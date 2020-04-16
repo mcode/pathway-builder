@@ -1,0 +1,36 @@
+@import '../../styles/variables';
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em;
+
+  > * {
+    margin-right: 2em;
+  }
+
+  &__back {
+    font-size: 1.8em;
+    color: $gray;
+    margin-right: 20px;
+
+    &:hover, &:focus {
+      cursor: pointer;
+      color: darken($gray, 10%);
+    }
+  }
+
+  &__leftPanel {
+    display: flex;
+    align-items: center;
+  }
+
+  &__rightPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+    max-width: 60%;
+  }
+}

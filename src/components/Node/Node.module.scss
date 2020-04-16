@@ -1,0 +1,63 @@
+@import '../../styles/variables';
+
+.node {
+  position: absolute;
+  width: auto;
+  min-width: 100px;
+  height: $collapsedNodeHeight;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .icon {
+    font-size: 1.2em;
+    color: $black;
+    padding-right: 5px;
+  }
+
+  &:first-child {
+    margin-top: 10px;
+  }
+}
+
+.onPatientPath {
+  background-color: $blue;
+  color: $white;
+
+  &.actionable {
+    background-color: $red;
+  }
+
+  .icon {
+    color: $white;
+  }
+}
+
+.notOnPatientPath {
+  background-color: $gray-lighter;
+  color: $black;
+}
+
+.expandedNode {
+  position: absolute;
+  display: block;
+  top: $collapsedNodeHeight;
+  left: 0px;
+  padding: 20px;
+  margin: 0;
+  width: 100%;
+  background-color: $white;
+
+  &.childOnPatientPath {
+    border: 1px solid $blue;
+
+  }
+  &.childActionable {
+    border: 1px solid $red;
+  }
+
+  &.childNotOnPatientPath {
+    border-width: 1px;
+    border-style: solid;
+  }
+}

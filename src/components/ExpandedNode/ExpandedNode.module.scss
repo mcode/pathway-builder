@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+
+.infoTable {
+  border-spacing: 10px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.descTitle {
+  font-weight: bold;
+  text-align: right;
+  width: 20%;
+}
+
+.desc {
+  padding-left: 15px;
+  font-style: italic;
+  overflow-wrap: break-word;
+
+  .externalLink {
+    color: $blue;
+    margin-left: 8px;
+  }
+
+  .externalLink:hover, .externalLink:focus {
+    color: darken($blue, 10%);
+  }
+}
+
+.defaultTextButton {
+    padding: 5px 10px;
+    margin: 0 0 2px 5px;
+    float: right;
+}
+
+.commentsForm {
+  margin-top: 15px;
+
+  > label {
+    font-weight: bold;
+  }
+}
+
+.footer {
+  float: right;
+}
+
+.comments {
+  margin-bottom: 10px;
+  width: 100%;
+  min-height: 85px;
+  resize: vertical;
+  background-color: $gray-lighter;
+  border: none;
+}
+
