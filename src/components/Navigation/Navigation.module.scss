@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@import "../../styles/variables";
 
 .navigation {
   display: flex;
@@ -15,7 +15,8 @@
     color: $gray;
     margin-right: 20px;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       cursor: pointer;
       color: darken($gray, 10%);
     }
@@ -24,6 +25,11 @@
   &__leftPanel {
     display: flex;
     align-items: center;
+
+    p {
+      font-size: 1.5em;
+      padding: 20px;
+    }
   }
 
   &__rightPanel {

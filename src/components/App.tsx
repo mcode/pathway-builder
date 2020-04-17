@@ -103,6 +103,8 @@ const App: FC<AppProps> = () => {
         >
           <div ref={headerElement}>
             <Header logo={logo} />
+
+            <Navigation name={'Breast Cancer: Neoadjuvant Chemotherapy with Surgery'} />
           </div>
 
           {selectPathway ? (
