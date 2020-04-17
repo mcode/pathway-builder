@@ -1,27 +1,16 @@
 import React, { FC, useState, useEffect, useRef, RefObject } from 'react';
 
-import { DomainResource } from 'fhir-objects';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNotesMedical, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import styles from './PatientRecord.module.scss';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.scss';
 
-interface PatientRecordProps {
+interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
 }
 
-interface PatientRecordElementProps {
-  resourceType: string;
-  resources: ReadonlyArray<DomainResource>;
-}
-
-interface VisualizerProps {
-  resourceType: string;
-  resourcesByType: ReadonlyArray<DomainResource>;
-}
-
-const PatientRecord: FC<PatientRecordProps> = ({ headerElement }) => {
+const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   const recordContainerElement = useRef<HTMLDivElement>(null);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   const expand = (): void => {
     setIsExpanded(!isExpanded);
@@ -48,11 +37,11 @@ const PatientRecord: FC<PatientRecordProps> = ({ headerElement }) => {
     return (
       <div className={styles.record}>
         <div className={styles.recordToggle} onClick={expand}>
-          <FontAwesomeIcon icon={faNotesMedical} />
+          <FontAwesomeIcon icon={faChevronRight} />
         </div>
       </div>
     );
   }
 };
 
-export default PatientRecord;
+export default Sidebar;
