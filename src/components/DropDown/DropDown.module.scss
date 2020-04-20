@@ -1,32 +1,28 @@
-@import '../../styles/variables';
+@import "../../styles/variables";
 
 .dropdown {
-  display: inline-flex;
-  flex-direction: column;
   width: 100%;
-
-  button {
-    padding: 5px 10px;
-    margin: 0 0 2px 5px;
-    float: right;
-    border: none;
-    color: $white;
-    background-color: $blue;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    appearance: none;
-
-    &:hover, &:focus {
-        background-color: darken($blue, 10%);
-    }
-  }
+  margin: 8px 0 !important;
+  color: #fff;
 
   label {
-    font-weight: 700;
-    font-size: 0.9em;
-    margin-bottom: 5px;
+    color: $white;
+  }
+
+  div {
+    color: $white;
+
+    svg {
+      color: $white;
+    }
+
+    fieldset {
+      border-color: $white;
+
+      &:hover,
+      &:focus {
+        border-color: $white !important;
+      }
+    }
   }
 }

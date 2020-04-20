@@ -1,59 +1,57 @@
-import React, { FC, useCallback } from 'react';
-import Select from 'react-select';
+import React, { FC, useState } from "react";
+import styles from "./DropDown.module.scss";
 
-import styles from './DropDown.module.scss';
-import { Option } from 'option';
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
+interface Option {
+  label: string;
+  value: string;
+}
 
 interface Props {
-  label?: string;
   id: string;
-  visible: boolean;
+  label: string;
   options: Array<Option>;
-  onChange?: (value: Option | ReadonlyArray<Option> | null) => void;
-  selectedValue: Option | ReadonlyArray<Option> | null;
-  setSelectPathway: (flag: boolean) => void;
+  initialSelected?: Option;
 }
 
 const DropDown: FC<Props> = ({
-  options,
-  label,
   id,
-  visible,
-  onChange,
-  selectedValue,
-  setSelectPathway
+  label,
+  options,
+  initialSelected,
 }: Props) => {
-  const onChangeCallback = useCallback(
-    (value: Option | ReadonlyArray<Option> | null | undefined) => {
-      if (onChange) onChange(value == null ? null : value);
-    },
-    [onChange]
+  const [selected, _setSelected] = useState<Option>(
+    initialSelected ?? options[0]
   );
 
-  if (visible)
-    return (
-      <div className={styles.dropdown}>
-        <div>
-          <label htmlFor={id}>{label}</label>
-          <button
-            onClick={(): void => {
-              setSelectPathway(true);
-            }}
-          >
-            Explore Pathways
-          </button>
-        </div>
-        <Select
-          classNamePrefix="DropDown"
-          inputId={id}
-          value={selectedValue}
-          onChange={onChangeCallback}
-          options={options}
-          aria-label={label}
-        />
-      </div>
+  const setSelected = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const selectedOption = options.find(
+      (opt) => opt.value === (event.target.value as string)
     );
-  else return <div></div>;
+    if (selectedOption) _setSelected(selectedOption);
+  };
+
+  return (
+    <FormControl variant="outlined" className={styles.dropdown}>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
+      <Select
+        native
+        value={selected.value}
+        onChange={setSelected}
+        label={label}
+        inputProps={{
+          id: id,
+        }}
+      >
+        {options.map((option) => (
+          <option value={option.value}>{option.label}</option>
+        ))}
+      </Select>
+    </FormControl>
+  );
 };
 
 export default DropDown;
