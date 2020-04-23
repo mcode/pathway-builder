@@ -1,19 +1,19 @@
-import React, { FC } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import React, { FC } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
-import styles from "./Navigation.module.scss";
+import styles from './Navigation.module.scss';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  theme => ({
     navigation: {
       backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary,
-    },
+      color: theme.palette.text.primary
+    }
   }),
-  { name: "Navigation" }
+  { name: 'Navigation' }
 );
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   onBack?: () => void;
 }
 
-const Navigation: FC<Props> = ({ name = "", onBack }) => {
+const Navigation: FC<Props> = ({ name = '', onBack }) => {
   const classes = useStyles();
 
   return (

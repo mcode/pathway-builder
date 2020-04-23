@@ -1,9 +1,9 @@
-import React, { FC, useState } from "react";
-import styles from "./DropDown.module.scss";
+import React, { FC, useState } from 'react';
+import styles from './DropDown.module.scss';
 
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 interface Option {
   label: string;
@@ -17,20 +17,11 @@ interface Props {
   initialSelected?: Option;
 }
 
-const DropDown: FC<Props> = ({
-  id,
-  label,
-  options,
-  initialSelected,
-}: Props) => {
-  const [selected, _setSelected] = useState<Option>(
-    initialSelected ?? options[0]
-  );
+const DropDown: FC<Props> = ({ id, label, options, initialSelected }: Props) => {
+  const [selected, _setSelected] = useState<Option>(initialSelected ?? options[0]);
 
   const setSelected = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const selectedOption = options.find(
-      (opt) => opt.value === (event.target.value as string)
-    );
+    const selectedOption = options.find(opt => opt.value === (event.target.value as string));
     if (selectedOption) _setSelected(selectedOption);
   };
 
@@ -43,10 +34,10 @@ const DropDown: FC<Props> = ({
         onChange={setSelected}
         label={label}
         inputProps={{
-          id: id,
+          id: id
         }}
       >
-        {options.map((option) => (
+        {options.map(option => (
           <option value={option.value}>{option.label}</option>
         ))}
       </Select>

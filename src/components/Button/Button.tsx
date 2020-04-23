@@ -1,8 +1,8 @@
-import React, { FC } from "react";
+import React, { FC } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import indexStyles from "styles/index.module.scss";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import indexStyles from 'styles/index.module.scss';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 interface ButtonProps {
   text: string;
