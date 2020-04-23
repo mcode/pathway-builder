@@ -22,9 +22,9 @@ export const PathwayListRow: FC<PathwayListRowProps> = ({
     <tr className={styles.tableRow} >
       <td className={styles.nameCell}>{pathway.pathway.name}</td>
       {/* TODO: display the status */}
-      <td className={styles.statusCell}>Draft</td>
+      <td className={styles.rowCell}>Draft</td>
       {/* TODO: display the last update time */}
-      <td className={styles.updatedCell}>2 Days ago</td>
+      <td className={styles.rowCell}>2 Days ago</td>
       <td className={styles.buttonCell}>
         <button
           className={styles.editButton}

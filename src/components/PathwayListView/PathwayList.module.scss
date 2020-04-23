@@ -3,12 +3,32 @@
 // ----------  TITLE SPACING  --------- //
 $verticalPadding: 20px;
 $lineHeight: 50px;
+$segoeFont: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+  Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+$namePadding: 100px;
+$headerPadding: 7px;
+$leftRightPadding: 50px;
+$topPadding: 30px;
+$bottomPadding: 10px;
+$rowIndent: 30px;
 
 .table {
   width: 90%;
   margin-left: 5%;
   margin-right: 5%;
-  //border-collapse: collapse;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: scroll;
+  min-width: 300px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  /* hide the scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+table.table::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
 }
 
 .headerRow {
@@ -19,65 +39,55 @@ $lineHeight: 50px;
   border-bottom: 2px solid #eaeef2;
   font-weight: normal;
   font-size: 18px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
 }
 
 .headerCell {
-  padding: 7px;
+  padding: $headerPadding;
   font-weight: normal;
-  padding-left: 2.5%;
-  padding-right: 2.5%;
+  padding-left: $leftRightPadding;
+  padding-right: $leftRightPadding;
   font-size: 18px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
+  white-space: nowrap;
 }
 
 .nameHeader {
-  padding: 7px;
-  padding-left: 30px;
-  padding-right: 10%;
+  padding: $headerPadding;
+  padding-left: $rowIndent;
+  padding-right: $namePadding;
   font-weight: normal;
   font-size: 18px;
   text-align: left;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
 }
 
 .buttonHeader {
   font-weight: normal;
-  width: 89%;
+  min-width: 115px;
+  //width: 89%;
 }
 
 .nameCell {
-  padding-left: 30px;
-  padding-top: 30px;
-  padding-bottom: 10px;
+  padding-top: $topPadding;
+  padding-bottom: $bottomPadding;
+  padding-left: $rowIndent;
+  padding-right: $namePadding;
   white-space: nowrap;
-  padding-right: 10%;
 }
 
-.statusCell {
-  padding-top: 30px;
-  padding-bottom: 10px;
+.rowCell {
+  padding-top: $topPadding;
+  padding-bottom: $bottomPadding;
+  padding-left: $leftRightPadding;
+  padding-right: $leftRightPadding;
   white-space: nowrap;
-  padding-left: 2.5%;
-  padding-right: 2.5%;
-  text-align: center;
-}
-
-.updatedCell {
-  padding-top: 30px;
-  padding-bottom: 10px;
-  white-space: nowrap;
-  padding-left: 2.5%;
-  padding-right: 2.5%;
   text-align: center;
 }
 
 .buttonCell {
-  padding-top: 30px;
-  padding-bottom: 10px;
+  padding-top: $topPadding;
+  padding-bottom: $bottomPadding;
   text-align: right;
   width: 100%;
 }
@@ -94,8 +104,7 @@ $lineHeight: 50px;
   border: none;
   font-size: 14px;
   font-weight: bold;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
 }
 
 .deleteIcon {
@@ -110,8 +119,7 @@ $lineHeight: 50px;
   border: none;
   font-size: 14px;
   font-weight: bold;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
 }
 
 .createIcon {
@@ -128,9 +136,7 @@ $lineHeight: 50px;
   margin-right: 5%;
   padding: 10px;
   font-size: 16px;
-  font-weight: 600;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: $segoeFont;
 
   // this is from _button.scss
   border: none;
@@ -138,7 +144,7 @@ $lineHeight: 50px;
   background-color: $blue;
   text-decoration: none;
   text-transform: uppercase;
-  //font-weight: 600;
+  font-weight: 600;
   cursor: pointer;
   text-align: center;
   appearance: none;
