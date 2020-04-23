@@ -1,36 +1,39 @@
 import React, { FC, useState, useEffect, useCallback, useRef } from 'react';
 import Header from 'components/Header';
-import Navigation from 'components/Navigation';
-import logo from 'camino-logo-dark.png';
+import logo from 'camino-builder-logo-dark-bg.png';
 import PatientRecord from './PatientRecord/PatientRecord';
 import Graph from './Graph';
 import config from 'utils/ConfigManager';
-import PathwaysList from './PathwaysList';
+import PathwaysList from './PathwayListView';
 import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
 import { EvaluatedPathway } from 'pathways-model';
 import useGetPathwaysService from './PathwaysService/PathwaysService';
 import styles from './App.module.scss';
 import { UserProvider } from './UserProvider';
-interface AppProps {
-}
+interface AppProps {}
 
 const App: FC<AppProps> = () => {
-  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
+  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(
+    null
+  );
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
-  const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>([]);
+  const [evaluatedPathways, setEvaluatedPathways] = useState<
+    EvaluatedPathway[]
+  >([]);
   const [user, setUser] = useState<string>('');
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
 
-  const service = useGetPathwaysService(
-    config.get('demoPathwaysService')
-  );
+  const service = useGetPathwaysService(config.get('demoPathwaysService'));
 
   useEffect(() => {
     if (service.status === 'loaded' && evaluatedPathways.length === 0)
       setEvaluatedPathways(
-        service.payload.map(pathway => ({ pathway: pathway, pathwayResults: null }))
+        service.payload.map((pathway) => ({
+          pathway: pathway,
+          pathwayResults: null,
+        }))
       );
   }, [service, evaluatedPathways.length]);
 
@@ -98,17 +101,11 @@ const App: FC<AppProps> = () => {
           pathwayCtx={{
             updateEvaluatedPathways,
             evaluatedPathway: currentPathway,
-            setEvaluatedPathway: setEvaluatedPathwayCallback
+            setEvaluatedPathway: setEvaluatedPathwayCallback,
           }}
         >
           <div ref={headerElement}>
             <Header logo={logo} />
-
-            <Navigation
-              evaluatedPathways={evaluatedPathways}
-              selectPathway={selectPathway}
-              setSelectPathway={setSelectPathway}
-            />
           </div>
 
           {selectPathway ? (
