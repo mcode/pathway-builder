@@ -1,21 +1,33 @@
-import React, { FC } from 'react';
-import { Pathway, EvaluatedPathway } from 'pathways-model';
-import { Service } from 'pathways-objects';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import React, { FC } from "react";
+import { Pathway, EvaluatedPathway } from "pathways-model";
+import { Service } from "pathways-objects";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
 
-import Loading from 'components/elements/Loading/Loading';
+import Loading from "components/elements/Loading/Loading";
 
-import styles from './PathwayList.module.scss';
+import styles from "./PathwaysList.module.scss";
 
-interface PathwayListProps {
+interface PathwaysTableProps {
   pathways: EvaluatedPathway[];
   deleteButton: Function;
   editButton: Function;
 }
 
-const PathwayList: FC<PathwayListProps> = ({ pathways, deleteButton, editButton }) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({
+  pathways,
+  deleteButton,
+  editButton,
+}) => {
   return (
     <TableContainer className={styles.pathwayList}>
       <Table aria-label="pathway list">
@@ -29,9 +41,11 @@ const PathwayList: FC<PathwayListProps> = ({ pathways, deleteButton, editButton 
         </TableHead>
 
         <TableBody>
-          {pathways.map(pathway => (
+          {pathways.map((pathway) => (
             <TableRow key={pathway.pathway.name}>
-              <TableCell component="th" scope="row">{pathway.pathway.name}</TableCell>
+              <TableCell component="th" scope="row">
+                {pathway.pathway.name}
+              </TableCell>
               <TableCell>draft</TableCell>
               <TableCell>2 days ago</TableCell>
               <TableCell align="right">
@@ -44,12 +58,7 @@ const PathwayList: FC<PathwayListProps> = ({ pathways, deleteButton, editButton 
                   Edit
                 </Button>
 
-                <Button
-                  className={styles.deleteButton}
-                  color="secondary"
-                  size="small"
-                  startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                >
+                <Button color="secondary" size="small" startIcon={<FontAwesomeIcon icon={faTrashAlt} />}>
                   Delete
                 </Button>
               </TableCell>
@@ -67,8 +76,12 @@ interface PathwaysListProps {
   service: Service<Array<Pathway>>;
 }
 
-const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
-  if (service.status === 'loading') return <Loading />;
+const PathwaysList: FC<PathwaysListProps> = ({
+  evaluatedPathways,
+  callback,
+  service,
+}) => {
+  if (service.status === "loading") return <Loading />;
 
   return (
     <div className={styles.root}>
@@ -81,7 +94,7 @@ const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, serv
         Create Pathway
       </Button>
 
-      <PathwayList
+      <PathwaysTable
         pathways={evaluatedPathways}
         deleteButton={(): void => callback()}
         editButton={(): void => callback()}

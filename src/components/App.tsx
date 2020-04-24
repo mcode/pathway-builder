@@ -7,7 +7,7 @@ import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
 import config from 'utils/ConfigManager';
 
-import PathwayList from './PathwayList';
+import PathwaysList from './PathwaysList';
 import Graph from './Graph';
 import PatientRecord from './PatientRecord/PatientRecord';
 import Header from 'components/Header';
@@ -113,11 +113,11 @@ const App: FC<AppProps> = () => {
           </div>
 
           {selectPathway ? (
-            <PathwayList
+            <PathwaysList
               evaluatedPathways={evaluatedPathways}
               callback={setEvaluatedPathwayCallback}
               service={service}
-            ></PathwayList>
+            ></PathwaysList>
           ) : (
             <PatientView evaluatedPathway={currentPathway} />
           )}
