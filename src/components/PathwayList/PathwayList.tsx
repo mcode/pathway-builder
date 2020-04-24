@@ -69,7 +69,6 @@ interface PathwaysListProps {
 
 const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
   if (service.status === 'loading') return <Loading />;
-  console.debug('evaluatedPathways', evaluatedPathways);
 
   return (
     <div className={styles.root}>
