@@ -17,6 +17,41 @@ const typography = {
     "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif"
 };
 
+const materialUiOverrides = {
+  MuiButton: {
+    root: {
+      borderRadius: 0
+    },
+    label: {
+      fontWeight: 600
+    },
+    iconSizeMedium: {
+      '& > *:first-child': {
+        fontSize: 12,
+      }
+    },
+    iconSizeSmall: {
+      '& > *:first-child': {
+        fontSize: 14,
+      }
+    }
+  },
+  MuiTableHead: {
+    root: {
+      backgroundColor: colors.grayLighter
+    }
+  },
+  MuiTableCell: {
+    root: {
+      fontSize: '1em'
+    },
+    head: {
+      padding: '5px 16px',
+      borderBottom: 'none'
+    }
+  }
+};
+
 const theme = createMuiTheme({
   typography: { ...typography },
   palette: {
@@ -34,7 +69,8 @@ const theme = createMuiTheme({
       primary: colors.gray,
       secondary: colors.gray
     }
-  }
+  },
+  overrides: { ...materialUiOverrides }
 });
 
 const projectorTheme = createMuiTheme({
@@ -54,7 +90,8 @@ const projectorTheme = createMuiTheme({
       primary: colors.black,
       secondary: colors.black
     }
-  }
+  },
+  overrides: { ...materialUiOverrides }
 });
 
 export default theme;

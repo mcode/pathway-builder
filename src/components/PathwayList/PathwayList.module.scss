@@ -1,0 +1,19 @@
+@import '../../styles/variables';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  padding: $global-padding;
+
+  .createPathwayButton {
+    align-self: flex-end;
+  }
+
+  .pathwayList {
+    margin-top: 2em;
+
+    .editButton {
+      margin-right: 1em;
+    }
+  }
+}

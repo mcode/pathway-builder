@@ -1,16 +1,20 @@
 import React, { FC, useState, useEffect, useCallback, useRef } from 'react';
-import Header from 'components/Header';
-import logo from 'camino-builder-logo-dark-bg.png';
-import PatientRecord from './PatientRecord/PatientRecord';
-import Graph from './Graph';
-import config from 'utils/ConfigManager';
-import PathwaysList from './PathwayListView';
+import { EvaluatedPathway } from 'pathways-model';
+
+import useGetPathwaysService from './PathwaysService/PathwaysService';
+import { UserProvider } from './UserProvider';
 import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
-import { EvaluatedPathway } from 'pathways-model';
-import useGetPathwaysService from './PathwaysService/PathwaysService';
+import config from 'utils/ConfigManager';
+
+import PathwayList from './PathwayList';
+import Graph from './Graph';
+import PatientRecord from './PatientRecord/PatientRecord';
+import Header from 'components/Header';
+
+import logo from 'camino-builder-logo-dark-bg.png';
 import styles from './App.module.scss';
-import { UserProvider } from './UserProvider';
+
 interface AppProps {}
 
 const App: FC<AppProps> = () => {
@@ -109,11 +113,11 @@ const App: FC<AppProps> = () => {
           </div>
 
           {selectPathway ? (
-            <PathwaysList
+            <PathwayList
               evaluatedPathways={evaluatedPathways}
               callback={setEvaluatedPathwayCallback}
               service={service}
-            ></PathwaysList>
+            ></PathwayList>
           ) : (
             <PatientView evaluatedPathway={currentPathway} />
           )}
