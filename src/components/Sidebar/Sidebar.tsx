@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, useRef, RefObject } from 'react';
 
-import Button from 'components/Button';
+import Button from '@material-ui/core/Button';
 import DropDown from 'components/DropDown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -27,7 +27,13 @@ const AddNodes: FC = () => {
         <tbody>
           <tr>
             <td className={styles.button}>
-              <Button text={'Add Action Node'} icon={faPlus} />
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faPlus} />}
+              >
+                Add Action Node
+              </Button>
             </td>
             <td className={styles.description}>
               Any clinical or worfklow step which is not a decision.
@@ -35,7 +41,13 @@ const AddNodes: FC = () => {
           </tr>
           <tr>
             <td className={styles.button}>
-              <Button text={'Add Decision Node'} icon={faPlus} />
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faPlus} />}
+              >
+                Add Decision Node
+              </Button>
             </td>
             <td className={styles.description}>
               A logical branching point based on clinical or workflow criteria.
@@ -43,7 +55,13 @@ const AddNodes: FC = () => {
           </tr>
           <tr>
             <td className={styles.button}>
-              <Button text={'Add Reusable Node'} icon={faPlus} />
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faPlus} />}
+              >
+                Add Reusable Node
+              </Button>
             </td>
             <td className={styles.description}>
               A previously built node or group of nodes defining a set of criteria.

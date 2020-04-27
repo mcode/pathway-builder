@@ -2,27 +2,4 @@
 
 .dropdown {
   width: 100%;
-  margin: 8px 0 !important;
-  color: #fff;
-
-  label {
-    color: $white;
-  }
-
-  div {
-    color: $white;
-
-    svg {
-      color: $white;
-    }
-
-    fieldset {
-      border-color: $white;
-
-      &:hover,
-      &:focus {
-        border-color: $white !important;
-      }
-    }
-  }
 }

@@ -9,6 +9,7 @@ const colors = {
   grayMedium: '#bbbdc0',
   grayBlue: '#cbd5df',
   grayLighter: '#eaeef2',
+  grayDark: '#444',
   green: '#2fa874'
 };
 
@@ -18,6 +19,7 @@ const typography = {
 };
 
 const materialUiOverrides = {
+  // Style sheet name ⚛️
   MuiButton: {
     root: {
       borderRadius: 0
@@ -48,6 +50,58 @@ const materialUiOverrides = {
     head: {
       padding: '5px 16px',
       borderBottom: 'none'
+    }
+  },
+  MuiFormControl: {
+    // Name of the rule
+    root: {
+      // Some CSS
+      margin: '10px 0',
+      '&:hover': {
+        borderColor: colors.white
+      }
+    }
+  },
+  MuiFormLabel: {
+    root: {
+      color: colors.white,
+      fontStyle: 'italic',
+      '&$focused': {
+        color: colors.white
+      }
+    }
+  },
+  MuiInputBase: {
+    root: {
+      color: colors.white,
+      fontWeight: 600,
+      '&:hover': {
+        borderColor: colors.white,
+        backgroundColor: colors.grayDark
+      }
+    }
+  },
+  MuiOutlinedInput: {
+    root: {
+      borderRadius: '0',
+      '&:hover': {
+        borderColor: colors.white
+      },
+      '&:hover $notchedOutline': {
+        borderColor: colors.white
+      },
+      '&$focused $notchedOutline': {
+        borderColor: colors.white
+      }
+    },
+    notchedOutline: {
+      borderColor: colors.white
+    }
+  },
+  MuiSelect: {
+    icon: {
+      color: colors.white,
+      fontSize: '2em'
     }
   }
 };

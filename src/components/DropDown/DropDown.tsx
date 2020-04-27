@@ -1,9 +1,7 @@
 import React, { FC, useState } from 'react';
 import styles from './DropDown.module.scss';
 
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import { InputLabel, FormControl, Select, MenuItem } from '@material-ui/core';
 
 interface Option {
   label: string;
@@ -27,18 +25,10 @@ const DropDown: FC<Props> = ({ id, label, options, initialSelected }: Props) => 
 
   return (
     <FormControl variant="outlined" className={styles.dropdown}>
-      <InputLabel htmlFor={id}>{label}</InputLabel>
-      <Select
-        native
-        value={selected.value}
-        onChange={setSelected}
-        label={label}
-        inputProps={{
-          id: id
-        }}
-      >
+      <InputLabel id={id}>{label}</InputLabel>
+      <Select id={id} value={selected.value} onChange={setSelected} label={label}>
         {options.map(option => (
-          <option value={option.value}>{option.label}</option>
+          <MenuItem value={option.value}>{option.label}</MenuItem>
         ))}
       </Select>
     </FormControl>
