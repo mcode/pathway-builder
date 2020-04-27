@@ -1,8 +1,8 @@
-import React, { FC } from "react";
-import { Pathway, EvaluatedPathway } from "pathways-model";
-import { Service } from "pathways-objects";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import React, { FC } from 'react';
+import { Pathway, EvaluatedPathway } from 'pathways-model';
+import { Service } from 'pathways-objects';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
   Table,
@@ -11,11 +11,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@material-ui/core";
+} from '@material-ui/core';
 
-import Loading from "components/elements/Loading/Loading";
+import Loading from 'components/elements/Loading/Loading';
 
-import styles from "./PathwaysList.module.scss";
+import styles from './PathwaysList.module.scss';
 
 interface PathwaysTableProps {
   pathways: EvaluatedPathway[];
@@ -58,7 +58,11 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
                   Edit
                 </Button>
 
-                <Button color="secondary" size="small" startIcon={<FontAwesomeIcon icon={faTrashAlt} />}>
+                <Button
+                  color="secondary"
+                  size="small"
+                  startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+                >
                   Delete
                 </Button>
               </TableCell>
@@ -81,7 +85,7 @@ const PathwaysList: FC<PathwaysListProps> = ({
   callback,
   service,
 }) => {
-  if (service.status === "loading") return <Loading />;
+  if (service.status === 'loading') return <Loading />;
 
   return (
     <div className={styles.root}>
@@ -90,6 +94,7 @@ const PathwaysList: FC<PathwaysListProps> = ({
         variant="contained"
         color="primary"
         startIcon={<FontAwesomeIcon icon={faPlus} />}
+        onClick={(): void => callback()}
       >
         Create Pathway
       </Button>
