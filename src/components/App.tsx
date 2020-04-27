@@ -12,9 +12,8 @@ import { EvaluatedPathway } from 'pathways-model';
 import useGetPathwaysService from './PathwaysService/PathwaysService';
 import styles from './App.module.scss';
 import { UserProvider } from './UserProvider';
-interface AppProps {}
 
-const App: FC<AppProps> = () => {
+const App: FC = () => {
   const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
   const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>([]);
