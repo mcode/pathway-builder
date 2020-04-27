@@ -54,6 +54,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
+                  onClick={() => editButton(pathway.pathway.name)}
                 >
                   Edit
                 </Button>
