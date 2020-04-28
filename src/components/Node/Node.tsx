@@ -97,10 +97,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
 
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
-          <div
-            className={`nodeTitle ${onClickHandler && 'clickable'}`}
-            onClick={onClickHandler}
-          >
+          <div className={`nodeTitle ${onClickHandler && 'clickable'}`} onClick={onClickHandler}>
             <div className="iconAndLabel">
               <NodeIcon pathwayState={pathwayState} isGuidance={isGuidance} />
               {label}

@@ -34,21 +34,21 @@ const MockedNavigation: FC = () => {
   }
 
   return (
-      <MockedPathwayProvider
-        pathwayCtx={{
-          evaluatedPathway: currentPathway,
-          setEvaluatedPathway: setEvaluatedPathwayCallback,
-          updateEvaluatedPathways: updateEvaluatedPathways
+    <MockedPathwayProvider
+      pathwayCtx={{
+        evaluatedPathway: currentPathway,
+        setEvaluatedPathway: setEvaluatedPathwayCallback,
+        updateEvaluatedPathways: updateEvaluatedPathways
+      }}
+    >
+      <Navigation
+        evaluatedPathways={evaluatedPathways}
+        selectPathway={false}
+        setSelectPathway={(): void => {
+          //do nothing
         }}
-      >
-        <Navigation
-          evaluatedPathways={evaluatedPathways}
-          selectPathway={false}
-          setSelectPathway={(): void => {
-            //do nothing
-          }}
-        />
-      </MockedPathwayProvider>
+      />
+    </MockedPathwayProvider>
   );
 };
 

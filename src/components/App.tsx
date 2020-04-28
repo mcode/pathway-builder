@@ -15,16 +15,10 @@ import Header from 'components/Header';
 import logo from 'camino-builder-logo-dark-bg.png';
 import styles from './App.module.scss';
 
-interface AppProps {}
-
-const App: FC<AppProps> = () => {
-  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(
-    null
-  );
+const App: FC = () => {
+  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
-  const [evaluatedPathways, setEvaluatedPathways] = useState<
-    EvaluatedPathway[]
-  >([]);
+  const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>([]);
   const [user, setUser] = useState<string>('');
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
@@ -34,9 +28,9 @@ const App: FC<AppProps> = () => {
   useEffect(() => {
     if (service.status === 'loaded' && evaluatedPathways.length === 0)
       setEvaluatedPathways(
-        service.payload.map((pathway) => ({
+        service.payload.map(pathway => ({
           pathway: pathway,
-          pathwayResults: null,
+          pathwayResults: null
         }))
       );
   }, [service, evaluatedPathways.length]);
@@ -105,7 +99,7 @@ const App: FC<AppProps> = () => {
           pathwayCtx={{
             updateEvaluatedPathways,
             evaluatedPathway: currentPathway,
-            setEvaluatedPathway: setEvaluatedPathwayCallback,
+            setEvaluatedPathway: setEvaluatedPathwayCallback
           }}
         >
           <div ref={headerElement}>

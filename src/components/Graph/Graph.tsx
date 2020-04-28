@@ -241,29 +241,29 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                 return interactive ? setExpanded(nodeName) : undefined;
               }, [nodeName]);
               return (
-                  <Node
-                    key={nodeName}
-                    documentation={docResource}
-                    ref={(node: HTMLDivElement): void => {
-                      nodeRefs.current[nodeName] = node;
-                    }}
-                    pathwayState={pathway.states[nodeName]}
-                    isOnPatientPath={
-                      evaluatedPathway.pathwayResults
-                        ? getPath(evaluatedPathway.pathwayResults).includes(nodeName) ||
-                          evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
-                        : false
-                    }
-                    isCurrentNode={
-                      evaluatedPathway.pathwayResults
-                        ? evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
-                        : false
-                    }
-                    xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
-                    yCoordinate={nodeCoordinates[nodeName].y}
-                    expanded={expanded[nodeName]}
-                    onClickHandler={onClickHandler}
-                  />
+                <Node
+                  key={nodeName}
+                  documentation={docResource}
+                  ref={(node: HTMLDivElement): void => {
+                    nodeRefs.current[nodeName] = node;
+                  }}
+                  pathwayState={pathway.states[nodeName]}
+                  isOnPatientPath={
+                    evaluatedPathway.pathwayResults
+                      ? getPath(evaluatedPathway.pathwayResults).includes(nodeName) ||
+                        evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
+                      : false
+                  }
+                  isCurrentNode={
+                    evaluatedPathway.pathwayResults
+                      ? evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
+                      : false
+                  }
+                  xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
+                  yCoordinate={nodeCoordinates[nodeName].y}
+                  expanded={expanded[nodeName]}
+                  onClickHandler={onClickHandler}
+                />
               );
             })
           : []}

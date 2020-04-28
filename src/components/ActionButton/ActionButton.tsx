@@ -15,8 +15,7 @@ interface ActionButtonProps extends ButtonProps {
 const LargeActionButton: FC<ButtonProps> = ({ type, onClick }) => {
   return (
     <button
-      className={`${styles.largeActionButton} button ${type === 'decline' &&
-        styles.largeDecline}`}
+      className={`${styles.largeActionButton} button ${type === 'decline' && styles.largeDecline}`}
       type="button"
       onClick={onClick}
     >

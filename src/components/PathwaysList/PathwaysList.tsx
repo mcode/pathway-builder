@@ -10,7 +10,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
+  TableRow
 } from '@material-ui/core';
 
 import Loading from 'components/elements/Loading/Loading';
@@ -19,15 +19,11 @@ import styles from './PathwaysList.module.scss';
 
 interface PathwaysTableProps {
   pathways: EvaluatedPathway[];
-  deleteButton: Function;
-  editButton: Function;
+  deleteButton: (pathway: object) => void;
+  editButton: (pathway: object) => void;
 }
 
-const PathwaysTable: FC<PathwaysTableProps> = ({
-  pathways,
-  deleteButton,
-  editButton,
-}) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editButton }) => {
   return (
     <TableContainer className={styles.pathwayList}>
       <Table aria-label="pathway list">
@@ -41,7 +37,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
         </TableHead>
 
         <TableBody>
-          {pathways.map((pathway) => (
+          {pathways.map(pathway => (
             <TableRow key={pathway.pathway.name}>
               <TableCell component="th" scope="row">
                 {pathway.pathway.name}
@@ -54,7 +50,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
-                  onClick={() => editButton(pathway)}
+                  onClick={(): void => editButton(pathway)}
                 >
                   Edit
                 </Button>
@@ -63,6 +59,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+                  onClick={(): void => deleteButton(pathway)}
                 >
                   Delete
                 </Button>
@@ -81,11 +78,7 @@ interface PathwaysListProps {
   service: Service<Array<Pathway>>;
 }
 
-const PathwaysList: FC<PathwaysListProps> = ({
-  evaluatedPathways,
-  callback,
-  service,
-}) => {
+const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
   if (service.status === 'loading') return <Loading />;
 
   return (
