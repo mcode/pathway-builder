@@ -29,9 +29,6 @@ const materialUiOverrides = {
     },
     iconSizeMedium: {
       '& > *:first-child': {
-        fontSize: 12
-      },
-      '&& svg': {
         fontSize: 14
       }
     },
