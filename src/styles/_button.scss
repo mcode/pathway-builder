@@ -1,17 +1,16 @@
 @import 'variables';
 
 .button {
-    border: none;
-    color: $white;
-    background-color: $blue;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    appearance: none;
+  border: none;
+  color: $white;
+  background-color: $blue;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px;
 
-    &:hover, &:focus {
-        background-color: darken($blue, 10%);
-    }
+  &:hover,
+  &:focus {
+    background-color: darken($blue, 10%);
+  }
 }

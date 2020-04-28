@@ -3,7 +3,6 @@ import { GuidanceState, DocumentationResource, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
-import indexStyles from 'styles/index.module.scss';
 import { isBranchState } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
@@ -121,7 +120,7 @@ const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(
     const guidance = isGuidance && renderGuidance(pathwayState);
     const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
     return (
-      <div className={indexStyles.expandedNode}>
+      <div className="expandedNode">
         <table className={styles.infoTable}>
           <tbody>
             {guidance || branch}

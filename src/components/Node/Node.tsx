@@ -5,7 +5,6 @@ import { GuidanceState, State, DocumentationResource } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
-import nodeStyles from 'styles/index.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
 import { isGuidanceState } from 'utils/nodeUtils';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -71,7 +70,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       const isActionable = isCurrentNode && !documentation;
       const topLevelClasses = [styles.node, backgroundColorClass];
       let expandedNodeClass = '';
-      if (expanded) topLevelClasses.push(nodeStyles.expanded);
+      if (expanded) topLevelClasses.push('expanded');
       if (isActionable) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
@@ -99,10 +98,10 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
           <div
-            className={`${nodeStyles.nodeTitle} ${onClickHandler && nodeStyles.clickable}`}
+            className={`nodeTitle ${onClickHandler && 'clickable'}`}
             onClick={onClickHandler}
           >
-            <div className={nodeStyles.iconAndLabel}>
+            <div className="iconAndLabel">
               <NodeIcon pathwayState={pathwayState} isGuidance={isGuidance} />
               {label}
             </div>
@@ -154,7 +153,7 @@ const StatusIcon: FC<StatusIconProps> = ({ status }) => {
   }
   const icon = status ? faCheckCircle : faTimesCircle;
   return (
-    <div className={nodeStyles.statusIcon}>
+    <div className="statusIcon">
       <FontAwesomeIcon icon={icon} className={styles.icon} />
     </div>
   );

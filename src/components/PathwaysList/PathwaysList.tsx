@@ -1,41 +1,79 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import React, { FC } from 'react';
+import { Pathway, EvaluatedPathway } from 'pathways-model';
 import { Service } from 'pathways-objects';
-import { Pathway, EvaluatedPathway, CriteriaResult } from 'pathways-model';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
+
+import Loading from 'components/elements/Loading/Loading';
 
 import styles from './PathwaysList.module.scss';
-import indexStyles from 'styles/index.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Graph from 'components/Graph';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { usePathwayContext } from 'components/PathwayProvider';
-import {
-  faPlay,
-  faPlus,
-  faMinus,
-  faChevronUp,
-  faChevronDown,
-  faCaretDown
-} from '@fortawesome/free-solid-svg-icons';
 
-const useStyles = makeStyles(
-  theme => ({
-    'pathway-element': {
-      backgroundColor: theme.palette.background.default
-    },
-    title: {
-      color: theme.palette.text.primary
-    }
-  }),
-  { name: 'PathwaysList' }
-);
-
-interface PathwaysListElementProps {
-  evaluatedPathway: EvaluatedPathway;
-  criteria?: CriteriaResult;
-  callback: Function;
+interface PathwaysTableProps {
+  pathways: EvaluatedPathway[];
+  deleteButton: Function;
+  editButton: Function;
 }
+
+const PathwaysTable: FC<PathwaysTableProps> = ({
+  pathways,
+  deleteButton,
+  editButton,
+}) => {
+  return (
+    <TableContainer className={styles.pathwayList}>
+      <Table aria-label="pathway list">
+        <TableHead>
+          <TableRow>
+            <TableCell>Pathway Name</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Last Updated</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {pathways.map((pathway) => (
+            <TableRow key={pathway.pathway.name}>
+              <TableCell component="th" scope="row">
+                {pathway.pathway.name}
+              </TableCell>
+              <TableCell>draft</TableCell>
+              <TableCell>2 days ago</TableCell>
+              <TableCell align="right">
+                <Button
+                  className={styles.editButton}
+                  color="primary"
+                  size="small"
+                  startIcon={<FontAwesomeIcon icon={faEdit} />}
+                  onClick={() => editButton(pathway)}
+                >
+                  Edit
+                </Button>
+
+                <Button
+                  color="secondary"
+                  size="small"
+                  startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 interface PathwaysListProps {
   evaluatedPathways: EvaluatedPathway[];
@@ -43,132 +81,30 @@ interface PathwaysListProps {
   service: Service<Array<Pathway>>;
 }
 
-const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
-  function renderList(): ReactNode {
-    return (
-      <div>
-        {evaluatedPathways.map(evaluatedPathway => {
-          return (
-            <PathwaysListElement
-              evaluatedPathway={evaluatedPathway}
-              callback={callback}
-              key={evaluatedPathway.pathway.name}
-            />
-          );
-        })}
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.pathways_list}>
-      {service.status === 'loading' ? (
-        <div>Loading...</div>
-      ) : service.status === 'loaded' ? (
-        <div className={styles.container}>
-          <div className={styles.pathwayListHeaderContainer}>
-            <div className={styles.header_title}>
-              <div className={styles.header_title__header}>Explore Pathways</div>
-              <div className={styles.header_title__note}>Select pathway below to view details</div>
-            </div>
-            <div className={styles.matchedElementsLabel}>
-              <i>
-                mCODE
-                <br />
-                elements
-                <br />
-                matched
-              </i>
-              <FontAwesomeIcon icon={faCaretDown} />
-            </div>
-          </div>
-          {renderList()}
-        </div>
-      ) : (
-        <div>ERROR</div>
-      )}
-    </div>
-  );
-};
-
-const PathwaysListElement: FC<PathwaysListElementProps> = ({
-  evaluatedPathway,
-  criteria,
-  callback
+const PathwaysList: FC<PathwaysListProps> = ({
+  evaluatedPathways,
+  callback,
+  service,
 }) => {
-  const classes = useStyles();
-  const pathway = evaluatedPathway.pathway;
-  const pathwayCtx = usePathwayContext();
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  const chevron: IconProp = isVisible ? faChevronUp : faChevronDown;
-
-  function toggleVisible(): void {
-    setIsVisible(!isVisible);
-  }
+  if (service.status === 'loading') return <Loading />;
 
   return (
-    <div
-      className={clsx(styles.pathwayElement, classes['pathway-element'])}
-      role={'list'}
-      key={pathway.name}
-    >
-      <div
-        className={clsx(styles.title, classes.title)}
-        role={'listitem'}
-        onClick={(e): void => {
-          pathwayCtx.setEvaluatedPathway(evaluatedPathway, true);
-          toggleVisible();
-        }}
+    <div className={styles.root}>
+      <Button
+        className={styles.createPathwayButton}
+        variant="contained"
+        color="primary"
+        startIcon={<FontAwesomeIcon icon={faPlus} />}
+        onClick={(): void => callback()}
       >
-        <div>{pathway.name}</div>
-        <div className={styles.expand}>
-          <FontAwesomeIcon icon={chevron} />
-        </div>
-        <div className={styles.numElements}>{criteria?.matches}</div>
-      </div>
+        Create Pathway
+      </Button>
 
-      {isVisible && (
-        <div className={styles.infoContainer}>
-          <div className={styles.details}>
-            <p>{pathway.description}</p>
-            <table>
-              <tbody>
-                <tr>
-                  <th></th>
-                  <th>mCODE elements</th>
-                  <th>patient elements</th>
-                </tr>
-                {criteria?.criteriaResultItems.map(c => (
-                  <tr key={c.elementName}>
-                    <td>{c.elementName}</td>
-                    <td>{c.expected}</td>
-                    <td className={c.match ? styles.matchingElement : undefined}>{c.actual}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button className={indexStyles.button} onClick={(): void => callback(evaluatedPathway)}>
-              Select Pathway
-            </button>
-          </div>
-          <div className={styles.pathway}>
-            <div style={{ height: '100%', overflow: 'scroll' }}>
-              <Graph
-                evaluatedPathway={evaluatedPathway}
-                interactive={false}
-                expandCurrentNode={false}
-                updateEvaluatedPathways={pathwayCtx.updateEvaluatedPathways}
-              />
-            </div>
-            <div className={styles.controls}>
-              <FontAwesomeIcon icon={faPlay} />
-              <FontAwesomeIcon icon={faPlus} />
-              <FontAwesomeIcon icon={faMinus} />
-            </div>
-          </div>
-        </div>
-      )}
+      <PathwaysTable
+        pathways={evaluatedPathways}
+        deleteButton={(): void => callback()}
+        editButton={(): void => callback()}
+      />
     </div>
   );
 };

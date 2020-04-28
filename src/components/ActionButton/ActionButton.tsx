@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import indexStyles from 'styles/index.module.scss';
 import styles from './ActionButton.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +15,7 @@ interface ActionButtonProps extends ButtonProps {
 const LargeActionButton: FC<ButtonProps> = ({ type, onClick }) => {
   return (
     <button
-      className={`${styles.largeActionButton} ${indexStyles.button} ${type === 'decline' &&
+      className={`${styles.largeActionButton} button ${type === 'decline' &&
         styles.largeDecline}`}
       type="button"
       onClick={onClick}
