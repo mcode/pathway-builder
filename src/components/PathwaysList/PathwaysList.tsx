@@ -19,8 +19,8 @@ import styles from './PathwaysList.module.scss';
 
 interface PathwaysTableProps {
   pathways: EvaluatedPathway[];
-  deleteButton: Function;
-  editButton: Function;
+  deleteButton: (pathway: object) => void;
+  editButton: (pathway: object) => void;
 }
 
 const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editButton }) => {
@@ -50,7 +50,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editBut
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
-                  onClick={() => editButton(pathway)}
+                  onClick={(): void => editButton(pathway)}
                 >
                   Edit
                 </Button>
@@ -59,6 +59,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editBut
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+                  onClick={(): void => deleteButton(pathway)}
                 >
                   Delete
                 </Button>
