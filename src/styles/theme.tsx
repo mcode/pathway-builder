@@ -27,12 +27,12 @@ const materialUiOverrides = {
     },
     iconSizeMedium: {
       '& > *:first-child': {
-        fontSize: 12,
+        fontSize: 12
       }
     },
     iconSizeSmall: {
       '& > *:first-child': {
-        fontSize: 14,
+        fontSize: 14
       }
     }
   },

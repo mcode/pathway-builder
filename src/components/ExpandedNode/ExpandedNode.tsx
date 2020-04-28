@@ -7,10 +7,7 @@ import { isBranchState } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
-import {
-  MedicationRequest,
-  ServiceRequest
-} from 'fhir-objects';
+import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 interface ExpandedNodeProps {
   pathwayState: GuidanceState;
   isActionable: boolean;
@@ -22,10 +19,7 @@ const ExpandedNode: FC<ExpandedNodeProps> = memo(
   ({ pathwayState, isActionable, isGuidance, documentation }) => {
     return (
       <>
-        <ExpandedNodeMemo
-          isGuidance={isGuidance}
-          pathwayState={pathwayState}
-        />
+        <ExpandedNodeMemo isGuidance={isGuidance} pathwayState={pathwayState} />
       </>
     );
   }
@@ -45,9 +39,7 @@ const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) =
   );
 };
 
-function renderBranch(
-  pathwayState: State
-): ReactElement[] {
+function renderBranch(pathwayState: State): ReactElement[] {
   const returnElements: ReactElement[] = [];
 
   const values: string[] = pathwayState.transitions
@@ -65,7 +57,7 @@ function renderBranch(
       description={<MissingDataPopup values={values} />}
     />
   );
-  
+
   return returnElements;
 }
 
@@ -74,9 +66,7 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
-function renderGuidance(
-  pathwayState: GuidanceState
-): ReactElement[] {
+function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
   const resource = pathwayState.action[0].resource;
   const coding = isMedicationRequest(resource)
     ? resource?.medicationCodeableConcept?.coding
@@ -112,23 +102,16 @@ interface ExpandedNodeMemoProps {
   pathwayState: GuidanceState;
   isGuidance: boolean;
 }
-const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(
-  ({
-    pathwayState,
-    isGuidance
-  }) => {
-    const guidance = isGuidance && renderGuidance(pathwayState);
-    const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
-    return (
-      <div className="expandedNode">
-        <table className={styles.infoTable}>
-          <tbody>
-            {guidance || branch}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-);
+const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayState, isGuidance }) => {
+  const guidance = isGuidance && renderGuidance(pathwayState);
+  const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
+  return (
+    <div className="expandedNode">
+      <table className={styles.infoTable}>
+        <tbody>{guidance || branch}</tbody>
+      </table>
+    </div>
+  );
+});
 
 export default ExpandedNode;
