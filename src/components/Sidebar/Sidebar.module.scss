@@ -1,0 +1,89 @@
+@import '../../styles/variables';
+
+.sidebarContainer {
+  display: flex;
+  color: $white;
+
+  .sidebarToggle {
+    display: inline-flex;
+    float: left;
+    width: 65px;
+    height: 65px;
+    font-size: 2.5em;
+    align-items: center;
+    justify-content: center;
+    background-color: $blue;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .sidebar {
+    float: left;
+    width: 650px;
+    padding: 25px;
+    background-color: $gray;
+    overflow-y: scroll;
+
+    .header {
+      display: flex;
+      line-height: 30px;
+      margin-bottom: 15px;
+
+      div {
+        display: inline-block;
+      }
+
+      .nodeName {
+        font-size: 2em;
+        font-weight: 700;
+        margin: 0 15px;
+      }
+
+      .icon {
+        align-items: center;
+        font-size: 1.2em;
+        cursor: pointer;
+      }
+
+      #back {
+        font-size: 2em;
+      }
+
+      #nodeSettings {
+        float: right;
+        margin-left: auto;
+        margin-right: 15px;
+      }
+    }
+
+    .addNodesContainer {
+      table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+
+        tr {
+          .button {
+            width: 40%;
+
+            button {
+              width: 90%;
+              font-weight: 900;
+            }
+          }
+
+          .description {
+            width: 60%;
+            padding-left: 20px;
+            font-style: italic;
+          }
+        }
+
+        td {
+          width: 50%;
+        }
+      }
+    }
+  }
+}

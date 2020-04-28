@@ -16,10 +16,7 @@ const MockedNavigation: FC = () => {
   const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
   const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>(defaultList);
 
-  function setEvaluatedPathwayCallback(
-    value: EvaluatedPathway | null,
-    selectPathway = false
-  ): void {
+  function setEvaluatedPathwayCallback(value: EvaluatedPathway | null): void {
     if (value !== null) setCurrentPathway(value);
   }
 
@@ -41,13 +38,7 @@ const MockedNavigation: FC = () => {
         updateEvaluatedPathways: updateEvaluatedPathways
       }}
     >
-      <Navigation
-        evaluatedPathways={evaluatedPathways}
-        selectPathway={false}
-        setSelectPathway={(): void => {
-          //do nothing
-        }}
-      />
+      <Navigation />
     </MockedPathwayProvider>
   );
 };

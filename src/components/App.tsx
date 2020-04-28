@@ -1,19 +1,17 @@
 import React, { FC, useState, useEffect, useCallback, useRef } from 'react';
-import { EvaluatedPathway } from 'pathways-model';
-
-import useGetPathwaysService from './PathwaysService/PathwaysService';
-import { UserProvider } from './UserProvider';
+import Header from 'components/Header';
+import Navigation from 'components/Navigation';
+import logo from 'camino-logo-dark.png';
+import Sidebar from 'components/Sidebar';
+import Graph from './Graph';
+import config from 'utils/ConfigManager';
+import PathwaysList from './PathwaysList';
 import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
-import config from 'utils/ConfigManager';
-
-import PathwaysList from './PathwaysList';
-import Graph from './Graph';
-import PatientRecord from './PatientRecord/PatientRecord';
-import Header from 'components/Header';
-
-import logo from 'camino-builder-logo-dark-bg.png';
+import { EvaluatedPathway } from 'pathways-model';
+import useGetPathwaysService from './PathwaysService/PathwaysService';
 import styles from './App.module.scss';
+import { UserProvider } from './UserProvider';
 
 const App: FC = () => {
   const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
@@ -72,10 +70,10 @@ const App: FC = () => {
     evaluatedPathway: EvaluatedPathway | null;
   }
 
-  const PatientView: FC<PatientViewProps> = ({ evaluatedPathway }) => {
+  const BuilderView: FC<PatientViewProps> = ({ evaluatedPathway }) => {
     return (
       <div className={styles.display}>
-        <PatientRecord headerElement={headerElement} />
+        <Sidebar headerElement={headerElement} />
 
         {evaluatedPathway ? (
           <div ref={graphContainerElement} className={styles.graph}>
@@ -104,6 +102,8 @@ const App: FC = () => {
         >
           <div ref={headerElement}>
             <Header logo={logo} />
+
+            <Navigation name={'Breast Cancer: Neoadjuvant Chemotherapy with Surgery'} />
           </div>
 
           {selectPathway ? (
@@ -113,7 +113,7 @@ const App: FC = () => {
               service={service}
             ></PathwaysList>
           ) : (
-            <PatientView evaluatedPathway={currentPathway} />
+            <BuilderView evaluatedPathway={currentPathway} />
           )}
         </PathwayProvider>
       </UserProvider>
