@@ -15,9 +15,7 @@ import Header from 'components/Header';
 import logo from 'camino-builder-logo-dark-bg.png';
 import styles from './App.module.scss';
 
-interface AppProps {}
-
-const App: FC<AppProps> = () => {
+const App: FC = () => {
   const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
   const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>([]);

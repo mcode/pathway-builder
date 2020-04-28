@@ -2,10 +2,7 @@ import React, { FC, useState, useEffect, useRef, RefObject } from 'react';
 
 import { DomainResource } from 'fhir-objects';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faNotesMedical,
-  faChevronLeft
-} from '@fortawesome/free-solid-svg-icons';
+import { faNotesMedical, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import styles from './PatientRecord.module.scss';
 
 interface PatientRecordProps {
@@ -40,9 +37,7 @@ const PatientRecord: FC<PatientRecordProps> = ({ headerElement }) => {
   if (isExpanded) {
     return (
       <div className={styles.record} ref={recordContainerElement}>
-        <div className={styles.sidebar}>
-          TODO: PUT A SIDEBAR HERE
-        </div>
+        <div className={styles.sidebar}>TODO: PUT A SIDEBAR HERE</div>
 
         <div className={styles.recordToggle} onClick={expand}>
           <FontAwesomeIcon icon={faChevronLeft} />
@@ -59,6 +54,5 @@ const PatientRecord: FC<PatientRecordProps> = ({ headerElement }) => {
     );
   }
 };
-
 
 export default PatientRecord;

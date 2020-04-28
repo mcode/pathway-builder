@@ -1,12 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import ExpandedNode from 'components/ExpandedNode';
-import {
-  GuidanceState,
-  BasicActionResource,
-  BasicMedicationRequestResource
-} from 'pathways-model';
-
+import { GuidanceState, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
 
 const testActionState: GuidanceState = {
   label: 'Chemotherapy',

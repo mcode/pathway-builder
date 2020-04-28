@@ -10,7 +10,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
+  TableRow
 } from '@material-ui/core';
 
 import Loading from 'components/elements/Loading/Loading';
@@ -23,11 +23,7 @@ interface PathwaysTableProps {
   editButton: Function;
 }
 
-const PathwaysTable: FC<PathwaysTableProps> = ({
-  pathways,
-  deleteButton,
-  editButton,
-}) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editButton }) => {
   return (
     <TableContainer className={styles.pathwayList}>
       <Table aria-label="pathway list">
@@ -41,7 +37,7 @@ const PathwaysTable: FC<PathwaysTableProps> = ({
         </TableHead>
 
         <TableBody>
-          {pathways.map((pathway) => (
+          {pathways.map(pathway => (
             <TableRow key={pathway.pathway.name}>
               <TableCell component="th" scope="row">
                 {pathway.pathway.name}
@@ -81,11 +77,7 @@ interface PathwaysListProps {
   service: Service<Array<Pathway>>;
 }
 
-const PathwaysList: FC<PathwaysListProps> = ({
-  evaluatedPathways,
-  callback,
-  service,
-}) => {
+const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
   if (service.status === 'loading') return <Loading />;
 
   return (
