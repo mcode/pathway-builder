@@ -30,6 +30,9 @@ const materialUiOverrides = {
     iconSizeMedium: {
       '& > *:first-child': {
         fontSize: 12
+      },
+      '&& svg': {
+        fontSize: 14
       }
     },
     iconSizeSmall: {
@@ -53,9 +56,7 @@ const materialUiOverrides = {
     }
   },
   MuiFormControl: {
-    // Name of the rule
     root: {
-      // Some CSS
       margin: '10px 0',
       '&:hover': {
         borderColor: colors.white
@@ -102,16 +103,6 @@ const materialUiOverrides = {
     icon: {
       color: colors.white,
       fontSize: '2em'
-    }
-  },
-  MuiButton: {
-    root: {
-      borderRadius: '0'
-    },
-    iconSizeMedium: {
-      '&& svg': {
-        fontSize: 14
-      }
     }
   },
   MuiPaper: {
