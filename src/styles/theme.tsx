@@ -103,6 +103,21 @@ const materialUiOverrides = {
       color: colors.white,
       fontSize: '2em'
     }
+  },
+  MuiButton: {
+    root: {
+      borderRadius: '0'
+    },
+    iconSizeMedium: {
+      '&& svg': {
+        fontSize: 14
+      }
+    }
+  },
+  MuiPaper: {
+    rounded: {
+      borderRadius: '0'
+    }
   }
 };
 
