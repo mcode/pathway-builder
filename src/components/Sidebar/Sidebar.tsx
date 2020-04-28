@@ -46,7 +46,7 @@ const AddNodes: FC = () => {
                 color="primary"
                 startIcon={<FontAwesomeIcon icon={faPlus} />}
               >
-                Add Decision Node
+                Add Branch Node
               </Button>
             </td>
             <td className={styles.description}>
