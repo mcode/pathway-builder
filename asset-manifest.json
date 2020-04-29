@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/pathway-builder/static/css/main.c6e46595.chunk.css",
+    "main.js": "/pathway-builder/static/js/main.c815de8b.chunk.js",
+    "main.js.map": "/pathway-builder/static/js/main.c815de8b.chunk.js.map",
+    "runtime-main.js": "/pathway-builder/static/js/runtime-main.1ad1bd3b.js",
+    "runtime-main.js.map": "/pathway-builder/static/js/runtime-main.1ad1bd3b.js.map",
+    "static/js/2.735b3087.chunk.js": "/pathway-builder/static/js/2.735b3087.chunk.js",
+    "static/js/2.735b3087.chunk.js.map": "/pathway-builder/static/js/2.735b3087.chunk.js.map",
+    "index.html": "/pathway-builder/index.html",
+    "precache-manifest.78381f8bc6452044c55c4857ceb6e477.js": "/pathway-builder/precache-manifest.78381f8bc6452044c55c4857ceb6e477.js",
+    "service-worker.js": "/pathway-builder/service-worker.js",
+    "static/css/main.c6e46595.chunk.css.map": "/pathway-builder/static/css/main.c6e46595.chunk.css.map",
+    "static/media/camino-logo-dark.png": "/pathway-builder/static/media/camino-logo-dark.c8fc712a.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.1ad1bd3b.js",
+    "static/js/2.735b3087.chunk.js",
+    "static/css/main.c6e46595.chunk.css",
+    "static/js/main.c815de8b.chunk.js"
+  ]
+}
