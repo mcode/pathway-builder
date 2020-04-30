@@ -12,10 +12,11 @@ import React, {
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
-import { Pathway } from 'pathways-model';
+import { Pathway, State } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
+import { usePathwayContext } from 'components/PathwayProvider';
 
 interface GraphProps {
   pathway: Pathway;
@@ -26,6 +27,7 @@ interface GraphProps {
 const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrentNode = true }) => {
   const graphElement = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+  const { setCurrentNode } = usePathwayContext();
   const [parentWidth, setParentWidth] = useState<number>(
     graphElement?.current?.parentElement?.clientWidth ?? 0
   );
@@ -139,6 +141,7 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
       maxWidth={maxWidth}
       expanded={expanded}
       setExpanded={setExpanded}
+      setCurrentNode={setCurrentNode}
     />
   );
 });
@@ -159,6 +162,7 @@ interface GraphMemoProps {
     [key: string]: boolean | undefined;
   };
   setExpanded: (key: string, expand?: boolean | undefined) => void;
+  setCurrentNode: (value: State) => void;
 }
 
 const GraphMemo: FC<GraphMemoProps> = memo(
@@ -173,7 +177,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     parentWidth,
     maxWidth,
     expanded,
-    setExpanded
+    setExpanded,
+    setCurrentNode
   }) => {
     return (
       <div
@@ -190,7 +195,11 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         {nodeCoordinates !== undefined
           ? Object.keys(nodeCoordinates).map(nodeName => {
               const onClickHandler = useCallback(() => {
-                return interactive ? setExpanded(nodeName) : undefined;
+                if (interactive) {
+                  setExpanded(nodeName);
+                  setCurrentNode(pathway.states[nodeName]);
+                }
+                // return interactive ? setExpanded(nodeName) : undefined;
               }, [nodeName]);
               return (
                 <Node

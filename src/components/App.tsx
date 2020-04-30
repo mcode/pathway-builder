@@ -8,7 +8,7 @@ import config from 'utils/ConfigManager';
 import PathwaysList from './PathwaysList';
 import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
-import { Pathway } from 'pathways-model';
+import { Pathway, State } from 'pathways-model';
 import useGetPathwaysService from './PathwaysService/PathwaysService';
 import styles from './App.module.scss';
 import { UserProvider } from './UserProvider';
@@ -18,6 +18,10 @@ const App: FC = () => {
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
   const [pathways, setPathways] = useState<Pathway[]>([]);
   const [user, setUser] = useState<string>('');
+  const [currentNode, setCurrentNode] = useState<State>({
+    label: 'Start',
+    transitions: []
+  });
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
 
@@ -66,7 +70,9 @@ const App: FC = () => {
         <PathwayProvider
           pathwayCtx={{
             pathway: currentPathway,
-            setPathway: setPathwayCallback
+            setPathway: setPathwayCallback,
+            currentNode,
+            setCurrentNode
           }}
         >
           <div ref={headerElement}>
