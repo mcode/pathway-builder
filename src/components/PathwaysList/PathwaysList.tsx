@@ -95,7 +95,7 @@ const PathwaysList: FC<PathwaysListProps> = ({ pathways, callback, service }) =>
 
       <PathwaysTable
         pathways={pathways}
-        deleteButton={(): void => callback()}
+        deleteButton={(): void => {}}
         editButton={(pathway: Pathway): void => callback(pathway)}
       />
     </div>
