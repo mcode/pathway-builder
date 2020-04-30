@@ -38,14 +38,14 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       };
 
       const isActionable = isCurrentNode;
-      const topLevelClasses = [styles.node, styles.onPatientPath];
+      const topLevelClasses = [styles.node];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
       if (isActionable) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
       } else {
-        expandedNodeClass = styles.childOnPatientPath;
+        expandedNodeClass = styles.childNotActionable;
       }
       const isGuidance = isGuidanceState(pathwayState);
 

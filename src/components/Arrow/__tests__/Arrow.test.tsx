@@ -24,12 +24,12 @@ describe('<Arrow />', () => {
     );
 
     expect(getByText(testEdge.label.text)).toBeVisible();
-    expect(container.firstChild).toHaveClass('arrowOnPatientPath');
+    expect(container.firstChild).toHaveClass('arrow');
   });
 
   it('renders an arrow on patient path', () => {
     const { container } = render(<Arrow edge={testEdge} edgeName="test" widthOffset={0} />);
 
-    expect(container.firstChild).toHaveClass('arrowOnPatientPath');
+    expect(container.firstChild).toHaveClass('arrow');
   });
 });

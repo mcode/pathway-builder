@@ -15,7 +15,7 @@ interface ArrowPathProps {
 }
 
 const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset }) => {
-  const className = styles.arrowOnPatientPath;
+  const className = styles.arrow;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 

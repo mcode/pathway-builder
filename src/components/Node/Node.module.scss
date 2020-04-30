@@ -9,33 +9,22 @@
   align-items: center;
   justify-content: center;
 
+  background-color: $blue;
+  color: $white;
+
   .icon {
     font-size: 1.2em;
-    color: $black;
+    color: $white;
     padding-right: 5px;
   }
 
   &:first-child {
     margin-top: 10px;
   }
-}
-
-.onPatientPath {
-  background-color: $blue;
-  color: $white;
 
   &.actionable {
     background-color: $red;
   }
-
-  .icon {
-    color: $white;
-  }
-}
-
-.notOnPatientPath {
-  background-color: $gray-lighter;
-  color: $black;
 }
 
 .expandedNode {
@@ -48,16 +37,11 @@
   width: 100%;
   background-color: $white;
 
-  &.childOnPatientPath {
+  &.childNotActionable {
     border: 1px solid $blue;
 
   }
   &.childActionable {
     border: 1px solid $red;
-  }
-
-  &.childNotOnPatientPath {
-    border-width: 1px;
-    border-style: solid;
   }
 }

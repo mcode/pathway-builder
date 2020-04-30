@@ -16,7 +16,7 @@ describe('<Node />', () => {
     expect(getByText(testState.label)).toBeVisible();
     expect(getByRole('img', { hidden: true })).toBeVisible();
 
-    expect(container.firstChild).toHaveClass('onPatientPath');
+    expect(container.firstChild).toHaveClass('node');
     expect(container.firstChild).toHaveStyle(`top: 0px`);
     expect(container.firstChild).toHaveStyle(`left: 0px`);
   });
