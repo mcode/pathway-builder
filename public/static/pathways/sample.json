@@ -1,0 +1,31 @@
+{
+  "name": "Sample",
+  "description": "Sample",
+  "library": "mCODE_Library.cql",
+  "criteria": [
+    {
+      "elementName": "Condition",
+      "expected": "Breast Cancer",
+      "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
+    },
+    {
+      "elementName": "HER2 Status",
+      "expected": "Positive",
+      "cql": "[Observation: \"HER2 [Presence] in Breast cancer specimen by Immune stain\"] Her2 return Tuple{ value: Her2.value.text.value, match: Her2.value.text.value ~ 'Positive' } "
+    }
+  ],
+  "states": {
+    "Start": {
+      "label": "Start",
+      "transitions": [
+        {
+          "transition": "NodeStatus"
+        }
+      ]
+    },
+    "NodeStatus": {
+      "label": "Node Status",
+      "transitions": []
+    }
+  }
+}

@@ -19,15 +19,14 @@ import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 import { usePathwayContext } from 'components/PathwayProvider';
 
 interface GraphProps {
-  pathway: Pathway;
   interactive?: boolean;
   expandCurrentNode?: boolean;
 }
 
-const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrentNode = true }) => {
+const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = true }) => {
   const graphElement = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<{ [key: string]: HTMLDivElement }>({});
-  const { setCurrentNode } = usePathwayContext();
+  const { pathway, setCurrentNode } = usePathwayContext();
   const [parentWidth, setParentWidth] = useState<number>(
     graphElement?.current?.parentElement?.clientWidth ?? 0
   );
@@ -51,7 +50,12 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
       });
     }
 
-    return graphLayout(pathway, nodeDimensions);
+    if (pathway) return graphLayout(pathway, nodeDimensions);
+    else
+      return {
+        nodeCoordinates: {},
+        edges: {}
+      };
   }, [pathway]);
 
   const [layout, setLayout] = useState(getGraphLayout());
@@ -100,6 +104,7 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
 
   const setExpanded = useCallback((key: string, expand?: boolean): void => {
     _setExpanded(prevState => {
+      console.log(prevState);
       return { ...prevState, [key]: !prevState[key] };
     });
   }, []);
@@ -128,22 +133,24 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
           .reduce((a, b) => Math.max(a, b), 0)
       : parentWidth;
 
-  return (
-    <GraphMemo
-      graphElement={graphElement}
-      interactive={interactive}
-      maxHeight={maxHeight}
-      nodeCoordinates={nodeCoordinates}
-      edges={edges}
-      pathway={pathway}
-      nodeRefs={nodeRefs}
-      parentWidth={parentWidth}
-      maxWidth={maxWidth}
-      expanded={expanded}
-      setExpanded={setExpanded}
-      setCurrentNode={setCurrentNode}
-    />
-  );
+  if (pathway)
+    return (
+      <GraphMemo
+        graphElement={graphElement}
+        interactive={interactive}
+        maxHeight={maxHeight}
+        nodeCoordinates={nodeCoordinates}
+        edges={edges}
+        pathway={pathway}
+        nodeRefs={nodeRefs}
+        parentWidth={parentWidth}
+        maxWidth={maxWidth}
+        expanded={expanded}
+        setExpanded={setExpanded}
+        setCurrentNode={setCurrentNode}
+      />
+    );
+  else return <div>No pathway loaded.</div>;
 });
 
 interface GraphMemoProps {
@@ -196,8 +203,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
           ? Object.keys(nodeCoordinates).map(nodeName => {
               const onClickHandler = useCallback(() => {
                 if (interactive) {
-                  setExpanded(nodeName);
                   setCurrentNode(pathway.states[nodeName]);
+                  setExpanded(nodeName);
                 }
                 // return interactive ? setExpanded(nodeName) : undefined;
               }, [nodeName]);
@@ -248,5 +255,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     );
   }
 );
+Graph.whyDidYouRender = {
+  logOnDifferentValues: true
+};
 
 export default Graph;

@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
+import React, { FC, useState, useEffect, useRef, useCallback } from 'react';
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
 import logo from 'camino-logo-dark.png';
@@ -6,7 +6,7 @@ import Sidebar from 'components/Sidebar';
 import Graph from './Graph';
 import config from 'utils/ConfigManager';
 import PathwaysList from './PathwaysList';
-import { PathwayProvider } from './PathwayProvider';
+import { PathwayProvider, usePathwayContext } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
 import { Pathway, State } from 'pathways-model';
 import useGetPathwaysService from './PathwaysService/PathwaysService';
@@ -18,7 +18,7 @@ const App: FC = () => {
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
   const [pathways, setPathways] = useState<Pathway[]>([]);
   const [user, setUser] = useState<string>('');
-  const [currentNode, setCurrentNode] = useState<State>({
+  const [currentNode, _setCurrentNode] = useState<State>({
     label: 'Start',
     transitions: []
   });
@@ -26,6 +26,8 @@ const App: FC = () => {
   const graphContainerElement = useRef<HTMLDivElement>(null);
 
   const service = useGetPathwaysService(config.get('demoPathwaysService'));
+
+  const setCurrentNode = useCallback((value: State) => _setCurrentNode(value), []);
 
   useEffect(() => {
     if (service.status === 'loaded' && pathways.length === 0) setPathways(service.payload);
@@ -44,18 +46,15 @@ const App: FC = () => {
     setCurrentPathway(value);
   }
 
-  interface PatientViewProps {
-    pathway: Pathway | null;
-  }
-
-  const BuilderView: FC<PatientViewProps> = ({ pathway }) => {
+  const BuilderView: FC = () => {
+    const { pathway } = usePathwayContext();
     return (
       <div className={styles.display}>
         <Sidebar headerElement={headerElement} />
 
         {pathway ? (
           <div ref={graphContainerElement} className={styles.graph}>
-            <Graph pathway={pathway} expandCurrentNode={true} />
+            <Graph expandCurrentNode={true} />
           </div>
         ) : (
           <div>No Pathway Loaded</div>
@@ -88,7 +87,7 @@ const App: FC = () => {
               service={service}
             ></PathwaysList>
           ) : (
-            <BuilderView pathway={currentPathway} />
+            <BuilderView />
           )}
         </PathwayProvider>
       </UserProvider>
