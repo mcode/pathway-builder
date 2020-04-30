@@ -10,9 +10,6 @@ export const PathwayContext = createContext<PathwayContextInterface>({
   pathway: null,
   setPathway: () => {
     //do nothing
-  },
-  updatePathways: () => {
-    //do nothing
   }
 });
 

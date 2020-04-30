@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useCallback, useRef } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
 import logo from 'camino-logo-dark.png';
@@ -40,23 +40,6 @@ const App: FC = () => {
     setCurrentPathway(value);
   }
 
-  const updatePathways = useCallback(
-    (value: Pathway) => {
-      const newList = [...pathways]; // Create a shallow copy of list
-      for (let i = 0; i < pathways.length; i++) {
-        if (pathways[i].name === value.name) {
-          newList[i] = value;
-          setPathways(newList);
-        }
-      }
-
-      if (currentPathway?.name === value.name) {
-        setCurrentPathway(value);
-      }
-    },
-    [currentPathway, pathways]
-  );
-
   interface PatientViewProps {
     pathway: Pathway | null;
   }
@@ -68,7 +51,7 @@ const App: FC = () => {
 
         {pathway ? (
           <div ref={graphContainerElement} className={styles.graph}>
-            <Graph pathway={pathway} expandCurrentNode={true} updatePathways={updatePathways} />
+            <Graph pathway={pathway} expandCurrentNode={true} />
           </div>
         ) : (
           <div>No Pathway Loaded</div>
@@ -82,7 +65,6 @@ const App: FC = () => {
       <UserProvider value={{ user, setUser }}>
         <PathwayProvider
           pathwayCtx={{
-            updatePathways,
             pathway: currentPathway,
             setPathway: setPathwayCallback
           }}

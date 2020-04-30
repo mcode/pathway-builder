@@ -5,7 +5,6 @@ import styles from './Arrow.module.scss';
 interface ArrowProps {
   edge: Edge;
   edgeName: string;
-  isOnPatientPath: boolean;
   widthOffset: number;
 }
 
@@ -15,8 +14,8 @@ interface ArrowPathProps {
   widthOffset: number;
 }
 
-const Arrow: FC<ArrowProps> = ({ edge, edgeName, isOnPatientPath, widthOffset }) => {
-  const className = isOnPatientPath ? styles.arrowOnPatientPath : styles.arrow;
+const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset }) => {
+  const className = styles.arrowOnPatientPath;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 

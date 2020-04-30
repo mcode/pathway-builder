@@ -54,6 +54,5 @@ declare module 'pathways-model' {
   export interface PathwayContextInterface {
     pathway: Pathway | null;
     setPathway: (pathway: Pathway | null, selectPathway?: boolean) => void;
-    updatePathways: (value: Pathway) => void;
   }
 }

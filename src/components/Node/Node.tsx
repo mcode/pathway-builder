@@ -1,6 +1,4 @@
 import React, { FC, Ref, forwardRef, memo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -18,22 +16,8 @@ import {
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 
-const useStyles = makeStyles(
-  theme => ({
-    'not-on-patient-path': {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary
-    },
-    'child-not-on-patient-path': {
-      borderColor: theme.palette.background.default
-    }
-  }),
-  { name: 'Node' }
-);
-
 interface NodeProps {
   pathwayState: State;
-  isOnPatientPath: boolean;
   isCurrentNode: boolean;
   xCoordinate: number;
   yCoordinate: number;
@@ -44,15 +28,7 @@ interface NodeProps {
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      {
-        pathwayState,
-        isOnPatientPath,
-        isCurrentNode,
-        xCoordinate,
-        yCoordinate,
-        expanded = false,
-        onClickHandler
-      },
+      { pathwayState, isCurrentNode, xCoordinate, yCoordinate, expanded = false, onClickHandler },
       ref
     ) => {
       const { label } = pathwayState;
@@ -61,21 +37,15 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         left: xCoordinate
       };
 
-      const classes = useStyles();
-      const backgroundColorClass = isOnPatientPath
-        ? styles.onPatientPath
-        : clsx(styles.notOnPatientPath, classes['not-on-patient-path']);
       const isActionable = isCurrentNode;
-      const topLevelClasses = [styles.node, backgroundColorClass];
+      const topLevelClasses = [styles.node, styles.onPatientPath];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
       if (isActionable) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
       } else {
-        expandedNodeClass = isOnPatientPath
-          ? styles.childOnPatientPath
-          : clsx(styles.childNotOnPatientPath, classes['child-not-on-patient-path']);
+        expandedNodeClass = styles.childOnPatientPath;
       }
       const isGuidance = isGuidanceState(pathwayState);
 
