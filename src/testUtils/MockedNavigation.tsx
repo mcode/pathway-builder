@@ -1,31 +1,28 @@
 import React, { FC, useState } from 'react';
-import { EvaluatedPathway } from 'pathways-model';
+import { Pathway } from 'pathways-model';
 import Navigation from 'components/Navigation';
 import MockedPathwayProvider from 'testUtils/MockedPathwayProvider';
 import { loadedService } from './services';
 
 const MockedNavigation: FC = () => {
-  let defaultList: EvaluatedPathway[] = [];
+  let defaultList: Pathway[] = [];
   if (loadedService.status === 'loaded') {
-    defaultList = loadedService.payload.map(pathway => ({
-      pathway: pathway,
-      pathwayResults: null
-    }));
+    defaultList = loadedService.payload;
   }
 
-  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
-  const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>(defaultList);
+  const [currentPathway, setCurrentPathway] = useState<Pathway | null>(null);
+  const [pathways, setPathways] = useState<Pathway[]>(defaultList);
 
-  function setEvaluatedPathwayCallback(value: EvaluatedPathway | null): void {
+  function setPathwayCallback(value: Pathway | null): void {
     if (value !== null) setCurrentPathway(value);
   }
 
-  function updateEvaluatedPathways(value: EvaluatedPathway): void {
-    const newList = [...evaluatedPathways]; // Create a shallow copy of list
-    for (let i = 0; i < evaluatedPathways.length; i++) {
-      if (evaluatedPathways[i].pathway.name === value.pathway.name) {
+  function updatePathways(value: Pathway): void {
+    const newList = [...pathways]; // Create a shallow copy of list
+    for (let i = 0; i < pathways.length; i++) {
+      if (pathways[i].name === value.name) {
         newList[i] = value;
-        setEvaluatedPathways(newList);
+        setPathways(newList);
       }
     }
   }
@@ -33,9 +30,9 @@ const MockedNavigation: FC = () => {
   return (
     <MockedPathwayProvider
       pathwayCtx={{
-        evaluatedPathway: currentPathway,
-        setEvaluatedPathway: setEvaluatedPathwayCallback,
-        updateEvaluatedPathways: updateEvaluatedPathways
+        pathway: currentPathway,
+        setPathway: setPathwayCallback,
+        updatePathways: updatePathways
       }}
     >
       <Navigation />

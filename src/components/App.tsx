@@ -8,15 +8,15 @@ import config from 'utils/ConfigManager';
 import PathwaysList from './PathwaysList';
 import { PathwayProvider } from './PathwayProvider';
 import ThemeProvider from './ThemeProvider';
-import { EvaluatedPathway } from 'pathways-model';
+import { Pathway } from 'pathways-model';
 import useGetPathwaysService from './PathwaysService/PathwaysService';
 import styles from './App.module.scss';
 import { UserProvider } from './UserProvider';
 
 const App: FC = () => {
-  const [currentPathway, setCurrentPathway] = useState<EvaluatedPathway | null>(null);
+  const [currentPathway, setCurrentPathway] = useState<Pathway | null>(null);
   const [selectPathway, setSelectPathway] = useState<boolean>(true);
-  const [evaluatedPathways, setEvaluatedPathways] = useState<EvaluatedPathway[]>([]);
+  const [pathways, setPathways] = useState<Pathway[]>([]);
   const [user, setUser] = useState<string>('');
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
@@ -24,14 +24,8 @@ const App: FC = () => {
   const service = useGetPathwaysService(config.get('demoPathwaysService'));
 
   useEffect(() => {
-    if (service.status === 'loaded' && evaluatedPathways.length === 0)
-      setEvaluatedPathways(
-        service.payload.map(pathway => ({
-          pathway: pathway,
-          pathwayResults: null
-        }))
-      );
-  }, [service, evaluatedPathways.length]);
+    if (service.status === 'loaded' && pathways.length === 0) setPathways(service.payload);
+  }, [service, pathways.length]);
 
   // Set the height of the graph container
   useEffect(() => {
@@ -40,48 +34,41 @@ const App: FC = () => {
         window.innerHeight - headerElement.current.clientHeight + 'px';
   }, [selectPathway]);
 
-  function setEvaluatedPathwayCallback(
-    value: EvaluatedPathway | null,
-    selectPathway = false
-  ): void {
+  function setPathwayCallback(value: Pathway | null, selectPathway = false): void {
     window.scrollTo(0, 0);
     setSelectPathway(selectPathway);
     setCurrentPathway(value);
   }
 
-  const updateEvaluatedPathways = useCallback(
-    (value: EvaluatedPathway) => {
-      const newList = [...evaluatedPathways]; // Create a shallow copy of list
-      for (let i = 0; i < evaluatedPathways.length; i++) {
-        if (evaluatedPathways[i].pathway.name === value.pathway.name) {
+  const updatePathways = useCallback(
+    (value: Pathway) => {
+      const newList = [...pathways]; // Create a shallow copy of list
+      for (let i = 0; i < pathways.length; i++) {
+        if (pathways[i].name === value.name) {
           newList[i] = value;
-          setEvaluatedPathways(newList);
+          setPathways(newList);
         }
       }
 
-      if (currentPathway?.pathway.name === value.pathway.name) {
+      if (currentPathway?.name === value.name) {
         setCurrentPathway(value);
       }
     },
-    [currentPathway, evaluatedPathways]
+    [currentPathway, pathways]
   );
 
   interface PatientViewProps {
-    evaluatedPathway: EvaluatedPathway | null;
+    pathway: Pathway | null;
   }
 
-  const BuilderView: FC<PatientViewProps> = ({ evaluatedPathway }) => {
+  const BuilderView: FC<PatientViewProps> = ({ pathway }) => {
     return (
       <div className={styles.display}>
         <Sidebar headerElement={headerElement} />
 
-        {evaluatedPathway ? (
+        {pathway ? (
           <div ref={graphContainerElement} className={styles.graph}>
-            <Graph
-              evaluatedPathway={evaluatedPathway}
-              expandCurrentNode={true}
-              updateEvaluatedPathways={updateEvaluatedPathways}
-            />
+            <Graph pathway={pathway} expandCurrentNode={true} updatePathways={updatePathways} />
           </div>
         ) : (
           <div>No Pathway Loaded</div>
@@ -95,25 +82,25 @@ const App: FC = () => {
       <UserProvider value={{ user, setUser }}>
         <PathwayProvider
           pathwayCtx={{
-            updateEvaluatedPathways,
-            evaluatedPathway: currentPathway,
-            setEvaluatedPathway: setEvaluatedPathwayCallback
+            updatePathways,
+            pathway: currentPathway,
+            setPathway: setPathwayCallback
           }}
         >
           <div ref={headerElement}>
             <Header logo={logo} />
 
-            <Navigation name={'Breast Cancer: Neoadjuvant Chemotherapy with Surgery'} />
+            <Navigation name={currentPathway?.name ?? ''} />
           </div>
 
           {selectPathway ? (
             <PathwaysList
-              evaluatedPathways={evaluatedPathways}
-              callback={setEvaluatedPathwayCallback}
+              pathways={pathways}
+              callback={setPathwayCallback}
               service={service}
             ></PathwaysList>
           ) : (
-            <BuilderView evaluatedPathway={currentPathway} />
+            <BuilderView pathway={currentPathway} />
           )}
         </PathwayProvider>
       </UserProvider>

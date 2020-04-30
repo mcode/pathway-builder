@@ -12,43 +12,20 @@ import React, {
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
-import {
-  EvaluatedPathway,
-  PathwayResults,
-  DocumentationResource,
-  Pathway,
-  Documentation
-} from 'pathways-model';
-import { Layout, NodeDimensions, NodeCoordinates, Edges, Edge } from 'graph-model';
+import { Pathway } from 'pathways-model';
+import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 
 interface GraphProps {
-  evaluatedPathway: EvaluatedPathway;
+  pathway: Pathway;
   interactive?: boolean;
   expandCurrentNode?: boolean;
-  updateEvaluatedPathways: (value: EvaluatedPathway) => void;
+  updatePathways: (value: Pathway) => void;
 }
 
-const getPath = (pathwayResults: PathwayResults): string[] => {
-  return Object.values(pathwayResults.documentation)
-    .filter(doc => doc.onPath)
-    .map(doc => doc.state);
-};
-
-const isEdgeOnPatientPath = (pathwayResults: PathwayResults, edge: Edge): boolean => {
-  const path = getPath(pathwayResults);
-  const startIndex = path.indexOf(edge.start);
-  const endIndex = path.indexOf(edge.end);
-  if (startIndex !== -1 && endIndex !== -1 && startIndex + 1 === endIndex) return true;
-  else if (startIndex === path.length - 1 && pathwayResults.currentStates.includes(edge.end))
-    return true;
-  else return false;
-};
-
 const Graph: FC<GraphProps> = memo(
-  ({ evaluatedPathway, interactive = true, expandCurrentNode = true, updateEvaluatedPathways }) => {
-    const pathway = evaluatedPathway.pathway;
+  ({ pathway, interactive = true, expandCurrentNode = true, updatePathways }) => {
     const graphElement = useRef<HTMLDivElement>(null);
     const nodeRefs = useRef<{ [key: string]: HTMLDivElement }>({});
     const [parentWidth, setParentWidth] = useState<number>(
@@ -128,15 +105,15 @@ const Graph: FC<GraphProps> = memo(
     }, []);
 
     // Expand all the current nodes by default if allowed
-    useEffect(() => {
-      if (evaluatedPathway.pathwayResults) {
-        for (const currentNode of evaluatedPathway.pathwayResults.currentStates) {
-          if (expandCurrentNode) {
-            if (currentNode) setExpanded(currentNode, true);
-          }
-        }
-      }
-    }, [expandCurrentNode, evaluatedPathway.pathwayResults, setExpanded]);
+    // useEffect(() => {
+    //   if (pathway.pathwayResults) {
+    //     for (const currentNode of pathway.pathwayResults.currentStates) {
+    //       if (expandCurrentNode) {
+    //         if (currentNode) setExpanded(currentNode, true);
+    //       }
+    //     }
+    //   }
+    // }, [expandCurrentNode, pathway.pathwayResults, setExpanded]);
 
     // Recalculate graph layout if graph container size changes
     useEffect(() => {
@@ -162,23 +139,17 @@ const Graph: FC<GraphProps> = memo(
             .reduce((a, b) => Math.max(a, b), 0)
         : parentWidth;
 
-    const documentation = evaluatedPathway.pathwayResults
-      ? evaluatedPathway.pathwayResults.documentation
-      : {};
-
     return (
       <GraphMemo
         graphElement={graphElement}
         interactive={interactive}
         maxHeight={maxHeight}
         nodeCoordinates={nodeCoordinates}
-        documentation={documentation}
         edges={edges}
-        evaluatedPathway={evaluatedPathway}
+        pathway={pathway}
         nodeRefs={nodeRefs}
         parentWidth={parentWidth}
         maxWidth={maxWidth}
-        pathway={pathway}
         expanded={expanded}
         setExpanded={setExpanded}
       />
@@ -191,15 +162,13 @@ interface GraphMemoProps {
   interactive: boolean;
   maxHeight: number;
   nodeCoordinates: NodeCoordinates;
-  documentation: { [key: string]: Documentation };
   edges: Edges;
-  evaluatedPathway: EvaluatedPathway;
+  pathway: Pathway;
   nodeRefs: React.MutableRefObject<{
     [key: string]: HTMLDivElement;
   }>;
   parentWidth: number;
   maxWidth: number;
-  pathway: Pathway;
   expanded: {
     [key: string]: boolean | undefined;
   };
@@ -212,13 +181,11 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     interactive,
     maxHeight,
     nodeCoordinates,
-    documentation,
     edges,
-    evaluatedPathway,
+    pathway,
     nodeRefs,
     parentWidth,
     maxWidth,
-    pathway,
     expanded,
     setExpanded
   }) => {
@@ -236,29 +203,18 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       >
         {nodeCoordinates !== undefined
           ? Object.keys(nodeCoordinates).map(nodeName => {
-              const docResource = documentation[nodeName] as DocumentationResource;
               const onClickHandler = useCallback(() => {
                 return interactive ? setExpanded(nodeName) : undefined;
               }, [nodeName]);
               return (
                 <Node
                   key={nodeName}
-                  documentation={docResource}
                   ref={(node: HTMLDivElement): void => {
                     nodeRefs.current[nodeName] = node;
                   }}
                   pathwayState={pathway.states[nodeName]}
-                  isOnPatientPath={
-                    evaluatedPathway.pathwayResults
-                      ? getPath(evaluatedPathway.pathwayResults).includes(nodeName) ||
-                        evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
-                      : false
-                  }
-                  isCurrentNode={
-                    evaluatedPathway.pathwayResults
-                      ? evaluatedPathway.pathwayResults.currentStates.includes(nodeName)
-                      : false
-                  }
+                  isOnPatientPath={false}
+                  isCurrentNode={false}
                   xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
                   yCoordinate={nodeCoordinates[nodeName].y}
                   expanded={expanded[nodeName]}
@@ -288,11 +244,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                     key={edgeName}
                     edge={edge}
                     edgeName={edgeName}
-                    isOnPatientPath={
-                      evaluatedPathway.pathwayResults
-                        ? isEdgeOnPatientPath(evaluatedPathway.pathwayResults, edge)
-                        : false
-                    }
+                    isOnPatientPath={false}
                     widthOffset={parentWidth / 2}
                   />
                 );

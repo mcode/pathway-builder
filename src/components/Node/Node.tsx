@@ -1,7 +1,7 @@
 import React, { FC, Ref, forwardRef, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { GuidanceState, State, DocumentationResource } from 'pathways-model';
+import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
@@ -33,7 +33,6 @@ const useStyles = makeStyles(
 
 interface NodeProps {
   pathwayState: State;
-  documentation: DocumentationResource | undefined;
   isOnPatientPath: boolean;
   isCurrentNode: boolean;
   xCoordinate: number;
@@ -47,7 +46,6 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
     (
       {
         pathwayState,
-        documentation,
         isOnPatientPath,
         isCurrentNode,
         xCoordinate,
@@ -67,7 +65,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       const backgroundColorClass = isOnPatientPath
         ? styles.onPatientPath
         : clsx(styles.notOnPatientPath, classes['not-on-patient-path']);
-      const isActionable = isCurrentNode && !documentation;
+      const isActionable = isCurrentNode;
       const topLevelClasses = [styles.node, backgroundColorClass];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
@@ -80,20 +78,6 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
           : clsx(styles.childNotOnPatientPath, classes['child-not-on-patient-path']);
       }
       const isGuidance = isGuidanceState(pathwayState);
-      // TODO: how do we determine whether a node has been accepted or declined?
-      // for now:
-      // if it's a non-actionable guidance state on the path: accepted == has documentation
-      // if it's actionable, not guidance or not on the path: null
-      const wasActionTaken = isOnPatientPath && isGuidance && !isActionable;
-      const isAccepted = wasActionTaken
-        ? documentation?.resourceType !== 'DocumentReference'
-        : null;
-      let status = null;
-      if ('action' in pathwayState) {
-        status = isAccepted;
-      } else if (!isCurrentNode && documentation) {
-        status = true;
-      }
 
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
@@ -102,7 +86,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
               <NodeIcon pathwayState={pathwayState} isGuidance={isGuidance} />
               {label}
             </div>
-            <StatusIcon status={status} />
+            <StatusIcon status={null} />
           </div>
           {expanded && (
             <div className={`${styles.expandedNode} ${expandedNodeClass}`}>
@@ -110,7 +94,6 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
                 pathwayState={pathwayState as GuidanceState}
                 isActionable={isActionable}
                 isGuidance={isGuidance}
-                documentation={documentation}
               />
             </div>
           )}

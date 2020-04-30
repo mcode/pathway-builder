@@ -17,11 +17,6 @@ declare module 'pathways-model' {
     criteria?: object;
   }
 
-  export interface EvaluatedPathway {
-    pathway: Pathway;
-    pathwayResults: PathwayResults | null;
-  }
-
   export interface Criteria {
     elementName: string; // name of the mCODE element
     expected: string; // human readable value
@@ -56,63 +51,9 @@ declare module 'pathways-model' {
     };
   }
 
-  export interface PathwayResults {
-    patientId: string;
-    currentStates: string[];
-    documentation: {
-      [key: string]: Documentation;
-    };
-  }
-
-  export interface CriteriaResultItem {
-    // doesn't extend Criteria because we don't care about the cql here,
-    // and don't want to make it optional in Criteria
-
-    elementName: string; // name of the mCODE element
-    expected: string; // human readable value
-    actual: string;
-    match: boolean; // in case expected !== actual but they are still a match
-  }
-
-  export interface CriteriaResult {
-    pathwayName: string;
-    matches: number;
-    criteriaResultItems: CriteriaResultItem[];
-  }
-
-  export interface ElmResults {
-    patientResults: {
-      [key: string]: PatientData;
-    };
-  }
-
-  export interface PatientData {
-    Patient: {
-      id: {
-        value: string;
-      };
-    };
-    [key: string]: Array<DomainResource, string> | DomainResource;
-  }
-
-  export interface Documentation {
-    state: string;
-    onPath: boolean;
-  }
-
-  export interface DocumentationResource extends Documentation {
-    resourceType: string;
-    id: string;
-    status: string;
-    resource?: DomainResource;
-  }
-
   export interface PathwayContextInterface {
-    evaluatedPathway: EvaluatedPathway | null;
-    setEvaluatedPathway: (
-      evaluatedPathway: EvaluatedPathway | null,
-      selectPathway?: boolean
-    ) => void;
-    updateEvaluatedPathways: (value: EvaluatedPathway) => void;
+    pathway: Pathway | null;
+    setPathway: (pathway: Pathway | null, selectPathway?: boolean) => void;
+    updatePathways: (value: Pathway) => void;
   }
 }
