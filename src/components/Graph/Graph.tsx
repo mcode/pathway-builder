@@ -30,7 +30,6 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
   const [parentWidth, setParentWidth] = useState<number>(
     graphElement?.current?.parentElement?.clientWidth ?? 0
   );
-
   // Get the layout of the graph
   const getGraphLayout = useCallback((): Layout => {
     const nodeDimensions: NodeDimensions = {};
@@ -92,6 +91,7 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
   }
   const layoutKeys = Object.keys(layout).toString();
   const initialExpandedState = useMemo(() => {
+    console.log(layoutKeys);
     return layoutKeys.split(',').reduce((acc: { [key: string]: boolean }, curr: string) => {
       acc[curr] = false;
       return acc;
@@ -255,8 +255,5 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     );
   }
 );
-Graph.whyDidYouRender = {
-  logOnDifferentValues: true
-};
 
 export default Graph;

@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef, useCallback } from 'react';
+import React, { FC, useState, useEffect, useRef, useCallback, RefObject } from 'react';
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
 import logo from 'camino-logo-dark.png';
@@ -46,23 +46,6 @@ const App: FC = () => {
     setCurrentPathway(value);
   }
 
-  const BuilderView: FC = () => {
-    const { pathway } = usePathwayContext();
-    return (
-      <div className={styles.display}>
-        <Sidebar headerElement={headerElement} />
-
-        {pathway ? (
-          <div ref={graphContainerElement} className={styles.graph}>
-            <Graph expandCurrentNode={true} />
-          </div>
-        ) : (
-          <div>No Pathway Loaded</div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <ThemeProvider>
       <UserProvider value={{ user, setUser }}>
@@ -87,11 +70,41 @@ const App: FC = () => {
               service={service}
             ></PathwaysList>
           ) : (
-            <BuilderView />
+            <BuilderView
+              headerElement={headerElement}
+              graphContainerElement={graphContainerElement}
+            />
           )}
         </PathwayProvider>
       </UserProvider>
     </ThemeProvider>
+  );
+};
+
+interface BuilderViewProps {
+  headerElement: RefObject<HTMLDivElement>;
+  graphContainerElement: RefObject<HTMLDivElement>;
+}
+
+const BuilderView: FC<BuilderViewProps> = ({ headerElement, graphContainerElement }) => {
+  const { pathway } = usePathwayContext();
+  useEffect(() => {
+    console.log('ooo effects');
+
+    return () => console.log('Builder view is unmouting now');
+  });
+  return (
+    <div className={styles.display}>
+      <Sidebar headerElement={headerElement} />
+
+      {pathway ? (
+        <div ref={graphContainerElement} className={styles.graph}>
+          <Graph expandCurrentNode={true} />
+        </div>
+      ) : (
+        <div>No Pathway Loaded</div>
+      )}
+    </div>
   );
 };
 
