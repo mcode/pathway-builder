@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Pathway, EvaluatedPathway } from 'pathways-model';
+import { Pathway } from 'pathways-model';
 import { Service } from 'pathways-objects';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -18,9 +18,9 @@ import Loading from 'components/elements/Loading/Loading';
 import styles from './PathwaysList.module.scss';
 
 interface PathwaysTableProps {
-  pathways: EvaluatedPathway[];
-  deleteButton: (pathway: object) => void;
-  editButton: (pathway: object) => void;
+  pathways: Pathway[];
+  deleteButton: (pathway: Pathway) => void;
+  editButton: (pathway: Pathway) => void;
 }
 
 const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editButton }) => {
@@ -38,9 +38,9 @@ const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editBut
 
         <TableBody>
           {pathways.map(pathway => (
-            <TableRow key={pathway.pathway.name}>
+            <TableRow key={pathway.name}>
               <TableCell component="th" scope="row">
-                {pathway.pathway.name}
+                {pathway.name}
               </TableCell>
               <TableCell>draft</TableCell>
               <TableCell>2 days ago</TableCell>
@@ -73,12 +73,12 @@ const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, deleteButton, editBut
 };
 
 interface PathwaysListProps {
-  evaluatedPathways: EvaluatedPathway[];
+  pathways: Pathway[];
   callback: Function;
   service: Service<Array<Pathway>>;
 }
 
-const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, service }) => {
+const PathwaysList: FC<PathwaysListProps> = ({ pathways, callback, service }) => {
   if (service.status === 'loading') return <Loading />;
 
   return (
@@ -94,9 +94,11 @@ const PathwaysList: FC<PathwaysListProps> = ({ evaluatedPathways, callback, serv
       </Button>
 
       <PathwaysTable
-        pathways={evaluatedPathways}
-        deleteButton={(): void => callback()}
-        editButton={(): void => callback()}
+        pathways={pathways}
+        deleteButton={(): void => {
+          // do nothing for now -- TODO: implement delete
+        }}
+        editButton={(pathway: Pathway): void => callback(pathway)}
       />
     </div>
   );

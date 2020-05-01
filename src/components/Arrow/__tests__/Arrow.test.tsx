@@ -20,7 +20,7 @@ const testEdge = {
 describe('<Arrow />', () => {
   it('renders an arrow with a label', () => {
     const { container, getByText } = render(
-      <Arrow edge={testEdge} edgeName="test" isOnPatientPath={false} widthOffset={0} />
+      <Arrow edge={testEdge} edgeName="test" widthOffset={0} />
     );
 
     expect(getByText(testEdge.label.text)).toBeVisible();
@@ -28,10 +28,8 @@ describe('<Arrow />', () => {
   });
 
   it('renders an arrow on patient path', () => {
-    const { container } = render(
-      <Arrow edge={testEdge} edgeName="test" isOnPatientPath={true} widthOffset={0} />
-    );
+    const { container } = render(<Arrow edge={testEdge} edgeName="test" widthOffset={0} />);
 
-    expect(container.firstChild).toHaveClass('arrowOnPatientPath');
+    expect(container.firstChild).toHaveClass('arrow');
   });
 });

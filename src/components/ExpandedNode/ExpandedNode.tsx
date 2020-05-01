@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceState, DocumentationResource, State } from 'pathways-model';
+import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
@@ -12,18 +12,15 @@ interface ExpandedNodeProps {
   pathwayState: GuidanceState;
   isActionable: boolean;
   isGuidance: boolean;
-  documentation: DocumentationResource | undefined;
 }
 
-const ExpandedNode: FC<ExpandedNodeProps> = memo(
-  ({ pathwayState, isActionable, isGuidance, documentation }) => {
-    return (
-      <>
-        <ExpandedNodeMemo isGuidance={isGuidance} pathwayState={pathwayState} />
-      </>
-    );
-  }
-);
+const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayState, isActionable, isGuidance }) => {
+  return (
+    <>
+      <ExpandedNodeMemo isGuidance={isGuidance} pathwayState={pathwayState} />
+    </>
+  );
+});
 
 type ExpandedNodeFieldProps = {
   title: string;

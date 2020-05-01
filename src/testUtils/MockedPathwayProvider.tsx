@@ -26,14 +26,11 @@ const pathway: Pathway = {
 };
 
 export const mockedPathwayCtx = {
-  evaluatedPathway: {
-    pathway: pathway,
-    pathwayResults: null
-  },
-  setEvaluatedPathway: (): void => {
+  pathway,
+  setPathway: (): void => {
     //do nothing
   },
-  updateEvaluatedPathways: (): void => {
+  updatePathways: (): void => {
     //do nothing
   }
 };

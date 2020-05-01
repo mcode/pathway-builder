@@ -18,9 +18,5 @@
 }
 
 .arrow {
-  @include arrow($gray-medium);
-}
-
-.arrowOnPatientPath {
   @include arrow($blue);
 }
