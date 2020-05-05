@@ -206,7 +206,6 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   setCurrentNode(pathway.states[nodeName]);
                   setExpanded(nodeName);
                 }
-                // return interactive ? setExpanded(nodeName) : undefined;
               }, [nodeName]);
               return (
                 <Node

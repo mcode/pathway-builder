@@ -88,11 +88,6 @@ interface BuilderViewProps {
 
 const BuilderView: FC<BuilderViewProps> = ({ headerElement, graphContainerElement }) => {
   const { pathway } = usePathwayContext();
-  useEffect(() => {
-    console.log('ooo effects');
-
-    return () => console.log('Builder view is unmouting now');
-  });
   return (
     <div className={styles.display}>
       <Sidebar headerElement={headerElement} />
