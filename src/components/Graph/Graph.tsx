@@ -216,7 +216,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
               const onClickHandler = useCallback(() => {
                 if (interactive) {
                   setCurrentNode(pathway.states[nodeName]);
-                  setExpanded(nodeName);
+                  setExpanded(nodeName, true);
                 }
               }, [nodeName]);
               return (
