@@ -107,15 +107,21 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
     _setExpanded(prevState => {
       if (prevState.expandedArray[key] === undefined) {
         // selecting a new node
-        const eprime = { ...prevState.expandedArray, [key]: !prevState.expandedArray[key] };
-        return { ...prevState, expandedArray: eprime, lastSelectedNode: key };
+        const newExpandedArray = {
+          ...prevState.expandedArray,
+          [key]: !prevState.expandedArray[key]
+        };
+        return { ...prevState, expandedArray: newExpandedArray, lastSelectedNode: key };
       } else if (prevState.lastSelectedNode !== key && prevState.expandedArray[key] === true) {
         // selected a different but already opened node
         return { ...prevState, expandedArray: prevState.expandedArray, lastSelectedNode: key };
       } else {
         // selected the same node or a different but collapsed node
-        const eprime = { ...prevState.expandedArray, [key]: !prevState.expandedArray[key] };
-        return { ...prevState, expandedArray: eprime, lastSelectedNode: key };
+        const newExpandedArray = {
+          ...prevState.expandedArray,
+          [key]: !prevState.expandedArray[key]
+        };
+        return { ...prevState, expandedArray: newExpandedArray, lastSelectedNode: key };
       }
     });
   }, []);
