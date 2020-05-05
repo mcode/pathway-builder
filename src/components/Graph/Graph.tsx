@@ -91,21 +91,33 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
   }
   const layoutKeys = Object.keys(layout).toString();
   const initialExpandedState = useMemo(() => {
-    console.log(layoutKeys);
     return layoutKeys.split(',').reduce((acc: { [key: string]: boolean }, curr: string) => {
       acc[curr] = false;
       return acc;
     }, {});
   }, [layoutKeys]);
 
-  const [expanded, _setExpanded] = useState<{ [key: string]: boolean | undefined }>(
-    initialExpandedState
-  );
+  const [expanded, _setExpanded] = useState({
+    expandedArray: initialExpandedState,
+    lastSelectedNode: ''
+  });
 
   const setExpanded = useCallback((key: string, expand?: boolean): void => {
     _setExpanded(prevState => {
-      console.log(prevState);
-      return { ...prevState, [key]: !prevState[key] };
+      // selecting a new node
+      if (prevState.expandedArray[key] === undefined) {
+        const eprime = { ...prevState.expandedArray, [key]: !prevState.expandedArray[key] };
+        return { ...prevState, expandedArray: eprime, lastSelectedNode: key };
+      }
+      // selected a different but already opened node
+      else if (prevState.lastSelectedNode !== key && prevState.expandedArray[key] === true) {
+        return { ...prevState, expandedArray: prevState.expandedArray, lastSelectedNode: key };
+      }
+      // selected the same node or a different but collapsed node
+      else {
+        const eprime = { ...prevState.expandedArray, [key]: !prevState.expandedArray[key] };
+        return { ...prevState, expandedArray: eprime, lastSelectedNode: key };
+      }
     });
   }, []);
 
@@ -145,7 +157,7 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
         nodeRefs={nodeRefs}
         parentWidth={parentWidth}
         maxWidth={maxWidth}
-        expanded={expanded}
+        expanded={expanded.expandedArray}
         setExpanded={setExpanded}
         setCurrentNode={setCurrentNode}
       />
