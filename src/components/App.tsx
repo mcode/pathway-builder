@@ -19,7 +19,7 @@ const App: FC = () => {
   const [pathways, setPathways] = useState<Pathway[]>([]);
   const [user, setUser] = useState<string>('');
   const [currentNode, _setCurrentNode] = useState<State>({
-    label: 'Start',
+    label: '',
     transitions: []
   });
   const headerElement = useRef<HTMLDivElement>(null);
@@ -44,6 +44,8 @@ const App: FC = () => {
     window.scrollTo(0, 0);
     setSelectPathway(selectPathway);
     setCurrentPathway(value);
+    const startState = value?.states['Start'];
+    if (startState) setCurrentNode(startState);
   }
 
   return (
@@ -71,6 +73,7 @@ const App: FC = () => {
             ></PathwaysList>
           ) : (
             <BuilderView
+              key={currentPathway?.name ?? ''}
               headerElement={headerElement}
               graphContainerElement={graphContainerElement}
             />
