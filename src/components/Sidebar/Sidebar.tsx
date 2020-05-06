@@ -19,6 +19,32 @@ interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
   currentNode: State;
 }
+const addBranch = (currentNode: any, pathway: any, setPathway: any) => {
+  console.log(currentNode);
+  const newTransition = {
+    transition: 'new transition',
+    condition: {
+      description: 'new description',
+      cql: 'new cql'
+    }
+  };
+
+  console.log(newTransition);
+  currentNode.transitions.push(newTransition);
+  console.log(currentNode);
+
+  const newState: State = {
+    label: 'New State',
+    transitions: [{ transition: 'new transition2' }]
+  };
+  console.log('states');
+  console.log(pathway.states);
+  pathway.states['newState'] = newState;
+  console.log('added new');
+  console.log(pathway.states);
+  console.log('set pathway');
+  setPathway(pathway);
+};
 
 interface SidebarHeaderProps {
   currentNodeLabel: string;
@@ -30,6 +56,8 @@ const nodeTypeOptions = [
 ];
 
 const AddNodes: FC = memo(() => {
+const { currentNode, pathway, setPathway } = usePathwayContext();
+
   return (
     <div className={styles.addNodesContainer}>
       <table>
@@ -54,6 +82,7 @@ const AddNodes: FC = memo(() => {
                 variant="contained"
                 color="primary"
                 startIcon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={(): void => addBranch(currentNode, pathway, setPathway)}
               >
                 Add Branch Node
               </Button>
@@ -83,6 +112,7 @@ const AddNodes: FC = memo(() => {
 });
 
 const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
+
   return (
     <div className={styles.header}>
       <div className={styles.icon} id={styles.back}>
