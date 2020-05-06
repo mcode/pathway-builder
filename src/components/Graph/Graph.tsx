@@ -99,30 +99,20 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
   }, [layoutKeys]);
 
   const [expanded, _setExpanded] = useState({
-    expandedArray: initialExpandedState,
+    expandedMap: initialExpandedState,
     lastSelectedNode: ''
   });
 
-  const setExpanded = useCallback((key: string, expand?: boolean): void => {
+  const setExpanded = useCallback((key: string): void => {
     _setExpanded(prevState => {
-      if (prevState.expandedArray[key] === undefined) {
-        // selecting a new node
-        const newExpandedArray = {
-          ...prevState.expandedArray,
-          [key]: !prevState.expandedArray[key]
+      let newExpandedMap = prevState.expandedMap;
+      if (!prevState.expandedMap[key] || prevState.lastSelectedNode === key) {
+        newExpandedMap = {
+          ...prevState.expandedMap,
+          [key]: !prevState.expandedMap[key]
         };
-        return { ...prevState, expandedArray: newExpandedArray, lastSelectedNode: key };
-      } else if (prevState.lastSelectedNode !== key && prevState.expandedArray[key] === true) {
-        // selected a different but already opened node
-        return { ...prevState, expandedArray: prevState.expandedArray, lastSelectedNode: key };
-      } else {
-        // selected the same node or a different but collapsed node
-        const newExpandedArray = {
-          ...prevState.expandedArray,
-          [key]: !prevState.expandedArray[key]
-        };
-        return { ...prevState, expandedArray: newExpandedArray, lastSelectedNode: key };
       }
+      return { ...prevState, expandedMap: newExpandedMap, lastSelectedNode: key };
     });
   }, []);
 
@@ -162,7 +152,7 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
         nodeRefs={nodeRefs}
         parentWidth={parentWidth}
         maxWidth={maxWidth}
-        expanded={expanded.expandedArray}
+        expanded={expanded.expandedMap}
         setExpanded={setExpanded}
         setCurrentNode={setCurrentNode}
       />
@@ -185,7 +175,7 @@ interface GraphMemoProps {
   expanded: {
     [key: string]: boolean | undefined;
   };
-  setExpanded: (key: string, expand?: boolean | undefined) => void;
+  setExpanded: (key: string) => void;
   setCurrentNode: (value: State) => void;
 }
 
@@ -221,7 +211,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
               const onClickHandler = useCallback(() => {
                 if (interactive) {
                   setCurrentNode(pathway.states[nodeName]);
-                  setExpanded(nodeName, true);
+                  setExpanded(nodeName);
                 }
               }, [nodeName]);
               return (
