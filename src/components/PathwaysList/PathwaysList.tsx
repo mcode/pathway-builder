@@ -166,11 +166,6 @@ const PathwaysList: FC<PathwaysListProps> = ({ pathways, callback, service }) =>
       </Button>
       <Modal className={classes.modal} open={open} onClose={handleClose}>
         <div className={classes.paper}>
-          {/* <Button
-            className={classes.modalCloseButton}
-            onClick={handleClose}
-            startIcon={<FontAwesomeIcon icon={faTimes} />}
-          /> */}
           <div className={classes.modalCloseButton} onClick={handleClose}>
             <FontAwesomeIcon icon={faTimes} size="lg" color="gray" />
           </div>
