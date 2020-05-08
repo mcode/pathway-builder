@@ -11,13 +11,10 @@ import {
   faEllipsisH
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.scss';
+import { usePathwayContext } from 'components/PathwayProvider';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
-}
-
-interface SidebarHeaderProps {
-  currentNode: string;
 }
 
 const AddNodes: FC = () => {
@@ -73,13 +70,14 @@ const AddNodes: FC = () => {
   );
 };
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({ currentNode }) => {
+const SidebarHeader: FC = () => {
+  const { currentNode } = usePathwayContext();
   return (
     <div className={styles.header}>
       <div className={styles.icon} id={styles.back}>
         <FontAwesomeIcon icon={faChevronLeft} />
       </div>
-      <div className={styles.nodeName}>{currentNode}</div>
+      <div className={styles.nodeName}>{currentNode.label}</div>
       <div className={styles.icon}>
         <FontAwesomeIcon icon={faEdit} />
       </div>
@@ -93,7 +91,6 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ currentNode }) => {
 const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   const sidebarContainerElement = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [currentNode] = useState<string>('Start');
 
   const expand = (): void => {
     setIsExpanded(!isExpanded);
@@ -110,7 +107,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
     return (
       <div className={styles.sidebarContainer} ref={sidebarContainerElement}>
         <div className={styles.sidebar}>
-          <SidebarHeader currentNode={currentNode} />
+          <SidebarHeader />
           <hr />
           <DropDown
             label={'Node Type'}

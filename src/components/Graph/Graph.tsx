@@ -12,20 +12,21 @@ import React, {
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
-import { Pathway } from 'pathways-model';
+import { Pathway, State } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
+import { usePathwayContext } from 'components/PathwayProvider';
 
 interface GraphProps {
-  pathway: Pathway;
   interactive?: boolean;
   expandCurrentNode?: boolean;
 }
 
-const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrentNode = true }) => {
+const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = true }) => {
   const graphElement = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+  const { pathway, setCurrentNode } = usePathwayContext();
   const [parentWidth, setParentWidth] = useState<number>(
     graphElement?.current?.parentElement?.clientWidth ?? 0
   );
@@ -49,7 +50,12 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
       });
     }
 
-    return graphLayout(pathway, nodeDimensions);
+    if (pathway) return graphLayout(pathway, nodeDimensions);
+    else
+      return {
+        nodeCoordinates: {},
+        edges: {}
+      };
   }, [pathway]);
 
   const [layout, setLayout] = useState(getGraphLayout());
@@ -92,13 +98,21 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
     }, {});
   }, [layoutKeys]);
 
-  const [expanded, _setExpanded] = useState<{ [key: string]: boolean | undefined }>(
-    initialExpandedState
-  );
+  const [expanded, _setExpanded] = useState({
+    expandedMap: initialExpandedState,
+    lastSelectedNode: ''
+  });
 
-  const setExpanded = useCallback((key: string, expand?: boolean): void => {
+  const setExpanded = useCallback((key: string): void => {
     _setExpanded(prevState => {
-      return { ...prevState, [key]: !prevState[key] };
+      let newExpandedMap = prevState.expandedMap;
+      if (!prevState.expandedMap[key] || prevState.lastSelectedNode === key) {
+        newExpandedMap = {
+          ...prevState.expandedMap,
+          [key]: !prevState.expandedMap[key]
+        };
+      }
+      return { ...prevState, expandedMap: newExpandedMap, lastSelectedNode: key };
     });
   }, []);
 
@@ -126,21 +140,24 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
           .reduce((a, b) => Math.max(a, b), 0)
       : parentWidth;
 
-  return (
-    <GraphMemo
-      graphElement={graphElement}
-      interactive={interactive}
-      maxHeight={maxHeight}
-      nodeCoordinates={nodeCoordinates}
-      edges={edges}
-      pathway={pathway}
-      nodeRefs={nodeRefs}
-      parentWidth={parentWidth}
-      maxWidth={maxWidth}
-      expanded={expanded}
-      setExpanded={setExpanded}
-    />
-  );
+  if (pathway)
+    return (
+      <GraphMemo
+        graphElement={graphElement}
+        interactive={interactive}
+        maxHeight={maxHeight}
+        nodeCoordinates={nodeCoordinates}
+        edges={edges}
+        pathway={pathway}
+        nodeRefs={nodeRefs}
+        parentWidth={parentWidth}
+        maxWidth={maxWidth}
+        expanded={expanded.expandedMap}
+        setExpanded={setExpanded}
+        setCurrentNode={setCurrentNode}
+      />
+    );
+  else return <div>No pathway loaded.</div>;
 });
 
 interface GraphMemoProps {
@@ -158,7 +175,8 @@ interface GraphMemoProps {
   expanded: {
     [key: string]: boolean | undefined;
   };
-  setExpanded: (key: string, expand?: boolean | undefined) => void;
+  setExpanded: (key: string) => void;
+  setCurrentNode: (value: State) => void;
 }
 
 const GraphMemo: FC<GraphMemoProps> = memo(
@@ -173,7 +191,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     parentWidth,
     maxWidth,
     expanded,
-    setExpanded
+    setExpanded,
+    setCurrentNode
   }) => {
     return (
       <div
@@ -190,7 +209,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         {nodeCoordinates !== undefined
           ? Object.keys(nodeCoordinates).map(nodeName => {
               const onClickHandler = useCallback(() => {
-                return interactive ? setExpanded(nodeName) : undefined;
+                if (interactive) {
+                  setCurrentNode(pathway.states[nodeName]);
+                  setExpanded(nodeName);
+                }
               }, [nodeName]);
               return (
                 <Node
