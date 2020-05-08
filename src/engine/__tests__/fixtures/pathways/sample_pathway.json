@@ -4,6 +4,7 @@
   "library": "mCODE_Library.cql",
   "criteria": [
     {
+      "id": "1",
       "elementName": "Condition",
       "expected": "Breast Cancer",
       "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
@@ -11,17 +12,21 @@
   ],
   "states": {
     "Start": {
+      "key": "Start",
       "label": "Start",
       "transitions": [
         {
+          "id": "1",
           "transition": "T-test"
         }
       ]
     },
     "T-test": {
+      "key": "T-test",
       "label": "T-test",
       "transitions": [
         {
+          "id": "1",
           "transition": "N-test",
           "condition": {
             "description": "T = T0",
@@ -29,6 +34,7 @@
           }
         },
         {
+          "id": "2",
           "transition": "Surgery",
           "condition": {
             "description": "T = T1",
@@ -38,9 +44,11 @@
       ]
     },
     "N-test": {
+      "key": "N-test",
       "label": "N-test",
       "transitions": [
         {
+          "id": "1",
           "transition": "Radiation",
           "condition": {
             "description": "N = N0",
@@ -48,6 +56,7 @@
           }
         },
         {
+          "id": "2",
           "transition": "OtherRadiation",
           "condition": {
             "description": "N = N0",
@@ -55,6 +64,7 @@
           }
         },
         {
+          "id": "3",
           "transition": "ChemoMedication",
           "condition": {
             "description": "N = N1",
@@ -64,9 +74,11 @@
       ]
     },
     "Surgery": {
+      "key": "Surgery",
       "label": "Surgery",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Issue Lumpectomy of breast procedure",
           "resource": {
@@ -86,15 +98,18 @@
       ],
       "transitions": [
         {
+          "id": "1",
           "transition": "N-test"
         }
       ],
       "cql": "[Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value, startTime: Lumpectomy.performedPeriod.start, endTime: Lumpectomy.performedPeriod.end }"
     },
     "Radiation": {
+      "key": "Radiation",
       "label": "Radiation",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
           "resource": {
@@ -116,9 +131,11 @@
       "transitions": []
     },
     "OtherRadiation": {
+      "key": "OtherRadiation",
       "label": "Other Radiation",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
           "resource": {
@@ -140,9 +157,11 @@
       "transitions": []
     },
     "Chemo": {
+      "key": "Chemo",
       "label": "Chemotherapy",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Begin Chemotherapy procedure",
           "resource": {
@@ -164,9 +183,11 @@
       "transitions": []
     },
     "ChemoMedication": {
+      "key": "ChemoMedication",
       "label": "ChemoMedication Request",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Request 10ML Doxorubicin Hydrochloride 2MG/ML Injection",
           "resource": {
@@ -185,7 +206,7 @@
         }
       ],
       "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] ChemoMedication where ToConcept(ChemoMedication.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: ChemoMedication.id.value, status: ChemoMedication.status.value }",
-      "transitions": [{ "transition": "Chemo" }]
+      "transitions": [{ "id": "1", "transition": "Chemo" }]
     }
   }
 }

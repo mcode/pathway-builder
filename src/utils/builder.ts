@@ -23,7 +23,8 @@ export function exportPathway(pathway: Pathway): string {
   pathway.criteria.forEach((criteria: Criteria) => delete criteria.id);
 
   // Strip key from each state
-  pathway.states.forEach((state: State) => {
+  Object.keys(pathway.states).forEach((stateName: string) => {
+    const state = pathway.states[stateName];
     delete state.key;
 
     // Strip id from each state.transition
@@ -38,7 +39,7 @@ export function exportPathway(pathway: Pathway): string {
   return JSON.stringify(pathway, undefined, 2);
 }
 
-export function addLibrary(pathway: Pathway, library: string) {
+export function addLibrary(pathway: Pathway, library: string): void {
   pathway.library = library;
 }
 
@@ -61,12 +62,12 @@ export function addCriteria(
   return id;
 }
 
-export function addNavigationalElm(pathway: Pathway, elm: object) {
+export function addNavigationalElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
   pathway.elm.navigational = elm;
 }
 
-export function addCriteriaElm(pathway: Pathway, elm: object) {
+export function addCriteriaElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
   pathway.elm.criteria = elm;
 }
@@ -96,7 +97,7 @@ export function addGuidanceState(pathway: Pathway): string {
   return key;
 }
 
-export function addStateLabel(pathway: Pathway, key: string, label: string) {
+export function addStateLabel(pathway: Pathway, key: string, label: string): void {
   pathway.states[key].label = label;
 }
 
@@ -120,7 +121,7 @@ export function addTransitionCondition(
   transitionId: string,
   description: string,
   cql: string
-) {
+): void {
   const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
@@ -128,7 +129,7 @@ export function addTransitionCondition(
   if (foundTransition) foundTransition.condition = { description: description, cql: cql };
 }
 
-export function addGuidanceStateCql(pathway: Pathway, key: string, cql: string) {
+export function addGuidanceStateCql(pathway: Pathway, key: string, cql: string): void {
   pathway.states[key].cql = cql;
 }
 
@@ -154,11 +155,11 @@ export function addAction(
 /*
 Update Element Functions
 */
-export function updatePathwayName(pathway: Pathway, name: string) {
+export function updatePathwayName(pathway: Pathway, name: string): void {
   pathway.name = name;
 }
 
-export function updatePathwayDescription(pathway: Pathway, description: string) {
+export function updatePathwayDescription(pathway: Pathway, description: string): void {
   pathway.description = description;
 }
 
@@ -167,7 +168,7 @@ export function updateTransition(
   startStateKey: string,
   endStateKey: string,
   transitionId: string
-) {
+): void {
   const transition: Transition = pathway.states[startStateKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
@@ -179,7 +180,7 @@ export function updateTransitionConditionDescription(
   startNodeKey: string,
   transitionId: string,
   description: string
-) {
+): void {
   const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
@@ -192,7 +193,7 @@ export function updateTransitionConditionCql(
   startNodeKey: string,
   transitionId: string,
   cql: string
-) {
+): void {
   const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
@@ -205,7 +206,7 @@ export function updateActionType(
   stateKey: string,
   actionId: string,
   type: string
-) {
+): void {
   if (pathway.states[stateKey].action) {
     const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
     action.type = type;
@@ -217,7 +218,7 @@ export function updateActionDescription(
   stateKey: string,
   actionId: string,
   description: string
-) {
+): void {
   if (pathway.states[stateKey].action) {
     const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
     action.description = description;
@@ -229,7 +230,7 @@ export function updateActionResource(
   stateKey: string,
   actionId: string,
   resource: MedicationRequest | ServiceRequest
-) {
+): void {
   if (pathway.states[stateKey].action) {
     const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
     action.resource = resource;
@@ -239,46 +240,54 @@ export function updateActionResource(
 /*
 Remove Element Function
 */
-export function removePathwayDescription(pathway: Pathway) {
+export function removePathwayDescription(pathway: Pathway): void {
   delete pathway.description;
 }
 
-export function removeCriteria(pathway: Pathway, id: string) {
-  const criteria = pathway.criteria.filter((criteria: Criteria) => criteria.id != id);
+export function removeCriteria(pathway: Pathway, id: string): void {
+  const criteria = pathway.criteria.filter((criteria: Criteria) => criteria.id !== id);
   pathway.criteria = criteria;
 }
 
-export function removeNavigationalElm(pathway: Pathway) {
+export function removeNavigationalElm(pathway: Pathway): void {
   delete pathway.elm?.navigational;
 }
 
-export function removeCriteriaElm(pathway: Pathway) {
+export function removeCriteriaElm(pathway: Pathway): void {
   delete pathway.elm?.criteria;
 }
 
-export function removeState(pathway: Pathway, key: string) {
+export function removeState(pathway: Pathway, key: string): void {
   delete pathway.states[key];
+
+  Object.keys(pathway.states).forEach((stateName: string) => {
+    const state = pathway.states[stateName];
+    state.transitions.forEach((transition: Transition) => {
+      if (transition.transition === key)
+        removeTransition(pathway, stateName, transition.id ?? '-1');
+    });
+  });
 }
 
 export function removeTransitionCondition(
   pathway: Pathway,
   stateKey: string,
   transitionId: string
-) {
+): void {
+  const transition = pathway.states[stateKey].transitions.find(
+    (transition: Transition) => transition.id === transitionId
+  );
+  delete transition.condition;
+}
+
+export function removeTransition(pathway: Pathway, stateKey: string, transitionId: string): void {
   const transitions = pathway.states[stateKey].transitions.filter(
     (transition: Transition) => transition.id !== transitionId
   );
   pathway.states[stateKey].transitions = transitions;
 }
 
-export function removeTransition(pathway: Pathway, stateKey: string, transitionId: string) {
-  const transitions = pathway.states[stateKey].transitions.filter(
-    (transition: Transition) => transition.id != transitionId
-  );
-  pathway.states[stateKey].transitions = transitions;
-}
-
-export function removeAction(pathway: Pathway, stateKey: string, actionId: string) {
+export function removeAction(pathway: Pathway, stateKey: string, actionId: string): void {
   if (pathway.states[stateKey].action) {
     const actions = pathway.states[stateKey].action.filter(
       (action: Action) => action.id !== actionId

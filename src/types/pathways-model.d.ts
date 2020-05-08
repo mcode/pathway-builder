@@ -20,14 +20,14 @@ declare module 'pathways-model' {
   }
 
   export interface Criteria {
-    id: string;
+    id?: string;
     elementName: string; // name of the mCODE element
     expected: string; // human readable value
     cql: string; // cql to fetch the value from a patient
   }
 
   export interface State {
-    key: string;
+    key?: string;
     label: string;
     transitions: Transition[];
   }
@@ -43,14 +43,14 @@ declare module 'pathways-model' {
   // Add it here if/when we ever need it.
 
   interface Action {
-    id: string;
+    id?: string;
     type: string;
     description: string;
     resource: MedicationRequest | ServiceRequest;
   }
 
   interface Transition {
-    id: string;
+    id?: string;
     transition: string;
     condition?: {
       description: string;
