@@ -1,4 +1,29 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+import deepmerge from 'deepmerge';
+
+declare module '@material-ui/core/styles/createMuiTheme' {
+  interface Theme {
+    variables: {
+      spacing: {
+        globalPadding: string;
+      };
+    };
+  }
+  // allow configuration using `createMuiTheme`
+  interface ThemeOptions {
+    variables?: {
+      spacing?: {
+        globalPadding?: string;
+      };
+    };
+  }
+}
+
+const variables = {
+  spacing: {
+    globalPadding: '2em'
+  }
+};
 
 const colors = {
   white: '#fff',
@@ -18,8 +43,7 @@ const typography = {
     "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif"
 };
 
-const materialUiOverrides = {
-  // Style sheet name ⚛️
+const materialUiOverridesBase = {
   MuiButton: {
     root: {
       borderRadius: 0
@@ -54,7 +78,55 @@ const materialUiOverrides = {
   },
   MuiFormControl: {
     root: {
-      margin: '10px 0',
+      margin: '10px 0'
+    }
+  },
+  MuiFormLabel: {
+    root: {
+      fontStyle: 'italic'
+    }
+  },
+  MuiInputBase: {
+    root: {
+      fontWeight: 600,
+      '&:hover': {}
+    }
+  },
+  MuiOutlinedInput: {
+    root: {
+      borderRadius: '0'
+    }
+  },
+  MuiSelect: {
+    icon: {
+      fontSize: '2em'
+    }
+  },
+  MuiPaper: {
+    rounded: {
+      borderRadius: '0'
+    }
+  },
+  MuiDialogTitle: {
+    root: {
+      padding: '1em'
+    }
+  },
+  MuiDialogContent: {
+    root: {
+      padding: '0 4em'
+    }
+  },
+  MuiDialogActions: {
+    root: {
+      padding: '2em 4em'
+    }
+  }
+};
+
+const materialUiOverridesDark = {
+  MuiFormControl: {
+    root: {
       '&:hover': {
         borderColor: colors.white
       }
@@ -63,7 +135,6 @@ const materialUiOverrides = {
   MuiFormLabel: {
     root: {
       color: colors.white,
-      fontStyle: 'italic',
       '&$focused': {
         color: colors.white
       }
@@ -72,7 +143,6 @@ const materialUiOverrides = {
   MuiInputBase: {
     root: {
       color: colors.white,
-      fontWeight: 600,
       '&:hover': {
         borderColor: colors.white,
         backgroundColor: colors.grayDark
@@ -81,7 +151,6 @@ const materialUiOverrides = {
   },
   MuiOutlinedInput: {
     root: {
-      borderRadius: '0',
       '&:hover': {
         borderColor: colors.white
       },
@@ -98,48 +167,48 @@ const materialUiOverrides = {
   },
   MuiSelect: {
     icon: {
-      color: colors.white,
-      fontSize: '2em'
-    }
-  },
-  MuiPaper: {
-    rounded: {
-      borderRadius: '0'
+      color: colors.white
     }
   }
 };
 
-const theme = createMuiTheme({
-  typography: { ...typography },
-  palette: {
-    primary: {
-      main: colors.blue
-    },
-    secondary: {
-      main: colors.red
-    },
-    common: colors,
-    background: {
-      default: colors.grayLighter
-    },
-    text: {
-      primary: colors.gray,
-      secondary: colors.gray
-    }
+const paletteBase = {
+  primary: {
+    main: colors.blue
   },
-  overrides: { ...materialUiOverrides }
+  secondary: {
+    main: colors.red
+  },
+  common: colors,
+  background: {
+    default: colors.grayLighter
+  },
+  text: {
+    primary: colors.gray,
+    secondary: colors.gray
+  },
+  grey: {
+    800: '#4a4a4a'
+  }
+};
+
+const lightTheme = createMuiTheme({
+  typography: { ...typography },
+  palette: { ...paletteBase },
+  overrides: { ...materialUiOverridesBase },
+  variables: { ...variables }
+});
+
+const darkTheme = createMuiTheme({
+  typography: { ...typography },
+  palette: { ...paletteBase },
+  overrides: deepmerge(materialUiOverridesBase, materialUiOverridesDark),
+  variables: { ...variables }
 });
 
 const projectorTheme = createMuiTheme({
   typography: { ...typography },
-  palette: {
-    primary: {
-      main: colors.blue
-    },
-    secondary: {
-      main: colors.red
-    },
-    common: colors,
+  palette: deepmerge(paletteBase, {
     background: {
       default: colors.grayBlue
     },
@@ -147,9 +216,10 @@ const projectorTheme = createMuiTheme({
       primary: colors.black,
       secondary: colors.black
     }
-  },
-  overrides: { ...materialUiOverrides }
+  }),
+  overrides: { ...materialUiOverridesBase },
+  variables: { ...variables }
 });
 
-export default theme;
-export { theme, projectorTheme };
+export default lightTheme;
+export { lightTheme, darkTheme, projectorTheme };

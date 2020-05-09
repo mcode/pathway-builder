@@ -1,7 +1,6 @@
-import React, { FC, useState, useEffect, useRef, RefObject } from 'react';
-
+import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
 import Button from '@material-ui/core/Button';
-import DropDown from 'components/DropDown';
+import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
@@ -10,14 +9,27 @@ import {
   faEdit,
   faEllipsisH
 } from '@fortawesome/free-solid-svg-icons';
+
+import DropDown from 'components/DropDown';
+import { useTheme } from 'components/ThemeProvider';
+import { State } from 'pathways-model';
 import styles from './Sidebar.module.scss';
-import { usePathwayContext } from 'components/PathwayProvider';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
+  currentNode?: State | null;
 }
 
-const AddNodes: FC = () => {
+interface SidebarHeaderProps {
+  currentNodeLabel: string;
+}
+
+const nodeTypeOptions = [
+  { label: 'Action', value: 'action' },
+  { label: 'Branch', value: 'branch' }
+];
+
+const AddNodes: FC = memo(() => {
   return (
     <div className={styles.addNodesContainer}>
       <table>
@@ -68,33 +80,36 @@ const AddNodes: FC = () => {
       </table>
     </div>
   );
-};
+});
 
-const SidebarHeader: FC = () => {
-  const { currentNode } = usePathwayContext();
+const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
   return (
     <div className={styles.header}>
       <div className={styles.icon} id={styles.back}>
         <FontAwesomeIcon icon={faChevronLeft} />
       </div>
-      <div className={styles.nodeName}>{currentNode.label}</div>
+
+      <div className={styles.nodeName}>{currentNodeLabel}</div>
+
       <div className={styles.icon}>
         <FontAwesomeIcon icon={faEdit} />
       </div>
+
       <div className={styles.icon} id={styles.nodeSettings}>
         <FontAwesomeIcon icon={faEllipsisH} />
       </div>
     </div>
   );
-};
+});
 
-const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
-  const sidebarContainerElement = useRef<HTMLDivElement>(null);
+const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const theme = useTheme('dark');
+  const sidebarContainerElement = useRef<HTMLDivElement>(null);
 
-  const expand = (): void => {
-    setIsExpanded(!isExpanded);
-  };
+  const toggleSidebar = useCallback((): void => {
+    setIsExpanded(expanded => !expanded);
+  }, []);
 
   // Set the height of the sidebar container
   useEffect(() => {
@@ -103,37 +118,24 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
         window.innerHeight - headerElement.current.clientHeight + 'px';
   }, [isExpanded, headerElement]);
 
-  if (isExpanded) {
-    return (
+  return (
+    <MuiThemeProvider theme={theme}>
       <div className={styles.sidebarContainer} ref={sidebarContainerElement}>
-        <div className={styles.sidebar}>
-          <SidebarHeader />
-          <hr />
-          <DropDown
-            label={'Node Type'}
-            id={'Node Type'}
-            options={[
-              { label: 'Action', value: 'action' },
-              { label: 'Branch', value: 'branch' }
-            ]}
-          />
-          <AddNodes />
-        </div>
+        {isExpanded && (
+          <div className={styles.sidebar}>
+            <SidebarHeader currentNodeLabel={currentNode?.label || ''} />
+            <hr />
+            <DropDown label="Node Type" id="Node Type" options={nodeTypeOptions} />
+            <AddNodes />
+          </div>
+        )}
 
-        <div className={styles.sidebarToggle} onClick={expand}>
-          <FontAwesomeIcon icon={faChevronLeft} />
+        <div className={styles.sidebarToggle} onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
         </div>
       </div>
-    );
-  } else {
-    return (
-      <div className={styles.sidebarContainer}>
-        <div className={styles.sidebarToggle} onClick={expand}>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </div>
-      </div>
-    );
-  }
+    </MuiThemeProvider>
+  );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

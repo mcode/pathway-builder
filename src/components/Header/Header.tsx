@@ -1,45 +1,48 @@
-import React, { FC, useState, MouseEvent } from 'react';
+import React, { FC, memo, useCallback, useState, MouseEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
 import { useThemeToggle } from '../ThemeProvider';
 
+import logo from 'camino-logo-dark.png';
 import styles from './Header.module.scss';
 
-interface HeaderProps {
-  logo: string;
-}
-
-const Header: FC<HeaderProps> = (props: HeaderProps) => {
+const Header: FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const toggleTheme = useThemeToggle();
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
+  const openMenu = useCallback((event: MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleClose = (): void => {
+  const closeMenu = useCallback((): void => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handleToggleTheme = (): void => {
+  const handleToggleTheme = useCallback((): void => {
     toggleTheme();
-    handleClose();
-  };
+    closeMenu();
+  }, [toggleTheme, closeMenu]);
 
   return (
     <header className={styles.header}>
-      <img src={props.logo} alt="logo" />
-      <button onClick={handleClick} aria-controls="options-menu" aria-haspopup="true">
+      <Link to="/" className={styles.homeLink}>
+        <img src={logo} alt="logo" className={styles.logo} />
+      </Link>
+
+      <button onClick={openMenu} aria-controls="options-menu" aria-haspopup="true">
         <FontAwesomeIcon icon={faCog} />
       </button>
+
       <Menu
         id="options-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={closeMenu}
       >
         <MenuItem onClick={handleToggleTheme}>Toggle Theme</MenuItem>
       </Menu>
@@ -47,4 +50,4 @@ const Header: FC<HeaderProps> = (props: HeaderProps) => {
   );
 };
 
-export default Header;
+export default memo(Header);

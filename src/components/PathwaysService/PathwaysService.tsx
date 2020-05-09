@@ -15,14 +15,21 @@ function typedFetch<T>(url: string, options?: object): Promise<T> {
 }
 
 const useGetPathwaysService = (url: string): Service<Pathway[]> => {
-  const [result, setResult] = useState<Service<Array<Pathway>>>({
+  const [result, setResult] = useState<Service<Pathway[]>>({
     status: 'loading'
   });
 
   useEffect(() => {
     getPathways(url)
-      .then(response => response.json() as Promise<Array<string>>)
-      .then(listOfFiles => listOfFiles.map(f => typedFetch<Pathway>(url + '/' + f)))
+      .then(response => response.json() as Promise<string[]>)
+      .then(listOfFiles =>
+        listOfFiles.map(f =>
+          typedFetch<Pathway>(url + '/' + f).then(pathway => ({
+            id: f,
+            ...pathway
+          }))
+        )
+      )
       .then(listOfPromises => Promise.all(listOfPromises))
       .then(pathwaysList => setResult({ status: 'loaded', payload: pathwaysList }))
       .catch(error => setResult({ status: 'error', error }));
