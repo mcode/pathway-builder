@@ -10,6 +10,13 @@ export const PathwayContext = createContext<PathwayContextInterface>({
   pathway: null,
   setPathway: () => {
     //do nothing
+  },
+  currentNode: {
+    label: 'Start',
+    transitions: []
+  },
+  setCurrentNode: () => {
+    // do nothing
   }
 });
 

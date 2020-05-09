@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import { PathwayContext } from 'components/PathwayProvider';
-import { PathwayContextInterface, Pathway } from 'pathways-model';
+import { PathwayContextInterface, Pathway, State } from 'pathways-model';
 
 interface PathwayProviderProps {
   children: ReactNode;
@@ -25,12 +25,18 @@ const pathway: Pathway = {
   }
 };
 
+const currentNode: State = {
+  label: 'Start',
+  transitions: []
+};
+
 export const mockedPathwayCtx = {
   pathway,
   setPathway: (): void => {
     //do nothing
   },
-  updatePathways: (): void => {
+  currentNode,
+  setCurrentNode: (): void => {
     //do nothing
   }
 };
