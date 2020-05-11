@@ -104,8 +104,10 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
     setExpanded(prevState => ({
       ...prevState,
       [key]: !prevState[key] || prevState.lastSelectedNode === key,
-      currentNode: key,
-      lastSelectedNode: prevState.currentNode
+      ...(prevState.currentNode !== key && {
+        currentNode: key,
+        lastSelectedNode: prevState.currentNode
+      })
     }));
   }, []);
 
