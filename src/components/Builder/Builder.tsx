@@ -10,7 +10,7 @@ import styles from './Builder.module.scss';
 
 interface BuilderProps {
   pathway: Pathway;
-  currentNode?: State | null;
+  currentNode: State;
 }
 
 const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {

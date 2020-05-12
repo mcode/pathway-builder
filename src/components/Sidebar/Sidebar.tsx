@@ -17,7 +17,7 @@ import styles from './Sidebar.module.scss';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
-  currentNode?: State | null;
+  currentNode: State;
 }
 
 interface SidebarHeaderProps {
