@@ -1,6 +1,7 @@
 import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import AddBranchNode from './AddBranchNode';
 import {
   faChevronLeft,
   faChevronRight,
@@ -13,17 +14,7 @@ import DropDown from 'components/DropDown';
 import { useTheme } from 'components/ThemeProvider';
 import { State } from 'pathways-model';
 import styles from './Sidebar.module.scss';
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  makeStyles,
-  InputLabel,
-  Button,
-  TextField,
-  InputAdornment,
-  Input
-} from '@material-ui/core';
+import { Select, MenuItem, FormControl, makeStyles, InputLabel, Button } from '@material-ui/core';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -34,36 +25,14 @@ interface AddNodeProps {
   addBranchNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-interface CriteraProps {
-  critera: string;
-  handleCriteraChange: (
-    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
-    child: ReactNode
-  ) => void;
-  classes: any;
-}
-
-interface BranchNodeProps {
-  currentNode: State;
-  addChoiceNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
-}
-
 interface SidebarHeaderProps {
   currentNodeLabel: string;
   }
   
-interface ChoiceNodeProps {
-  transition: string;
-}
-
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
   { label: 'Branch', value: 'branch' }
 ];
-
-interface AddChoiceButtonProps {
-  addChoiceNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
-}
 
 const AddNodes: FC<AddNodeProps> = ({ addBranchNode }) => {
 const AddNodes: FC = memo(() => {
@@ -120,199 +89,6 @@ const AddNodes: FC = memo(() => {
     </div>
   );
 });
-
-const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
-  // TODO: in PATHWAYS-256 use the properties in the pathway instead?
-  const [source, setSource] = React.useState('');
-  const [critera, setCritera] = React.useState('');
-
-  const handleSourceChange = (event: any) => {
-    // TODO: in PATHWAYS-256 set the source
-    setSource(event.target.value);
-    setCritera('');
-  };
-
-  const handleCriteraChange = (event: any) => {
-    // TODO: in PATHWAYS-256 set the criteria
-    setCritera(event.target.value);
-  };
-
-  const useStyles = makeStyles(theme => ({
-    formControl: {
-      margin: theme.spacing(1, 0),
-      minWidth: 120
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2)
-    }
-  }));
-
-  const classes = useStyles();
-
-  let displayCritera = null;
-  if (source === 'mCode') {
-    displayCritera = (
-      <McodeOptions critera={critera} handleCriteraChange={handleCriteraChange} classes={classes} />
-    );
-  } else if (source === 'other') {
-    displayCritera = (
-      <OtherOptions critera={critera} handleCriteraChange={handleCriteraChange} classes={classes} />
-    );
-  } else {
-    displayCritera = null;
-  }
-
-  return (
-    <div className={styles.addNodesContainer}>
-      <FormControl variant="outlined" className={classes.formControl} fullWidth>
-        <InputLabel>Criteria Source</InputLabel>
-        <Select
-          value={source}
-          onChange={handleSourceChange}
-          displayEmpty
-          label="Criteria Source"
-          error={source === ''}
-        >
-          <MenuItem value={'mCode'}>mCODE</MenuItem>
-          <MenuItem value={'other'}>Other Library</MenuItem>
-        </Select>
-      </FormControl>
-      {displayCritera}
-      <hr />
-      {currentNode.transitions.map((transition, index) => (
-        <ChoiceNode key={index} transition={transition.transition} />
-      ))}
-      {critera !== '' ? <AddChoiceButton addChoiceNode={addChoiceNode} /> : null}
-    </div>
-  );
-};
-
-const McodeOptions: FC<CriteraProps> = ({ critera, handleCriteraChange, classes }) => {
-  return (
-    <FormControl variant="outlined" className={classes.formControl} fullWidth>
-      <InputLabel>Criteria</InputLabel>
-      <Select
-        value={critera}
-        onChange={handleCriteraChange}
-        displayEmpty
-        label="Criteria"
-        error={critera === ''}
-      >
-        <MenuItem value={'tumor'}>Tumor Category</MenuItem>
-        <MenuItem value={'node'}>Node Category</MenuItem>
-        <MenuItem value={'metastatis'}>Metastatis Category</MenuItem>
-      </Select>
-    </FormControl>
-  );
-};
-
-const OtherOptions: FC<CriteraProps> = ({ critera, handleCriteraChange, classes }) => {
-  return (
-    <FormControl variant="outlined" className={classes.formControl} fullWidth>
-      <InputLabel>Criteria</InputLabel>
-      <Select
-        value={critera}
-        onChange={handleCriteraChange}
-        displayEmpty
-        label="Criteria"
-        error={critera === ''}
-      >
-        <MenuItem value={'other'}>Other Library</MenuItem>
-      </Select>
-    </FormControl>
-  );
-};
-
-// TODO: in PATHWAYS-256 Add choice needs to update the pathway with the new transition and new state
-const AddChoiceButton: FC<AddChoiceButtonProps> = ({ addChoiceNode }) => {
-  return (
-    <table>
-      <tbody>
-        <tr>
-          <td className={styles.button}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<FontAwesomeIcon icon={faPlus} />}
-              onClick={addChoiceNode}
-            >
-              Add Choice Node
-            </Button>
-          </td>
-          <td className={styles.description}>
-            A logical choice for a clinical decision within a workflow.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  );
-};
-
-const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
-  const useStyles = makeStyles(theme => ({
-    formControl: {
-      margin: theme.spacing(1, 0),
-      minWidth: 120,
-      display: 'flex',
-      flexWrap: 'wrap'
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2)
-    },
-    rename: {
-      fontSize: '2rem',
-      display: 'flex',
-      flexWrap: 'wrap'
-    }
-  }));
-
-  const classes = useStyles();
-
-  const [choice, setChoice] = React.useState('');
-  const [label, setLabel] = React.useState<string>(transition);
-
-  const handleChoiceChange = (event: any) => {
-    // TODO: in PATHWAYS-256 need to update the state of the node
-    setChoice(event.target.value);
-  };
-
-  const handleLabelChange = (event: any) => {
-    // TODO: in PATHWAYS-256 need to update the transition of the previous node and the state of the choice node
-    setLabel(event.target.value);
-  };
-
-  // TODO: in PATHWAYS-256 the forward button needs to select the newly created choice node
-  return (
-    <div>
-      <div className={styles.choiceNode}>
-        <FormControl className={styles.nodeName}>
-          <Input
-            classes={{ input: classes.rename }}
-            value={label}
-            type="text"
-            onChange={handleLabelChange}
-            endAdornment={
-              <InputAdornment position="end">
-                <FontAwesomeIcon icon={faEdit} className={styles.icon} />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <div className={styles.icon} id={styles.forward}>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </div>
-      </div>
-      <FormControl variant="outlined" className={classes.formControl} fullWidth>
-        <TextField
-          label="Choice Node Value"
-          value={choice}
-          variant="outlined"
-          onChange={handleChoiceChange}
-          error={choice === ''}
-        />
-      </FormControl>
-    </div>
-  );
 };
 
 const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
