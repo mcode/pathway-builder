@@ -22,10 +22,7 @@ import {
   Button,
   TextField,
   InputAdornment,
-  Input,
-  OutlinedInput,
-  IconButton,
-  createMuiTheme
+  Input
 } from '@material-ui/core';
 
 interface SidebarProps {
@@ -34,12 +31,15 @@ interface SidebarProps {
 }
 
 interface AddNodeProps {
-  addBranchNode: any;
+  addBranchNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 interface CriteraProps {
-  critera: any;
-  handleCriteraChange: any;
+  critera: string;
+  handleCriteraChange: (
+    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
+    child: ReactNode
+  ) => void;
   classes: any;
 }
 
@@ -122,15 +122,18 @@ const AddNodes: FC = memo(() => {
 });
 
 const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
+  // TODO: in PATHWAYS-256 use the properties in the pathway instead?
   const [source, setSource] = React.useState('');
   const [critera, setCritera] = React.useState('');
 
   const handleSourceChange = (event: any) => {
+    // TODO: in PATHWAYS-256 set the source
     setSource(event.target.value);
     setCritera('');
   };
 
   const handleCriteraChange = (event: any) => {
+    // TODO: in PATHWAYS-256 set the criteria
     setCritera(event.target.value);
   };
 
@@ -269,17 +272,16 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
   const [label, setLabel] = React.useState<string>(transition);
 
   const handleChoiceChange = (event: any) => {
+    // TODO: in PATHWAYS-256 need to update the state of the node
     setChoice(event.target.value);
   };
 
   const handleLabelChange = (event: any) => {
+    // TODO: in PATHWAYS-256 need to update the transition of the previous node and the state of the choice node
     setLabel(event.target.value);
   };
 
-  // TODO: in PATHWAYS-256
-  // 1 - the forward button needs to select the newly created choice node
-  // 2 - handleLabelChange needs to update the transition of the previous node and the state of the choice node
-  // 3 - handleChoiceChange needs to update the state of the choice node
+  // TODO: in PATHWAYS-256 the forward button needs to select the newly created choice node
   return (
     <div>
       <div className={styles.choiceNode}>
@@ -337,6 +339,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
 const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   const { currentNode, pathway } = usePathwayContext();
 
+  // TODO: in PATHWAYS-256 get type based on state
   if (currentNode.nodeType === undefined) {
     currentNode.nodeType = 'action';
   }
@@ -346,8 +349,8 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   const sidebarContainerElement = useRef<HTMLDivElement>(null);
   const [type, setType] = useState<string>(currentNode.nodeType);
 
-  if (type != currentNode.nodeType)
-  {
+  // TODO: in PATHWAYS-256 get/use type based on state
+  if (type !== currentNode.nodeType) {
     setType(currentNode.nodeType);
   }
 
@@ -380,6 +383,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   };
 
   const handleTypeChange = (event: any) => {
+    // TODO: in PATHWAYS-256 switch the node to the appropriate type and remove thise
     if (pathway !== null) {
       const label = currentNode.label.replace(/\s/g, '');
       pathway.states[label].nodeType = event.target.value;
@@ -391,6 +395,16 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   const addChoiceNoide = () => {
     // TODO: in PATHWAYS-256 adding a choice node needs to modify the pathway
     console.log('Add Choice Node Clicked');
+
+    // TODO: in PATHWASYS-256 remove this
+    const newTransition = {
+      transition: 'Choice Node',
+      condition: {
+        description: 'new description',
+        cql: 'new cql'
+      }
+    };
+    currentNode.transitions.push(newTransition);
   };
 
   // Set the height of the sidebar container
