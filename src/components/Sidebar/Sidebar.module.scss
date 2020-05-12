@@ -1,5 +1,11 @@
 @import '../../styles/variables';
 
+.rename {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0 15px;
+}
+
 .sidebarContainer {
   display: flex;
   color: $white;
@@ -25,6 +31,46 @@
     padding: 25px;
     background-color: $gray;
     overflow-y: scroll;
+
+    .choiceNode {
+      display: flex;
+      line-height: 30px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+
+      div {
+        display: inline-block;
+      }
+
+      .nodeName {
+        font-size: 2em;
+        font-weight: 700;
+        margin: 0 15px;
+      }
+
+      .icon {
+        align-items: center;
+        font-size: 1.2em;
+        cursor: pointer;
+      }
+
+      .rename {
+        font-size: 5em;
+        font-weight: 700;
+        margin: 0 150px;
+      }
+
+      #back {
+        font-size: 2em;
+      }
+
+      #forward {
+        float: right;
+        margin-left: auto;
+        margin-right: 15px;
+        font-size: 2em;
+      }
+    }
 
     .header {
       display: flex;
@@ -59,6 +105,7 @@
     }
 
     .addNodesContainer {
+
       table {
         border-collapse: separate;
         border-spacing: 0 15px;
