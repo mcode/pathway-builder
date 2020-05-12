@@ -28,6 +28,10 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     setPathways(currentPathways => [...currentPathways, pathway]);
   }, []);
 
+  const deletePathway = useCallback((pathway: Pathway) => {
+    // TODO
+  }, []);
+
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload]);
@@ -38,7 +42,9 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
 
     default:
       return (
-        <PathwayContext.Provider value={{ pathways, addPathway, status: service.status }}>
+        <PathwayContext.Provider
+          value={{ pathways, addPathway, deletePathway, status: service.status }}
+        >
           {children}
         </PathwayContext.Provider>
       );

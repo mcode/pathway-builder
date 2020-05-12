@@ -8,7 +8,7 @@ import { Pathway } from 'pathways-model';
 import useStyles from './styles';
 
 interface Props {
-  pathway?: Pathway | null;
+  pathway: Pathway;
 }
 
 const Navigation: FC<Props> = ({ pathway }) => {

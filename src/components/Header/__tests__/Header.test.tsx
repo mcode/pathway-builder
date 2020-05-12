@@ -7,7 +7,7 @@ describe('<Header />', () => {
   it('renders a visible header title and logo', () => {
     const { getByRole } = render(
       <MemoryRouter>
-        <Header logo="logo" />
+        <Header />
       </MemoryRouter>
     );
     expect(getByRole('img')).toBeVisible();

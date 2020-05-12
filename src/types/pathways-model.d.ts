@@ -58,5 +58,6 @@ declare module 'pathways-model' {
     pathways: Pathway[];
     status: string;
     addPathway: (Pathway) => void;
+    deletePathway: (Pathway) => void;
   }
 }

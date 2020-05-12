@@ -5,12 +5,11 @@ import Header from 'components/Header';
 import Navigation from 'components/Navigation';
 import Sidebar from 'components/Sidebar';
 import Graph from 'components/Graph';
-import Loading from 'components/elements/Loading';
 
 import styles from './Builder.module.scss';
 
 interface BuilderProps {
-  pathway?: Pathway | null;
+  pathway: Pathway;
   currentNode?: State | null;
 }
 
@@ -35,15 +34,9 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
       <div className={styles.display}>
         <Sidebar headerElement={headerElement} currentNode={currentNode} />
 
-        {pathway ? (
-          <div ref={graphContainerElement} className={styles.graph}>
-            <Graph pathway={pathway} expandCurrentNode={true} />
-          </div>
-        ) : (
-          <div className={styles.graph}>
-            <Loading />
-          </div>
-        )}
+        <div ref={graphContainerElement} className={styles.graph}>
+          <Graph pathway={pathway} expandCurrentNode={true} />
+        </div>
       </div>
     </>
   );

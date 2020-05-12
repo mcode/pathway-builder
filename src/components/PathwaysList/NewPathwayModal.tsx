@@ -1,4 +1,5 @@
 import React, { FC, useCallback, useRef, memo, FormEvent } from 'react';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -10,9 +11,9 @@ import {
   TextField,
   IconButton
 } from '@material-ui/core';
-import { v4 as uuidv4 } from 'uuid';
+import shortid from 'shortid';
 
-import { usePathwayContext } from '../PathwayProvider';
+import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 interface NewPathwayModalProps {
@@ -22,16 +23,26 @@ interface NewPathwayModalProps {
 
 const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
   const styles = useStyles();
+  const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
   const { addPathway } = usePathwayContext();
 
+  const closeModal = useCallback(
+    (pathwayId: string): void => {
+      history.push(`/builder/${encodeURIComponent(pathwayId)}/node/Start`);
+      onClose();
+    },
+    [history, onClose]
+  );
+
   const createNewPathway = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
+      const pathwayId = shortid.generate();
 
       addPathway({
-        id: uuidv4(),
+        id: pathwayId,
         name: pathwayNameRef.current?.value ?? '',
         description: pathwayDescRef.current?.value ?? '',
         library: '',
@@ -43,9 +54,9 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
           }
         }
       });
-      onClose();
+      closeModal(pathwayId);
     },
-    [addPathway, onClose]
+    [addPathway, closeModal]
   );
 
   return (

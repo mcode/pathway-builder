@@ -12,18 +12,13 @@ import {
   TableRow
 } from '@material-ui/core';
 
-import { Pathway } from 'pathways-model';
-import { usePathwayContext } from '../PathwayProvider';
+import { usePathwayContext } from 'components/PathwayProvider';
 
 import useStyles from './styles';
 
 const PathwaysTable: FC = () => {
   const styles = useStyles();
-  const { pathways } = usePathwayContext();
-
-  function deletePathway(pathway: Pathway | null): void {
-    // TODO
-  }
+  const { pathways, deletePathway } = usePathwayContext();
 
   return (
     <TableContainer className={styles.pathwayList}>

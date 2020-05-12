@@ -22,14 +22,7 @@ const useGetPathwaysService = (url: string): Service<Pathway[]> => {
   useEffect(() => {
     getPathways(url)
       .then(response => response.json() as Promise<string[]>)
-      .then(listOfFiles =>
-        listOfFiles.map(f =>
-          typedFetch<Pathway>(url + '/' + f).then(pathway => ({
-            id: f,
-            ...pathway
-          }))
-        )
-      )
+      .then(listOfFiles => listOfFiles.map(f => typedFetch<Pathway>(url + '/' + f)))
       .then(listOfPromises => Promise.all(listOfPromises))
       .then(pathwaysList => setResult({ status: 'loaded', payload: pathwaysList }))
       .catch(error => setResult({ status: 'error', error }));

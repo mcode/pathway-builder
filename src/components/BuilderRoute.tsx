@@ -14,9 +14,8 @@ const BuilderRoute: FC = () => {
   ]);
   const currentNode = pathway?.states?.[decodeURIComponent(nodeId)];
 
-  if (pathway != null && currentNode == null) {
-    return <Redirect to={`/builder/${id}/node/Start`} />;
-  }
+  if (pathway == null) return null;
+  if (currentNode == null) return <Redirect to={`/builder/${id}/node/Start`} />;
 
   return <Builder pathway={pathway} currentNode={currentNode} />;
 };

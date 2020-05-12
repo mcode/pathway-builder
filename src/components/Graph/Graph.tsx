@@ -103,11 +103,10 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   const toggleExpanded = useCallback((key: string) => {
     setExpanded(prevState => ({
       ...prevState,
-      [key]: !prevState[key] || prevState.lastSelectedNode === key,
-      ...(prevState.currentNode !== key && {
-        currentNode: key,
-        lastSelectedNode: prevState.currentNode
-      })
+      [key]:
+        !prevState[key] || prevState.lastSelectedNode === key ? !prevState[key] : prevState[key],
+      currentNode: key,
+      lastSelectedNode: prevState.currentNode
     }));
   }, []);
 

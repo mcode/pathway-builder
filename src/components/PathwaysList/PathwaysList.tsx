@@ -15,11 +15,11 @@ const PathwaysList: FC = () => {
   const [open, setOpen] = useState(false);
   const { status } = usePathwayContext();
 
-  const handleClickOpen = useCallback((): void => {
+  const openNewPathwayModal = useCallback((): void => {
     setOpen(true);
   }, []);
 
-  const handleClose = useCallback((): void => {
+  const closeNewPathwayModal = useCallback((): void => {
     setOpen(false);
   }, []);
 
@@ -30,12 +30,12 @@ const PathwaysList: FC = () => {
         variant="contained"
         color="primary"
         startIcon={<FontAwesomeIcon icon={faPlus} />}
-        onClick={handleClickOpen}
+        onClick={openNewPathwayModal}
       >
         Create Pathway
       </Button>
 
-      <NewPathwayModal open={open} onClose={handleClose} />
+      <NewPathwayModal open={open} onClose={closeNewPathwayModal} />
       {status === 'loading' ? <Loading /> : <PathwaysTable />}
     </div>
   );
