@@ -251,6 +251,20 @@ describe('builder interface update functions', () => {
     Builder.updateActionResource(pathway, stateKey, actionId, resource);
     expect(pathway.states[stateKey].action[0].resource).toEqual(resource);
   });
+
+  it('make branch state a guidance state', () => {
+    const key = 'N-test';
+    Builder.makeBranchStateGuidance(pathway, key);
+    expect(pathway.states[key].cql).toBe('');
+    expect(pathway.states[key].action).toEqual([]);
+  });
+
+  it('make guidance state a branch state', () => {
+    const key = 'Surgery';
+    Builder.makeGuidanceStateBranch(pathway, key);
+    expect('cql' in pathway.states[key]).toBeFalsy();
+    expect('action' in pathway.states[key]).toBeFalsy();
+  });
 });
 
 describe('builder interface remove functions', () => {

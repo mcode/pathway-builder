@@ -92,8 +92,7 @@ export function addBranchState(pathway: Pathway): string {
 export function addGuidanceState(pathway: Pathway): string {
   const key = shortid.generate();
   addState(pathway, key);
-  pathway.states[key].cql = '';
-  pathway.states[key].action = [];
+  makeBranchStateGuidance(pathway, key);
   return key;
 }
 
@@ -235,6 +234,20 @@ export function updateActionResource(
     const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
     action.resource = resource;
   }
+}
+
+export function makeBranchStateGuidance(pathway: Pathway, key: string): void {
+  const state = pathway.states[key];
+  if (!('action' in state)) {
+    state.cql = '';
+    state.action = [];
+  }
+}
+
+export function makeGuidanceStateBranch(pathway: Pathway, key: string): void {
+  const state = pathway.states[key];
+  delete state.cql;
+  delete state.action;
 }
 
 /*
