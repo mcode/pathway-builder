@@ -32,9 +32,6 @@ const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
     formControl: {
       margin: theme.spacing(1, 0),
       minWidth: 120
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2)
     }
   }));
 
@@ -42,21 +39,9 @@ const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
 
   let displayCritera = null;
   if (source === 'mCode') {
-    displayCritera = (
-      <McodeCriteria
-        critera={critera}
-        handleCriteraChange={handleCriteraChange}
-        classes={classes}
-      />
-    );
+    displayCritera = <McodeCriteria critera={critera} handleCriteraChange={handleCriteraChange} />;
   } else if (source === 'other') {
-    displayCritera = (
-      <OtherCriteria
-        critera={critera}
-        handleCriteraChange={handleCriteraChange}
-        classes={classes}
-      />
-    );
+    displayCritera = <OtherCriteria critera={critera} handleCriteraChange={handleCriteraChange} />;
   } else {
     displayCritera = null;
   }

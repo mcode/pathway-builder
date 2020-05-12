@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { usePathwayContext } from 'components/PathwayProvider';
 import styles from './Sidebar.module.scss';
 import { FormControl, makeStyles, TextField, InputAdornment, Input } from '@material-ui/core';
 
@@ -10,15 +11,14 @@ interface ChoiceNodeProps {
 }
 
 const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
+  const { pathway } = usePathwayContext();
+
   const useStyles = makeStyles(theme => ({
     formControl: {
       margin: theme.spacing(1, 0),
       minWidth: 120,
       display: 'flex',
       flexWrap: 'wrap'
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2)
     },
     rename: {
       fontSize: '2rem',
@@ -28,9 +28,11 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
   }));
 
   const classes = useStyles();
+  const initial = pathway !== null ? pathway.states[transition].label : 'Choice Node';
 
+  // TODO: in PATHWAYS-256 use the data from the pathway
   const [choice, setChoice] = React.useState('');
-  const [label, setLabel] = React.useState<string>(transition);
+  const [label, setLabel] = React.useState<string>(initial);
 
   const handleChoiceChange = (event: any) => {
     // TODO: in PATHWAYS-256 need to update the state of the node
@@ -46,7 +48,7 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
   return (
     <div>
       <div className={styles.choiceNode}>
-        <FormControl className={styles.nodeName}>
+        <FormControl className={classes.formControl}>
           <Input
             classes={{ input: classes.rename }}
             value={label}
@@ -72,6 +74,7 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
           error={choice === ''}
         />
       </FormControl>
+      <hr />
     </div>
   );
 };

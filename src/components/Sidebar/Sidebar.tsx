@@ -138,9 +138,6 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
     formControl: {
       margin: theme.spacing(1, 0),
       minWidth: 120
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2)
     }
   }));
 
@@ -159,7 +156,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   };
 
   const handleTypeChange = (event: any) => {
-    // TODO: in PATHWAYS-256 switch the node to the appropriate type and remove thise
+    // TODO: in PATHWAYS-256 switch the node to the appropriate type and remove this
     if (pathway !== null) {
       const label = currentNode.label.replace(/\s/g, '');
       pathway.states[label].nodeType = event.target.value;
