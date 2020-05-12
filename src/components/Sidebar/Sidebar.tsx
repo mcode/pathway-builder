@@ -150,16 +150,28 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
     // remove the modification of the currentNode
     if (pathway !== null && currentNode.label !== undefined) {
       const label = currentNode.label.replace(/\s/g, '');
+
+      if (pathway.states[label] === undefined) {
+        // This code will be removed with PATHWAYS-256 but will stop the error for now
+        console.log('State not found - possibly due to more than one state with this name');
+        return;
+      }
       pathway.states[label].nodeType = 'branch';
     }
     setType('branch');
   };
 
   const handleTypeChange = (event: ChangeEvent<{ value: unknown }>): void => {
-    // TODO: in PATHWAYS-256 switch the node to the appropriate type and remove this
+    // TODO: in PATHWAYS-256 switch the node to the appropriate and remove this code block
     if (pathway !== null) {
       const label = currentNode.label.replace(/\s/g, '');
-      pathway.states[label].nodeType = event.target.value;
+
+      if (pathway.states[label] === undefined) {
+        // This code will be removed with PATHWAYS-256 but will stop the error for now
+        console.log('State not found - possibly due to more than one state with this name');
+        return;
+      }
+      pathway.states[label].nodeType = event.target.value as string;
     }
     currentNode.nodeType = event.target.value as string;
     setType(event.target.value as string);
