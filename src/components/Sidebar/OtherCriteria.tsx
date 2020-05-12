@@ -1,12 +1,9 @@
-import React, { FC, ChangeEvent, ReactNode } from 'react';
+import React, { FC, ChangeEvent } from 'react';
 import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material-ui/core';
 
 interface CriteraProps {
   critera: string;
-  handleCriteraChange: (
-    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
-    child: ReactNode
-  ) => void;
+  handleCriteraChange: (event: ChangeEvent<{ value: unknown }>) => void;
 }
 
 const OtherCriteria: FC<CriteraProps> = ({ critera, handleCriteraChange }) => {

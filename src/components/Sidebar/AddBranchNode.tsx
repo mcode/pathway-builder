@@ -17,15 +17,15 @@ const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
   const [source, setSource] = React.useState('');
   const [critera, setCritera] = React.useState('');
 
-  const handleSourceChange = (event: any) => {
+  const handleSourceChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 set the source
-    setSource(event.target.value);
+    setSource(event.target.value as string);
     setCritera('');
   };
 
-  const handleCriteraChange = (event: any) => {
+  const handleCriteraChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 set the criteria
-    setCritera(event.target.value);
+    setCritera(event.target.value as string);
   };
 
   const useStyles = makeStyles(theme => ({

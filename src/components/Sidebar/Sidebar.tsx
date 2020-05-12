@@ -155,17 +155,17 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
     setType('branch');
   };
 
-  const handleTypeChange = (event: any) => {
+  const handleTypeChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 switch the node to the appropriate type and remove this
     if (pathway !== null) {
       const label = currentNode.label.replace(/\s/g, '');
       pathway.states[label].nodeType = event.target.value;
     }
-    currentNode.nodeType = event.target.value;
-    setType(event.target.value);
+    currentNode.nodeType = event.target.value as string;
+    setType(event.target.value as string);
   };
 
-  const addChoiceNoide = () => {
+  const addChoiceNoide = (): void => {
     // TODO: in PATHWAYS-256 adding a choice node needs to modify the pathway
     console.log('Add Choice Node Clicked');
 

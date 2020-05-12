@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ChangeEvent } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -34,14 +34,15 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
   const [choice, setChoice] = React.useState('');
   const [label, setLabel] = React.useState<string>(initial);
 
-  const handleChoiceChange = (event: any) => {
+  const handleChoiceChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 need to update the state of the node
-    setChoice(event.target.value);
+    setChoice(event.target.value as string);
   };
 
-  const handleLabelChange = (event: any) => {
-    // TODO: in PATHWAYS-256 need to update the transition of the previous node and the state of the choice node
-    setLabel(event.target.value);
+  const handleLabelChange = (event: ChangeEvent<{ value: unknown }>): void => {
+    // TODO: in PATHWAYS-256 need to update the transition of the previous node
+    // and the state of the choice node
+    setLabel(event.target.value as string);
   };
 
   // TODO: in PATHWAYS-256 the forward button needs to select the newly created choice node

@@ -8,7 +8,7 @@ interface AddChoiceButtonProps {
   addChoiceNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-// TODO: in PATHWAYS-256 Add choice needs to update the pathway with the new transition and new state
+// TODO: in PATHWAYS-256 Add choice needs to update the pathway with the new transition and state
 const AddChoiceButton: FC<AddChoiceButtonProps> = ({ addChoiceNode }) => {
   return (
     <table>
