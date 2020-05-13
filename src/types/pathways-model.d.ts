@@ -53,4 +53,11 @@ declare module 'pathways-model' {
       cql: string;
     };
   }
+
+  export interface PathwayContextInterface {
+    pathways: Pathway[];
+    status: string;
+    addPathway: (Pathway) => void;
+    deletePathway: (Pathway) => void;
+  }
 }
