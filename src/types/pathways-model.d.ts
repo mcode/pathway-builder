@@ -1,6 +1,8 @@
 declare module 'pathways-model' {
   import { DomainResource, MedicationRequest, ServiceRequest } from 'fhir-objects';
+
   export interface Pathway {
+    id: string;
     name: string;
     description?: string;
     library: string;
@@ -43,18 +45,12 @@ declare module 'pathways-model' {
     description: string;
     resource: MedicationRequest | ServiceRequest;
   }
+
   interface Transition {
     transition: string;
     condition?: {
       description: string;
       cql: string;
     };
-  }
-
-  export interface PathwayContextInterface {
-    pathway: Pathway | null;
-    setPathway: (pathway: Pathway | null, selectPathway?: boolean) => void;
-    currentNode: State;
-    setCurrentNode: (value: State) => void;
   }
 }

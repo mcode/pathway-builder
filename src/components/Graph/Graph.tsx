@@ -8,25 +8,29 @@ import React, {
   useState,
   memo
 } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
-import { Pathway, State } from 'pathways-model';
+import { Pathway } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
-import { usePathwayContext } from 'components/PathwayProvider';
 
 interface GraphProps {
+  pathway: Pathway;
   interactive?: boolean;
   expandCurrentNode?: boolean;
 }
 
-const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = true }) => {
+interface ExpandedState {
+  [key: string]: boolean | string | null;
+}
+
+const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrentNode = true }) => {
   const graphElement = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<{ [key: string]: HTMLDivElement }>({});
-  const { pathway, setCurrentNode } = usePathwayContext();
   const [parentWidth, setParentWidth] = useState<number>(
     graphElement?.current?.parentElement?.clientWidth ?? 0
   );
@@ -50,12 +54,7 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
       });
     }
 
-    if (pathway) return graphLayout(pathway, nodeDimensions);
-    else
-      return {
-        nodeCoordinates: {},
-        edges: {}
-      };
+    return graphLayout(pathway, nodeDimensions);
   }, [pathway]);
 
   const [layout, setLayout] = useState(getGraphLayout());
@@ -90,30 +89,24 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
       if (edge.label) edge.label.x += toAdd;
     });
   }
-  const layoutKeys = Object.keys(layout).toString();
-  const initialExpandedState = useMemo(() => {
-    return layoutKeys.split(',').reduce((acc: { [key: string]: boolean }, curr: string) => {
-      acc[curr] = false;
-      return acc;
-    }, {});
-  }, [layoutKeys]);
 
-  const [expanded, _setExpanded] = useState({
-    expandedMap: initialExpandedState,
-    lastSelectedNode: ''
-  });
+  const [expanded, setExpanded] = useState<ExpandedState>(() =>
+    Object.keys(layout).reduce(
+      (acc, curr: string) => {
+        acc[curr] = false;
+        return acc;
+      },
+      { lastSelectedNode: null } as ExpandedState
+    )
+  );
 
-  const setExpanded = useCallback((key: string): void => {
-    _setExpanded(prevState => {
-      let newExpandedMap = prevState.expandedMap;
-      if (!prevState.expandedMap[key] || prevState.lastSelectedNode === key) {
-        newExpandedMap = {
-          ...prevState.expandedMap,
-          [key]: !prevState.expandedMap[key]
-        };
-      }
-      return { ...prevState, expandedMap: newExpandedMap, lastSelectedNode: key };
-    });
+  const toggleExpanded = useCallback((key: string) => {
+    setExpanded(prevState => ({
+      ...prevState,
+      [key]:
+        !prevState[key] || prevState.lastSelectedNode === key ? !prevState[key] : prevState[key],
+      lastSelectedNode: key
+    }));
   }, []);
 
   // Recalculate graph layout if graph container size changes
@@ -140,24 +133,21 @@ const Graph: FC<GraphProps> = memo(({ interactive = true, expandCurrentNode = tr
           .reduce((a, b) => Math.max(a, b), 0)
       : parentWidth;
 
-  if (pathway)
-    return (
-      <GraphMemo
-        graphElement={graphElement}
-        interactive={interactive}
-        maxHeight={maxHeight}
-        nodeCoordinates={nodeCoordinates}
-        edges={edges}
-        pathway={pathway}
-        nodeRefs={nodeRefs}
-        parentWidth={parentWidth}
-        maxWidth={maxWidth}
-        expanded={expanded.expandedMap}
-        setExpanded={setExpanded}
-        setCurrentNode={setCurrentNode}
-      />
-    );
-  else return <div>No pathway loaded.</div>;
+  return (
+    <GraphMemo
+      graphElement={graphElement}
+      interactive={interactive}
+      maxHeight={maxHeight}
+      nodeCoordinates={nodeCoordinates}
+      edges={edges}
+      pathway={pathway}
+      nodeRefs={nodeRefs}
+      parentWidth={parentWidth}
+      maxWidth={maxWidth}
+      expanded={expanded}
+      toggleExpanded={toggleExpanded}
+    />
+  );
 });
 
 interface GraphMemoProps {
@@ -172,11 +162,8 @@ interface GraphMemoProps {
   }>;
   parentWidth: number;
   maxWidth: number;
-  expanded: {
-    [key: string]: boolean | undefined;
-  };
-  setExpanded: (key: string) => void;
-  setCurrentNode: (value: State) => void;
+  expanded: ExpandedState;
+  toggleExpanded: (key: string) => void;
 }
 
 const GraphMemo: FC<GraphMemoProps> = memo(
@@ -191,9 +178,20 @@ const GraphMemo: FC<GraphMemoProps> = memo(
     parentWidth,
     maxWidth,
     expanded,
-    setExpanded,
-    setCurrentNode
+    toggleExpanded
   }) => {
+    const { id: pathwayId } = useParams();
+    const history = useHistory();
+    const redirectToNode = useCallback(
+      nodeId => {
+        const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
+        if (url !== history.location.pathname) {
+          history.push(url);
+        }
+      },
+      [history, pathwayId]
+    );
+
     return (
       <div
         ref={graphElement}
@@ -210,8 +208,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
           ? Object.keys(nodeCoordinates).map(nodeName => {
               const onClickHandler = useCallback(() => {
                 if (interactive) {
-                  setCurrentNode(pathway.states[nodeName]);
-                  setExpanded(nodeName);
+                  redirectToNode(nodeName);
+                  toggleExpanded(nodeName);
                 }
               }, [nodeName]);
               return (
@@ -224,7 +222,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   isCurrentNode={false}
                   xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
                   yCoordinate={nodeCoordinates[nodeName].y}
-                  expanded={expanded[nodeName]}
+                  expanded={Boolean(expanded[nodeName])}
                   onClickHandler={onClickHandler}
                 />
               );
