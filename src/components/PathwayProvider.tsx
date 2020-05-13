@@ -8,10 +8,17 @@ import React, {
   useState,
   ReactNode
 } from 'react';
-import { Pathway, PathwayContextInterface } from 'pathways-model';
+import { Pathway } from 'pathways-model';
 import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
 import useGetPathwaysService from './PathwaysService';
+
+interface PathwayContextInterface {
+  pathways: Pathway[];
+  status: string;
+  addPathway: (Pathway) => void;
+  deletePathway: (Pathway) => void;
+}
 
 export const PathwayContext = createContext<PathwayContextInterface>({} as PathwayContextInterface);
 
