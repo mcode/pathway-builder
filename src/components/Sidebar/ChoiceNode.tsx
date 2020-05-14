@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent } from 'react';
+import React, { FC, ChangeEvent, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -31,8 +31,8 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
   const initial = pathway !== null ? pathway.states[transition].label : 'Choice Node';
 
   // TODO: in PATHWAYS-256 use the data from the pathway
-  const [choice, setChoice] = React.useState('');
-  const [label, setLabel] = React.useState<string>(initial);
+  const [choice, setChoice] = useState<string>('');
+  const [label, setLabel] = useState<string>(initial);
 
   const handleChoiceChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 need to update the state of the node

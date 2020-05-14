@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState, ChangeEvent, MouseEvent } from 'react';
 import OtherCriteria from './OtherCriteria';
 import ChoiceNode from './ChoiceNode';
 import AddChoiceButton from './AddChoiceButton';
@@ -9,21 +9,21 @@ import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material
 
 interface BranchNodeProps {
   currentNode: State;
-  addChoiceNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  addChoiceNode: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
   // TODO: in PATHWAYS-256 use the properties in the pathway instead?
-  const [source, setSource] = React.useState('');
-  const [critera, setCritera] = React.useState('');
+  const [source, setSource] = useState<string>('');
+  const [critera, setCritera] = useState<string>('');
 
-  const handleSourceChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
+  const handleSourceChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 set the source
     setSource(event.target.value as string);
     setCritera('');
   };
 
-  const handleCriteraChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
+  const handleCriteraChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 set the criteria
     setCritera(event.target.value as string);
   };
