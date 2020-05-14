@@ -3,16 +3,17 @@ import OtherCriteria from './OtherCriteria';
 import ChoiceNode from './ChoiceNode';
 import AddChoiceButton from './AddChoiceButton';
 import McodeCriteria from './McodeCriteria';
-import { State } from 'pathways-model';
+import { State, Pathway } from 'pathways-model';
 import styles from './Sidebar.module.scss';
 import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material-ui/core';
 
 interface BranchNodeProps {
+  pathway: Pathway;
   currentNode: State;
   addChoiceNode: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
-const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
+const AddBranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, addChoiceNode }) => {
   // TODO: in PATHWAYS-256 use the properties in the pathway instead?
   const [source, setSource] = useState<string>('');
   const [critera, setCritera] = useState<string>('');
@@ -64,7 +65,7 @@ const AddBranchNode: FC<BranchNodeProps> = ({ currentNode, addChoiceNode }) => {
       {displayCritera}
       <hr />
       {currentNode.transitions.map((transition, index) => (
-        <ChoiceNode key={index} transition={transition.transition} />
+        <ChoiceNode pathway={pathway} key={index} transition={transition.transition} />
       ))}
       {critera !== '' ? <AddChoiceButton addChoiceNode={addChoiceNode} /> : null}
     </div>

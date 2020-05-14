@@ -32,7 +32,7 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
       </div>
 
       <div className={styles.display}>
-        <Sidebar headerElement={headerElement} currentNode={currentNode} />
+        <Sidebar pathway={pathway} headerElement={headerElement} currentNode={currentNode} />
 
         <div ref={graphContainerElement} className={styles.graph}>
           <Graph pathway={pathway} expandCurrentNode={true} />

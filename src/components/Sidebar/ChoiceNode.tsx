@@ -2,21 +2,20 @@ import React, { FC, ChangeEvent, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faEdit } from '@fortawesome/free-solid-svg-icons';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { Pathway } from 'pathways-model';
 import styles from './Sidebar.module.scss';
 import { FormControl, makeStyles, TextField, InputAdornment, Input } from '@material-ui/core';
 
 interface ChoiceNodeProps {
+  pathway: Pathway;
   transition: string;
 }
 
-const ChoiceNode: FC<ChoiceNodeProps> = ({ transition }) => {
-  const { pathway } = usePathwayContext();
-
+const ChoiceNode: FC<ChoiceNodeProps> = ({ pathway, transition }) => {
   const useStyles = makeStyles(theme => ({
     formControl: {
       margin: theme.spacing(1, 0),
-      minWidth: 120,
+      width: '90%',
       display: 'flex',
       flexWrap: 'wrap'
     },

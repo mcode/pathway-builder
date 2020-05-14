@@ -1,4 +1,13 @@
-import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  RefObject,
+  ChangeEvent
+} from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AddBranchNode from './AddBranchNode';
@@ -10,13 +19,13 @@ import {
   faEllipsisH
 } from '@fortawesome/free-solid-svg-icons';
 
-import DropDown from 'components/DropDown';
 import { useTheme } from 'components/ThemeProvider';
-import { State } from 'pathways-model';
+import { State, Pathway } from 'pathways-model';
 import styles from './Sidebar.module.scss';
 import { Select, MenuItem, FormControl, makeStyles, InputLabel, Button } from '@material-ui/core';
 
 interface SidebarProps {
+  pathway: Pathway;
   headerElement: RefObject<HTMLDivElement>;
   currentNode: State;
 }
@@ -27,16 +36,9 @@ interface AddNodeProps {
 
 interface SidebarHeaderProps {
   currentNodeLabel: string;
-  }
-  
-const nodeTypeOptions = [
-  { label: 'Action', value: 'action' },
-  { label: 'Branch', value: 'branch' }
-];
+}
 
-const AddNodes: FC<AddNodeProps> = ({ addBranchNode }) => {
-const AddNodes: FC = memo(() => {
-
+const AddNodes: FC<AddNodeProps> = memo(({ addBranchNode }) => {
   return (
     <div className={styles.addNodesContainer}>
       <table>
@@ -89,10 +91,8 @@ const AddNodes: FC = memo(() => {
     </div>
   );
 });
-};
 
 const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
-
   return (
     <div className={styles.header}>
       <div className={styles.icon} id={styles.back}>
@@ -112,9 +112,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
   );
 });
 
-const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
-  const { currentNode, pathway } = usePathwayContext();
-
+const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
   // TODO: in PATHWAYS-256 get type based on state
   if (currentNode.nodeType === undefined) {
     currentNode.nodeType = 'action';
@@ -149,11 +147,13 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
     // select the new state
     // remove the modification of the currentNode
     if (pathway !== null && currentNode.label !== undefined) {
-      const label = currentNode.label.replace(/\s/g, '');
+      const label = currentNode.label.replace(/[^A-Z0-9+]/gi, '');
 
       if (pathway.states[label] === undefined) {
         // This code will be removed with PATHWAYS-256 but will stop the error for now
-        console.log('State not found - possibly due to more than one state with this name');
+        console.log(
+          'State ' + label + ' not found - possibly due to more than one state with this name'
+        );
         return;
       }
       pathway.states[label].nodeType = 'branch';
@@ -164,11 +164,13 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
   const handleTypeChange = (event: ChangeEvent<{ value: unknown }>): void => {
     // TODO: in PATHWAYS-256 switch the node to the appropriate and remove this code block
     if (pathway !== null) {
-      const label = currentNode.label.replace(/\s/g, '');
+      const label = currentNode.label.replace(/[^A-Z0-9+]/gi, '');
 
       if (pathway.states[label] === undefined) {
         // This code will be removed with PATHWAYS-256 but will stop the error for now
-        console.log('State not found - possibly due to more than one state with this name');
+        console.log(
+          'State ' + label + ' not found - possibly due to more than one state with this name'
+        );
         return;
       }
       pathway.states[label].nodeType = event.target.value as string;
@@ -206,24 +208,27 @@ const Sidebar: FC<SidebarProps> = ({ headerElement, currentNode }) => {
           <div className={styles.sidebar}>
             <SidebarHeader currentNodeLabel={currentNode?.label || ''} />
             <hr />
-            <AddNodes />
-          <FormControl variant="outlined" className={classes.formControl} fullWidth>
-            <InputLabel>Node Type</InputLabel>
-            <Select
-              value={currentNode.nodeType}
-              onChange={handleTypeChange}
-              label="Node Type"
-              error={currentNode.nodeType === null}
-            >
-              <MenuItem value={'action'}>Action</MenuItem>
-              <MenuItem value={'branch'}>Branch</MenuItem>
-            </Select>
-          </FormControl>
-          {currentNode.nodeType === 'branch' ? (
-            <AddBranchNode currentNode={currentNode} addChoiceNode={addChoiceNoide} />
-          ) : (
-            <AddNodes addBranchNode={addBranchNode} />
-          )}
+            <FormControl variant="outlined" className={classes.formControl} fullWidth>
+              <InputLabel>Node Type</InputLabel>
+              <Select
+                value={currentNode.nodeType}
+                onChange={handleTypeChange}
+                label="Node Type"
+                error={currentNode.nodeType === null}
+              >
+                <MenuItem value={'action'}>Action</MenuItem>
+                <MenuItem value={'branch'}>Branch</MenuItem>
+              </Select>
+            </FormControl>
+            {currentNode.nodeType === 'branch' ? (
+              <AddBranchNode
+                pathway={pathway}
+                currentNode={currentNode}
+                addChoiceNode={addChoiceNoide}
+              />
+            ) : (
+              <AddNodes addBranchNode={addBranchNode} />
+            )}
           </div>
         )}
 
