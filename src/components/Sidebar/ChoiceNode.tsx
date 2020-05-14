@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent, useState } from 'react';
+import React, { FC, ChangeEvent, useState, memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -79,4 +79,4 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ pathway, transition }) => {
   );
 };
 
-export default ChoiceNode;
+export default memo(ChoiceNode);

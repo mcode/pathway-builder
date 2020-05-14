@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent } from 'react';
+import React, { FC, ChangeEvent, memo } from 'react';
 import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material-ui/core';
 
 interface CriteraProps {
@@ -34,4 +34,4 @@ const McodeCriteria: FC<CriteraProps> = ({ critera, handleCriteraChange }) => {
   );
 };
 
-export default McodeCriteria;
+export default memo(McodeCriteria);

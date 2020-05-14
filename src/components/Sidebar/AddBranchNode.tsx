@@ -1,4 +1,4 @@
-import React, { FC, useState, ChangeEvent, MouseEvent } from 'react';
+import React, { FC, useState, ChangeEvent, MouseEvent, memo } from 'react';
 import OtherCriteria from './OtherCriteria';
 import ChoiceNode from './ChoiceNode';
 import AddChoiceButton from './AddChoiceButton';
@@ -72,4 +72,4 @@ const AddBranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, addChoiceNod
   );
 };
 
-export default AddBranchNode;
+export default memo(AddBranchNode);

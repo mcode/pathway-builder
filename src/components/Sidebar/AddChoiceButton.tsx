@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.scss';
@@ -33,4 +33,4 @@ const AddChoiceButton: FC<AddChoiceButtonProps> = ({ addChoiceNode }) => {
   );
 };
 
-export default AddChoiceButton;
+export default memo(AddChoiceButton);
