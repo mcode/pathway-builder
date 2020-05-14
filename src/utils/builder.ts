@@ -40,10 +40,6 @@ export function exportPathway(pathway: Pathway): string {
   return JSON.stringify(pathway, undefined, 2);
 }
 
-export function addLibrary(pathway: Pathway, library: string): void {
-  pathway.library = library;
-}
-
 // TODO: possibly add more criteria methods
 export function addCriteria(
   pathway: Pathway,
@@ -63,12 +59,12 @@ export function addCriteria(
   return id;
 }
 
-export function addNavigationalElm(pathway: Pathway, elm: object): void {
+export function setNavigationalElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
   pathway.elm.navigational = elm;
 }
 
-export function addCriteriaElm(pathway: Pathway, elm: object): void {
+export function setCriteriaElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
   pathway.elm.criteria = elm;
 }
@@ -97,7 +93,7 @@ export function addGuidanceState(pathway: Pathway): string {
   return key;
 }
 
-export function addStateLabel(pathway: Pathway, key: string, label: string): void {
+export function setStateLabel(pathway: Pathway, key: string, label: string): void {
   pathway.states[key].label = label;
 }
 
@@ -115,7 +111,7 @@ export function addTransition(
   return id;
 }
 
-export function addTransitionCondition(
+export function setTransitionCondition(
   pathway: Pathway,
   startNodeKey: string,
   transitionId: string,
@@ -129,7 +125,7 @@ export function addTransitionCondition(
   if (foundTransition) foundTransition.condition = { description: description, cql: cql };
 }
 
-export function addGuidanceStateCql(pathway: Pathway, key: string, cql: string): void {
+export function setGuidanceStateCql(pathway: Pathway, key: string, cql: string): void {
   pathway.states[key].cql = cql;
 }
 
@@ -153,17 +149,21 @@ export function addAction(
 }
 
 /*
-Update Element Functions
+Set Element Functions
 */
-export function updatePathwayName(pathway: Pathway, name: string): void {
+export function setPathwayName(pathway: Pathway, name: string): void {
   pathway.name = name;
 }
 
-export function updatePathwayDescription(pathway: Pathway, description: string): void {
+export function setPathwayDescription(pathway: Pathway, description: string): void {
   pathway.description = description;
 }
 
-export function updateTransition(
+export function setLibrary(pathway: Pathway, library: string): void {
+  pathway.library = library;
+}
+
+export function setTransition(
   pathway: Pathway,
   startStateKey: string,
   endStateKey: string,
@@ -175,7 +175,7 @@ export function updateTransition(
   transition.transition = endStateKey;
 }
 
-export function updateTransitionConditionDescription(
+export function setTransitionConditionDescription(
   pathway: Pathway,
   startNodeKey: string,
   transitionId: string,
@@ -188,7 +188,7 @@ export function updateTransitionConditionDescription(
   if (foundTransition?.condition) foundTransition.condition.description = description;
 }
 
-export function updateTransitionConditionCql(
+export function setTransitionConditionCql(
   pathway: Pathway,
   startNodeKey: string,
   transitionId: string,
@@ -201,7 +201,7 @@ export function updateTransitionConditionCql(
   if (foundTransition?.condition) foundTransition.condition.cql = cql;
 }
 
-export function updateActionType(
+export function setActionType(
   pathway: Pathway,
   stateKey: string,
   actionId: string,
@@ -213,7 +213,7 @@ export function updateActionType(
   }
 }
 
-export function updateActionDescription(
+export function setActionDescription(
   pathway: Pathway,
   stateKey: string,
   actionId: string,
@@ -225,7 +225,7 @@ export function updateActionDescription(
   }
 }
 
-export function updateActionResource(
+export function setActionResource(
   pathway: Pathway,
   stateKey: string,
   actionId: string,

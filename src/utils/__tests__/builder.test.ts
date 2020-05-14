@@ -52,11 +52,6 @@ describe('builder interface add functions', () => {
     });
   });
 
-  it('add/update library', () => {
-    Builder.addLibrary(pathway, 'library.cql');
-    expect(pathway.library).toBe('library.cql');
-  });
-
   it('add criteria', () => {
     const id = Builder.addCriteria(pathway, 'test element name', 'test expected', 'test cql');
     const criteria = pathway.criteria[pathway.criteria.length - 1];
@@ -68,18 +63,6 @@ describe('builder interface add functions', () => {
     };
     expect(criteria).toBeDefined();
     expect(criteria).toEqual(expectedCriteria);
-  });
-
-  it('add/update navigational elm', () => {
-    const elm = {};
-    Builder.addNavigationalElm(pathway, elm);
-    expect(pathway.elm?.navigational).toEqual(elm);
-  });
-
-  it('add/update criteria elm', () => {
-    const elm = {};
-    Builder.addCriteriaElm(pathway, elm);
-    expect(pathway.elm?.criteria).toEqual(elm);
   });
 
   it('add branch state', () => {
@@ -104,12 +87,6 @@ describe('builder interface add functions', () => {
     expect(pathway.states[key]).toEqual(expectedState);
   });
 
-  it('add/update state label', () => {
-    const key = 'T-test';
-    Builder.addStateLabel(pathway, key, 'test label');
-    expect(pathway.states[key].label).toBe('test label');
-  });
-
   it('add transition', () => {
     const startStateKey = 'Surgery';
     const endStateKey = 'N-test';
@@ -119,33 +96,6 @@ describe('builder interface add functions', () => {
       transition: endStateKey
     };
     expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
-  });
-
-  it('add/update transition condition', () => {
-    const startStateKey = 'N-test';
-    const transitionId = '1';
-    Builder.addTransitionCondition(
-      pathway,
-      startStateKey,
-      transitionId,
-      'test description',
-      'test cql'
-    );
-    const expectedTransition = {
-      id: '1',
-      transition: 'Radiation',
-      condition: {
-        description: 'test description',
-        cql: 'test cql'
-      }
-    };
-    expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
-  });
-
-  it('add/update guidance state cql', () => {
-    const key = 'Radiation';
-    Builder.addGuidanceStateCql(pathway, key, 'test cql');
-    expect(pathway.states[key].cql).toBe('test cql');
   });
 
   it('add action', () => {
@@ -179,29 +129,67 @@ describe('builder interface update functions', () => {
   // Create a deep copy of the pathway
   const pathway = JSON.parse(JSON.stringify(samplepathway)) as Pathway;
 
-  it('update pathway name', () => {
-    Builder.updatePathwayName(pathway, 'test name');
+  it('set pathway name', () => {
+    Builder.setPathwayName(pathway, 'test name');
     expect(pathway.name).toBe('test name');
   });
 
-  it('update pathway description', () => {
-    Builder.updatePathwayDescription(pathway, 'test description');
+  it('set pathway description', () => {
+    Builder.setPathwayDescription(pathway, 'test description');
     expect(pathway.description).toBe('test description');
   });
 
-  it('update transition', () => {
+  it('set library', () => {
+    Builder.setLibrary(pathway, 'library.cql');
+    expect(pathway.library).toBe('library.cql');
+  });
+
+  it('set navigational elm', () => {
+    const elm = {};
+    Builder.setNavigationalElm(pathway, elm);
+    expect(pathway.elm?.navigational).toEqual(elm);
+  });
+
+  it('set criteria elm', () => {
+    const elm = {};
+    Builder.setCriteriaElm(pathway, elm);
+    expect(pathway.elm?.criteria).toEqual(elm);
+  });
+
+  it('set transition', () => {
     const startStateKey = 'ChemoMedication';
     const endStateKey = 'Start';
     const transitionId = '1';
 
-    Builder.updateTransition(pathway, startStateKey, endStateKey, transitionId);
+    Builder.setTransition(pathway, startStateKey, endStateKey, transitionId);
     expect(pathway.states[startStateKey].transitions[0].transition).toBe(endStateKey);
   });
 
-  it('update transition condition description', () => {
+  it('set transition condition', () => {
+    const startStateKey = 'N-test';
+    const transitionId = '1';
+    Builder.setTransitionCondition(
+      pathway,
+      startStateKey,
+      transitionId,
+      'test description',
+      'test cql'
+    );
+    const expectedTransition = {
+      id: '1',
+      transition: 'Radiation',
+      condition: {
+        description: 'test description',
+        cql: 'test cql'
+      }
+    };
+    expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
+  });
+
+  it('set transition condition description', () => {
     const startStateKey = 'T-test';
     const transitionId = '1';
-    Builder.updateTransitionConditionDescription(
+    Builder.setTransitionConditionDescription(
       pathway,
       startStateKey,
       transitionId,
@@ -212,28 +200,40 @@ describe('builder interface update functions', () => {
     );
   });
 
-  it('update transition condition cql', () => {
+  it('set transition condition cql', () => {
     const startStateKey = 'T-test';
     const transitionId = '1';
-    Builder.updateTransitionConditionCql(pathway, startStateKey, transitionId, 'test cql');
+    Builder.setTransitionConditionCql(pathway, startStateKey, transitionId, 'test cql');
     expect(pathway.states[startStateKey].transitions[0].condition.cql).toBe('test cql');
   });
 
-  it('update action type', () => {
+  it('set guidance state cql', () => {
+    const key = 'Radiation';
+    Builder.setGuidanceStateCql(pathway, key, 'test cql');
+    expect(pathway.states[key].cql).toBe('test cql');
+  });
+
+  it('set state label', () => {
+    const key = 'T-test';
+    Builder.setStateLabel(pathway, key, 'test label');
+    expect(pathway.states[key].label).toBe('test label');
+  });
+
+  it('set action type', () => {
     const stateKey = 'Chemo';
     const actionId = '1';
-    Builder.updateActionType(pathway, stateKey, actionId, 'delete');
+    Builder.setActionType(pathway, stateKey, actionId, 'delete');
     expect(pathway.states[stateKey].action[0].type).toBe('delete');
   });
 
-  it('update action descrtiption', () => {
+  it('set action descrtiption', () => {
     const stateKey = 'Chemo';
     const actionId = '1';
-    Builder.updateActionDescription(pathway, stateKey, actionId, 'test description');
+    Builder.setActionDescription(pathway, stateKey, actionId, 'test description');
     expect(pathway.states[stateKey].action[0].description).toBe('test description');
   });
 
-  it('update action resource', () => {
+  it('set action resource', () => {
     const stateKey = 'Chemo';
     const actionId = '1';
     const resource = {
@@ -249,7 +249,7 @@ describe('builder interface update functions', () => {
         text: 'Test procedure'
       }
     };
-    Builder.updateActionResource(pathway, stateKey, actionId, resource);
+    Builder.setActionResource(pathway, stateKey, actionId, resource);
     expect(pathway.states[stateKey].action[0].resource).toEqual(resource);
   });
 
