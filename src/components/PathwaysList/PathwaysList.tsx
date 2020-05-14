@@ -9,7 +9,6 @@ import PathwaysTable from './PathwaysTable';
 import NewPathwayModal from './NewPathwayModal';
 
 import useStyles from './styles';
-import { createNewPathway } from 'utils/builder';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();

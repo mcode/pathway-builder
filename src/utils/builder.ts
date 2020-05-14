@@ -2,8 +2,9 @@ import { Pathway, Criteria, State, Transition, Action, GuidanceState } from 'pat
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 
-export function createNewPathway(name: string, description?: string): Pathway {
+export function createNewPathway(name: string, description?: string, pathwayId?: string): Pathway {
   return {
+    id: pathwayId ?? shortid.generate(),
     name: name,
     description: description ?? '',
     library: '',

@@ -7,8 +7,9 @@ describe('builder interface add functions', () => {
   const pathway = JSON.parse(JSON.stringify(samplepathway)) as Pathway;
 
   it('create new pathway', () => {
-    const newPathway = Builder.createNewPathway('name', 'description');
+    const newPathway = Builder.createNewPathway('name', 'description', '1');
     const expectedPathway = {
+      id: '1',
       name: 'name',
       description: 'description',
       library: '',
