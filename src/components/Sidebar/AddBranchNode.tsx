@@ -1,8 +1,7 @@
 import React, { FC, useState, ChangeEvent, MouseEvent, memo } from 'react';
-import OtherCriteria from './OtherCriteria';
 import ChoiceNode from './ChoiceNode';
 import AddChoiceButton from './AddChoiceButton';
-import McodeCriteria from './McodeCriteria';
+import Criteria from './Criteria';
 import { State, Pathway } from 'pathways-model';
 import styles from './Sidebar.module.scss';
 import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material-ui/core';
@@ -38,11 +37,27 @@ const AddBranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, addChoiceNod
 
   const classes = useStyles();
 
+  // These are placeholder values
+  const mCodeItems = ['Tumor Category', 'Node Category', 'Metastatis Category'];
+  const otherItems = ['Other Library'];
+
   let displayCritera = null;
   if (source === 'mCode') {
-    displayCritera = <McodeCriteria critera={critera} handleCriteraChange={handleCriteraChange} />;
+    displayCritera = (
+      <Criteria
+        critera={critera}
+        handleCriteraChange={handleCriteraChange}
+        menuItems={mCodeItems}
+      />
+    );
   } else if (source === 'other') {
-    displayCritera = <OtherCriteria critera={critera} handleCriteraChange={handleCriteraChange} />;
+    displayCritera = (
+      <Criteria
+        critera={critera}
+        handleCriteraChange={handleCriteraChange}
+        menuItems={otherItems}
+      />
+    );
   } else {
     displayCritera = null;
   }
@@ -67,7 +82,7 @@ const AddBranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, addChoiceNod
       {currentNode.transitions.map((transition, index) => (
         <ChoiceNode pathway={pathway} key={index} transition={transition.transition} />
       ))}
-      {critera !== '' ? <AddChoiceButton addChoiceNode={addChoiceNode} /> : null}
+      {critera !== '' && <AddChoiceButton addChoiceNode={addChoiceNode} />}
     </div>
   );
 };

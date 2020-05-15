@@ -27,8 +27,8 @@ const ChoiceNode: FC<ChoiceNodeProps> = ({ pathway, transition }) => {
   }));
 
   const classes = useStyles();
-  const initial = pathway !== null ? pathway.states[transition].label : 'Choice Node';
-
+  const initial = (pathway !== null && pathway.states[transition] !== undefined) ? pathway.states[transition].label : 'Choice Node';
+  
   // TODO: in PATHWAYS-256 use the data from the pathway
   const [choice, setChoice] = useState<string>('');
   const [label, setLabel] = useState<string>(initial);

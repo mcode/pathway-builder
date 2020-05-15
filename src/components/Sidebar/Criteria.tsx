@@ -4,9 +4,10 @@ import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material
 interface CriteraProps {
   critera: string;
   handleCriteraChange: (event: ChangeEvent<{ value: unknown }>) => void;
+  menuItems : Array<string>;
 }
 
-const OtherCriteria: FC<CriteraProps> = ({ critera, handleCriteraChange }) => {
+const Criteria: FC<CriteraProps> = ({ critera, handleCriteraChange, menuItems }) => {
   const useStyles = makeStyles(theme => ({
     formControl: {
       margin: theme.spacing(1, 0),
@@ -26,10 +27,11 @@ const OtherCriteria: FC<CriteraProps> = ({ critera, handleCriteraChange }) => {
         label="Criteria"
         error={critera === ''}
       >
-        <MenuItem value={'other'}>Other Library</MenuItem>
+        {menuItems.map(item =>
+          <MenuItem value={item}>{item}</MenuItem>)}
       </Select>
     </FormControl>
   );
 };
 
-export default memo(OtherCriteria);
+export default memo(Criteria);
