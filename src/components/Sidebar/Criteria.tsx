@@ -4,7 +4,7 @@ import { Select, MenuItem, FormControl, makeStyles, InputLabel } from '@material
 interface CriteraProps {
   critera: string;
   handleCriteraChange: (event: ChangeEvent<{ value: unknown }>) => void;
-  menuItems : Array<string>;
+  menuItems: Array<string>;
 }
 
 const Criteria: FC<CriteraProps> = ({ critera, handleCriteraChange, menuItems }) => {
@@ -27,8 +27,9 @@ const Criteria: FC<CriteraProps> = ({ critera, handleCriteraChange, menuItems })
         label="Criteria"
         error={critera === ''}
       >
-        {menuItems.map(item =>
-          <MenuItem value={item}>{item}</MenuItem>)}
+        {menuItems.map(item => (
+          <MenuItem value={item}>{item}</MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
