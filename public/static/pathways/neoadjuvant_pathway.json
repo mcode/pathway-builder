@@ -5,11 +5,13 @@
     "library": "mCODE_Library.cql",
     "criteria": [
       {
+        "id": "1",
         "elementName": "Condition",
         "expected": "Breast Cancer",
         "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
       },
       {
+        "id": "2",
         "elementName": "HER2 Status",
         "expected": "+",
         "cql": "[Observation: \"HER2 [Presence] in Breast cancer specimen by Immune stain\"] Her2 return Tuple{ value: Her2.value.text.value, match: Her2.value.text.value ~ 'Positive' } "
@@ -17,17 +19,21 @@
     ],
     "states": {
       "Start": {
+        "key": "Start",
         "label": "Start",
         "transitions": [
           {
+            "id": "1",
             "transition": "TumorSize"
           }
         ]
       },
       "TumorSize": {
+        "key": "TumorSize",
         "label": "Tumor Size",
         "transitions": [
           {
+            "id": "1",
             "transition": "ChemotherapyTCHP",
             "condition": {
               "description": "T > 2",
@@ -35,6 +41,7 @@
             }
           },
           {
+            "id": "2",
             "transition": "ChemotherapyACTHP",
             "condition": {
               "description": "T > 2",
@@ -42,6 +49,7 @@
             }
           },
           {
+            "id": "3",
             "transition": "ChemotherapyddACTHP",
             "condition": {
               "description": "T > 2",
@@ -49,6 +57,7 @@
             }
           },
           {
+            "id": "4",
             "transition": "NodeStatus",
             "condition": {
               "description": "T <= 2",
@@ -58,9 +67,11 @@
         ]
       },
       "NodeStatus": {
+        "key": "NodeStatus",
         "label": "Node Status",
         "transitions": [
           {
+            "id": "1",
             "transition": "ChemotherapyTCHP",
             "condition": {
               "description": "N+",
@@ -68,6 +79,7 @@
             }
           },
           {
+            "id": "2",
             "transition": "ChemotherapyACTHP",
             "condition": {
               "description": "N+",
@@ -75,6 +87,7 @@
             }
           },
           {
+            "id": "3",
             "transition": "ChemotherapyddACTHP",
             "condition": {
               "description": "N+",
@@ -82,6 +95,7 @@
             }
           },
           {
+            "id": "4",
             "transition": "Surgery1",
             "condition": {
               "description": "N0",
@@ -91,9 +105,11 @@
         ]
       },
       "Surgery1": {
+        "key": "Surgery1",
         "label": "Surgery",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Cancer Related Surgery Procedure",
             "resource": {
@@ -114,14 +130,17 @@
         "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
         "transitions": [
           {
+            "id": "1",
             "transition": "PaclitaxelTrastuzumab"
           }
         ]
       },
       "PaclitaxelTrastuzumab": {
+        "key": "PaclitaxelTrastuzumab",
         "label": "Paclitaxel and Trastuzumab",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Paclitaxel request",
             "resource": {
@@ -139,6 +158,7 @@
             }
           },
           {
+            "id": "2",
             "type": "create",
             "description": "Trastuzumab request",
             "resource": {
@@ -160,9 +180,11 @@
         "transitions": []
       },
       "ChemotherapyTCHP": {
+        "key": "ChemotherapyTCHP",
         "label": "Chemotherapy TCHP",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Doxorubicin Medication request",
             "resource": {
@@ -180,6 +202,7 @@
             }
           },
           {
+            "id": "2",
             "type": "create",
             "description": "Docetaxel Medication request",
             "resource": {
@@ -197,6 +220,7 @@
             }
           },
           {
+            "id": "3",
             "type": "create",
             "description": "Carbolplatin Medication request",
             "resource": {
@@ -214,6 +238,7 @@
             }
           },
           {
+            "id": "4",
             "type": "create",
             "description": "Pertuzumab Medication request",
             "resource": {
@@ -234,14 +259,17 @@
         "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value, status: MR.status.value }",
         "transitions": [
           {
+            "id": "1",
             "transition": "Surgery2"
           }
         ]
       },
       "ChemotherapyACTHP": {
+        "key": "ChemotherapyACTHP",
         "label": "Chemotherapy ACTHP",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Cyclophosphamide Medication request",
             "resource": {
@@ -259,6 +287,7 @@
             }
           },
           {
+            "id": "2",
             "type": "create",
             "description": "Doxorubicin Medication request",
             "resource": {
@@ -276,6 +305,7 @@
             }
           },
           {
+            "id": "3",
             "type": "create",
             "description": "Pertuzumab Medication request",
             "resource": {
@@ -293,6 +323,7 @@
             }
           },
           {
+            "id": "4",
             "type": "create",
             "description": "Trastuzumab Medication request",
             "resource": {
@@ -310,6 +341,7 @@
             }
           },
           {
+            "id": "5",
             "type": "create",
             "description": "Paclitaxel Medication request",
             "resource": {
@@ -330,14 +362,17 @@
         "cql": "[MedicationRequest: \"Cyclophosphamide 1000 MG Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"Cyclophosphamide 1000 MG Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": [
           {
+            "id": "1",
             "transition": "Surgery2"
           }
         ]
       },
       "ChemotherapyddACTHP": {
+        "key": "ChemotherapyddACTHP",
         "label": "Chemotherapy ddACTHP",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Pertuzumab Medication request",
             "resource": {
@@ -355,6 +390,7 @@
             }
           },
           {
+            "id": "2",
             "type": "create",
             "description": "Doxorubicin Medication request",
             "resource": {
@@ -372,6 +408,7 @@
             }
           },
           {
+            "id": "3",
             "type": "create",
             "description": "Cyclophosphamide Medication request",
             "resource": {
@@ -389,6 +426,7 @@
             }
           },
           {
+            "id": "4",
             "type": "create",
             "description": "Trastuzumab Medication request",
             "resource": {
@@ -406,6 +444,7 @@
             }
           },
           {
+            "id": "5",
             "type": "create",
             "description": "Paclitaxel Medication request",
             "resource": {
@@ -426,14 +465,17 @@
         "cql": "[MedicationRequest: \"14 ML pertuzumab 30 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"14 ML pertuzumab 30 MG/ML Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": [
           {
+            "id": "1",
             "transition": "Surgery2"
           }
         ]
       },
       "Surgery2": {
+        "key": "Surgery2",
         "label": "Surgery",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Cancer Related Surgery Procedure",
             "resource": {
@@ -454,14 +496,17 @@
         "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
         "transitions": [
           {
+            "id": "1",
             "transition": "PathologicalResponse"
           }
         ]
       },
       "PathologicalResponse": {
+        "key": "PathologicalResponse",
         "label": "Pathological Response",
         "transitions": [
           {
+            "id": "1",
             "transition": "NodeStatus2",
             "condition": {
               "description": "Complete",
@@ -469,6 +514,7 @@
             }
           },
           {
+            "id": "2",
             "transition": "AdotrastuzumabEmtansine",
             "condition": {
               "description": "Partial/Stable/Progressive",
@@ -478,9 +524,11 @@
         ]
       },
       "AdotrastuzumabEmtansine": {
+        "key": "AdotrastuzumabEmtansine",
         "label": "Ado-trastuzumab Emtansine",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Ado-trastuzumab Emtansine Request",
             "resource": {
@@ -502,9 +550,11 @@
         "transitions": []
       },
       "NodeStatus2": {
+        "key": "NodeStatus2",
         "label": "Node Status Prior to Surgery",
         "transitions": [
           {
+            "id": "1",
             "transition": "Trastuzumab",
             "condition": {
               "description": "N0",
@@ -512,6 +562,7 @@
             }
           },
           {
+            "id": "2",
             "transition": "PertuzumabTrastuzumab",
             "condition": {
               "description": "N+",
@@ -521,9 +572,11 @@
         ]
       },
       "Trastuzumab": {
+        "key": "Trastuzumab",
         "label": "Trastuzumab",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Trastuzumab request",
             "resource": {
@@ -545,9 +598,11 @@
         "transitions": []
       },
       "PertuzumabTrastuzumab": {
+        "key": "PertuzumabTrastuzumab",
         "label": "Pertuzumab and Trastuzumab",
         "action": [
           {
+            "id": "1",
             "type": "create",
             "description": "Pertuzumab request",
             "resource": {
@@ -565,6 +620,7 @@
             }
           },
           {
+            "id": "2",
             "type": "create",
             "description": "Trastuzumab request",
             "resource": {

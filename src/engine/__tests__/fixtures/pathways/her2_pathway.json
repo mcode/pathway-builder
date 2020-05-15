@@ -4,11 +4,13 @@
   "library": "mCODE_Library.cql",
   "criteria": [
     {
+      "id": "1",
       "elementName": "Condition",
       "expected": "Breast Cancer",
       "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
     },
     {
+      "id": "2",
       "elementName": "HER2 Status",
       "expected": "Positive",
       "cql": "[Observation: \"HER2 [Presence] in Breast cancer specimen by Immune stain\"] Her2 return Tuple{ value: Her2.value.text.value, match: Her2.value.text.value ~ 'Positive' } "
@@ -16,17 +18,21 @@
   ],
   "states": {
     "Start": {
+      "key": "Start",
       "label": "Start",
       "transitions": [
         {
+          "id": "1",
           "transition": "NodeStatus"
         }
       ]
     },
     "NodeStatus": {
+      "key": "NodeStatus",
       "label": "Node Status",
       "transitions": [
         {
+          "id": "1",
           "transition": "TumorSize",
           "condition": {
             "description": "N0",
@@ -34,6 +40,7 @@
           }
         },
         {
+          "id": "2",
           "transition": "ChemotherapyTCHAC+TH",
           "condition": {
             "description": "N+",
@@ -43,9 +50,11 @@
       ]
     },
     "TumorSize": {
+      "key": "TumorSize",
       "label": "Tumor Size",
       "transitions": [
         {
+          "id": "1",
           "transition": "ChemotherapyTCHAC+TH",
           "condition": {
             "description": "T > 2cm",
@@ -53,6 +62,7 @@
           }
         },
         {
+          "id": "2",
           "transition": "ChemotherapyTHWeekly",
           "condition": {
             "description": "T <= 2cm",
@@ -62,9 +72,11 @@
       ]
     },
     "ChemotherapyTHWeekly": {
+      "key": "ChemotherapyTHWeekly",
       "label": "Chemotherapy TH Weekly",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Chemotherapy TH Weekly",
           "resource": {
@@ -84,15 +96,18 @@
       ],
       "transitions": [
         {
+          "id": "1",
           "transition": "PostchemotherapyTrastuzumabRequest"
         }
       ],
       "cql": "if exists [Procedure: \"Chemotherapy (procedure) code\"] then [Procedure: \"Chemotherapy (procedure) code\"] Chemo return Tuple{ resourceType: 'Procedure', id: Chemo.id.value , status: Chemo.status.value} else [ServiceRequest: \"Chemotherapy (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }"
     },
     "ChemotherapyTCHAC+TH": {
+      "key": "ChemotherapyTCHAC+TH",
       "label": "Chemotherapy TCH AC + TH",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Chemotherapy TCH AC + TH",
           "resource": {
@@ -112,15 +127,18 @@
       ],
       "transitions": [
         {
+          "id": "1",
           "transition": "PostchemotherapyTrastuzumabRequest"
         }
       ],
       "cql": "if exists [Procedure: \"Chemotherapy (procedure) code\"] then [Procedure: \"Chemotherapy (procedure) code\"] Chemo return Tuple{ resourceType: 'Procedure', id: Chemo.id.value , status: Chemo.status.value} else [ServiceRequest: \"Chemotherapy (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }"
     },
     "PostchemotherapyTrastuzumabRequest": {
+      "key": "PostchemotherapyTrastuzumabRequest",
       "label": "Post-Chemotherapy Trastuzumab Request",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Post Chemotherapy Trastuzumab (1 year total duration recommended)",
           "resource": {
@@ -140,15 +158,18 @@
       ],
       "transitions": [
         {
+          "id": "1",
           "transition": "PostchemotherapyTrastuzumabAdministration"
         }
       ],
       "cql": "[MedicationRequest: \"trastuzumab 150 MG Injection code\"] PCT return Tuple{ resourceType: 'MedicationRequest', id: PCT.id.value , status: PCT.status.value} "
     },
     "PostchemotherapyTrastuzumabAdministration": {
+      "key": "PostchemotherapyTrastuzumabAdministration",
       "label": "Post-Chemotherapy Trastuzumab Administration",
       "action": [
         {
+          "id": "1",
           "type": "create",
           "description": "Post Chemotherapy Trastuzumab (1 year total duration recommended)",
           "resource": {
@@ -168,15 +189,18 @@
       ],
       "transitions": [
         {
+          "id": "1",
           "transition": "ERStatus"
         }
       ],
       "cql": "[MedicationAdministration: \"trastuzumab code\"] Trastuzumab return Tuple{ resourceType: 'MedicationAdministration', id: Trastuzumab.id.value, status: Trastuzumab.status.value} "
     },
     "ERStatus": {
+      "key": "ERStatus",
       "label": "ER Status",
       "transitions": [
         {
+          "id": "1",
           "transition": "NoEndocrineTherapy",
           "condition": {
             "description": "ERNegative",
@@ -184,6 +208,7 @@
           }
         },
         {
+          "id": "2",
           "transition": "EndocrineTherapy",
           "condition": {
             "description": "ERPositive",
@@ -193,11 +218,13 @@
       ]
     },
     "NoEndocrineTherapy": {
+      "key": "NoEndocrineTherapy",
       "label": "No Endocrine Therapy",
       "action": [],
       "transitions": []
     },
     "EndocrineTherapy": {
+      "key": "EndocrineTherapy",
       "label": "Endocrine Therapy",
       "action": [],
       "transitions": []

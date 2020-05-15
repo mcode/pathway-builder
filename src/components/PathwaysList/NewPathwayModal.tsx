@@ -15,6 +15,7 @@ import shortid from 'shortid';
 
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
+import { createNewPathway } from 'utils/builder';
 
 interface NewPathwayModalProps {
   open: boolean;
@@ -36,24 +37,13 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
     [history, onClose]
   );
 
-  const createNewPathway = useCallback(
+  const handleCreateNewPathway = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
       const pathwayId = shortid.generate();
-
-      addPathway({
-        id: pathwayId,
-        name: pathwayNameRef.current?.value ?? '',
-        description: pathwayDescRef.current?.value ?? '',
-        library: '',
-        criteria: [],
-        states: {
-          Start: {
-            label: 'Start',
-            transitions: []
-          }
-        }
-      });
+      const name: string = pathwayNameRef.current?.value ?? '';
+      const description: string = pathwayDescRef.current?.value ?? '';
+      addPathway(createNewPathway(name, description, pathwayId));
       closeModal(pathwayId);
     },
     [addPathway, closeModal]
@@ -67,7 +57,7 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={createNewPathway}>
+      <form onSubmit={handleCreateNewPathway}>
         <DialogContent>
           <TextField
             variant="outlined"
