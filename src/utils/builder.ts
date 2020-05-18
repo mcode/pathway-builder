@@ -73,7 +73,7 @@ function addState(pathway: Pathway, key?: string): string {
   if (!key) key = shortid.generate();
   const state: State = {
     key: key,
-    label: '',
+    label: 'New Node',
     transitions: []
   };
   pathway.states[key] = state;
@@ -93,22 +93,103 @@ export function addGuidanceState(pathway: Pathway): string {
   return key;
 }
 
-export function setStateLabel(pathway: Pathway, key: string, label: string): void {
-  pathway.states[key].label = label;
+export function setStateLabel(pathway: Pathway, key: string, label: string): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        label
+      }
+    }
+  };
+}
+
+export function setStateNodeType(pathway: Pathway, key: string, nodeType: string): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        nodeType
+      }
+    }
+  };
+}
+
+export function setStateCriteriaSource(
+  pathway: Pathway,
+  key: string,
+  criteriaSource: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        criteriaSource
+      }
+    }
+  };
+}
+
+export function setStateMcodeCriteria(
+  pathway: Pathway,
+  key: string,
+  mcodeCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        mcodeCriteria
+      }
+    }
+  };
+}
+
+export function setStateOtherCriteria(
+  pathway: Pathway,
+  key: string,
+  otherCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        otherCriteria
+      }
+    }
+  };
 }
 
 export function addTransition(
   pathway: Pathway,
   startStateKey: string,
   endStateKey: string
-): string {
-  const id = shortid.generate();
+): Pathway {
   const transition: Transition = {
-    id: id,
+    id: shortid.generate(),
     transition: endStateKey
   };
-  pathway.states[startStateKey].transitions.push(transition);
-  return id;
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startStateKey]: {
+        ...pathway.states[startStateKey],
+        transitions: [...pathway.states[startStateKey].transitions, transition]
+      }
+    }
+  };
 }
 
 export function setTransitionCondition(

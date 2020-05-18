@@ -30,7 +30,6 @@ declare module 'pathways-model' {
     key?: string;
     label: string;
     transitions: Transition[];
-    // TODO: in PATHWAYS-256 remove this property
     nodeType?: string;
   }
 

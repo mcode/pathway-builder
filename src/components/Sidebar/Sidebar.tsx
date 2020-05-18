@@ -1,198 +1,35 @@
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  RefObject,
-  ChangeEvent
-} from 'react';
-import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
+import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AddBranchNode from './AddBranchNode';
-import {
-  faChevronLeft,
-  faChevronRight,
-  faPlus,
-  faEdit,
-  faEllipsisH
-} from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { useTheme } from 'components/ThemeProvider';
+import { SidebarHeader, SidebarButton, BranchNode, ActionNode } from '.';
 import { State, Pathway } from 'pathways-model';
-import styles from './Sidebar.module.scss';
-import { Select, MenuItem, FormControl, makeStyles, InputLabel, Button } from '@material-ui/core';
+import { setStateNodeType } from 'utils/builder';
+import useStyles from './styles';
 
 interface SidebarProps {
   pathway: Pathway;
+  updatePathway: (pathway: Pathway) => void;
   headerElement: RefObject<HTMLDivElement>;
   currentNode: State;
 }
 
-interface AddNodeProps {
-  addBranchNode: (event: React.MouseEvent<HTMLButtonElement>) => void;
-}
-
-interface SidebarHeaderProps {
-  currentNodeLabel: string;
-}
-
-const AddNodes: FC<AddNodeProps> = memo(({ addBranchNode }) => {
-  return (
-    <div className={styles.addNodesContainer}>
-      <table>
-        <tbody>
-          <tr>
-            <td className={styles.button}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<FontAwesomeIcon icon={faPlus} />}
-              >
-                Add Action Node
-              </Button>
-            </td>
-            <td className={styles.description}>
-              Any clinical or worfklow step which is not a decision.
-            </td>
-          </tr>
-          <tr>
-            <td className={styles.button}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={addBranchNode}
-              >
-                Add Branch Node
-              </Button>
-            </td>
-            <td className={styles.description}>
-              A logical branching point based on clinical or workflow criteria.
-            </td>
-          </tr>
-          <tr>
-            <td className={styles.button}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<FontAwesomeIcon icon={faPlus} />}
-              >
-                Add Reusable Node
-              </Button>
-            </td>
-            <td className={styles.description}>
-              A previously built node or group of nodes defining a set of criteria.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-});
-
-const SidebarHeader: FC<SidebarHeaderProps> = memo(({ currentNodeLabel }) => {
-  return (
-    <div className={styles.header}>
-      <div className={styles.icon} id={styles.back}>
-        <FontAwesomeIcon icon={faChevronLeft} />
-      </div>
-
-      <div className={styles.nodeName}>{currentNodeLabel}</div>
-
-      <div className={styles.icon}>
-        <FontAwesomeIcon icon={faEdit} />
-      </div>
-
-      <div className={styles.icon} id={styles.nodeSettings}>
-        <FontAwesomeIcon icon={faEllipsisH} />
-      </div>
-    </div>
-  );
-});
-
-const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
-  // TODO: in PATHWAYS-256 get type based on state
-  if (currentNode.nodeType === undefined) {
-    currentNode.nodeType = 'action';
-  }
-
+const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, currentNode }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const theme = useTheme('dark');
+  const styles = useStyles();
   const sidebarContainerElement = useRef<HTMLDivElement>(null);
-  const [type, setType] = useState<string>(currentNode.nodeType);
-
-  // TODO: in PATHWAYS-256 get/use type based on state
-  if (type !== currentNode.nodeType) {
-    setType(currentNode.nodeType);
-  }
+  const currentNodeKey = currentNode?.key;
 
   const toggleSidebar = useCallback((): void => {
-    setIsExpanded(expanded => !expanded);
-  }, []);
+    setIsExpanded(!isExpanded);
+  }, [isExpanded]);
 
-  const useStyles = makeStyles(theme => ({
-    formControl: {
-      margin: theme.spacing(1, 0),
-      minWidth: 120
-    }
-  }));
-
-  const classes = useStyles();
-
-  const addBranchNode = (): void => {
-    // TODO: in PATHWAYS-256 this needs to do the following
-    // Add a new state with nodeType = 'branch'
-    // select the new state
-    // remove the modification of the currentNode
-    if (pathway !== null && currentNode.label !== undefined) {
-      const label = currentNode.label.replace(/[^A-Z0-9+]/gi, '');
-
-      if (pathway.states[label] === undefined) {
-        // This code will be removed with PATHWAYS-256 but will stop the error for now
-        console.log(
-          'State ' + label + ' not found - possibly due to more than one state with this name'
-        );
-        return;
-      }
-      pathway.states[label].nodeType = 'branch';
-    }
-    setType('branch');
-  };
-
-  const handleTypeChange = (event: ChangeEvent<{ value: unknown }>): void => {
-    // TODO: in PATHWAYS-256 switch the node to the appropriate and remove this code block
-    if (pathway !== null) {
-      const label = currentNode.label.replace(/[^A-Z0-9+]/gi, '');
-
-      if (pathway.states[label] === undefined) {
-        // This code will be removed with PATHWAYS-256 but will stop the error for now
-        console.log(
-          'State ' + label + ' not found - possibly due to more than one state with this name'
-        );
-        return;
-      }
-      pathway.states[label].nodeType = event.target.value as string;
-    }
-    currentNode.nodeType = event.target.value as string;
-    setType(event.target.value as string);
-  };
-
-  const addChoiceNoide = (): void => {
-    // TODO: in PATHWAYS-256 adding a choice node needs to modify the pathway
-    console.log('Add Choice Node Clicked');
-
-    // TODO: in PATHWASYS-256 remove this
-    const newTransition = {
-      transition: 'Choice Node',
-      condition: {
-        description: 'new description',
-        cql: 'new cql'
-      }
-    };
-    currentNode.transitions.push(newTransition);
-  };
+  const changeNodeType = useCallback(
+    (nodeType: string): void => {
+      if (currentNodeKey) updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType));
+    },
+    [pathway, updatePathway, currentNodeKey]
+  );
 
   // Set the height of the sidebar container
   useEffect(() => {
@@ -202,41 +39,58 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
   }, [isExpanded, headerElement]);
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <div className={styles.sidebarContainer} ref={sidebarContainerElement}>
-        {isExpanded && (
-          <div className={styles.sidebar}>
-            <SidebarHeader currentNodeLabel={currentNode?.label || ''} />
-            <hr />
-            <FormControl variant="outlined" className={classes.formControl} fullWidth>
-              <InputLabel>Node Type</InputLabel>
-              <Select
-                value={currentNode.nodeType}
-                onChange={handleTypeChange}
-                label="Node Type"
-                error={currentNode.nodeType === null}
-              >
-                <MenuItem value={'action'}>Action</MenuItem>
-                <MenuItem value={'branch'}>Branch</MenuItem>
-              </Select>
-            </FormControl>
-            {currentNode.nodeType === 'branch' ? (
-              <AddBranchNode
-                pathway={pathway}
-                currentNode={currentNode}
-                addChoiceNode={addChoiceNoide}
-              />
-            ) : (
-              <AddNodes addBranchNode={addBranchNode} />
-            )}
-          </div>
-        )}
+    <>
+      {isExpanded && (
+        <div className={styles.root} ref={sidebarContainerElement}>
+          <SidebarHeader
+            pathway={pathway}
+            currentNode={currentNode}
+            updatePathway={updatePathway}
+          />
 
-        <div className={styles.sidebarToggle} onClick={toggleSidebar}>
-          <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
+          <hr className={styles.divider} />
+
+          {(!currentNode.nodeType || currentNode.nodeType === '') && (
+            <>
+              <SidebarButton
+                buttonName="Add Action Node"
+                buttonIcon={<FontAwesomeIcon icon={faPlus} />}
+                buttonText="Any clinical or workflow step which is not a decision."
+                onClick={(): void => changeNodeType('action')}
+              />
+
+              <SidebarButton
+                buttonName="Add Branch Node"
+                buttonIcon={<FontAwesomeIcon icon={faPlus} />}
+                buttonText="A logical branching point based on clinical or workflow criteria."
+                onClick={(): void => changeNodeType('branch')}
+              />
+            </>
+          )}
+
+          {currentNode.nodeType === 'action' && (
+            <ActionNode
+              pathway={pathway}
+              currentNode={currentNode}
+              changeNodeType={changeNodeType}
+            />
+          )}
+
+          {currentNode.nodeType === 'branch' && (
+            <BranchNode
+              pathway={pathway}
+              currentNode={currentNode}
+              changeNodeType={changeNodeType}
+              updatePathway={updatePathway}
+            />
+          )}
         </div>
+      )}
+
+      <div className={styles.toggleSidebar} onClick={toggleSidebar}>
+        <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
       </div>
-    </MuiThemeProvider>
+    </>
   );
 };
 

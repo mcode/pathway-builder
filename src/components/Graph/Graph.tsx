@@ -122,7 +122,7 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   // Recalculate graph layout if a node is expanded
   useEffect(() => {
     setLayout(getGraphLayout());
-  }, [expanded, getGraphLayout]);
+  }, [pathway, expanded, getGraphLayout]);
 
   // maxWidth finds the edge label that is farthest to the right
   const maxWidth: number =
@@ -191,6 +191,15 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       },
       [history, pathwayId]
     );
+    const onClickHandler = useCallback(
+      (nodeName: string) => {
+        if (interactive) {
+          redirectToNode(nodeName);
+          toggleExpanded(nodeName);
+        }
+      },
+      [redirectToNode, toggleExpanded, interactive]
+    );
 
     return (
       <div
@@ -206,15 +215,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       >
         {nodeCoordinates !== undefined
           ? Object.keys(nodeCoordinates).map(nodeName => {
-              const onClickHandler = useCallback(() => {
-                if (interactive) {
-                  redirectToNode(nodeName);
-                  toggleExpanded(nodeName);
-                }
-              }, [nodeName]);
               return (
                 <Node
                   key={nodeName}
+                  name={nodeName}
                   ref={(node: HTMLDivElement): void => {
                     nodeRefs.current[nodeName] = node;
                   }}
@@ -223,7 +227,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
                   yCoordinate={nodeCoordinates[nodeName].y}
                   expanded={Boolean(expanded[nodeName])}
-                  onClickHandler={onClickHandler}
+                  onClick={onClickHandler}
                 />
               );
             })

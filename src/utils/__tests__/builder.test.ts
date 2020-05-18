@@ -69,7 +69,7 @@ describe('builder interface add functions', () => {
     const key = Builder.addBranchState(pathway);
     const expectedState = {
       key: key,
-      label: '',
+      label: 'New Node',
       transitions: []
     };
     expect(pathway.states[key]).toEqual(expectedState);
@@ -79,7 +79,7 @@ describe('builder interface add functions', () => {
     const key = Builder.addGuidanceState(pathway);
     const expectedState = {
       key: key,
-      label: '',
+      label: 'New Node',
       transitions: [],
       action: [],
       cql: ''
@@ -90,12 +90,15 @@ describe('builder interface add functions', () => {
   it('add transition', () => {
     const startStateKey = 'Surgery';
     const endStateKey = 'N-test';
-    const id = Builder.addTransition(pathway, startStateKey, endStateKey);
-    const expectedTransition = {
-      id: id,
-      transition: endStateKey
-    };
-    expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
+
+    const newPathway = Builder.addTransition(pathway, startStateKey, endStateKey);
+
+    expect(pathway.states[startStateKey].transitions).toEqual([]);
+    expect(newPathway.states[startStateKey].transitions[0]).toEqual(
+      expect.objectContaining({
+        transition: endStateKey
+      })
+    );
   });
 
   it('add action', () => {
@@ -215,8 +218,20 @@ describe('builder interface update functions', () => {
 
   it('set state label', () => {
     const key = 'T-test';
-    Builder.setStateLabel(pathway, key, 'test label');
-    expect(pathway.states[key].label).toBe('test label');
+
+    const newPathway = Builder.setStateLabel(pathway, key, 'test label');
+
+    expect(pathway.states[key].label).toBe('T-test');
+    expect(newPathway.states[key].label).toBe('test label');
+  });
+
+  it('sets the state node type', () => {
+    const key = 'Chemo';
+
+    const newPathway = Builder.setStateNodeType(pathway, key, 'action');
+
+    expect(pathway.states[key].nodeType).not.toBeDefined();
+    expect(newPathway.states[key].nodeType).toEqual('action');
   });
 
   it('set action type', () => {
