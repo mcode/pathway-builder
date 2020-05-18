@@ -8,3 +8,5 @@ export const extractMultipartFileName = /Content-Disposition: form-data; name="(
 export const extractJSONContent = /(\{[^]*\})/;
 
 export const extractCQLInclude = /include .* called (.*)/g;
+
+export const extractCQLLibraryInfo = /library [\"]?(.*)[\"]? version \'(.*)\'/g;

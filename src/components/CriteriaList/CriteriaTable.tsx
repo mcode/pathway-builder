@@ -12,13 +12,12 @@ import {
   TableRow
 } from '@material-ui/core';
 
-import { usePathwayContext } from 'components/PathwayProvider';
-
 import useStyles from './styles';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const CriteriaTable: FC = () => {
   const styles = useStyles();
-  const { pathways, deletePathway } = usePathwayContext();
+  const { criteria } = useCriteriaContext();
 
   return (
     <TableContainer className={styles.criteriaList}>
@@ -33,13 +32,12 @@ const CriteriaTable: FC = () => {
         </TableHead>
 
         <TableBody>
-          {pathways.map(pathway => (
-            <TableRow key={pathway.id}>
+          {criteria.map(c => (
+            <TableRow key={c.label}>
               <TableCell component="th" scope="row">
-                {pathway.name}
+                {c.label}
               </TableCell>
-
-              <TableCell>1.0.0</TableCell>
+              <TableCell>{c.version}</TableCell>
               <TableCell>2 days ago</TableCell>
 
               <TableCell align="right">
@@ -48,8 +46,6 @@ const CriteriaTable: FC = () => {
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
-                  component={Link}
-                  to={`/builder/${encodeURIComponent(pathway.id)}`}
                 >
                   Edit
                 </Button>
@@ -58,7 +54,6 @@ const CriteriaTable: FC = () => {
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                  onClick={(): void => deletePathway(pathway)}
                 >
                   Delete
                 </Button>
