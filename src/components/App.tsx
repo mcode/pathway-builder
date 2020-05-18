@@ -10,38 +10,41 @@ import BuilderRoute from './BuilderRoute';
 import ThemeProvider from './ThemeProvider';
 import { PathwayProvider } from './PathwayProvider';
 import { UserProvider } from './UserProvider';
+import { CriteriaProvider } from './CriteriaProvider';
 
 const App: FC = () => {
   return (
     <ThemeProvider theme="light">
       <UserProvider>
         <PathwayProvider>
-          <Router>
-            <Switch>
-              <Route path="/builder/:id/node/:nodeId">
-                <BuilderRoute />
-              </Route>
-              <Route path="/builder/:id">
-                <BuilderRoute />
-              </Route>
-              <Route path="/">
-                <Header />
-                <Tabs>
-                  <TabList>
-                    <Tab>Pathways</Tab>
-                    <Tab>Criteria</Tab>
-                  </TabList>
+          <CriteriaProvider>
+            <Router>
+              <Switch>
+                <Route path="/builder/:id/node/:nodeId">
+                  <BuilderRoute />
+                </Route>
+                <Route path="/builder/:id">
+                  <BuilderRoute />
+                </Route>
+                <Route path="/">
+                  <Header />
+                  <Tabs>
+                    <TabList>
+                      <Tab>Pathways</Tab>
+                      <Tab>Criteria</Tab>
+                    </TabList>
 
-                  <TabPanel>
-                    <PathwaysList />
-                  </TabPanel>
-                  <TabPanel>
-                    <CriteriaList />
-                  </TabPanel>
-                </Tabs>
-              </Route>
-            </Switch>
-          </Router>
+                    <TabPanel>
+                      <PathwaysList />
+                    </TabPanel>
+                    <TabPanel>
+                      <CriteriaList />
+                    </TabPanel>
+                  </Tabs>
+                </Route>
+              </Switch>
+            </Router>
+          </CriteriaProvider>
         </PathwayProvider>
       </UserProvider>
     </ThemeProvider>
