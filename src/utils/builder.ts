@@ -69,28 +69,32 @@ export function setCriteriaElm(pathway: Pathway, elm: object): void {
   pathway.elm.criteria = elm;
 }
 
-function addState(pathway: Pathway, key?: string): string {
+export function createState(key?: string): State {
   if (!key) key = shortid.generate();
   const state: State = {
-    key: key,
+    key,
     label: 'New Node',
     transitions: []
   };
-  pathway.states[key] = state;
 
-  return key;
+  return state;
 }
 
-export function addBranchState(pathway: Pathway): string {
-  const key = shortid.generate();
-  return addState(pathway, key);
+export function addState(pathway: Pathway, state: State): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [state.key as string]: state
+    }
+  };
 }
 
-export function addGuidanceState(pathway: Pathway): string {
-  const key = shortid.generate();
-  addState(pathway, key);
-  makeBranchStateGuidance(pathway, key);
-  return key;
+export function addGuidanceState(pathway: Pathway): Pathway {
+  const state = createState();
+  const newPathway = addState(pathway, state);
+
+  return makeBranchStateGuidance(newPathway, state.key as string);
 }
 
 export function setStateLabel(pathway: Pathway, key: string, label: string): Pathway {
@@ -318,12 +322,24 @@ export function setActionResource(
   }
 }
 
-export function makeBranchStateGuidance(pathway: Pathway, key: string): void {
+export function makeBranchStateGuidance(pathway: Pathway, key: string): Pathway {
   const state = pathway.states[key];
-  if (!('action' in state)) {
-    state.cql = '';
-    state.action = [];
+
+  if (!state.action) {
+    return {
+      ...pathway,
+      states: {
+        ...pathway.states,
+        [key]: {
+          ...pathway.states[key],
+          cql: '',
+          action: []
+        }
+      }
+    };
   }
+
+  return pathway;
 }
 
 export function makeGuidanceStateBranch(pathway: Pathway, key: string): void {

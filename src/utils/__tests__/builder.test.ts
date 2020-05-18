@@ -65,26 +65,21 @@ describe('builder interface add functions', () => {
     expect(criteria).toEqual(expectedCriteria);
   });
 
-  it('add branch state', () => {
-    const key = Builder.addBranchState(pathway);
-    const expectedState = {
-      key: key,
-      label: 'New Node',
-      transitions: []
-    };
-    expect(pathway.states[key]).toEqual(expectedState);
-  });
-
   it('add guidance state', () => {
-    const key = Builder.addGuidanceState(pathway);
-    const expectedState = {
-      key: key,
-      label: 'New Node',
-      transitions: [],
-      action: [],
-      cql: ''
-    };
-    expect(pathway.states[key]).toEqual(expectedState);
+    const existingStates = Object.keys(pathway.states);
+    const newPathway = Builder.addGuidanceState(pathway);
+
+    const newStateKey = Object.keys(newPathway.states).find(
+      state => !existingStates.includes(state)
+    );
+    expect(newPathway.states[newStateKey]).toEqual(
+      expect.objectContaining({
+        label: 'New Node',
+        transitions: [],
+        action: [],
+        cql: ''
+      })
+    );
   });
 
   it('add transition', () => {
@@ -270,9 +265,9 @@ describe('builder interface update functions', () => {
 
   it('make branch state a guidance state', () => {
     const key = 'N-test';
-    Builder.makeBranchStateGuidance(pathway, key);
-    expect(pathway.states[key].cql).toBe('');
-    expect(pathway.states[key].action).toEqual([]);
+    const newPathway = Builder.makeBranchStateGuidance(pathway, key);
+    expect(newPathway.states[key].cql).toBe('');
+    expect(newPathway.states[key].action).toEqual([]);
   });
 
   it('make guidance state a branch state', () => {
