@@ -30,7 +30,6 @@ declare module 'pathways-model' {
     key?: string;
     label: string;
     transitions: Transition[];
-    nodeType?: string;
   }
 
   export interface GuidanceState extends State {

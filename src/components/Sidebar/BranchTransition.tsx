@@ -32,7 +32,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, transition, upda
       <SidebarButton
         buttonName="Build Criteria"
         buttonIcon={<FontAwesomeIcon icon={faTools} />}
-        buttonText="Create new criteria logic to add to branch node.."
+        buttonText="Create new criteria logic to add to branch node."
       />
     </>
   );
