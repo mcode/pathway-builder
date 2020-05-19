@@ -36,8 +36,8 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     setPathways(currentPathways => [...currentPathways, pathway]);
   }, []);
 
-  const deletePathway = useCallback((pathway: Pathway) => {
-    // TODO
+  const deletePathway = useCallback((id: string) => {
+    setPathways(currentPathways => currentPathways.filter(pathway => pathway.id !== id));
   }, []);
 
   const updatePathwayAtIndex = useCallback((pathway: Pathway, index: number) => {

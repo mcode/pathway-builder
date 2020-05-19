@@ -1,5 +1,4 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -11,13 +10,22 @@ import {
   TableHead,
   TableRow
 } from '@material-ui/core';
+import moment from 'moment';
 
 import useStyles from './styles';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const CriteriaTable: FC = () => {
   const styles = useStyles();
-  const { criteria } = useCriteriaContext();
+  const { criteria, deleteCriteria } = useCriteriaContext();
+
+  const renderDate = (datetime: number): string => {
+    let formattedDate = '';
+    if (datetime) {
+      formattedDate = moment(datetime).fromNow();
+    }
+    return formattedDate;
+  };
 
   return (
     <TableContainer className={styles.criteriaList}>
@@ -33,12 +41,12 @@ const CriteriaTable: FC = () => {
 
         <TableBody>
           {criteria.map(c => (
-            <TableRow key={c.label}>
+            <TableRow key={c.id}>
               <TableCell component="th" scope="row">
                 {c.label}
               </TableCell>
               <TableCell>{c.version}</TableCell>
-              <TableCell>2 days ago</TableCell>
+              <TableCell>{renderDate(c.modified)}</TableCell>
 
               <TableCell align="right">
                 <Button
@@ -54,6 +62,7 @@ const CriteriaTable: FC = () => {
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+                  onClick={(): void => deleteCriteria(c.id)}
                 >
                   Delete
                 </Button>

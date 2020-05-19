@@ -7,6 +7,6 @@ export const extractMultipartFileName = /Content-Disposition: form-data; name="(
 // eveything between { } including newlines. [^] is like . but matches newline
 export const extractJSONContent = /(\{[^]*\})/;
 
-export const extractCQLInclude = /include .* called (.*)/g;
+export const extractCQLInclude = /include .* called (.*)/;
 
-export const extractCQLLibraryInfo = /library [\"]?(.*)[\"]? version \'(.*)\'/g;
+export const extractCQLLibraryInfo = /library ["]?(.*)["]? version '(.*)'/;

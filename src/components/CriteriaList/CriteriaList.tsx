@@ -15,10 +15,13 @@ const CriteriaList: FC = () => {
   const { status } = usePathwayContext();
   const { addCriteria } = useCriteriaContext();
 
-  const selectFile = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files?.length) addCriteria(files[0]);
-  }, []);
+  const selectFile = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (files?.length) addCriteria(files[0]);
+    },
+    [addCriteria]
+  );
 
   return (
     <div className={styles.root}>

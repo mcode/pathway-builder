@@ -58,7 +58,7 @@ const PathwaysTable: FC = () => {
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                  onClick={(): void => deletePathway(pathway)}
+                  onClick={(): void => deletePathway(pathway.id)}
                 >
                   Delete
                 </Button>
