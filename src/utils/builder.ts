@@ -74,7 +74,8 @@ export function createState(key?: string): State {
   const state: State = {
     key,
     label: 'New Node',
-    transitions: []
+    transitions: [],
+    nodeTypeIsUndefined: true
   };
 
   return state;
@@ -110,14 +111,20 @@ export function setStateLabel(pathway: Pathway, key: string, label: string): Pat
   };
 }
 
-export function setStateNodeType(pathway: Pathway, key: string, nodeType: string): Pathway {
+export function setStateNodeType(
+  pathway: Pathway,
+  key: string,
+  nodeType: string,
+  nodeTypeIsUndefined: boolean | undefined
+): Pathway {
   return {
     ...pathway,
     states: {
       ...pathway.states,
       [key]: {
         ...pathway.states[key],
-        nodeType
+        nodeType,
+        nodeTypeIsUndefined: nodeTypeIsUndefined
       }
     }
   };
@@ -235,11 +242,12 @@ export function addAction(
 
 export function getNodeType(pathway: Pathway, key: string | undefined): string {
   if (!key) {
-    return 'action';
+    return 'null';
   }
-
   const state = pathway.states[key];
-  if (!state.action && key !== 'Start') {
+  if (state.nodeTypeIsUndefined) {
+    return 'null';
+  } else if (!state.action && key !== 'Start') {
     return 'branch';
   } else {
     return 'action';
@@ -337,6 +345,7 @@ export function setActionResource(
 
 export function makeBranchStateGuidance(pathway: Pathway, key: string): Pathway {
   const state = pathway.states[key];
+  delete pathway.states[key].nodeTypeIsUndefined;
 
   if (!state.action) {
     return {
@@ -352,13 +361,15 @@ export function makeBranchStateGuidance(pathway: Pathway, key: string): Pathway 
     };
   }
 
-  return pathway;
+  return { ...pathway };
 }
 
-export function makeGuidanceStateBranch(pathway: Pathway, key: string): void {
-  const state = pathway.states[key];
-  delete state.cql;
-  delete state.action;
+export function makeGuidanceStateBranch(pathway: Pathway, key: string): Pathway {
+  delete pathway.states[key].cql;
+  delete pathway.states[key].action;
+  delete pathway.states[key].nodeTypeIsUndefined;
+
+  return { ...pathway };
 }
 
 /*

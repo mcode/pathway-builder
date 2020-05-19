@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import { SidebarHeader, BranchNode, ActionNode } from '.';
+import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
 import { State, Pathway } from 'pathways-model';
 import {
   setStateNodeType,
@@ -11,7 +11,8 @@ import {
   createState,
   addState,
   getNodeType,
-  makeBranchStateGuidance
+  makeBranchStateGuidance,
+  makeGuidanceStateBranch
 } from 'utils/builder';
 import useStyles from './styles';
 
@@ -35,7 +36,15 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
 
   const changeNodeType = useCallback(
     (nodeType: string): void => {
-      if (currentNodeKey) updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType));
+      if (currentNodeKey) {
+        // TODO: setStateNodeType might be OBE
+        updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType, undefined));
+        if (nodeType === 'action') {
+          updatePathway(makeBranchStateGuidance(pathway, currentNodeKey));
+        } else {
+          updatePathway(makeGuidanceStateBranch(pathway, currentNodeKey));
+        }
+      }
     },
     [pathway, updatePathway, currentNodeKey]
   );
@@ -57,10 +66,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
       const newState = createState();
       let newPathway = addState(pathway, newState);
       newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
-      newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
-      if (nodeType === 'action') {
-        newPathway = makeBranchStateGuidance(newPathway, newState.key as string);
-      }
+      newPathway = setStateNodeType(newPathway, newState.key as string, nodeType, true);
 
       updatePathway(newPathway);
       redirectToNode(newState.key);
@@ -89,6 +95,15 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
           />
 
           <hr className={styles.divider} />
+
+          {nodeType === 'null' && (
+            <NullNode
+              pathway={pathway}
+              currentNode={currentNode}
+              changeNodeType={changeNodeType}
+              addNode={addNode}
+            />
+          )}
 
           {nodeType === 'action' && (
             <ActionNode
