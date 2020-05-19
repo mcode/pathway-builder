@@ -5,7 +5,14 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 
 import { SidebarHeader, BranchNode, ActionNode } from '.';
 import { State, Pathway } from 'pathways-model';
-import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
+import {
+  setStateNodeType,
+  addTransition,
+  createState,
+  addState,
+  getNodeType,
+  makeBranchStateGuidance
+} from 'utils/builder';
 import useStyles from './styles';
 
 interface SidebarProps {
@@ -51,6 +58,9 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
       let newPathway = addState(pathway, newState);
       newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
       newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
+      if (nodeType === 'action') {
+        newPathway = makeBranchStateGuidance(newPathway, newState.key as string);
+      }
 
       updatePathway(newPathway);
       redirectToNode(newState.key);
