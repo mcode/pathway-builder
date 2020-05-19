@@ -65,6 +65,8 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
         window.innerHeight - headerElement.current.clientHeight + 'px';
   }, [isExpanded, headerElement]);
 
+  const nodeType = getNodeType(pathway, currentNodeKey);
+
   return (
     <>
       {isExpanded && (
@@ -73,12 +75,12 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
             pathway={pathway}
             currentNode={currentNode}
             updatePathway={updatePathway}
-            isChoiceNode={false}
+            isTransition={false}
           />
 
           <hr className={styles.divider} />
 
-          {getNodeType(pathway, currentNodeKey) === 'action' && (
+          {nodeType === 'action' && (
             <ActionNode
               pathway={pathway}
               currentNode={currentNode}
@@ -87,7 +89,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
             />
           )}
 
-          {getNodeType(pathway, currentNodeKey) === 'branch' && (
+          {nodeType === 'branch' && (
             <BranchNode
               pathway={pathway}
               currentNode={currentNode}

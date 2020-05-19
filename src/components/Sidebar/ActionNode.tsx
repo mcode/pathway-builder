@@ -28,13 +28,16 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
 
   return (
     <>
-      <DropDown
-        id="nodeType"
-        label="Node Type"
-        options={nodeTypeOptions}
-        onChange={selectNodeType}
-        initialSelected={nodeTypeOptions.find(option => option.value === 'action')}
-      />
+      {!currentNode.key && currentNode.key !== 'Start' && (
+        <DropDown
+          id="nodeType"
+          label="Node Type"
+          options={nodeTypeOptions}
+          onChange={selectNodeType}
+          initialSelected={nodeTypeOptions.find(option => option.value === 'action')}
+        />
+      )}
+
       <SidebarButton
         buttonName="Add Action Node"
         buttonIcon={<FontAwesomeIcon icon={faPlus} />}

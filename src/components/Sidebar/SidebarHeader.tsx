@@ -17,14 +17,14 @@ interface SidebarHeaderProps {
   pathway: Pathway;
   currentNode: State;
   updatePathway: (pathway: Pathway) => void;
-  isChoiceNode: boolean;
+  isTransition: boolean;
 }
 
 const SidebarHeader: FC<SidebarHeaderProps> = ({
   pathway,
   currentNode,
   updatePathway,
-  isChoiceNode
+  isTransition
 }) => {
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -33,6 +33,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
   const styles = useStyles();
 
   const goToParentNode = useCallback(() => {
+    // TODO
+  }, []);
+
+  const goToNode = useCallback(() => {
     // TODO
   }, []);
 
@@ -56,7 +60,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
   return (
     <div className={styles.sidebarHeader}>
       <div className={styles.sidebarHeaderGroup}>
-        {currentNodeLabel !== 'Start' && !isChoiceNode && (
+        {currentNodeLabel !== 'Start' && !isTransition && (
           <IconButton
             className={styles.backToParentButton}
             onClick={goToParentNode}
@@ -89,10 +93,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
       </div>
 
       <div className={styles.sidebarHeaderGroup}>
-        {isChoiceNode ? (
+        {isTransition ? (
           <IconButton
             className={styles.backToParentButton}
-            onClick={goToParentNode}
+            onClick={goToNode}
             aria-label="go to choice node"
           >
             <FontAwesomeIcon icon={faChevronRight} />

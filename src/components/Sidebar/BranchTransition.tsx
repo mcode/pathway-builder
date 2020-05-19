@@ -25,7 +25,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, transition, upda
         pathway={pathway}
         currentNode={transitionNode}
         updatePathway={updatePathway}
-        isChoiceNode={true}
+        isTransition={true}
       />
 
       <SidebarButton
