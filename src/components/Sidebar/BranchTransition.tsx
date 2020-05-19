@@ -21,7 +21,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, transition, upda
     <>
       <hr className={styles.divider} />
 
-      <SidebarHeader pathway={pathway} currentNode={transitionNode} updatePathway={updatePathway} />
+      <SidebarHeader
+        pathway={pathway}
+        currentNode={transitionNode}
+        updatePathway={updatePathway}
+        isChoiceNode={true}
+      />
 
       <SidebarButton
         buttonName="Use Criteria"

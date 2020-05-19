@@ -233,6 +233,19 @@ export function addAction(
   return id;
 }
 
+export function getNodeType(pathway: Pathway, key: string | undefined): string {
+  if (!key) {
+    return 'action';
+  }
+
+  const state = pathway.states[key];
+  if (!state.action && key !== 'Start') {
+    return 'branch';
+  } else {
+    return 'action';
+  }
+}
+
 /*
 Set Element Functions
 */

@@ -1,7 +1,12 @@
 import React, { FC, memo, useCallback, useRef, useState, KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faEllipsisH, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEdit,
+  faEllipsisH,
+  faChevronLeft,
+  faChevronRight
+} from '@fortawesome/free-solid-svg-icons';
 import { IconButton, FormControl, Input } from '@material-ui/core';
 
 import { Pathway, State } from 'pathways-model';
@@ -12,9 +17,15 @@ interface SidebarHeaderProps {
   pathway: Pathway;
   currentNode: State;
   updatePathway: (pathway: Pathway) => void;
+  isChoiceNode: boolean;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, updatePathway }) => {
+const SidebarHeader: FC<SidebarHeaderProps> = ({
+  pathway,
+  currentNode,
+  updatePathway,
+  isChoiceNode
+}) => {
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const currentNodeKey = currentNode?.key;
@@ -45,7 +56,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, updatePat
   return (
     <div className={styles.sidebarHeader}>
       <div className={styles.sidebarHeaderGroup}>
-        {currentNodeLabel !== 'Start' && (
+        {currentNodeLabel !== 'Start' && !isChoiceNode && (
           <IconButton
             className={styles.backToParentButton}
             onClick={goToParentNode}
@@ -78,7 +89,17 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, updatePat
       </div>
 
       <div className={styles.sidebarHeaderGroup}>
-        <FontAwesomeIcon icon={faEllipsisH} />
+        {isChoiceNode ? (
+          <IconButton
+            className={styles.backToParentButton}
+            onClick={goToParentNode}
+            aria-label="go to choice node"
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </IconButton>
+        ) : (
+          <FontAwesomeIcon icon={faEllipsisH} />
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import { SidebarHeader, SidebarButton, BranchNode, ActionNode } from '.';
+import { SidebarHeader, BranchNode, ActionNode } from '.';
 import { State, Pathway } from 'pathways-model';
-import { setStateNodeType, addTransition, createState, addState } from 'utils/builder';
+import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
 import useStyles from './styles';
 
 interface SidebarProps {
@@ -73,37 +73,21 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
             pathway={pathway}
             currentNode={currentNode}
             updatePathway={updatePathway}
+            isChoiceNode={false}
           />
 
           <hr className={styles.divider} />
 
-          {(!currentNode.nodeType || currentNode.nodeType === '') && (
-            <>
-              <SidebarButton
-                buttonName="Add Action Node"
-                buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-                buttonText="Any clinical or workflow step which is not a decision."
-                onClick={(): void => addNode('action')}
-              />
-
-              <SidebarButton
-                buttonName="Add Branch Node"
-                buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-                buttonText="A logical branching point based on clinical or workflow criteria."
-                onClick={(): void => addNode('branch')}
-              />
-            </>
-          )}
-
-          {currentNode.nodeType === 'action' && (
+          {getNodeType(pathway, currentNodeKey) === 'action' && (
             <ActionNode
               pathway={pathway}
               currentNode={currentNode}
               changeNodeType={changeNodeType}
+              addNode={addNode}
             />
           )}
 
-          {currentNode.nodeType === 'branch' && (
+          {getNodeType(pathway, currentNodeKey) === 'branch' && (
             <BranchNode
               pathway={pathway}
               currentNode={currentNode}
