@@ -28,7 +28,7 @@ export default makeStyles(
       display: 'flex',
       alignItems: 'center'
     },
-    backToParentButton: {
+    sidebarHeaderButton: {
       height: '45px',
       width: '45px',
       color: theme.palette.text.primary

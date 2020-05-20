@@ -40,6 +40,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
     // TODO
   }, []);
 
+  const openNodeOptions = useCallback(() => {
+    // TODO
+  }, []);
+
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
     if (currentNodeKey) updatePathway(setStateLabel(pathway, currentNodeKey, label));
@@ -62,7 +66,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
       <div className={styles.sidebarHeaderGroup}>
         {currentNodeLabel !== 'Start' && !isTransition && (
           <IconButton
-            className={styles.backToParentButton}
+            className={styles.sidebarHeaderButton}
             onClick={goToParentNode}
             aria-label="go to parent node"
           >
@@ -93,17 +97,13 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
       </div>
 
       <div className={styles.sidebarHeaderGroup}>
-        {isTransition ? (
-          <IconButton
-            className={styles.backToParentButton}
-            onClick={goToNode}
-            aria-label="go to choice node"
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </IconButton>
-        ) : (
-          <FontAwesomeIcon icon={faEllipsisH} />
-        )}
+        <IconButton
+          className={styles.sidebarHeaderButton}
+          onClick={isTransition ? goToNode : openNodeOptions}
+          aria-label={isTransition ? 'go to transition node' : 'open node options'}
+        >
+          <FontAwesomeIcon icon={isTransition ? faChevronRight : faEllipsisH} />
+        </IconButton>
       </div>
     </div>
   );

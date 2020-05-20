@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,7 +12,7 @@ import {
   createState,
   addState
 } from 'utils/builder';
-import { Pathway, State } from 'pathways-model';
+import { Pathway, BranchState } from 'pathways-model';
 import useStyles from './styles';
 
 const nodeTypeOptions = [
@@ -35,7 +35,7 @@ const otherCriteriaOptions = [{ value: 'item', label: 'Item' }];
 
 interface BranchNodeProps {
   pathway: Pathway;
-  currentNode: State;
+  currentNode: BranchState;
   changeNodeType: (event: string) => void;
   updatePathway: (pathway: Pathway) => void;
 }
@@ -46,8 +46,6 @@ const BranchNode: FC<BranchNodeProps> = ({
   changeNodeType,
   updatePathway
 }) => {
-  const [criteriaSource, setCriteriaSource] = useState<string>('');
-  const [criteria, setCriteria] = useState<string>('');
   const currentNodeKey = currentNode?.key;
   const styles = useStyles();
 
@@ -64,7 +62,6 @@ const BranchNode: FC<BranchNodeProps> = ({
 
       const criteriaSource = event?.target.value || '';
       updatePathway(setStateCriteriaSource(pathway, currentNodeKey, criteriaSource));
-      setCriteriaSource(criteriaSource);
     },
     [currentNodeKey, updatePathway, pathway]
   );
@@ -75,7 +72,6 @@ const BranchNode: FC<BranchNodeProps> = ({
 
       const mcodeCriteria = event?.target.value || '';
       updatePathway(setStateMcodeCriteria(pathway, currentNodeKey, mcodeCriteria));
-      setCriteria(mcodeCriteria);
     },
     [currentNodeKey, updatePathway, pathway]
   );
@@ -86,7 +82,6 @@ const BranchNode: FC<BranchNodeProps> = ({
 
       const otherCriteria = event?.target.value || '';
       updatePathway(setStateOtherCriteria(pathway, currentNodeKey, otherCriteria));
-      setCriteria(otherCriteria);
     },
     [currentNodeKey, updatePathway, pathway]
   );
@@ -98,6 +93,9 @@ const BranchNode: FC<BranchNodeProps> = ({
     updatePathway(addTransition(newPathway, currentNodeKey || '', newState.key as string));
   }, [pathway, updatePathway, currentNodeKey]);
 
+  const canAddTransition =
+    currentNode.criteriaSource != null && (currentNode.mcodeCriteria || currentNode.otherCriteria);
+
   return (
     <>
       <DropDown
@@ -105,7 +103,7 @@ const BranchNode: FC<BranchNodeProps> = ({
         label="Node Type"
         options={nodeTypeOptions}
         onChange={selectNodeType}
-        initialSelected={nodeTypeOptions.find(option => option.value === 'branch')}
+        value="branch"
       />
 
       <DropDown
@@ -113,23 +111,26 @@ const BranchNode: FC<BranchNodeProps> = ({
         label="Criteria Source"
         options={criteriaSourceOptions}
         onChange={selectCriteriaSource}
+        value={currentNode.criteriaSource}
       />
 
-      {criteriaSource === 'mcode' && (
+      {currentNode.criteriaSource === 'mcode' && (
         <DropDown
           id="mCodeCriteria"
           label="mCODE Criteria"
           options={mCodeCriteriaOptions}
           onChange={selectMcodeCriteria}
+          value={currentNode.mcodeCriteria}
         />
       )}
 
-      {criteriaSource === 'other' && (
+      {currentNode.criteriaSource === 'other' && (
         <DropDown
           id="otherCriteria"
           label="Other Criteria"
           options={otherCriteriaOptions}
           onChange={selectOtherCriteria}
+          value={currentNode.otherCriteria}
         />
       )}
 
@@ -144,7 +145,7 @@ const BranchNode: FC<BranchNodeProps> = ({
         );
       })}
 
-      {criteria !== '' && (
+      {canAddTransition && (
         <>
           <hr className={styles.divider} />
 

@@ -4,23 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { State, Pathway } from 'pathways-model';
-import {
-  setStateNodeType,
-  addTransition,
-  createState,
-  addState,
-  getNodeType,
-  makeBranchStateGuidance,
-  makeGuidanceStateBranch
-} from 'utils/builder';
+import { State, GuidanceState, BranchState, Pathway } from 'pathways-model';
+import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
 import useStyles from './styles';
 
 interface SidebarProps {
   pathway: Pathway;
   updatePathway: (pathway: Pathway) => void;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: State;
+  currentNode: GuidanceState | BranchState | State;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, currentNode }) => {
@@ -36,15 +28,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
 
   const changeNodeType = useCallback(
     (nodeType: string): void => {
-      if (currentNodeKey) {
-        // TODO: setStateNodeType might be OBE
-        updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType, undefined));
-        if (nodeType === 'action') {
-          updatePathway(makeBranchStateGuidance(pathway, currentNodeKey));
-        } else {
-          updatePathway(makeGuidanceStateBranch(pathway, currentNodeKey));
-        }
-      }
+      if (currentNodeKey) updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType));
     },
     [pathway, updatePathway, currentNodeKey]
   );
@@ -66,7 +50,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
       const newState = createState();
       let newPathway = addState(pathway, newState);
       newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
-      newPathway = setStateNodeType(newPathway, newState.key as string, nodeType, true);
+      newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
 
       updatePathway(newPathway);
       redirectToNode(newState.key);

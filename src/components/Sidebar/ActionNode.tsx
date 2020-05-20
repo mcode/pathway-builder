@@ -42,7 +42,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
           label="Node Type"
           options={nodeTypeOptions}
           onChange={selectNodeType}
-          initialSelected={nodeTypeOptions.find(option => option.value === 'action')}
+          value="action"
         />
       )}
       {displayAddButtons && (
