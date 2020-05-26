@@ -1,39 +1,49 @@
-import React, { FC, memo, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
 import { usePathwayContext } from 'components/PathwayProvider';
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
+import ImportCriteriaModal from './ImportCriteriaModal';
 
 import useStyles from './styles';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
   const { status } = usePathwayContext();
-  const { addCriteria } = useCriteriaContext();
 
-  const selectFile = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (files?.length) addCriteria(files[0]);
-    },
-    [addCriteria]
-  );
+  const [open, setOpen] = useState(false);
+  const openImportModal = useCallback((): void => {
+    setOpen(true);
+  }, []);
+
+  const closeImportModal = useCallback((): void => {
+    setOpen(false);
+  }, []);
 
   return (
     <div className={styles.root}>
-      <input type="file" accept=".json" onChange={selectFile} />
+      <Button
+        className={styles.buildCriteriaButton}
+        variant="contained"
+        color="primary"
+        startIcon={<FontAwesomeIcon icon={faFileImport} />}
+        onClick={openImportModal}
+      >
+        Import Library
+      </Button>
       <Button
         className={styles.buildCriteriaButton}
         variant="contained"
         color="primary"
         startIcon={<FontAwesomeIcon icon={faPlus} />}
       >
-        Create Pathway
+        Build Criteria
       </Button>
+
+      <ImportCriteriaModal open={open} onClose={closeImportModal} />
 
       {status === 'loading' ? <Loading /> : <CriteriaTable />}
     </div>
