@@ -4,14 +4,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarButton, BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
-import {
-  setStateCriteriaSource,
-  setStateMcodeCriteria,
-  setStateOtherCriteria,
-  addTransition,
-  createState,
-  addState
-} from 'utils/builder';
+import { addTransition, createState, addState } from 'utils/builder';
 import { Pathway, BranchState } from 'pathways-model';
 import useStyles from './styles';
 
@@ -19,19 +12,6 @@ const nodeTypeOptions = [
   { value: 'action', label: 'Action' },
   { value: 'branch', label: 'Branch' }
 ];
-
-const criteriaSourceOptions = [
-  { value: 'mcode', label: 'mCODE' },
-  { value: 'other', label: 'Other' }
-];
-
-const mCodeCriteriaOptions = [
-  { value: 'tumorCategory', label: 'Tumor Category' },
-  { value: 'nodeCategory', label: 'Node Category' },
-  { value: 'metastatisCategory', label: 'Metastatis Category' }
-];
-
-const otherCriteriaOptions = [{ value: 'item', label: 'Item' }];
 
 interface BranchNodeProps {
   pathway: Pathway;
@@ -56,36 +36,6 @@ const BranchNode: FC<BranchNodeProps> = ({
     [changeNodeType]
   );
 
-  const selectCriteriaSource = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
-
-      const criteriaSource = event?.target.value || '';
-      updatePathway(setStateCriteriaSource(pathway, currentNodeKey, criteriaSource));
-    },
-    [currentNodeKey, updatePathway, pathway]
-  );
-
-  const selectMcodeCriteria = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
-
-      const mcodeCriteria = event?.target.value || '';
-      updatePathway(setStateMcodeCriteria(pathway, currentNodeKey, mcodeCriteria));
-    },
-    [currentNodeKey, updatePathway, pathway]
-  );
-
-  const selectOtherCriteria = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
-
-      const otherCriteria = event?.target.value || '';
-      updatePathway(setStateOtherCriteria(pathway, currentNodeKey, otherCriteria));
-    },
-    [currentNodeKey, updatePathway, pathway]
-  );
-
   const handleAddTransition = useCallback((): void => {
     const newState = createState();
 
@@ -93,8 +43,7 @@ const BranchNode: FC<BranchNodeProps> = ({
     updatePathway(addTransition(newPathway, currentNodeKey || '', newState.key as string));
   }, [pathway, updatePathway, currentNodeKey]);
 
-  const canAddTransition =
-    currentNode.criteriaSource != null && (currentNode.mcodeCriteria || currentNode.otherCriteria);
+  const canAddTransition = true;
 
   return (
     <>
@@ -105,41 +54,13 @@ const BranchNode: FC<BranchNodeProps> = ({
         onChange={selectNodeType}
         value="branch"
       />
-
-      <DropDown
-        id="criteriaSource"
-        label="Criteria Source"
-        options={criteriaSourceOptions}
-        onChange={selectCriteriaSource}
-        value={currentNode.criteriaSource}
-      />
-
-      {currentNode.criteriaSource === 'mcode' && (
-        <DropDown
-          id="mCodeCriteria"
-          label="mCODE Criteria"
-          options={mCodeCriteriaOptions}
-          onChange={selectMcodeCriteria}
-          value={currentNode.mcodeCriteria}
-        />
-      )}
-
-      {currentNode.criteriaSource === 'other' && (
-        <DropDown
-          id="otherCriteria"
-          label="Other Criteria"
-          options={otherCriteriaOptions}
-          onChange={selectOtherCriteria}
-          value={currentNode.otherCriteria}
-        />
-      )}
-
       {currentNode.transitions.map(transition => {
         return (
           <BranchTransition
             key={transition.id}
             pathway={pathway}
             transition={transition}
+            currentNode={currentNode}
             updatePathway={updatePathway}
           />
         );

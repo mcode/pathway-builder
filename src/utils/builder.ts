@@ -346,6 +346,54 @@ export function setTransitionCondition(
 export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
   (pathway.states[key] as GuidanceState).elm = elm;
   (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
+  }
+  
+export function setTransitionCriteria(
+  pathway: Pathway,
+  criteria: string,
+  transitionId: string,
+  startNodeKey: string
+): Pathway {
+  pathway.states[startNodeKey].transitions.forEach(transition => {
+    if (transition.transition === transitionId) {
+      transition.criteria = criteria;
+    }
+  });
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startNodeKey]: {
+        ...pathway.states[startNodeKey]
+      }
+    }
+  };
+}
+
+export function setTransitionCriteriaDisplay(
+  pathway: Pathway,
+  criteriaDisplay: string,
+  transitionId: string,
+  startNodeKey: string
+): Pathway {
+  pathway.states[startNodeKey].transitions.forEach(transition => {
+    if (transition.transition === transitionId) {
+      transition.criteriaDisplay = criteriaDisplay;
+    }
+  });
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startNodeKey]: {
+        ...pathway.states[startNodeKey]
+      }
+    }
+  };
+}
+
 }
 
 // TODO: possibly add more action methods

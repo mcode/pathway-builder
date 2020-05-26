@@ -60,6 +60,8 @@ declare module 'pathways-model' {
       cql: string;
       elm?: ElmLibrary;
     };
+    criteria?: string;
+    criteriaDisplay?: string;
   }
 
   export interface ElmLibrary {
