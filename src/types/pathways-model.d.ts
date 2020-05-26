@@ -35,6 +35,7 @@ declare module 'pathways-model' {
 
   export interface GuidanceState extends State {
     cql: string;
+    elm?: ElmLibrary;
     action: Action[];
   }
 
@@ -57,6 +58,72 @@ declare module 'pathways-model' {
     condition?: {
       description: string;
       cql: string;
+      elm?: ElmLibrary;
     };
+  }
+
+  export interface ElmLibrary {
+    library: {
+      identifier: {
+        id: string;
+        version: string;
+      };
+      schemaIdentifier: {
+        id: string;
+        version: string;
+      };
+      usings: {
+        def: {
+          localId?: string;
+          locator?: string;
+          localIdentifier: string;
+          uri: string;
+          version?: string;
+        }[];
+      };
+      includes: {
+        def: {
+          localId?: string;
+          locator?: string;
+          localIdentifier?: string;
+          path: string;
+          version: string;
+        }[];
+      };
+      valueSets: {
+        def: {
+          localId?: string;
+          locator?: string;
+          name: string;
+          id: string;
+          accesslevel: string;
+          resultTypeSpecifer: object;
+        }[];
+      };
+      codes?: {
+        def: object[];
+      };
+      codeSystems?: {
+        def: object[];
+      };
+      concepts?: {
+        def: object[];
+      };
+      statements: {
+        def: ElmStatement[];
+      };
+      [x: string]: object;
+    };
+  }
+
+  export interface ElmStatement {
+    name: string;
+    context: string;
+    expression: object;
+    locator?: string;
+    locatorId?: string;
+    accessLevel?: string;
+    resultTypeName?: string;
+    annotation?: object[];
   }
 }

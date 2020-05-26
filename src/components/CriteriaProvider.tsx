@@ -7,15 +7,15 @@ import React, {
   useContext,
   useCallback
 } from 'react';
-import { extractCQLLibraryInfo } from 'utils/regexes';
 import shortid from 'shortid';
+import { ElmStatement } from 'pathways-model';
 
 interface Criteria {
   id: string;
   label: string;
   version: string;
   modified: number;
-  cql: string;
+  elm: object;
 }
 
 interface CriteriaContextInterface {
@@ -39,14 +39,32 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     const reader = new FileReader();
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {
-        const cql = event.target.result as string;
-        const libraryInfo = extractCQLLibraryInfo.exec(cql);
+        const rawElm = event.target.result as string;
+        const elm = JSON.parse(rawElm);
+        if (!elm.library?.identifier) {
+          alert('Please upload ELM file');
+          return;
+        }
+        const defaultStatementNames = [
+          'Patient',
+          'MeetsInclusionCriteria',
+          'InPopulation',
+          'Recommendation',
+          'Rationale',
+          'Errors'
+        ];
+        const elmStatements: ElmStatement[] = elm.library.statements.def;
+        const elmStatement = elmStatements.find(def => !defaultStatementNames.includes(def.name));
+        if (!elmStatement) {
+          alert('No elm statement found in that file');
+          return;
+        }
         const newCriteria = {
           id: shortid.generate(),
-          label: libraryInfo ? libraryInfo[1].replace('"', '') : 'Error Reading Label',
-          version: libraryInfo ? libraryInfo[2] : 'Unknown',
+          label: elm.library.identifier.id,
+          version: elm.library.identifier.version,
           modified: Date.now(),
-          cql: cql
+          elm: elm
         };
         setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
       } else alert('Unable to read that file');

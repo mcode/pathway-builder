@@ -34,17 +34,23 @@ describe('builder interface add functions', () => {
       expect('id' in criteria).toBeFalsy()
     );
 
-    // Check the key and ids have been stripped
+    // Check the key, ids, and elm have been stripped
     Object.keys(exportedPathwayJson.states).forEach((stateName: string) => {
       const state = exportedPathwayJson.states[stateName];
       expect('key' in state).toBeFalsy();
 
-      state.transitions.forEach((transition: Transition) => expect('id' in transition).toBeFalsy());
+      state.transitions.forEach((transition: Transition) => {
+        expect('id' in transition).toBeFalsy();
+        expect('elm' in transition).toBeFalsy();
+      });
 
       if ('action' in state) {
         state.action.forEach((action: Action) => expect('id' in action).toBeFalsy());
+        expect('elm' in state).toBeFalsy();
       }
     });
+
+    expect(exportedPathwayJson.elm?.navigational).toBeDefined();
   });
 
   it('add criteria', () => {
@@ -72,7 +78,8 @@ describe('builder interface add functions', () => {
         label: 'New Node',
         transitions: [],
         action: [],
-        cql: ''
+        cql: '',
+        elm: {}
       })
     );
   });
@@ -121,6 +128,55 @@ describe('builder interface add functions', () => {
 describe('builder interface update functions', () => {
   // Create a deep copy of the pathway
   const pathway = JSON.parse(JSON.stringify(samplepathway)) as Pathway;
+  const elm = {
+    library: {
+      identifier: {
+        id: pathway.id,
+        version: '1.0.0'
+      },
+      schemaIdentifier: {
+        id: 'urn:hl7-org:elm',
+        version: 'r1'
+      },
+      usings: {
+        def: [
+          {
+            localIdentifier: 'System',
+            uri: 'urn:hl7-org:elm-types:r1'
+          },
+          {
+            localId: '1',
+            locator: '3:1-3:26',
+            localIdentifier: 'FHIR',
+            uri: 'http://hl7.org/fhir',
+            version: '4.0.0'
+          }
+        ]
+      },
+      statements: {
+        def: [
+          {
+            locator: '13:1-13:15',
+            name: 'Patient',
+            context: 'Patient',
+            expression: {
+              type: 'SingletonFrom',
+              operand: {
+                locator: '13:1-13:15',
+                dataType: '{http://hl7.org/fhir}Patient',
+                type: 'Retrieve'
+              }
+            }
+          },
+          {
+            name: 'Tumor Size'
+          }
+        ]
+      },
+      includes: { def: [] },
+      valueSets: { def: [] }
+    }
+  };
 
   it('set pathway name', () => {
     Builder.setPathwayName(pathway, 'test name');
@@ -161,19 +217,14 @@ describe('builder interface update functions', () => {
   it('set transition condition', () => {
     const startStateKey = 'N-test';
     const transitionId = '1';
-    Builder.setTransitionCondition(
-      pathway,
-      startStateKey,
-      transitionId,
-      'test description',
-      'test cql'
-    );
+    Builder.setTransitionCondition(pathway, startStateKey, transitionId, 'test description', elm);
     const expectedTransition = {
       id: '1',
       transition: 'Radiation',
       condition: {
         description: 'test description',
-        cql: 'test cql'
+        cql: 'Tumor Size',
+        elm: elm
       }
     };
     expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
@@ -193,17 +244,18 @@ describe('builder interface update functions', () => {
     );
   });
 
-  it('set transition condition cql', () => {
+  it('set transition condition elm', () => {
     const startStateKey = 'T-test';
     const transitionId = '1';
-    Builder.setTransitionConditionCql(pathway, startStateKey, transitionId, 'test cql');
-    expect(pathway.states[startStateKey].transitions[0].condition.cql).toBe('test cql');
+    Builder.setTransitionConditionElm(pathway, startStateKey, transitionId, elm);
+    expect(pathway.states[startStateKey].transitions[0].condition.cql).toBe('Tumor Size');
   });
 
-  it('set guidance state cql', () => {
+  it('set guidance state elm', () => {
     const key = 'Radiation';
-    Builder.setGuidanceStateCql(pathway, key, 'test cql');
-    expect(pathway.states[key].cql).toBe('test cql');
+    Builder.setGuidanceStateElm(pathway, key, elm);
+    expect(pathway.states[key].cql).toBe('Tumor Size');
+    expect(pathway.states[key].elm).toEqual(elm);
   });
 
   it('set state label', () => {

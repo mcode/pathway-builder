@@ -25,7 +25,7 @@ const CriteriaList: FC = () => {
 
   return (
     <div className={styles.root}>
-      <input type="file" onChange={selectFile} />
+      <input type="file" accept=".json" onChange={selectFile} />
       <Button
         className={styles.buildCriteriaButton}
         variant="contained"

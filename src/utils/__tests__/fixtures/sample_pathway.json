@@ -30,7 +30,35 @@
           "transition": "N-test",
           "condition": {
             "description": "T = T0",
-            "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] T0 where ToConcept(T0.value as FHIR.CodeableConcept) ~ \"T0 category (finding)\"return Tuple{ resourceType: 'Observation', id: T0.id.value, status: T0.status.value }"
+            "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] T0 where ToConcept(T0.value as FHIR.CodeableConcept) ~ \"T0 category (finding)\"return Tuple{ resourceType: 'Observation', id: T0.id.value, status: T0.status.value }",
+            "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         {
@@ -38,7 +66,35 @@
           "transition": "Surgery",
           "condition": {
             "description": "T = T1",
-            "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] T1 where ToConcept(T1.value as FHIR.CodeableConcept) ~ \"T1 category (finding)\"return Tuple{ resourceType: 'Observation', id: T1.id.value, status: T1.status.value }"
+            "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] T1 where ToConcept(T1.value as FHIR.CodeableConcept) ~ \"T1 category (finding)\"return Tuple{ resourceType: 'Observation', id: T1.id.value, status: T1.status.value }",
+            "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       ]
@@ -56,7 +112,35 @@
           "transition": "OtherRadiation",
           "condition": {
             "description": "N = N0",
-            "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\"return Tuple{ resourceType: 'Observation', id: N0.id.value, status: N0.status.value }"
+            "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\"return Tuple{ resourceType: 'Observation', id: N0.id.value, status: N0.status.value }",
+            "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         {
@@ -64,7 +148,35 @@
           "transition": "ChemoMedication",
           "condition": {
             "description": "N = N1",
-            "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N1 where ToConcept(N1.value as FHIR.CodeableConcept) ~ \"N1 category (finding)\"return Tuple{ resourceType: 'Observation', id: N1.id.value, status: N1.status.value }"
+            "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N1 where ToConcept(N1.value as FHIR.CodeableConcept) ~ \"N1 category (finding)\"return Tuple{ resourceType: 'Observation', id: N1.id.value, status: N1.status.value }",
+            "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       ]
@@ -93,7 +205,35 @@
         }
       ],
       "transitions": [],
-      "cql": "[Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value, startTime: Lumpectomy.performedPeriod.start, endTime: Lumpectomy.performedPeriod.end }"
+      "cql": "[Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value, startTime: Lumpectomy.performedPeriod.start, endTime: Lumpectomy.performedPeriod.end }",
+      "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            }
     },
     "Radiation": {
       "key": "Radiation",
@@ -119,6 +259,34 @@
         }
       ],
       "cql": "",
+      "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            },
       "transitions": []
     },
     "OtherRadiation": {
@@ -145,6 +313,34 @@
         }
       ],
       "cql": "[Procedure: \"Teleradiotherapy procedure (procedure) code\"] Radiation return Tuple{ resourceType: 'Procedure', id: Radiation.id.value, status: Radiation.status.value }",
+      "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            },
       "transitions": []
     },
     "Chemo": {
@@ -171,6 +367,34 @@
         }
       ],
       "cql": "[Procedure: \"Chemotherapy (procedure) code\"] Chemo return Tuple{ resourceType: 'Procedure', id: Chemo.id.value, status: Chemo.status.value }",
+      "elm":{
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            } ,
       "transitions": []
     },
     "ChemoMedication": {
@@ -197,6 +421,34 @@
         }
       ],
       "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] ChemoMedication where ToConcept(ChemoMedication.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: ChemoMedication.id.value, status: ChemoMedication.status.value }",
+      "elm": {
+              "library": {
+                "identifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "schemaIdentifier": {
+                  "id": "1",
+                  "version": "1.0"
+                },
+                "usings": {
+                  "def": []
+                },
+                "includes": {
+                  "def": []
+                },
+                "valueSets": {
+                  "def": []
+                },
+                "statements": {
+                  "def": [
+                    {
+                      "name": "Tumor Size"
+                    }
+                  ]
+                }
+              }
+            },
       "transitions": [{ "id": "1", "transition": "Chemo" }]
     }
   },
