@@ -7,8 +7,13 @@ export default makeStyles(
       flexDirection: 'column',
       padding: theme.variables.spacing.globalPadding
     },
+    buttonRow: {
+      display: 'flex',
+      justifyContent: 'flex-end'
+    },
     buildCriteriaButton: {
-      alignSelf: 'flex-end'
+      alignSelf: 'flex-end',
+      marginLeft: '20px'
     },
     criteriaList: {
       marginTop: '2em'

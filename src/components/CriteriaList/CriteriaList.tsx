@@ -25,23 +25,25 @@ const CriteriaList: FC = () => {
 
   return (
     <div className={styles.root}>
-      <Button
-        className={styles.buildCriteriaButton}
-        variant="contained"
-        color="primary"
-        startIcon={<FontAwesomeIcon icon={faFileImport} />}
-        onClick={openImportModal}
-      >
-        Import Library
-      </Button>
-      <Button
-        className={styles.buildCriteriaButton}
-        variant="contained"
-        color="primary"
-        startIcon={<FontAwesomeIcon icon={faPlus} />}
-      >
-        Build Criteria
-      </Button>
+      <div className={styles.buttonRow}>
+        <Button
+          className={styles.buildCriteriaButton}
+          variant="contained"
+          color="primary"
+          startIcon={<FontAwesomeIcon icon={faFileImport} />}
+          onClick={openImportModal}
+        >
+          Import Library
+        </Button>
+        <Button
+          className={styles.buildCriteriaButton}
+          variant="contained"
+          color="primary"
+          startIcon={<FontAwesomeIcon icon={faPlus} />}
+        >
+          Build Criteria
+        </Button>
+      </div>
 
       <ImportCriteriaModal open={open} onClose={closeImportModal} />
 
