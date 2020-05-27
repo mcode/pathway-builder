@@ -51,6 +51,135 @@ describe('builder interface add functions', () => {
     });
 
     expect(exportedPathwayJson.elm?.navigational).toBeDefined();
+    expect(exportedPathwayJson.elm?.navigational).toEqual({
+      library: {
+        identifier: {
+          id: 'test_breast_cancer',
+          version: '1.0.0'
+        },
+        schemaIdentifier: {
+          id: 'urn:hl7-org:elm',
+          version: 'r1'
+        },
+        usings: {
+          def: [
+            {
+              localIdentifier: 'System',
+              uri: 'urn:hl7-org:elm-types:r1'
+            },
+            {
+              localId: '1',
+              locator: '3:1-3:26',
+              localIdentifier: 'FHIR',
+              uri: 'http://hl7.org/fhir',
+              version: '4.0.0'
+            },
+            {
+              localIdentifier: 'example',
+              uri: 'urn:example-org'
+            },
+            {
+              localIdentifier: 'example2',
+              uri: 'urn:example2-org'
+            }
+          ]
+        },
+        includes: {
+          def: [
+            {
+              path: 'example-path',
+              version: '1.0'
+            },
+            {
+              path: 'example-path-2',
+              version: '1.0'
+            },
+            {
+              path: 'example-path-3',
+              version: '1.0'
+            }
+          ]
+        },
+        valueSets: {
+          def: [
+            {
+              name: 'example',
+              id: '1',
+              accessLevel: 'Public',
+              resultTypeSpecifier: {}
+            },
+            {
+              name: 'example2',
+              id: '2',
+              accessLevel: 'Public',
+              resultTypeSpecifier: {}
+            }
+          ]
+        },
+        statements: {
+          def: [
+            {
+              locator: '13:1-13:15',
+              name: 'Patient',
+              context: 'Patient',
+              expression: {
+                type: 'SingletonFrom',
+                operand: {
+                  locator: '13:1-13:15',
+                  dataType: '{http://hl7.org/fhir}Patient',
+                  type: 'Retrieve'
+                }
+              }
+            },
+            {
+              name: 'T = T0',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'T = T1',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'N = N0',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'N = N1',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'Surgery',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'Radiation',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'OtherRadiation',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'Chemo',
+              context: 'Patient',
+              expression: {}
+            },
+            {
+              name: 'ChemoMedication',
+              context: 'Patient',
+              expression: {}
+            }
+          ]
+        }
+      }
+    });
   });
 
   it('add criteria', () => {

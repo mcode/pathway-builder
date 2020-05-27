@@ -1,5 +1,6 @@
 {
   "name": "test_breast_cancer",
+  "id": "test_breast_cancer",
   "description": "Mock breast cancer pathway used for testing the system",
   "library": "mCODE_Library.cql",
   "criteria": [
@@ -42,18 +43,37 @@
                   "version": "1.0"
                 },
                 "usings": {
-                  "def": []
+                  "def": [
+                    {
+                      "localIdentifier": "example",
+                      "uri": "urn:example-org"
+                    }
+                  ]
                 },
                 "includes": {
-                  "def": []
+                  "def": [
+                    {
+                      "path": "example-path",
+                      "version": "1.0"
+                    }
+                  ]
                 },
                 "valueSets": {
-                  "def": []
+                  "def": [
+                    {
+                      "name": "example",
+                      "id": "1",
+                      "accessLevel": "Public",
+                      "resultTypeSpecifier": {}
+                    }
+                  ]
                 },
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -78,18 +98,45 @@
                   "version": "1.0"
                 },
                 "usings": {
-                  "def": []
+                  "def": [
+                    {
+                      "localIdentifier": "example",
+                      "uri": "urn:example-org"
+                    },
+                    {
+                      "localIdentifier": "example2",
+                      "uri": "urn:example2-org"
+                    }
+                  ]
                 },
                 "includes": {
-                  "def": []
+                  "def": [
+                    {
+                      "path": "example-path",
+                      "version": "1.0"
+                    },
+                    {
+                      "path": "example-path-2",
+                      "version": "1.0"
+                    }
+                  ]
                 },
                 "valueSets": {
-                  "def": []
+                  "def": [
+                    {
+                      "name": "example2",
+                      "id": "2",
+                      "accessLevel": "Public",
+                      "resultTypeSpecifier": {}
+                    }
+                  ]
                 },
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -124,10 +171,20 @@
                   "version": "1.0"
                 },
                 "usings": {
-                  "def": []
+                  "def": [
+                    {
+                      "localIdentifier": "System",
+                      "uri": "urn:hl7-org:elm-types:r1"
+                    }
+                  ]
                 },
                 "includes": {
-                  "def": []
+                  "def": [
+                    {
+                      "path": "example-path-3",
+                      "version": "1.0"
+                    }
+                  ]
                 },
                 "valueSets": {
                   "def": []
@@ -135,7 +192,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -171,7 +230,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -228,7 +289,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -281,7 +344,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -335,7 +400,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -389,7 +456,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }
@@ -443,7 +512,9 @@
                 "statements": {
                   "def": [
                     {
-                      "name": "Tumor Size"
+                      "name": "Tumor Size",
+                      "context": "Patient",
+                      "expression": {}
                     }
                   ]
                 }

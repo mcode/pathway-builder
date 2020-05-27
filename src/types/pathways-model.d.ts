@@ -96,8 +96,8 @@ declare module 'pathways-model' {
           locator?: string;
           name: string;
           id: string;
-          accesslevel: string;
-          resultTypeSpecifer: object;
+          accessLevel: string;
+          resultTypeSpecifier: object;
         }[];
       };
       codes?: {
