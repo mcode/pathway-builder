@@ -1,4 +1,4 @@
-import React, { FC, Ref, forwardRef, memo } from 'react';
+import React, { FC, Ref, forwardRef, memo, useCallback } from 'react';
 import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -17,20 +17,25 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 interface NodeProps {
+  name: string;
   pathwayState: State;
   isCurrentNode: boolean;
   xCoordinate: number;
   yCoordinate: number;
   expanded?: boolean;
-  onClickHandler?: () => void;
+  onClick?: (nodeName: string) => void;
 }
 
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      { pathwayState, isCurrentNode, xCoordinate, yCoordinate, expanded = false, onClickHandler },
+      { name, pathwayState, isCurrentNode, xCoordinate, yCoordinate, expanded = false, onClick },
       ref
     ) => {
+      const onClickHandler = useCallback(() => {
+        if (onClick) onClick(name);
+      }, [onClick, name]);
+
       const { label } = pathwayState;
       const style = {
         top: yCoordinate,

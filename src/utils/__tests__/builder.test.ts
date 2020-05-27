@@ -1,6 +1,6 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import * as Builder from 'utils/builder';
-import { Pathway, Criteria, Transition, GuidanceState, Action } from 'pathways-model';
+import { Pathway, Criteria, Transition, Action } from 'pathways-model';
 
 describe('builder interface add functions', () => {
   // Create a deep copy of the pathway
@@ -26,11 +26,8 @@ describe('builder interface add functions', () => {
   });
 
   it('export pathway', () => {
-    const _pathway = JSON.parse(JSON.stringify(pathway)); // create a deep copy
-    const exportedPathway = Builder.exportPathway(_pathway);
-    expect(exportedPathway.length).toBeGreaterThan(0);
+    const exportedPathway = Builder.exportPathway(pathway);
     const exportedPathwayJson: Pathway = JSON.parse(exportedPathway);
-    expect(exportedPathwayJson).toBeDefined();
 
     // Check the id for criteria has been stripped
     exportedPathwayJson.criteria.forEach((criteria: Criteria) =>
@@ -45,9 +42,7 @@ describe('builder interface add functions', () => {
       state.transitions.forEach((transition: Transition) => expect('id' in transition).toBeFalsy());
 
       if ('action' in state) {
-        (state as GuidanceState).action.forEach((action: Action) =>
-          expect('id' in action).toBeFalsy()
-        );
+        state.action.forEach((action: Action) => expect('id' in action).toBeFalsy());
       }
     });
   });
@@ -65,37 +60,35 @@ describe('builder interface add functions', () => {
     expect(criteria).toEqual(expectedCriteria);
   });
 
-  it('add branch state', () => {
-    const key = Builder.addBranchState(pathway);
-    const expectedState = {
-      key: key,
-      label: '',
-      transitions: []
-    };
-    expect(pathway.states[key]).toEqual(expectedState);
-  });
-
   it('add guidance state', () => {
-    const key = Builder.addGuidanceState(pathway);
-    const expectedState = {
-      key: key,
-      label: '',
-      transitions: [],
-      action: [],
-      cql: ''
-    };
-    expect(pathway.states[key]).toEqual(expectedState);
+    const existingStates = Object.keys(pathway.states);
+    const newPathway = Builder.addGuidanceState(pathway);
+
+    const newStateKey = Object.keys(newPathway.states).find(
+      state => !existingStates.includes(state)
+    );
+    expect(newPathway.states[newStateKey]).toEqual(
+      expect.objectContaining({
+        label: 'New Node',
+        transitions: [],
+        action: [],
+        cql: ''
+      })
+    );
   });
 
   it('add transition', () => {
     const startStateKey = 'Surgery';
     const endStateKey = 'N-test';
-    const id = Builder.addTransition(pathway, startStateKey, endStateKey);
-    const expectedTransition = {
-      id: id,
-      transition: endStateKey
-    };
-    expect(pathway.states[startStateKey].transitions[0]).toEqual(expectedTransition);
+
+    const newPathway = Builder.addTransition(pathway, startStateKey, endStateKey);
+
+    expect(pathway.states[startStateKey].transitions).toEqual([]);
+    expect(newPathway.states[startStateKey].transitions[0]).toEqual(
+      expect.objectContaining({
+        transition: endStateKey
+      })
+    );
   });
 
   it('add action', () => {
@@ -215,8 +208,25 @@ describe('builder interface update functions', () => {
 
   it('set state label', () => {
     const key = 'T-test';
-    Builder.setStateLabel(pathway, key, 'test label');
-    expect(pathway.states[key].label).toBe('test label');
+
+    const newPathway = Builder.setStateLabel(pathway, key, 'test label');
+
+    expect(pathway.states[key].label).toBe('T-test');
+    expect(newPathway.states[key].label).toBe('test label');
+  });
+
+  describe('setStateNodeType', () => {
+    it('converts a branch state into a guidance state', () => {
+      const key = 'N-test';
+      const newPathway = Builder.setStateNodeType(pathway, key, 'action');
+      expect(newPathway.states[key].cql).toEqual('');
+    });
+
+    it('converts a guidance state intoa a branch state', () => {
+      const key = 'Surgery';
+      const newPathway = Builder.makeStateBranch(pathway, key);
+      expect(newPathway.states[key].cql).not.toBeDefined();
+    });
   });
 
   it('set action type', () => {
@@ -253,18 +263,40 @@ describe('builder interface update functions', () => {
     expect(pathway.states[stateKey].action[0].resource).toEqual(resource);
   });
 
-  it('make branch state a guidance state', () => {
-    const key = 'N-test';
-    Builder.makeBranchStateGuidance(pathway, key);
-    expect(pathway.states[key].cql).toBe('');
-    expect(pathway.states[key].action).toEqual([]);
+  describe('makeStateGuidance', () => {
+    it('converts a branch state into a guidance state', () => {
+      const key = 'N-test';
+      const newPathway = Builder.makeStateGuidance(pathway, key);
+      expect(newPathway.states[key].cql).toEqual('');
+      expect(newPathway.states[key].action).toEqual([]);
+      expect(newPathway.states[key].nodeTypeIsUndefined).not.toBeDefined();
+    });
+
+    it('does not modify its argument', () => {
+      const key = 'N-test';
+      Builder.makeStateGuidance(pathway, key);
+
+      expect(pathway.states[key].cql).not.toBeDefined();
+      expect(pathway.states[key].action).not.toBeDefined();
+    });
   });
 
-  it('make guidance state a branch state', () => {
-    const key = 'Surgery';
-    Builder.makeGuidanceStateBranch(pathway, key);
-    expect('cql' in pathway.states[key]).toBeFalsy();
-    expect('action' in pathway.states[key]).toBeFalsy();
+  describe('makeStateBranch', () => {
+    it('converts a guidance state intoa a branch state', () => {
+      const key = 'Surgery';
+      const newPathway = Builder.makeStateBranch(pathway, key);
+      expect(newPathway.states[key].cql).not.toBeDefined();
+      expect(newPathway.states[key].action).not.toBeDefined();
+      expect(newPathway.states[key].nodeTypeIsUndefined).not.toBeDefined();
+    });
+
+    it('does not modify its argument', () => {
+      const key = 'Surgery';
+      Builder.makeStateBranch(pathway, key);
+
+      expect(pathway.states[key].cql).toBeDefined();
+      expect(pathway.states[key].action).toBeDefined();
+    });
   });
 });
 

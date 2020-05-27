@@ -39,8 +39,20 @@ const colors = {
 };
 
 const typography = {
-  fontFamily:
-    "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif"
+  fontFamily: [
+    'Open Sans',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    'sans-serif'
+  ].join(',')
 };
 
 const materialUiOverridesBase = {
@@ -169,6 +181,11 @@ const materialUiOverridesDark = {
     icon: {
       color: colors.white
     }
+  },
+  MuiMenuItem: {
+    root: {
+      color: colors.grayDark
+    }
   }
 };
 
@@ -177,6 +194,9 @@ const paletteBase = {
     main: colors.blue
   },
   secondary: {
+    main: colors.red
+  },
+  error: {
     main: colors.red
   },
   common: colors,
@@ -201,7 +221,12 @@ const lightTheme = createMuiTheme({
 
 const darkTheme = createMuiTheme({
   typography: { ...typography },
-  palette: { ...paletteBase },
+  palette: deepmerge(paletteBase, {
+    text: {
+      primary: colors.white,
+      secondary: colors.white
+    }
+  }),
   overrides: deepmerge(materialUiOverridesBase, materialUiOverridesDark),
   variables: { ...variables }
 });

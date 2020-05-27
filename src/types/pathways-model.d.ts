@@ -30,6 +30,7 @@ declare module 'pathways-model' {
     key?: string;
     label: string;
     transitions: Transition[];
+    nodeTypeIsUndefined?: boolean;
   }
 
   export interface GuidanceState extends State {
@@ -37,10 +38,11 @@ declare module 'pathways-model' {
     action: Action[];
   }
 
-  // NOTE: the model also includes a BranchState (which extends State),
-  // but as of right now it has no additional fields not in State,
-  // and TypeScript does not allow "empty" interfaces so we can't add it yet.
-  // Add it here if/when we ever need it.
+  export interface BranchState extends State {
+    criteriaSource?: string;
+    mcodeCriteria?: string;
+    otherCriteria?: string;
+  }
 
   interface Action {
     id?: string;

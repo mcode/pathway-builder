@@ -1,4 +1,4 @@
-import { Pathway, Criteria, State, Transition, Action, GuidanceState } from 'pathways-model';
+import { Pathway, Criteria, State, GuidanceState, Transition, Action } from 'pathways-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 
@@ -20,24 +20,38 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
 }
 
 export function exportPathway(pathway: Pathway): string {
-  // Strip id from each criteria
-  pathway.criteria.forEach((criteria: Criteria) => delete criteria.id);
+  const pathwayToExport: Pathway = {
+    ...pathway,
+    // Strip id from each criteria
+    criteria: pathway.criteria.map((criteria: Criteria) => ({ ...criteria, id: undefined })),
+    states: { ...pathway.states }
+  };
 
-  // Strip key from each state
-  Object.keys(pathway.states).forEach((stateName: string) => {
-    const state = pathway.states[stateName];
-    delete state.key;
-
-    // Strip id from each state.transition
-    state.transitions.forEach((transition: Transition) => delete transition.id);
-
-    // Strip id from each state.action
-    if ('action' in state) {
-      (state as GuidanceState).action.forEach((action: Action) => delete action.id);
-    }
+  Object.keys(pathwayToExport.states).forEach((stateName: string) => {
+    pathwayToExport.states[stateName] = {
+      ...pathwayToExport.states[stateName],
+      // Strip key from each state
+      key: undefined,
+      criteriaSource: undefined,
+      mcodeCriteria: undefined,
+      otherCriteria: undefined,
+      // Strip id from each state.transition
+      transitions: pathway.states[stateName].transitions.map((transition: Transition) => ({
+        ...transition,
+        id: undefined
+      })),
+      // Strip id from each state.action
+      action:
+        (pathway.states[stateName] as GuidanceState).action == null
+          ? undefined
+          : (pathway.states[stateName] as GuidanceState).action.map((action: Action) => ({
+              ...action,
+              id: undefined
+            }))
+    };
   });
 
-  return JSON.stringify(pathway, undefined, 2);
+  return JSON.stringify(pathwayToExport, undefined, 2);
 }
 
 // TODO: possibly add more criteria methods
@@ -69,46 +83,130 @@ export function setCriteriaElm(pathway: Pathway, elm: object): void {
   pathway.elm.criteria = elm;
 }
 
-function addState(pathway: Pathway, key?: string): string {
+export function createState(key?: string): State {
   if (!key) key = shortid.generate();
   const state: State = {
-    key: key,
-    label: '',
-    transitions: []
+    key,
+    label: 'New Node',
+    transitions: [],
+    nodeTypeIsUndefined: true
   };
-  pathway.states[key] = state;
 
-  return key;
+  return state;
 }
 
-export function addBranchState(pathway: Pathway): string {
-  const key = shortid.generate();
-  return addState(pathway, key);
+export function addState(pathway: Pathway, state: State): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [state.key as string]: state
+    }
+  };
 }
 
-export function addGuidanceState(pathway: Pathway): string {
-  const key = shortid.generate();
-  addState(pathway, key);
-  makeBranchStateGuidance(pathway, key);
-  return key;
+export function addGuidanceState(pathway: Pathway): Pathway {
+  const state = createState();
+  const newPathway = addState(pathway, state);
+
+  return makeStateGuidance(newPathway, state.key as string);
 }
 
-export function setStateLabel(pathway: Pathway, key: string, label: string): void {
-  pathway.states[key].label = label;
+export function setStateLabel(pathway: Pathway, key: string, label: string): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        label
+      }
+    }
+  };
+}
+
+export function setStateNodeType(pathway: Pathway, stateKey: string, nodeType: string): Pathway {
+  switch (nodeType) {
+    case 'action':
+      return makeStateGuidance(pathway, stateKey);
+    case 'branch':
+      return makeStateBranch(pathway, stateKey);
+    default:
+      return pathway;
+  }
+}
+
+export function setStateCriteriaSource(
+  pathway: Pathway,
+  key: string,
+  criteriaSource: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        criteriaSource
+      }
+    }
+  };
+}
+
+export function setStateMcodeCriteria(
+  pathway: Pathway,
+  key: string,
+  mcodeCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        mcodeCriteria
+      }
+    }
+  };
+}
+
+export function setStateOtherCriteria(
+  pathway: Pathway,
+  key: string,
+  otherCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        otherCriteria
+      }
+    }
+  };
 }
 
 export function addTransition(
   pathway: Pathway,
   startStateKey: string,
   endStateKey: string
-): string {
-  const id = shortid.generate();
+): Pathway {
   const transition: Transition = {
-    id: id,
+    id: shortid.generate(),
     transition: endStateKey
   };
-  pathway.states[startStateKey].transitions.push(transition);
-  return id;
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startStateKey]: {
+        ...pathway.states[startStateKey],
+        transitions: [...pathway.states[startStateKey].transitions, transition]
+      }
+    }
+  };
 }
 
 export function setTransitionCondition(
@@ -118,7 +216,7 @@ export function setTransitionCondition(
   description: string,
   cql: string
 ): void {
-  const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
+  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -126,7 +224,7 @@ export function setTransitionCondition(
 }
 
 export function setGuidanceStateCql(pathway: Pathway, key: string, cql: string): void {
-  pathway.states[key].cql = cql;
+  (pathway.states[key] as GuidanceState).cql = cql;
 }
 
 // TODO: possibly add more action methods
@@ -144,8 +242,22 @@ export function addAction(
     description: description,
     resource: resource
   };
-  pathway.states[key].action.push(action);
+  (pathway.states[key] as GuidanceState).action.push(action);
   return id;
+}
+
+export function getNodeType(pathway: Pathway, key: string | undefined): string {
+  if (!key) {
+    return 'null';
+  }
+  const state = pathway.states[key];
+  if (state.nodeTypeIsUndefined) {
+    return 'null';
+  } else if (!(state as GuidanceState).action && key !== 'Start') {
+    return 'branch';
+  } else {
+    return 'action';
+  }
 }
 
 /*
@@ -169,10 +281,10 @@ export function setTransition(
   endStateKey: string,
   transitionId: string
 ): void {
-  const transition: Transition = pathway.states[startStateKey].transitions.find(
+  const transition = pathway.states[startStateKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
-  transition.transition = endStateKey;
+  if (transition) transition.transition = endStateKey;
 }
 
 export function setTransitionConditionDescription(
@@ -181,7 +293,7 @@ export function setTransitionConditionDescription(
   transitionId: string,
   description: string
 ): void {
-  const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
+  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -194,7 +306,7 @@ export function setTransitionConditionCql(
   transitionId: string,
   cql: string
 ): void {
-  const foundTransition: Transition | null = pathway.states[startNodeKey].transitions.find(
+  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -207,9 +319,11 @@ export function setActionType(
   actionId: string,
   type: string
 ): void {
-  if (pathway.states[stateKey].action) {
-    const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
-    action.type = type;
+  if ((pathway.states[stateKey] as GuidanceState).action) {
+    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+      (action: Action) => action.id === actionId
+    );
+    if (action) action.type = type;
   }
 }
 
@@ -219,9 +333,11 @@ export function setActionDescription(
   actionId: string,
   description: string
 ): void {
-  if (pathway.states[stateKey].action) {
-    const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
-    action.description = description;
+  if ((pathway.states[stateKey] as GuidanceState).action) {
+    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+      (action: Action) => action.id === actionId
+    );
+    if (action) action.description = description;
   }
 }
 
@@ -231,24 +347,61 @@ export function setActionResource(
   actionId: string,
   resource: MedicationRequest | ServiceRequest
 ): void {
-  if (pathway.states[stateKey].action) {
-    const action = pathway.states[stateKey].action.find((action: Action) => action.id === actionId);
-    action.resource = resource;
+  if ((pathway.states[stateKey] as GuidanceState).action) {
+    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+      (action: Action) => action.id === actionId
+    );
+    if (action) action.resource = resource;
   }
 }
 
-export function makeBranchStateGuidance(pathway: Pathway, key: string): void {
-  const state = pathway.states[key];
-  if (!('action' in state)) {
-    state.cql = '';
-    state.action = [];
+export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
+  const state = pathway.states[stateKey] as GuidanceState;
+
+  if (state.cql !== undefined && state.action !== undefined) {
+    return pathway;
   }
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [stateKey]: {
+        ...state,
+        cql: '',
+        action: [],
+        nodeTypeIsUndefined: undefined,
+        criteriaSource: undefined,
+        mcodeCriteria: undefined,
+        otherCriteria: undefined
+      }
+    }
+  };
 }
 
-export function makeGuidanceStateBranch(pathway: Pathway, key: string): void {
-  const state = pathway.states[key];
-  delete state.cql;
-  delete state.action;
+export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
+  const state = pathway.states[stateKey] as GuidanceState;
+
+  if (
+    state.cql === undefined &&
+    state.action === undefined &&
+    state.nodeTypeIsUndefined === undefined
+  ) {
+    return pathway;
+  }
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [stateKey]: {
+        ...state,
+        cql: undefined,
+        action: undefined,
+        nodeTypeIsUndefined: undefined
+      }
+    }
+  };
 }
 
 /*
@@ -291,7 +444,7 @@ export function removeTransitionCondition(
   const transition = pathway.states[stateKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
-  delete transition.condition;
+  if (transition) delete transition.condition;
 }
 
 export function removeTransition(pathway: Pathway, stateKey: string, transitionId: string): void {
@@ -302,10 +455,10 @@ export function removeTransition(pathway: Pathway, stateKey: string, transitionI
 }
 
 export function removeAction(pathway: Pathway, stateKey: string, actionId: string): void {
-  if (pathway.states[stateKey].action) {
-    const actions = pathway.states[stateKey].action.filter(
+  if ((pathway.states[stateKey] as GuidanceState).action) {
+    const actions = (pathway.states[stateKey] as GuidanceState).action.filter(
       (action: Action) => action.id !== actionId
     );
-    pathway.states[stateKey].action = actions;
+    (pathway.states[stateKey] as GuidanceState).action = actions;
   }
 }
