@@ -1,8 +1,6 @@
 import React, { FC, memo, ReactNode } from 'react';
 import { Tab as ReactTab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
 
-import PathwaysList from 'components/PathwaysList';
-import CriteriaList from 'components/CriteriaList';
 import { Button } from '@material-ui/core';
 
 import useStyles from './styles';
