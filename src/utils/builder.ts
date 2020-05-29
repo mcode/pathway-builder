@@ -493,7 +493,6 @@ export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
       [stateKey]: {
         ...state,
         cql: '',
-        elm: {},
         action: [],
         nodeTypeIsUndefined: undefined,
         criteriaSource: undefined,

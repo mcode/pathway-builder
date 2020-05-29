@@ -207,8 +207,7 @@ describe('builder interface add functions', () => {
         label: 'New Node',
         transitions: [],
         action: [],
-        cql: '',
-        elm: {}
+        cql: ''
       })
     );
   });
