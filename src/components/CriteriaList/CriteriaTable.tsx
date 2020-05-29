@@ -20,11 +20,7 @@ const CriteriaTable: FC = () => {
   const { criteria, deleteCriteria } = useCriteriaContext();
 
   const renderDate = (datetime: number): string => {
-    let formattedDate = '';
-    if (datetime) {
-      formattedDate = moment(datetime).fromNow();
-    }
-    return formattedDate;
+    return moment(datetime).fromNow();
   };
 
   return (

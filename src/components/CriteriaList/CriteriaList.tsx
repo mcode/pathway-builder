@@ -1,6 +1,6 @@
 import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faTools, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
 import { usePathwayContext } from 'components/PathwayProvider';
@@ -39,7 +39,7 @@ const CriteriaList: FC = () => {
           className={styles.buildCriteriaButton}
           variant="contained"
           color="primary"
-          startIcon={<FontAwesomeIcon icon={faPlus} />}
+          startIcon={<FontAwesomeIcon icon={faTools} />}
         >
           Build Criteria
         </Button>

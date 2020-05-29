@@ -36,7 +36,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
   );
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="import-criteria" fullWidth maxWidth="md">
+    <Dialog open={open} onClose={onClose} aria-labelledby="import-criteria" fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
         <IconButton aria-label="close" onClick={onClose} className={styles.dialogCloseButton}>
           <FontAwesomeIcon icon={faTimes} />
