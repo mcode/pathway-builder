@@ -29,7 +29,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
   const selectFile = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const files = importFileRef.current?.files;
+      const files = importFileRef?.current?.files;
       if (files?.length) addCriteria(files[0]);
       onClose();
       setFileName('');
@@ -38,7 +38,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
   );
 
   const handleChooseFile = useCallback(() => {
-    if (importFileRef.current?.files?.[0]) setFileName(importFileRef.current.files[0].name);
+    if (importFileRef?.current?.files?.[0]) setFileName(importFileRef.current.files[0].name);
   }, [importFileRef]);
 
   return (
