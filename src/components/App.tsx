@@ -11,6 +11,7 @@ import ThemeProvider from './ThemeProvider';
 import { PathwayProvider } from './PathwayProvider';
 import { UserProvider } from './UserProvider';
 import { CriteriaProvider } from './CriteriaProvider';
+import { Button, makeStyles, Theme, createStyles } from '@material-ui/core';
 
 const App: FC = () => {
   return (
@@ -28,19 +29,7 @@ const App: FC = () => {
                 </Route>
                 <Route path="/">
                   <Header />
-                  <Tabs>
-                    <TabList>
-                      <Tab>Pathways</Tab>
-                      <Tab>Criteria</Tab>
-                    </TabList>
-
-                    <TabPanel>
-                      <PathwaysList />
-                    </TabPanel>
-                    <TabPanel>
-                      <CriteriaList />
-                    </TabPanel>
-                  </Tabs>
+                  <PathwayCriteriaTabs />
                 </Route>
               </Switch>
             </Router>
@@ -48,6 +37,40 @@ const App: FC = () => {
         </PathwayProvider>
       </UserProvider>
     </ThemeProvider>
+  );
+};
+
+const PathwayCriteriaTabs: FC = () => {
+  const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      label: {
+        padding: `0.2em 2em`,
+        textTransform: 'none',
+        fontSize: '1.2em',
+        fontWeight: 100
+      }
+    })
+  );
+  const styles = useStyles();
+
+  return (
+    <Tabs>
+      <TabList>
+        <Tab>
+          <Button classes={{ label: styles.label }}>Pathways</Button>
+        </Tab>
+        <Tab>
+          <Button classes={{ label: styles.label }}>Criteria</Button>
+        </Tab>
+      </TabList>
+
+      <TabPanel>
+        <PathwaysList />
+      </TabPanel>
+      <TabPanel>
+        <CriteriaList />
+      </TabPanel>
+    </Tabs>
   );
 };
 
