@@ -24,6 +24,20 @@ export default makeStyles(
     dialogCloseButton: {
       float: 'right',
       width: '45px'
+    },
+    input: {
+      display: 'none'
+    },
+    chooseFileInput: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    inputButton: {
+      whiteSpace: 'nowrap',
+      marginRight: '1em'
+    },
+    fileName: {
+      fontStyle: 'italic'
     }
   }),
   { name: 'CriteriaList' }

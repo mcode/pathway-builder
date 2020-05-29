@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, memo, FormEvent } from 'react';
+import React, { FC, useCallback, useRef, memo, FormEvent, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -21,6 +21,7 @@ interface ImportCriteriaModalProps {
 
 const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) => {
   const styles = useStyles();
+  const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
 
   const { addCriteria } = useCriteriaContext();
@@ -31,9 +32,14 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
       const files = importFileRef.current?.files;
       if (files?.length) addCriteria(files[0]);
       onClose();
+      setFileName('');
     },
     [addCriteria, onClose]
   );
+
+  const handleChooseFile = useCallback(() => {
+    if (importFileRef.current?.files?.[0]) setFileName(importFileRef.current.files[0].name);
+  }, [importFileRef]);
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="import-criteria" fullWidth maxWidth="sm">
@@ -45,14 +51,31 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
 
       <form onSubmit={selectFile}>
         <DialogContent>
-          <Input
-            autoFocus
-            fullWidth
-            required
-            inputRef={importFileRef}
-            type="file"
-            inputProps={{ accept: '.json' }}
-          />
+          <div className={styles.chooseFileInput}>
+            <Input
+              id="choose-file-input"
+              className={styles.input}
+              inputRef={importFileRef}
+              type="file"
+              inputProps={{ accept: '.json' }}
+              onChange={handleChooseFile}
+            />
+
+            <label htmlFor="choose-file-input">
+              <Button
+                className={styles.inputButton}
+                variant="contained"
+                color="primary"
+                component="span"
+              >
+                Choose File
+              </Button>
+            </label>
+
+            <div className={styles.fileName}>
+              {fileName ? <span>{fileName}</span> : <span>Choose ELM file to import.</span>}
+            </div>
+          </div>
         </DialogContent>
 
         <DialogActions>
