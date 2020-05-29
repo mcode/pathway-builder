@@ -21,18 +21,16 @@ const Tabs: FC<TabsProp> = ({ tabs }) => {
     <div className={styles.root}>
       <ReactTabs>
         <TabList>
-          {tabs.map(tab => {
-            return (
-              <ReactTab>
-                <Button classes={{ label: styles.label }}>{tab.label}</Button>
-              </ReactTab>
-            );
-          })}
+          {tabs.map(tab => (
+            <ReactTab>
+              <Button classes={{ label: styles.label }}>{tab.label}</Button>
+            </ReactTab>
+          ))}
         </TabList>
 
-        {tabs.map(tab => {
-          return <TabPanel>{tab.component}</TabPanel>;
-        })}
+        {tabs.map(tab => (
+          <TabPanel>{tab.component}</TabPanel>
+        ))}
       </ReactTabs>
     </div>
   );
