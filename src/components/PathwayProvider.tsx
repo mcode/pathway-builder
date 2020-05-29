@@ -17,7 +17,7 @@ interface PathwayContextInterface {
   pathways: Pathway[];
   status: string;
   addPathway: (pathway: Pathway) => void;
-  deletePathway: (pathway: Pathway) => void;
+  deletePathway: (id: string) => void;
   updatePathwayAtIndex: (pathway: Pathway, index: number) => void;
 }
 

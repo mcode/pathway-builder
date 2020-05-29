@@ -76,26 +76,6 @@ export function exportPathway(pathway: Pathway): string {
     }
   };
 
-  const mergeElm = (additionalElm: ElmLibrary): void => {
-    // Merge usings
-    additionalElm.library.usings.def.forEach(using => {
-      // Check if it is in ELM
-      if (!elm.library.usings.def.find(def => def.uri === using.uri))
-        elm.library.usings.def.push(using);
-    });
-    // Merge includes
-    additionalElm.library.includes.def.forEach(include => {
-      if (!elm.library.includes.def.find(def => def.path === include.path))
-        elm.library.includes.def.push(include);
-    });
-    // Merge valueSets
-    additionalElm.library.valueSets.def.forEach(valueSet => {
-      if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
-        elm.library.valueSets.def.push(valueSet);
-    });
-    // TODO: merge code, codesystem, and concepts
-  };
-
   const pathwayToExport: Pathway = {
     ...pathway,
     // Strip id from each criteria
@@ -106,7 +86,7 @@ export function exportPathway(pathway: Pathway): string {
   Object.keys(pathwayToExport.states).forEach((stateName: string) => {
     const state = pathway.states[stateName];
     if ('elm' in state && state.elm && state.key) {
-      mergeElm(state.elm);
+      mergeElm(elm, state.elm);
       const elmStatement = getElmStatement(state.elm);
       elmStatement.name = state.key;
       elm.library.statements.def.push(elmStatement);
@@ -124,7 +104,7 @@ export function exportPathway(pathway: Pathway): string {
       transitions: state.transitions.map((transition: Transition) => {
         if (transition.condition?.elm) {
           // Add tranistion.condition.elm to elm
-          mergeElm(transition.condition.elm);
+          mergeElm(elm, transition.condition.elm);
           const elmStatement = getElmStatement(transition.condition.elm);
           elmStatement.name = transition.condition.description;
           elm.library.statements.def.push(elmStatement);
