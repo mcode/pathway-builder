@@ -14,7 +14,7 @@ const CriteriaList: FC = () => {
   const styles = useStyles();
   const { status } = usePathwayContext();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const openImportModal = useCallback((): void => {
     setOpen(true);
   }, []);
