@@ -1,4 +1,13 @@
-import { Pathway, Criteria, State, GuidanceState, Transition, Action } from 'pathways-model';
+import {
+  Pathway,
+  Criteria,
+  State,
+  Transition,
+  Action,
+  GuidanceState,
+  ElmLibrary,
+  ElmStatement
+} from 'pathways-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 
@@ -20,6 +29,53 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
 }
 
 export function exportPathway(pathway: Pathway): string {
+  const elm: ElmLibrary = {
+    library: {
+      identifier: {
+        id: pathway.id,
+        version: '1.0.0'
+      },
+      schemaIdentifier: {
+        id: 'urn:hl7-org:elm',
+        version: 'r1'
+      },
+      usings: {
+        def: [
+          {
+            localIdentifier: 'System',
+            uri: 'urn:hl7-org:elm-types:r1'
+          },
+          {
+            localId: '1',
+            locator: '3:1-3:26',
+            localIdentifier: 'FHIR',
+            uri: 'http://hl7.org/fhir',
+            version: '4.0.0'
+          }
+        ]
+      },
+      statements: {
+        def: [
+          {
+            locator: '13:1-13:15',
+            name: 'Patient',
+            context: 'Patient',
+            expression: {
+              type: 'SingletonFrom',
+              operand: {
+                locator: '13:1-13:15',
+                dataType: '{http://hl7.org/fhir}Patient',
+                type: 'Retrieve'
+              }
+            }
+          }
+        ]
+      },
+      includes: { def: [] },
+      valueSets: { def: [] }
+    }
+  };
+
   const pathwayToExport: Pathway = {
     ...pathway,
     // Strip id from each criteria
@@ -28,30 +84,89 @@ export function exportPathway(pathway: Pathway): string {
   };
 
   Object.keys(pathwayToExport.states).forEach((stateName: string) => {
+    const state = pathway.states[stateName];
+    if ('elm' in state && state.elm && state.key) {
+      mergeElm(elm, state.elm);
+      const elmStatement = getElmStatement(state.elm);
+      elmStatement.name = state.key;
+      elm.library.statements.def.push(elmStatement);
+    }
+
     pathwayToExport.states[stateName] = {
       ...pathwayToExport.states[stateName],
       // Strip key from each state
       key: undefined,
+      elm: undefined,
       criteriaSource: undefined,
       mcodeCriteria: undefined,
       otherCriteria: undefined,
       // Strip id from each state.transition
-      transitions: pathway.states[stateName].transitions.map((transition: Transition) => ({
-        ...transition,
-        id: undefined
-      })),
+      transitions: state.transitions.map((transition: Transition) => {
+        if (transition.condition?.elm) {
+          // Add tranistion.condition.elm to elm
+          mergeElm(elm, transition.condition.elm);
+          const elmStatement = getElmStatement(transition.condition.elm);
+          elmStatement.name = transition.condition.description;
+          elm.library.statements.def.push(elmStatement);
+        }
+        return {
+          ...transition,
+          id: undefined,
+          condition: transition.condition ? { ...transition.condition, elm: undefined } : undefined
+        };
+      }),
       // Strip id from each state.action
       action:
-        (pathway.states[stateName] as GuidanceState).action == null
+        (state as GuidanceState).action == null
           ? undefined
-          : (pathway.states[stateName] as GuidanceState).action.map((action: Action) => ({
+          : (state as GuidanceState).action.map((action: Action) => ({
               ...action,
               id: undefined
             }))
     };
   });
 
+  setNavigationalElm(pathwayToExport, elm);
+
   return JSON.stringify(pathwayToExport, undefined, 2);
+}
+
+function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
+  // Merge usings
+  additionalElm.library.usings.def.forEach(using => {
+    // Check if it is in ELM
+    if (!elm.library.usings.def.find(def => def.uri === using.uri))
+      elm.library.usings.def.push(using);
+  });
+  // Merge includes
+  additionalElm.library.includes.def.forEach(include => {
+    if (!elm.library.includes.def.find(def => def.path === include.path))
+      elm.library.includes.def.push(include);
+  });
+  // Merge valueSets
+  additionalElm.library.valueSets.def.forEach(valueSet => {
+    if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
+      elm.library.valueSets.def.push(valueSet);
+  });
+  // TODO: merge code, codesystem, and concepts
+}
+
+function getElmStatement(elm: ElmLibrary): ElmStatement {
+  const defaultStatementNames = [
+    'Patient',
+    'MeetsInclusionCriteria',
+    'InPopulation',
+    'Recommendation',
+    'Rationale',
+    'Errors'
+  ];
+  const elmStatement = elm.library.statements.def.find(
+    def => !defaultStatementNames.includes(def.name)
+  );
+
+  // elmStatement type is ElmStatement | undefined but criteria
+  // provider validates such a statement exists in the elm
+  return elmStatement as ElmStatement;
 }
 
 // TODO: possibly add more criteria methods
@@ -214,17 +329,23 @@ export function setTransitionCondition(
   startNodeKey: string,
   transitionId: string,
   description: string,
-  cql: string
+  elm: ElmLibrary
 ): void {
   const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
-  if (foundTransition) foundTransition.condition = { description: description, cql: cql };
+  if (foundTransition)
+    foundTransition.condition = {
+      description: description,
+      cql: getElmStatement(elm).name,
+      elm: elm
+    };
 }
 
-export function setGuidanceStateCql(pathway: Pathway, key: string, cql: string): void {
-  (pathway.states[key] as GuidanceState).cql = cql;
+export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
+  (pathway.states[key] as GuidanceState).elm = elm;
+  (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
 }
 
 // TODO: possibly add more action methods
@@ -300,17 +421,20 @@ export function setTransitionConditionDescription(
   if (foundTransition?.condition) foundTransition.condition.description = description;
 }
 
-export function setTransitionConditionCql(
+export function setTransitionConditionElm(
   pathway: Pathway,
   startNodeKey: string,
   transitionId: string,
-  cql: string
+  elm: ElmLibrary
 ): void {
   const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
-  if (foundTransition?.condition) foundTransition.condition.cql = cql;
+  if (foundTransition?.condition) {
+    foundTransition.condition.elm = elm;
+    foundTransition.condition.cql = getElmStatement(elm).name;
+  }
 }
 
 export function setActionType(
@@ -384,6 +508,7 @@ export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
 
   if (
     state.cql === undefined &&
+    state.elm === undefined &&
     state.action === undefined &&
     state.nodeTypeIsUndefined === undefined
   ) {
@@ -397,6 +522,7 @@ export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
       [stateKey]: {
         ...state,
         cql: undefined,
+        elm: undefined,
         action: undefined,
         nodeTypeIsUndefined: undefined
       }

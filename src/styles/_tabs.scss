@@ -1,0 +1,18 @@
+@import 'variables';
+
+.react-tabs {
+  &__tab {
+    display: inline-block;
+
+    &-list {
+      margin: 0 0 1em;
+      padding: 2em 2em 0;
+      background-color: $gray-lighter;
+    }
+
+    &--selected {
+      background: $white;
+      border-top: 4px solid $blue;
+    }
+  }
+}

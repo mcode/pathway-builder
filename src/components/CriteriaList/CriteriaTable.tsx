@@ -1,5 +1,4 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -11,36 +10,39 @@ import {
   TableHead,
   TableRow
 } from '@material-ui/core';
-
-import { usePathwayContext } from 'components/PathwayProvider';
+import moment from 'moment';
 
 import useStyles from './styles';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
-const PathwaysTable: FC = () => {
+const CriteriaTable: FC = () => {
   const styles = useStyles();
-  const { pathways, deletePathway } = usePathwayContext();
+  const { criteria, deleteCriteria } = useCriteriaContext();
+
+  const renderDate = (datetime: number): string => {
+    return moment(datetime).fromNow();
+  };
 
   return (
-    <TableContainer className={styles.pathwayList}>
-      <Table aria-label="pathway list">
+    <TableContainer className={styles.criteriaList}>
+      <Table aria-label="criteria list">
         <TableHead>
           <TableRow>
-            <TableCell>Pathway Name</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Last Updated</TableCell>
+            <TableCell>Criteria Name</TableCell>
+            <TableCell>Version</TableCell>
+            <TableCell>Added</TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {pathways.map(pathway => (
-            <TableRow key={pathway.id}>
+          {criteria.map(c => (
+            <TableRow key={c.id}>
               <TableCell component="th" scope="row">
-                {pathway.name}
+                {c.label}
               </TableCell>
-
-              <TableCell>draft</TableCell>
-              <TableCell>2 days ago</TableCell>
+              <TableCell>{c.version}</TableCell>
+              <TableCell>{renderDate(c.modified)}</TableCell>
 
               <TableCell align="right">
                 <Button
@@ -48,8 +50,6 @@ const PathwaysTable: FC = () => {
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
-                  component={Link}
-                  to={`/builder/${encodeURIComponent(pathway.id)}`}
                 >
                   Edit
                 </Button>
@@ -58,7 +58,7 @@ const PathwaysTable: FC = () => {
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                  onClick={(): void => deletePathway(pathway.id)}
+                  onClick={(): void => deleteCriteria(c.id)}
                 >
                   Delete
                 </Button>
@@ -71,4 +71,4 @@ const PathwaysTable: FC = () => {
   );
 };
 
-export default memo(PathwaysTable);
+export default memo(CriteriaTable);
