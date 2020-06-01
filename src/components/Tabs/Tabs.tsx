@@ -4,6 +4,7 @@ import { Tab as ReactTab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tab
 import { Button } from '@material-ui/core';
 
 import useStyles from './styles';
+import shortid from 'shortid';
 
 interface Tab {
   label: string;
@@ -22,14 +23,14 @@ const Tabs: FC<TabsProp> = ({ tabs }) => {
       <ReactTabs>
         <TabList>
           {tabs.map(tab => (
-            <ReactTab>
+            <ReactTab key={shortid.generate()}>
               <Button classes={{ label: styles.label }}>{tab.label}</Button>
             </ReactTab>
           ))}
         </TabList>
 
         {tabs.map(tab => (
-          <TabPanel>{tab.component}</TabPanel>
+          <TabPanel key={shortid.generate()}>{tab.component}</TabPanel>
         ))}
       </ReactTabs>
     </div>
