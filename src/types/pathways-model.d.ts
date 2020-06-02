@@ -40,9 +40,6 @@ declare module 'pathways-model' {
   }
 
   export interface BranchState extends State {
-    criteriaSource?: string;
-    mcodeCriteria?: string;
-    otherCriteria?: string;
   }
 
   interface Action {

@@ -97,9 +97,6 @@ export function exportPathway(pathway: Pathway): string {
       // Strip key from each state
       key: undefined,
       elm: undefined,
-      criteriaSource: undefined,
-      mcodeCriteria: undefined,
-      otherCriteria: undefined,
       // Strip id from each state.transition
       transitions: state.transitions.map((transition: Transition) => {
         if (transition.condition?.elm) {
@@ -249,57 +246,6 @@ export function setStateNodeType(pathway: Pathway, stateKey: string, nodeType: s
     default:
       return pathway;
   }
-}
-
-export function setStateCriteriaSource(
-  pathway: Pathway,
-  key: string,
-  criteriaSource: string
-): Pathway {
-  return {
-    ...pathway,
-    states: {
-      ...pathway.states,
-      [key]: {
-        ...pathway.states[key],
-        criteriaSource
-      }
-    }
-  };
-}
-
-export function setStateMcodeCriteria(
-  pathway: Pathway,
-  key: string,
-  mcodeCriteria: string
-): Pathway {
-  return {
-    ...pathway,
-    states: {
-      ...pathway.states,
-      [key]: {
-        ...pathway.states[key],
-        mcodeCriteria
-      }
-    }
-  };
-}
-
-export function setStateOtherCriteria(
-  pathway: Pathway,
-  key: string,
-  otherCriteria: string
-): Pathway {
-  return {
-    ...pathway,
-    states: {
-      ...pathway.states,
-      [key]: {
-        ...pathway.states[key],
-        otherCriteria
-      }
-    }
-  };
 }
 
 export function addTransition(
@@ -542,10 +488,7 @@ export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
         ...state,
         cql: '',
         action: [],
-        nodeTypeIsUndefined: undefined,
-        criteriaSource: undefined,
-        mcodeCriteria: undefined,
-        otherCriteria: undefined
+        nodeTypeIsUndefined: undefined
       }
     }
   };

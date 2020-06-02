@@ -43,8 +43,7 @@ const BranchNode: FC<BranchNodeProps> = ({
     updatePathway(addTransition(newPathway, currentNodeKey || '', newState.key as string));
   }, [pathway, updatePathway, currentNodeKey]);
 
-  const canAddTransition = true;
-
+  console.log('node re-render');
   return (
     <>
       <DropDown
@@ -60,24 +59,20 @@ const BranchNode: FC<BranchNodeProps> = ({
             key={transition.id}
             pathway={pathway}
             transition={transition}
-            currentNode={currentNode}
+            currentNodeKey={currentNodeKey || ''}
             updatePathway={updatePathway}
           />
         );
       })}
 
-      {canAddTransition && (
-        <>
-          <hr className={styles.divider} />
+      <hr className={styles.divider} />
 
-          <SidebarButton
-            buttonName="Add Transition"
-            buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-            buttonText="Add transition logic for a clinical decision within a workflow."
-            onClick={handleAddTransition}
-          />
-        </>
-      )}
+      <SidebarButton
+        buttonName="Add Transition"
+        buttonIcon={<FontAwesomeIcon icon={faPlus} />}
+        buttonText="Add transition logic for a clinical decision within a workflow."
+        onClick={handleAddTransition}
+      />
     </>
   );
 };

@@ -3,24 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { TextField, FormControl } from '@material-ui/core';
-import {
-  setStateCriteriaSource,
-  setStateMcodeCriteria,
-  setStateOtherCriteria,
-  addTransition,
-  createState,
-  addState,
-  setTransitionCriteria,
-  setTransitionCriteriaDisplay
-} from 'utils/builder';
+import { setTransitionCriteria, setTransitionCriteriaDisplay } from 'utils/builder';
 import { SidebarHeader, SidebarButton } from '.';
-import { Pathway, Transition, BranchState } from 'pathways-model';
+import { Pathway, Transition } from 'pathways-model';
 import useStyles from './styles';
 
 interface BranchTransitionProps {
   pathway: Pathway;
   transition: Transition;
-  currentNode: BranchState;
+  currentNodeKey: string;
   updatePathway: (pathway: Pathway) => void;
 }
 
@@ -33,18 +24,17 @@ const criteriaOptions = [
 const BranchTransition: FC<BranchTransitionProps> = ({
   pathway,
   transition,
-  currentNode,
+  currentNodeKey,
   updatePathway
 }) => {
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
   const transitionNode = pathway.states[transitionKey];
   const [useSelected, setUseSelected] = useState<boolean>(false);
-  const currentNodeKey = currentNode?.key;
 
   const handleUseCriteria = useCallback((): void => {
     setUseSelected(!useSelected);
-  }, [pathway, updatePathway]);
+  }, [useSelected]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -53,7 +43,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
       const criteriaSource = event?.target.value || '';
       updatePathway(setTransitionCriteria(pathway, criteriaSource, transitionKey, currentNodeKey));
     },
-    [currentNodeKey, updatePathway, pathway]
+    [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
   );
 
   const setCriteriaDisplay = useCallback(
@@ -65,9 +55,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         setTransitionCriteriaDisplay(pathway, criteriaSource, transitionKey, currentNodeKey)
       );
     },
-    [currentNodeKey, updatePathway, pathway]
+    [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
   );
-
+  console.log('transition re-render');
   return (
     <>
       <hr className={styles.divider} />
