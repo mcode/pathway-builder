@@ -43,14 +43,18 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
     if (nodeRefs?.current) {
       Object.keys(nodeRefs.current).forEach(key => {
         const nodeElement = nodeRefs.current[key];
-        const width = nodeElement.clientWidth;
-        // nodeElement can have multiple children so calculate the sum to get the node height
-        const height = Array.from(nodeElement.children).reduce(
-          (acc, child) => acc + child.clientHeight,
-          0
-        );
+        if (nodeElement) {
+          const width = nodeElement.clientWidth;
+          // nodeElement can have multiple children so calculate the sum to get the node height
+          const height = Array.from(nodeElement.children).reduce(
+            (acc, child) => acc + child.clientHeight,
+            0
+          );
 
-        nodeDimensions[key] = { width, height };
+          nodeDimensions[key] = { width, height };
+        } else {
+          debugger;
+        }
       });
     }
 
@@ -220,7 +224,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   key={nodeName}
                   name={nodeName}
                   ref={(node: HTMLDivElement): void => {
-                    nodeRefs.current[nodeName] = node;
+                    if (node) nodeRefs.current[nodeName] = node;
                   }}
                   pathwayState={pathway.states[nodeName]}
                   isCurrentNode={false}
