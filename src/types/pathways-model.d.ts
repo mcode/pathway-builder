@@ -8,7 +8,7 @@ declare module 'pathways-model' {
     library: string;
     criteria: Criteria[];
     states: {
-      [key: string]: GuidanceState | BranchState | State;
+      [key: string]: GuidanceState | State;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -37,9 +37,6 @@ declare module 'pathways-model' {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
-  }
-
-  export interface BranchState extends State {
   }
 
   interface Action {

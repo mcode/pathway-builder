@@ -21,12 +21,20 @@ const criteriaOptions = [
   { value: 'Other', label: 'Other' }
 ];
 
-function usePrevious(value: any) {
-  const ref = useRef<any>();
+function usePreviousString(value: string): string {
+  const ref = useRef<string>();
   useEffect(() => {
     ref.current = value;
   });
-  return ref.current;
+  return ref.current || '';
+}
+
+function usePreviousPathway(value: Pathway): Pathway {
+  const ref = useRef<Pathway>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current || value;
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({
@@ -40,10 +48,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({
   const transitionNode = pathway.states[transitionKey];
   const [useSelected, setUseSelected] = useState<boolean>(false);
   const [criteriaDisplay, setCriteriaDisplay] = useState(transition.criteriaDisplay || '');
-  const prevCriteriaDisplay = usePrevious(criteriaDisplay);
-  const prevTransitionKey = usePrevious(transitionKey);
-  const prevNodeKey = usePrevious(currentNodeKey);
-  const prevPathway = usePrevious(pathway);
+  const prevCriteriaDisplay = usePreviousString(criteriaDisplay);
+  const prevTransitionKey = usePreviousString(transitionKey);
+  const prevNodeKey = usePreviousString(currentNodeKey);
+  const prevPathway = usePreviousPathway(pathway);
+  // need to save this value for the component unmount
   const savedCriteriaDisplay = React.useRef<string>();
 
   const handleUseCriteria = useCallback((): void => {
@@ -56,6 +65,16 @@ const BranchTransition: FC<BranchTransitionProps> = ({
 
       const criteriaSource = event?.target.value || '';
       updatePathway(setTransitionCriteria(pathway, criteriaSource, transitionKey, currentNodeKey));
+
+      // Need to also save the criteria display as the component will reload without saving
+      updatePathway(
+        setTransitionCriteriaDisplay(
+          pathway,
+          savedCriteriaDisplay.current || '',
+          transitionKey,
+          currentNodeKey
+        )
+      );
     },
     [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
   );
@@ -64,28 +83,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     savedCriteriaDisplay.current = event?.target.value || '';
     setCriteriaDisplay(event?.target.value);
   };
-  console.log(
-    'criteriaDisplay prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
-  );
+
+  // Save the pathway when this component unmounts
   useEffect(() => {
-    console.log('component mount');
-    return () => {
-      console.log('component unmount');
-      console.log('temp: ' + savedCriteriaDisplay.current + '.');
-      console.log(
-        'previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey
-      );
-      console.log('current values ' + pathway + ' ' + currentNodeKey + ' -> ' + transitionKey);
+    return (): void => {
       if (pathway && transitionKey && currentNodeKey) {
-        console.log(
-          'updating pathway prev: ' +
-            prevCriteriaDisplay +
-            '. and current:' +
-            criteriaDisplay +
-            '. saved:' +
-            savedCriteriaDisplay.current +
-            '.'
-        );
         updatePathway(
           setTransitionCriteriaDisplay(
             pathway,
@@ -96,15 +98,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         );
       }
     };
+    // we only want to save the pathway on componentWillUnMount
+    // eslint-disable-next-line
   }, []);
 
+  // Save the pathway when we transition to another branch node
   useEffect(() => {
-    console.log('component transition update');
-    console.log('previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey);
     if (prevPathway && prevTransitionKey && prevNodeKey) {
-      console.log(
-        'updating pathway prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
-      );
       updatePathway(
         setTransitionCriteriaDisplay(
           prevPathway,
@@ -115,26 +115,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({
       );
     }
     setCriteriaDisplay(transition.criteriaDisplay || '');
+    // we only want to save the pathway once
+    // eslint-disable-next-line
   }, [transition]);
-
-  // useEffect(() => {
-  //   console.log('component currentNodeKey update');
-  //   console.log('previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey);
-  //   if (prevPathway && prevTransitionKey && prevNodeKey) {
-  //     console.log(
-  //       'updating pathway prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
-  //     );
-  //     updatePathway(
-  //       setTransitionCriteriaDisplay(
-  //         prevPathway,
-  //         prevCriteriaDisplay || '',
-  //         prevTransitionKey,
-  //         prevNodeKey
-  //       )
-  //     );
-  //   }
-  //   setCriteriaDisplay(transition.criteriaDisplay || '');
-  // }, [currentNodeKey]);
 
   return (
     <>
