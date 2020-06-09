@@ -65,15 +65,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({
 
       const criteriaSource = event?.target.value || '';
       updatePathway(setTransitionCriteria(pathway, criteriaSource, transitionKey, currentNodeKey));
-
       // Need to also save the criteria display as the component will reload without saving
       updatePathway(
-        setTransitionCriteriaDisplay(
-          pathway,
-          savedCriteriaDisplay.current || '',
-          transitionKey,
-          currentNodeKey
-        )
+        setTransitionCriteriaDisplay(pathway, criteriaDisplay || '', transitionKey, currentNodeKey)
       );
     },
     [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]

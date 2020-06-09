@@ -292,8 +292,8 @@ export function setTransitionCondition(
 export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
   (pathway.states[key] as GuidanceState).elm = elm;
   (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
-  }
-  
+}
+
 export function setTransitionCriteria(
   pathway: Pathway,
   criteria: string,
@@ -338,8 +338,6 @@ export function setTransitionCriteriaDisplay(
       }
     }
   };
-}
-
 }
 
 // TODO: possibly add more action methods
