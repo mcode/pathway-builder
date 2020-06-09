@@ -70,6 +70,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         setTransitionCriteriaDisplay(pathway, criteriaDisplay || '', transitionKey, currentNodeKey)
       );
     },
+    // Don't include criteriaDisplay as we only want to save when something else is updated
+    // eslint-disable-next-line
     [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
   );
 
