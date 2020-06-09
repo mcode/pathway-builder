@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useState, useCallback, ChangeEvent, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
@@ -10,8 +10,8 @@ import useStyles from './styles';
 
 interface BranchTransitionProps {
   pathway: Pathway;
-  transition: Transition;
   currentNodeKey: string;
+  transition: Transition;
   updatePathway: (pathway: Pathway) => void;
 }
 
@@ -21,16 +21,30 @@ const criteriaOptions = [
   { value: 'Other', label: 'Other' }
 ];
 
+function usePrevious(value: any) {
+  const ref = useRef<any>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 const BranchTransition: FC<BranchTransitionProps> = ({
   pathway,
-  transition,
   currentNodeKey,
+  transition,
   updatePathway
 }) => {
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
   const transitionNode = pathway.states[transitionKey];
   const [useSelected, setUseSelected] = useState<boolean>(false);
+  const [criteriaDisplay, setCriteriaDisplay] = useState(transition.criteriaDisplay || '');
+  const prevCriteriaDisplay = usePrevious(criteriaDisplay);
+  const prevTransitionKey = usePrevious(transitionKey);
+  const prevNodeKey = usePrevious(currentNodeKey);
+  const prevPathway = usePrevious(pathway);
+  const savedCriteriaDisplay = React.useRef<string>();
 
   const handleUseCriteria = useCallback((): void => {
     setUseSelected(!useSelected);
@@ -46,18 +60,82 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
   );
 
-  const setCriteriaDisplay = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey || !transition.id) return;
-
-      const criteriaSource = event?.target.value || '';
-      updatePathway(
-        setTransitionCriteriaDisplay(pathway, criteriaSource, transitionKey, currentNodeKey)
-      );
-    },
-    [transition.id, transitionKey, currentNodeKey, updatePathway, pathway]
+  const updateCriteriaDisplay = (event: ChangeEvent<{ value: string }>): void => {
+    savedCriteriaDisplay.current = event?.target.value || '';
+    setCriteriaDisplay(event?.target.value);
+  };
+  console.log(
+    'criteriaDisplay prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
   );
-  console.log('transition re-render');
+  useEffect(() => {
+    console.log('component mount');
+    return () => {
+      console.log('component unmount');
+      console.log('temp: ' + savedCriteriaDisplay.current + '.');
+      console.log(
+        'previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey
+      );
+      console.log('current values ' + pathway + ' ' + currentNodeKey + ' -> ' + transitionKey);
+      if (pathway && transitionKey && currentNodeKey) {
+        console.log(
+          'updating pathway prev: ' +
+            prevCriteriaDisplay +
+            '. and current:' +
+            criteriaDisplay +
+            '. saved:' +
+            savedCriteriaDisplay.current +
+            '.'
+        );
+        updatePathway(
+          setTransitionCriteriaDisplay(
+            pathway,
+            savedCriteriaDisplay.current || '',
+            transitionKey,
+            currentNodeKey
+          )
+        );
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log('component transition update');
+    console.log('previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey);
+    if (prevPathway && prevTransitionKey && prevNodeKey) {
+      console.log(
+        'updating pathway prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
+      );
+      updatePathway(
+        setTransitionCriteriaDisplay(
+          prevPathway,
+          prevCriteriaDisplay || '',
+          prevTransitionKey,
+          prevNodeKey
+        )
+      );
+    }
+    setCriteriaDisplay(transition.criteriaDisplay || '');
+  }, [transition]);
+
+  // useEffect(() => {
+  //   console.log('component currentNodeKey update');
+  //   console.log('previous values ' + prevPathway + ' ' + prevNodeKey + ' -> ' + prevTransitionKey);
+  //   if (prevPathway && prevTransitionKey && prevNodeKey) {
+  //     console.log(
+  //       'updating pathway prev: ' + prevCriteriaDisplay + '. and current:' + criteriaDisplay + '.'
+  //     );
+  //     updatePathway(
+  //       setTransitionCriteriaDisplay(
+  //         prevPathway,
+  //         prevCriteriaDisplay || '',
+  //         prevTransitionKey,
+  //         prevNodeKey
+  //       )
+  //     );
+  //   }
+  //   setCriteriaDisplay(transition.criteriaDisplay || '');
+  // }, [currentNodeKey]);
+
   return (
     <>
       <hr className={styles.divider} />
@@ -89,10 +167,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({
           <FormControl variant="outlined" fullWidth>
             <TextField
               label="Criteria display"
-              value={transition.criteriaDisplay || ''}
+              value={criteriaDisplay}
               variant="outlined"
-              onChange={setCriteriaDisplay}
-              error={transition.criteriaDisplay === undefined || transition.criteriaDisplay === ''}
+              onChange={updateCriteriaDisplay}
+              error={criteriaDisplay === undefined || criteriaDisplay === ''}
             />
           </FormControl>
         </>
@@ -106,5 +184,4 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     </>
   );
 };
-
 export default memo(BranchTransition);

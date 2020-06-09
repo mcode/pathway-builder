@@ -43,7 +43,7 @@ const BranchNode: FC<BranchNodeProps> = ({
     updatePathway(addTransition(newPathway, currentNodeKey || '', newState.key as string));
   }, [pathway, updatePathway, currentNodeKey]);
 
-  console.log('node re-render');
+  console.log('node re-render '+ currentNode.transitions[0].criteriaDisplay);
   return (
     <>
       <DropDown
@@ -58,8 +58,8 @@ const BranchNode: FC<BranchNodeProps> = ({
           <BranchTransition
             key={transition.id}
             pathway={pathway}
-            transition={transition}
             currentNodeKey={currentNodeKey || ''}
+            transition={transition}
             updatePathway={updatePathway}
           />
         );

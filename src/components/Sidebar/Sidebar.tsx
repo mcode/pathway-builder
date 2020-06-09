@@ -66,7 +66,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
   }, [isExpanded, headerElement]);
 
   const nodeType = getNodeType(pathway, currentNodeKey);
-  console.log('sidebar re-render');
+  console.log('sidebar re-render ' + currentNode.transitions[0].criteriaDisplay);
   return (
     <>
       {isExpanded && (
