@@ -51,6 +51,20 @@ const ActionNode: FC<ActionNodeProps> = ({
     },
     [changeNodeType]
   );
+  const currentNodeKey = currentNode?.key;
+
+  const changeCode = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      if (!currentNodeKey) return;
+
+      const code = event?.target.value || '';
+      updatePathway(setStateCode(pathway, currentNodeKey, code));
+    },
+    [currentNodeKey, pathway, updatePathway]
+  );
+  const selectActionType = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      if (!currentNodeKey) return;
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
