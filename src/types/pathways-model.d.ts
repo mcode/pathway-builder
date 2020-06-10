@@ -8,7 +8,7 @@ declare module 'pathways-model' {
     library: string;
     criteria: Criteria[];
     states: {
-      [key: string]: GuidanceState | State;
+      [key: string]: GuidanceState | BranchState | ActionState | State;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -44,6 +44,11 @@ declare module 'pathways-model' {
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
 
+  export interface ActionState extends State {
+    actionType?: string;
+    codeSystem?: string;
+    code?: string;
+  }
   interface Action {
     id?: string;
     type: string;
