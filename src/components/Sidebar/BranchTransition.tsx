@@ -52,7 +52,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         setTransitionConditionDescription(pathway, currentNodeKey, transition.id, criteriaDisplay)
       );
     },
-    [currentNodeKey, transitionKey, transition.id, updatePathway, pathway]
+    [currentNodeKey, transition.id, updatePathway, pathway]
   );
 
   return (
