@@ -317,29 +317,6 @@ export function setTransitionCriteria(
   };
 }
 
-export function setTransitionCriteriaDisplay(
-  pathway: Pathway,
-  criteriaDisplay: string,
-  transitionId: string,
-  startNodeKey: string
-): Pathway {
-  pathway.states[startNodeKey].transitions.forEach(transition => {
-    if (transition.transition === transitionId) {
-      transition.criteriaDisplay = criteriaDisplay;
-    }
-  });
-
-  return {
-    ...pathway,
-    states: {
-      ...pathway.states,
-      [startNodeKey]: {
-        ...pathway.states[startNodeKey]
-      }
-    }
-  };
-}
-
 // TODO: possibly add more action methods
 export function addAction(
   pathway: Pathway,
@@ -405,12 +382,22 @@ export function setTransitionConditionDescription(
   startNodeKey: string,
   transitionId: string,
   description: string
-): void {
+): Pathway {
   const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
   if (foundTransition?.condition) foundTransition.condition.description = description;
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startNodeKey]: {
+        ...pathway.states[startNodeKey]
+      }
+    }
+  };
 }
 
 export function setTransitionConditionElm(

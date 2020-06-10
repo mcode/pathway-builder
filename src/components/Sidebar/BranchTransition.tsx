@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { TextField, FormControl } from '@material-ui/core';
-import { setTransitionCriteria, setTransitionCriteriaDisplay } from 'utils/builder';
+import { setTransitionCriteria, setTransitionConditionDescription } from 'utils/builder';
 import { SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
@@ -47,9 +47,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeKey || !transition.id) return;
 
-      const criteriaSource = event?.target.value || '';
+      const criteriaDisplay = event?.target.value || '';
       updatePathway(
-        setTransitionCriteriaDisplay(pathway, criteriaSource, transitionKey, currentNodeKey)
+        setTransitionConditionDescription(pathway, currentNodeKey, transition.id, criteriaDisplay)
       );
     },
     [currentNodeKey, transitionKey, transition.id, updatePathway, pathway]
@@ -86,10 +86,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({
           <FormControl variant="outlined" fullWidth>
             <TextField
               label="Criteria display"
-              value={transition.criteriaDisplay || ''}
+              value={transition.condition?.description || ''}
               variant="outlined"
               onChange={setCriteriaDisplay}
-              error={transition.criteriaDisplay === undefined || transition.criteriaDisplay === ''}
+              error={
+                transition.condition?.description === undefined ||
+                transition.condition?.description === ''
+              }
             />
           </FormControl>
         </>
