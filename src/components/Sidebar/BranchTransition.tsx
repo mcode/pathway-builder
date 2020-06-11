@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { TextField, FormControl } from '@material-ui/core';
-import { setTransitionCriteria, setTransitionConditionDescription } from 'utils/builder';
+import { setTransitionCondition, setTransitionConditionDescription } from 'utils/builder';
 import { SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
@@ -38,9 +38,25 @@ const BranchTransition: FC<BranchTransitionProps> = ({
       if (!currentNodeKey || !transition.id) return;
 
       const criteriaSource = event?.target.value || '';
-      updatePathway(setTransitionCriteria(pathway, criteriaSource, transitionKey, currentNodeKey));
+      let elm = undefined;
+      criteria.forEach(c => {
+        if (c.label === criteriaSource) {
+          elm = c.elm;
+        }
+      });
+      if (!elm) return;
+      updatePathway(
+        setTransitionCondition(
+          pathway,
+          currentNodeKey,
+          transition.id,
+          transition.condition?.description || '',
+          elm,
+          criteriaSource
+        )
+      );
     },
-    [currentNodeKey, transitionKey, transition.id, updatePathway, pathway]
+    [currentNodeKey, transition.id, updatePathway, pathway, transition.condition, criteria]
   );
 
   const setCriteriaDisplay = useCallback(
@@ -54,7 +70,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     },
     [currentNodeKey, transition.id, updatePathway, pathway]
   );
-
   return (
     <>
       <hr className={styles.divider} />
@@ -81,7 +96,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
             label="Criteria"
             options={criteriaOptions}
             onChange={selectCriteriaSource}
-            value={transition.criteria}
+            value={transition.condition?.cql || undefined}
           />
           <FormControl variant="outlined" fullWidth>
             <TextField

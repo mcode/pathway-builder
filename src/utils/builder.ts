@@ -275,18 +275,31 @@ export function setTransitionCondition(
   startNodeKey: string,
   transitionId: string,
   description: string,
-  elm: ElmLibrary
-): void {
+  elm: ElmLibrary,
+  criteria?: string
+): Pathway {
   const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
+  const cql = criteria ? criteria : getElmStatement(elm).name;
+
   if (foundTransition)
     foundTransition.condition = {
       description: description,
-      cql: getElmStatement(elm).name,
+      cql: cql,
       elm: elm
     };
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [startNodeKey]: {
+        ...pathway.states[startNodeKey]
+      }
+    }
+  };
 }
 
 export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
@@ -294,17 +307,26 @@ export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibra
   (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
 }
 
-export function setTransitionCriteria(
+export function setTransitionCql(
   pathway: Pathway,
   criteria: string,
   transitionId: string,
   startNodeKey: string
 ): Pathway {
-  pathway.states[startNodeKey].transitions.forEach(transition => {
-    if (transition.transition === transitionId) {
-      transition.criteria = criteria;
+  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
+    (transition: Transition) => transition.id === transitionId
+  );
+
+  if (foundTransition) {
+    if (foundTransition.condition) {
+      foundTransition.condition.cql = criteria;
+    } else {
+      foundTransition.condition = {
+        cql: criteria,
+        description: ''
+      };
     }
-  });
+  }
 
   return {
     ...pathway,
