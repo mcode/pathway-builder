@@ -24,12 +24,22 @@ interface NodeProps {
   yCoordinate: number;
   expanded?: boolean;
   onClick?: (nodeName: string) => void;
+  isChoiceOfCurrent: boolean;
 }
 
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      { name, pathwayState, isCurrentNode, xCoordinate, yCoordinate, expanded = false, onClick },
+      {
+        name,
+        pathwayState,
+        isCurrentNode,
+        xCoordinate,
+        yCoordinate,
+        expanded = false,
+        onClick,
+        isChoiceOfCurrent
+      },
       ref
     ) => {
       const onClickHandler = useCallback(() => {
@@ -46,7 +56,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       const topLevelClasses = [styles.node];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
-      if (isActionable) {
+      if (isActionable || isChoiceOfCurrent) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
       } else {

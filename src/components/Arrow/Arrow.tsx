@@ -6,6 +6,7 @@ interface ArrowProps {
   edge: Edge;
   edgeName: string;
   widthOffset: number;
+  isBranchArrow: boolean;
 }
 
 interface ArrowPathProps {
@@ -14,8 +15,8 @@ interface ArrowPathProps {
   widthOffset: number;
 }
 
-const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset }) => {
-  const className = styles.arrow;
+const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, isBranchArrow }) => {
+  const className = isBranchArrow ? styles.branchArrow : styles.arrow;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 
