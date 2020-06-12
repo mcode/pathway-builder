@@ -276,13 +276,13 @@ export function setTransitionCondition(
   transitionId: string,
   description: string,
   elm: ElmLibrary,
-  criteria?: string
+  criteriaLabel?: string
 ): Pathway {
   const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
-  const cql = criteria ? criteria : getElmStatement(elm).name;
+  const cql = criteriaLabel ? criteriaLabel : getElmStatement(elm).name;
 
   if (foundTransition)
     foundTransition.condition = {
@@ -305,38 +305,6 @@ export function setTransitionCondition(
 export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
   (pathway.states[key] as GuidanceState).elm = elm;
   (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
-}
-
-export function setTransitionCql(
-  pathway: Pathway,
-  criteria: string,
-  transitionId: string,
-  startNodeKey: string
-): Pathway {
-  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
-    (transition: Transition) => transition.id === transitionId
-  );
-
-  if (foundTransition) {
-    if (foundTransition.condition) {
-      foundTransition.condition.cql = criteria;
-    } else {
-      foundTransition.condition = {
-        cql: criteria,
-        description: ''
-      };
-    }
-  }
-
-  return {
-    ...pathway,
-    states: {
-      ...pathway.states,
-      [startNodeKey]: {
-        ...pathway.states[startNodeKey]
-      }
-    }
-  };
 }
 
 // TODO: possibly add more action methods
@@ -409,7 +377,14 @@ export function setTransitionConditionDescription(
     (transition: Transition) => transition.id === transitionId
   );
 
-  if (foundTransition?.condition) foundTransition.condition.description = description;
+  if (foundTransition?.condition) {
+    foundTransition.condition.description = description;
+  } else if (foundTransition) {
+    foundTransition.condition = {
+      description: description,
+      cql: ''
+    };
+  }
 
   return {
     ...pathway,

@@ -23,7 +23,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
   updatePathway
 }) => {
   const { criteria } = useCriteriaContext();
-  const criteriaOptions = criteria.map(c => ({ value: c.label, label: c.label }));
+  const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
   const transitionNode = pathway.states[transitionKey];
@@ -40,7 +40,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
       const criteriaSource = event?.target.value || '';
       let elm = undefined;
       criteria.forEach(c => {
-        if (c.label === criteriaSource) {
+        if (c.id === criteriaSource) {
           elm = c.elm;
         }
       });
@@ -104,10 +104,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
               value={transition.condition?.description || ''}
               variant="outlined"
               onChange={setCriteriaDisplay}
-              error={
-                transition.condition?.description === undefined ||
-                transition.condition?.description === ''
-              }
+              error={!transition.condition?.description}
             />
           </FormControl>
         </>
