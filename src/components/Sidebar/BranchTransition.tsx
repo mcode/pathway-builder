@@ -2,7 +2,7 @@ import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { TextField, FormControl } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { setTransitionCondition, setTransitionConditionDescription } from 'utils/builder';
 import { SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
