@@ -80,7 +80,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         updatePathway={updatePathway}
         isTransition={true}
       />
-      {!useCriteriaSelected && (
+      {!(useCriteriaSelected || transition.condition?.cql) && (
         <SidebarButton
           buttonName="Use Criteria"
           buttonIcon={<FontAwesomeIcon icon={faPlus} />}
@@ -89,7 +89,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
         />
       )}
 
-      {useCriteriaSelected && (
+      {(useCriteriaSelected || transition.condition?.cql) && (
         <>
           <DropDown
             id="Criteria"
