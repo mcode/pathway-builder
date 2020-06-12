@@ -220,7 +220,8 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   key={nodeName}
                   name={nodeName}
                   ref={(node: HTMLDivElement): void => {
-                    nodeRefs.current[nodeName] = node;
+                    if (node) nodeRefs.current[nodeName] = node;
+                    else delete nodeRefs.current[nodeName];
                   }}
                   pathwayState={pathway.states[nodeName]}
                   isCurrentNode={false}
