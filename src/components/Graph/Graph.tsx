@@ -221,6 +221,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                   name={nodeName}
                   ref={(node: HTMLDivElement): void => {
                     if (node) nodeRefs.current[nodeName] = node;
+                    else delete nodeRefs.current[nodeName];
                   }}
                   pathwayState={pathway.states[nodeName]}
                   isCurrentNode={false}
