@@ -95,7 +95,10 @@ const materialUiOverridesBase = {
   },
   MuiFormLabel: {
     root: {
-      fontStyle: 'italic'
+      fontStyle: 'italic',
+      '&.Mui-error': {
+        color: colors.white
+      }
     }
   },
   MuiInputBase: {

@@ -98,15 +98,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({
             onChange={selectCriteriaSource}
             value={transition.condition?.cql || undefined}
           />
-          <FormControl variant="outlined" fullWidth>
-            <TextField
-              label="Criteria display"
-              value={transition.condition?.description || ''}
-              variant="outlined"
-              onChange={setCriteriaDisplay}
-              error={!transition.condition?.description}
-            />
-          </FormControl>
+          <TextField
+            label="Criteria Display"
+            value={transition.condition?.description || ''}
+            variant="outlined"
+            onChange={setCriteriaDisplay}
+            error={!transition.condition?.description}
+          />
         </>
       )}
 
