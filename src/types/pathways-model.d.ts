@@ -37,6 +37,8 @@ declare module 'pathways-model' {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
+    title?: string;
+    description?: string;
   }
 
   // NOTE: the model also includes a BranchState (which extends State),
