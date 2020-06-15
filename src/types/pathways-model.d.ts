@@ -1,5 +1,5 @@
 declare module 'pathways-model' {
-  import { DomainResource, MedicationRequest, ServiceRequest } from 'fhir-objects';
+  import { DomainResource, MedicationRequest, ServiceRequest, CarePlan } from 'fhir-objects';
 
   export interface Pathway {
     id: string;
@@ -8,7 +8,7 @@ declare module 'pathways-model' {
     library: string;
     criteria: Criteria[];
     states: {
-      [key: string]: GuidanceState | BranchState | ActionState | State;
+      [key: string]: GuidanceState | BranchState | State;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -37,23 +37,24 @@ declare module 'pathways-model' {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
+    title?: string;
+    description?: string;
   }
 
   // NOTE: the model also includes a BranchState (which extends State),
   // but as of right now it has no additional fields not in State,
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
-
-  export interface ActionState extends State {
-    actionType?: string;
-    codeSystem?: string;
-    code?: string;
+  export interface BranchState extends State {
+    criteriaSource?: string;
+    mcodeCriteria?: string;
+    otherCriteria?: string;
   }
   interface Action {
     id?: string;
     type: string;
     description: string;
-    resource: MedicationRequest | ServiceRequest;
+    resource: MedicationRequest | ServiceRequest | CarePlan;
   }
 
   interface Transition {

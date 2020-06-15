@@ -1,9 +1,9 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceState, State, ActionState } from 'pathways-model';
+import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
-import { isBranchState, isActionState } from 'utils/nodeUtils';
+import { isBranchState } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -70,11 +70,6 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
     : resource?.code?.coding;
 
   const returnElements = [
-    <ExpandedNodeField
-      key="Notes"
-      title="Notes"
-      description={pathwayState.action[0].description}
-    />,
     <ExpandedNodeField key="Type" title="Type" description={resource.resourceType} />,
     <ExpandedNodeField
       key="System"
@@ -94,22 +89,6 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
 
   return returnElements;
 }
-function renderAction(state: ActionState): ReactElement[] {
-  let actionType = '';
-  if (state.actionType === 'careplan') {
-    actionType = 'Care Plan';
-  } else if (state.actionType === 'medicationrequest') {
-    actionType = 'Medication Request';
-  } else {
-    actionType = 'Service Request';
-  }
-  const returnElements = [
-    <ExpandedNodeField key="Type" title="Type" description={actionType} />,
-    <ExpandedNodeField key="System" title="System" description={state.codeSystem} />,
-    <ExpandedNodeField key="Code" title="Code" description={state.code} />
-  ];
-  return returnElements;
-}
 interface ExpandedNodeMemoProps {
   pathwayState: GuidanceState;
   isGuidance: boolean;
@@ -117,11 +96,10 @@ interface ExpandedNodeMemoProps {
 const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayState, isGuidance }) => {
   const guidance = isGuidance && renderGuidance(pathwayState);
   const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
-  const action = isActionState(pathwayState) && renderAction(pathwayState);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>
-        <tbody>{guidance || branch || action}</tbody>
+        <tbody>{guidance || branch}</tbody>
       </table>
     </div>
   );

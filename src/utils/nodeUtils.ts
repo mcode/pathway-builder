@@ -9,7 +9,3 @@ export function isBranchState(state: State): boolean {
   const { action, label } = state as GuidanceState;
   return action === undefined && label !== 'Start';
 }
-
-export function isActionState(state: State): boolean {
-  return !isBranchState(state);
-}
