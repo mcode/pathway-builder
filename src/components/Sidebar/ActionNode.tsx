@@ -2,12 +2,19 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { setStateAction, setActionDescription } from 'utils/builder';
+import {
+  setStateAction,
+  createCQL,
+  setActionDescription,
+  setGuidanceStateElm
+} from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
 import { Pathway, GuidanceState, Action } from 'pathways-model';
+import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
@@ -17,7 +24,7 @@ const nodeTypeOptions = [
 const actionTypeOptions = [
   { label: 'Medication', value: 'MedicationRequest' },
   { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'Careplan' }
+  { label: 'Regimen', value: 'CarePlan' }
 ];
 
 const codeSystemOptions = [
@@ -51,20 +58,6 @@ const ActionNode: FC<ActionNodeProps> = ({
     },
     [changeNodeType]
   );
-  const currentNodeKey = currentNode?.key;
-
-  const changeCode = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
-
-      const code = event?.target.value || '';
-      updatePathway(setStateCode(pathway, currentNodeKey, code));
-    },
-    [currentNodeKey, pathway, updatePathway]
-  );
-  const selectActionType = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -189,17 +182,25 @@ const ActionNode: FC<ActionNodeProps> = ({
   );
 
   const validateFunction = (): void => {
-    if (!currentNode.key) return;
+    if (currentNode.key && currentNode.action.length) {
+      const action = currentNode.action[0];
+      if (action.resource.medicationCodeableConcept) {
+        action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
+      } else if (action.resource.title) {
+        action.resource.description = 'Example Careplan Text';
+      } else {
+        action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
+      }
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
 
-    const action = currentNode.action[0];
-    if (action.resource.medicationCodeableConcept) {
-      action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
-    } else if (action.resource.resourceType === 'Careplan') {
-      action.resource.description = 'Example Careplan Text';
+      const cql = createCQL(action, currentNode.key);
+      convertBasicCQL(cql).then(elm => {
+        // eslint-disable-next-line
+        updatePathway(setGuidanceStateElm(pathway, currentNode.key!, elm as ElmLibrary));
+      });
     } else {
-      action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
+      console.error('No Actions -- Cannot Validate');
     }
-    updatePathway(setStateAction(pathway, currentNode.key, [action]));
   };
 
   const resetDisplay = (action: Action): void => {
@@ -211,6 +212,7 @@ const ActionNode: FC<ActionNodeProps> = ({
       action.resource.code.coding[0].display = ''; // TODO: actually validate
     }
   };
+
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       validateFunction();
@@ -256,7 +258,7 @@ const ActionNode: FC<ActionNodeProps> = ({
             label="Action Type"
             options={actionTypeOptions}
             onChange={selectActionType}
-            value={resource && resource.resourceType}
+            value={resource.resourceType}
           />
           {(resource.resourceType === 'MedicationRequest' ||
             resource.resourceType === 'ServiceRequest') && (
@@ -307,7 +309,7 @@ const ActionNode: FC<ActionNodeProps> = ({
             </>
           )}
 
-          {resource.resourceType === 'Careplan' && (
+          {resource.resourceType === 'CarePlan' && (
             // design for careplan ?
             <>
               <TextField

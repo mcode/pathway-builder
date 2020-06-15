@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceState, State, ActionState } from 'pathways-model';
+import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
@@ -114,11 +114,10 @@ interface ExpandedNodeMemoProps {
 const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayState, isGuidance }) => {
   const guidance = isGuidance && renderGuidance(pathwayState);
   const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
-  const action = isActionState(pathwayState) && renderAction(pathwayState);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>
-        <tbody>{guidance || branch || action}</tbody>
+        <tbody>{guidance || branch}</tbody>
       </table>
     </div>
   );

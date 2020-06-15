@@ -1,13 +1,5 @@
-import {
-  Pathway,
-  Criteria,
-  State,
-  Transition,
-  Action,
-  GuidanceState,
-  ElmLibrary,
-  ElmStatement
-} from 'pathways-model';
+import { Pathway, Criteria, State, Transition, Action, GuidanceState } from 'pathways-model';
+import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 
@@ -88,7 +80,9 @@ export function exportPathway(pathway: Pathway): string {
         ]
       },
       includes: { def: [] },
-      valueSets: { def: [] }
+      valueSets: { def: [] },
+      codes: { def: [] },
+      codeSystems: { def: [] }
     }
   };
 
@@ -163,7 +157,18 @@ function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
     if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
       elm.library.valueSets.def.push(valueSet);
   });
-  // TODO: merge code, codesystem, and concepts
+  // Merge codes
+  additionalElm.library.codes.def.forEach(code => {
+    if (!elm.library.codes.def.find(def => def.name === code.name))
+      elm.library.codes.def.push(code);
+  });
+  // Merge codesystems
+  additionalElm.library.codeSystems.def.forEach(codesystem => {
+    if (!elm.library.codeSystems.def.find(def => def.name === codesystem.name))
+      elm.library.codeSystems.def.push(codesystem);
+  });
+
+  // TODO: merge concepts
 }
 
 function getElmStatement(elm: ElmLibrary): ElmStatement {
@@ -384,9 +389,18 @@ export function setTransitionCondition(
   };
 }
 
-export function setGuidanceStateElm(pathway: Pathway, key: string, elm: ElmLibrary): void {
-  (pathway.states[key] as GuidanceState).elm = elm;
-  (pathway.states[key] as GuidanceState).cql = getElmStatement(elm).name;
+export function setGuidanceStateElm(pathway: Pathway, stateKey: string, elm: ElmLibrary): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [stateKey]: {
+        ...pathway.states[stateKey],
+        elm: elm,
+        cql: getElmStatement(elm).name
+      }
+    }
+  };
 }
 
 // TODO: possibly add more action methods
@@ -539,6 +553,27 @@ export function setActionResource(
   }
 }
 
+export function setActionResourceDisplay(
+  pathway: Pathway,
+  stateKey: string,
+  actionId: string,
+  display: string
+): void {
+  if ((pathway.states[stateKey] as GuidanceState).action) {
+    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+      (action: Action) => action.id === actionId
+    );
+    const resource = action?.resource;
+    if (
+      resource?.resourceType === 'MedicationRequest' &&
+      resource.medicationCodeableConcept.coding.length
+    )
+      resource.medicationCodeableConcept.coding[0].display = display;
+    else if (resource?.resourceType === 'ServiceRequest' && resource.code.coding.length)
+      resource.code.coding[0].display = display;
+  }
+}
+
 export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
   const state = pathway.states[stateKey] as GuidanceState;
 
@@ -585,6 +620,53 @@ export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
       }
     }
   };
+}
+
+export function createCQL(action: Action, stateKey: string): string {
+  const resource = action.resource;
+  // CQl identifier cannot start with a number or contain '-'
+  const cqlId = `cql${shortid.generate().replace('-', 'a')}`;
+  let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\n`;
+
+  const codesystemStatement = (system: string): string => `codesystem "${system}": '${system}'\n`;
+
+  const returnStatement = (resourceType: string): string =>
+    `return Tuple{ resourceType: '${resourceType}', id: R.id.value, status: R.status.value}`;
+
+  const retrieveStatement = (resourceType: string): string => `[${resourceType}: "${cqlId} code"]`;
+
+  const defineStatement = (): string => `define "${stateKey}":`;
+
+  if (resource.resourceType === 'MedicationRequest') {
+    const coding = resource.medicationCodeableConcept.coding[0];
+
+    cql += codesystemStatement(coding.system);
+
+    // eslint-disable-next-line
+    cql += `code "${cqlId} code": '${coding.code}' from "${coding.system}" display '${coding.display}'\n`;
+    cql += `${defineStatement()}
+      ${retrieveStatement('MedicationRequest')} R ${returnStatement('MedicationRequest')}`;
+  } else if (resource.resourceType === 'ServiceRequest') {
+    const coding = resource.code.coding[0];
+
+    cql += codesystemStatement(coding.system);
+
+    // eslint-disable-next-line
+    cql += `code "${cqlId} code": '${coding.code}' from "${coding.system}" display '${coding.display}'\n`;
+    cql += `${defineStatement()}
+      if exists ${retrieveStatement('Procedure')} 
+      then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')} 
+      else ${retrieveStatement('ServiceRequest')} R ${returnStatement('ServiceRequest')}`;
+  } else if (resource.resourceType === 'CarePlan') {
+    cql += `${defineStatement()}
+      [CarePlan] R where R.title.value = '${resource.title}' ${returnStatement('CarePlan')}`;
+  } else {
+    console.error(
+      'Auto generating CQL for action - unsupported resource type: ' + resource.resourceType
+    );
+  }
+
+  return cql;
 }
 
 /*
