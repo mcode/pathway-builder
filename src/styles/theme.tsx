@@ -103,8 +103,13 @@ const materialUiOverridesBase = {
   },
   MuiInputBase: {
     root: {
-      fontWeight: 600,
-      '&:hover': {}
+      fontWeight: 600
+    },
+    input: {
+      '&::selection': {
+        color: colors.white,
+        backgroundColor: colors.grayDark
+      }
     }
   },
   MuiOutlinedInput: {
