@@ -266,6 +266,70 @@ export function setStateNodeType(pathway: Pathway, stateKey: string, nodeType: s
   }
 }
 
+export function setStateCriteriaSource(
+  pathway: Pathway,
+  key: string,
+  criteriaSource: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        criteriaSource
+      }
+    }
+  };
+}
+
+export function setStateAction(pathway: Pathway, key: string, action: Action[]): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        action
+      }
+    }
+  };
+}
+
+export function setStateMcodeCriteria(
+  pathway: Pathway,
+  key: string,
+  mcodeCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        mcodeCriteria
+      }
+    }
+  };
+}
+
+export function setStateOtherCriteria(
+  pathway: Pathway,
+  key: string,
+  otherCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        otherCriteria
+      }
+    }
+  };
+}
+
 export function addTransition(
   pathway: Pathway,
   startStateKey: string,

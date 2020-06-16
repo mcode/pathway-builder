@@ -8,6 +8,7 @@ import Input from 'components/elements/Input';
 import { Pathway, GuidanceState, Action } from 'pathways-model';
 import useStyles from './styles';
 import shortid from 'shortid';
+import { TextField } from '@material-ui/core';
 
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
@@ -48,42 +49,38 @@ const ActionNode: FC<ActionNodeProps> = ({
     },
     [changeNodeType]
   );
-  const currentNodeKey = currentNode?.key;
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
+      if (!currentNode.key) return;
 
       const code = event?.target.value || '';
-      const currentState: GuidanceState = pathway.states[currentNodeKey] as GuidanceState;
-      const action: Action = currentState.action[0];
+      const action: Action = currentNode.action[0];
       action.resource.code.coding[0].code = code;
-      updatePathway(setStateAction(pathway, currentNodeKey, [action]));
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
-    [currentNodeKey, pathway, updatePathway]
+    [currentNode, pathway, updatePathway]
   );
 
   const changeTitle = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
+      if (!currentNode.key) return;
 
       const title = event?.target.value || '';
-      const currentState: GuidanceState = pathway.states[currentNodeKey] as GuidanceState;
-      const action: Action = currentState.action[0];
+      const action = currentNode.action[0];
       action.resource.title = title;
-      updatePathway(setStateAction(pathway, currentNodeKey, [action]));
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
-    [currentNodeKey, pathway, updatePathway]
+    [currentNode, pathway, updatePathway]
   );
 
   const selectActionType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
+      if (!currentNode.key) return;
       const value = event?.target.value || '';
       const actionType = actionTypeOptions.find(option => {
         return option.value === value;
       });
-      const currentState: GuidanceState = pathway.states[currentNodeKey] as GuidanceState;
       let action: Action;
       if (actionType?.label === 'Careplan') {
         action = {
@@ -96,10 +93,10 @@ const ActionNode: FC<ActionNodeProps> = ({
           }
         };
       } else if (
-        currentState.action.length > 0 &&
-        currentState.action[0].resource.resourceType !== 'Careplan'
+        currentNode.action.length > 0 &&
+        currentNode.action[0].resource.resourceType !== 'Careplan'
       ) {
-        action = currentState.action[0];
+        action = currentNode.action[0];
         action.resource.resourceType = actionType?.label;
       } else {
         action = {
@@ -121,28 +118,27 @@ const ActionNode: FC<ActionNodeProps> = ({
         };
       }
 
-      updatePathway(setStateAction(pathway, currentNodeKey, [action]));
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
-    [currentNodeKey, pathway, updatePathway]
+    [currentNode, pathway, updatePathway]
   );
 
   const selectCodeSystem = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey) return;
+      if (!currentNode.key) return;
 
       const codeSystem = event?.target.value || '';
-      const currentState: GuidanceState = pathway.states[currentNodeKey] as GuidanceState;
-      const action: Action = currentState.action[0];
+      const action = currentNode.action[0];
       action.resource.code.coding[0].system = codeSystem;
-      updatePathway(setStateAction(pathway, currentNodeKey, [action]));
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
-    [currentNodeKey, pathway, updatePathway]
+    [currentNode, pathway, updatePathway]
   );
   // The node has a key and is not the start node
   const changeNodeTypeEnabled = currentNode.key !== undefined && currentNode.key !== 'Start';
 
   const action = currentNode.action;
-  const resource = action && action.length > 0 && action[0].resource;
+  const resource = action?.length > 0 && action[0].resource;
   // If the node does not have transitions it can be added to
   const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
   return (
@@ -181,7 +177,7 @@ const ActionNode: FC<ActionNodeProps> = ({
                   value={resource.code.coding[0].code}
                 />
               )}
-              {resource.code.coding[0].system && (
+              {resource.code.coding[0].code && (
                 <SidebarButton
                   buttonName="Validate"
                   buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
@@ -195,7 +191,14 @@ const ActionNode: FC<ActionNodeProps> = ({
           {resource.resourceType === 'Careplan' && (
             // design for careplan ?
             <>
-              <Input id="title" label="Title" onChange={changeTitle} value={resource.title} />
+              <TextField
+                id="title-input"
+                label="Title"
+                value={resource.title || ''}
+                onChange={changeTitle}
+                variant="outlined"
+                error={resource.title == null}
+              />
               {resource.title && (
                 <SidebarButton
                   buttonName="Validate"

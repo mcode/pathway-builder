@@ -70,6 +70,11 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
     : resource?.code?.coding;
 
   const returnElements = [
+    <ExpandedNodeField
+      key="Notes"
+      title="Notes"
+      description={pathwayState.action[0].description}
+    />,
     <ExpandedNodeField key="Type" title="Type" description={resource.resourceType} />,
     <ExpandedNodeField
       key="System"
