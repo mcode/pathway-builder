@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
-import { FormControl, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 
 interface Option {
   label: string;
@@ -22,16 +22,14 @@ const Input: FC<InputProps> = ({ id, label, value, onChange }: InputProps) => {
   );
 
   return (
-    <FormControl variant="outlined" fullWidth>
-      <TextField
-        id={`${id}-input`}
-        label={label}
-        value={value || ''}
-        onChange={handleChange}
-        variant="outlined"
-        error={value == null || value === ''}
-      />
-    </FormControl>
+    <TextField
+      id={`${id}-input`}
+      label={label}
+      value={value || ''}
+      onChange={handleChange}
+      variant="outlined"
+      error={value == null || value === ''}
+    />
   );
 };
 

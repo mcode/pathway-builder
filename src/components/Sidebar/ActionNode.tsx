@@ -51,7 +51,6 @@ const ActionNode: FC<ActionNodeProps> = ({
     },
     [changeNodeType]
   );
-  const currentNodeKey = currentNode?.key;
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
