@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { State, GuidanceState, BranchState, Pathway } from 'pathways-model';
+import { State, GuidanceState, Pathway } from 'pathways-model';
 import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
 import useStyles from './styles';
 
@@ -12,7 +12,7 @@ interface SidebarProps {
   pathway: Pathway;
   updatePathway: (pathway: Pathway) => void;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: GuidanceState | BranchState | State;
+  currentNode: GuidanceState | State;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, currentNode }) => {
@@ -66,7 +66,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
   }, [isExpanded, headerElement]);
 
   const nodeType = getNodeType(pathway, currentNodeKey);
-
   return (
     <>
       {isExpanded && (

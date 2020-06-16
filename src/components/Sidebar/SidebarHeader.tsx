@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useRef, useState, KeyboardEvent } from 'react';
+import React, { FC, memo, useCallback, useRef, useState, KeyboardEvent, FocusEvent } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -64,7 +64,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
   return (
     <div className={styles.sidebarHeader}>
       <div className={styles.sidebarHeaderGroup}>
-        {currentNodeLabel !== 'Start' && !isTransition && (
+        {currentNodeKey !== 'Start' && !isTransition && (
           <IconButton
             className={styles.sidebarHeaderButton}
             onClick={goToParentNode}
@@ -85,6 +85,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
                 onKeyPress={handleKeyPress}
                 defaultValue={currentNodeLabel}
                 autoFocus
+                onFocus={(event: FocusEvent<HTMLInputElement>): void => event.target.select()}
               />
             </FormControl>
           ) : (

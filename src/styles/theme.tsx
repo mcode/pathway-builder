@@ -95,13 +95,21 @@ const materialUiOverridesBase = {
   },
   MuiFormLabel: {
     root: {
-      fontStyle: 'italic'
+      fontStyle: 'italic',
+      '&.Mui-error': {
+        color: colors.white
+      }
     }
   },
   MuiInputBase: {
     root: {
-      fontWeight: 600,
-      '&:hover': {}
+      fontWeight: 600
+    },
+    input: {
+      '&::selection': {
+        color: colors.white,
+        backgroundColor: colors.grayDark
+      }
     }
   },
   MuiOutlinedInput: {
