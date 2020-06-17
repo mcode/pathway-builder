@@ -94,8 +94,8 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   const maxWidth = useMemo(() => {
     return nodeCoordinates !== undefined
       ? Object.values(nodeCoordinates)
-          // Add 250 to account for expanded node width
-          .map(x => x.x + parentWidth / 2 + 250)
+          // Add width of the node to account for x coordinate starting at top left corner
+          .map(x => x.x + parentWidth / 2 + (x.width ?? 0))
           .reduce((a, b) => Math.max(a, b))
       : 0;
   }, [nodeCoordinates, parentWidth]);
