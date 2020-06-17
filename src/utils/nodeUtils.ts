@@ -1,6 +1,6 @@
 import { State, GuidanceState } from 'pathways-model';
 
-export function isGuidanceState(state: State): boolean {
+export function isGuidanceState(state: State): state is GuidanceState {
   const { action } = state as GuidanceState;
   return action ? action.length > 0 : false;
 }

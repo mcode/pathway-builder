@@ -513,13 +513,19 @@ export function setActionDescription(
   pathway: Pathway,
   stateKey: string,
   actionId: string,
-  description: string
+  description: string,
+  callback: Function
 ): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const action = (pathway.states[stateKey] as GuidanceState).action.find(
-      (action: Action) => action.id === actionId
-    );
-    if (action) action.description = description;
+  const state = (pathway.states[stateKey] as GuidanceState).action;
+
+  if (state) {
+    const action = state.find((action: Action) => action.id === actionId);
+    if (action) {
+      action.description = description;
+      // when adding for multiple actions, use the action ID instead
+      // of providing an array.
+      callback(setStateAction(pathway, stateKey, state));
+    }
   }
 }
 

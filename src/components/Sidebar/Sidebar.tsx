@@ -51,7 +51,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
       let newPathway = addState(pathway, newState);
       newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
       newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
-
       updatePathway(newPathway);
       redirectToNode(newState.key);
     },

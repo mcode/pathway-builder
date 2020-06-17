@@ -71,8 +71,8 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
 
   const returnElements = [
     <ExpandedNodeField
-      key="Notes"
-      title="Notes"
+      key="Description"
+      title="Description"
       description={pathwayState.action[0].description}
     />,
     <ExpandedNodeField key="Type" title="Type" description={resource.resourceType} />,

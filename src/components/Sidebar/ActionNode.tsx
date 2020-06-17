@@ -2,9 +2,8 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { setStateAction } from 'utils/builder';
+import { setStateAction, setActionDescription } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import Input from 'components/elements/Input';
 import { Pathway, GuidanceState, Action } from 'pathways-model';
 import useStyles from './styles';
 import shortid from 'shortid';
@@ -16,9 +15,9 @@ const nodeTypeOptions = [
 ];
 
 const actionTypeOptions = [
-  { label: 'Medication Request', value: 'Medication Request' },
-  { label: 'Service Request', value: 'Service Request' },
-  { label: 'Careplan', value: 'Careplan' }
+  { label: 'Medication', value: 'MedicationRequest' },
+  { label: 'Procedure', value: 'ServiceRequest' },
+  { label: 'Regimen', value: 'Careplan' }
 ];
 
 const codeSystemOptions = [
@@ -56,8 +55,25 @@ const ActionNode: FC<ActionNodeProps> = ({
 
       const code = event?.target.value || '';
       const action: Action = currentNode.action[0];
-      action.resource.code.coding[0].code = code;
+      if (action.resource.medicationCodeableConcept) {
+        action.resource.medicationCodeableConcept.coding[0].code = code;
+      } else {
+        action.resource.code.coding[0].code = code;
+      }
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
+    },
+    [currentNode, pathway, updatePathway]
+  );
+
+  const changeDescription = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      if (!currentNode.key) return;
+
+      const description = event?.target.value || '';
+      const actionId = currentNode.action[0].id;
+      if (actionId) {
+        setActionDescription(pathway, currentNode.key, actionId, description, updatePathway);
+      }
     },
     [currentNode, pathway, updatePathway]
   );
@@ -82,29 +98,41 @@ const ActionNode: FC<ActionNodeProps> = ({
         return option.value === value;
       });
       let action: Action;
-      if (actionType?.label === 'Careplan') {
+      if (actionType?.value === 'Careplan') {
         action = {
           type: 'create',
           description: '',
+          id: shortid.generate(),
           resource: {
-            id: shortid.generate(),
-            resourceType: actionType?.label,
+            resourceType: actionType?.value,
             title: ''
           }
         };
-      } else if (
-        currentNode.action.length > 0 &&
-        currentNode.action[0].resource.resourceType !== 'Careplan'
-      ) {
-        action = currentNode.action[0];
-        action.resource.resourceType = actionType?.label;
+      } else if (actionType?.value === 'MedicationRequest') {
+        action = {
+          type: 'create',
+          description: '',
+          id: shortid.generate(),
+          resource: {
+            resourceType: actionType?.value,
+            medicationCodeableConcept: {
+              coding: [
+                {
+                  system: '',
+                  code: '',
+                  display: ''
+                }
+              ]
+            }
+          }
+        };
       } else {
         action = {
           type: 'create',
           description: '',
+          id: shortid.generate(),
           resource: {
-            id: shortid.generate(),
-            resourceType: actionType?.label,
+            resourceType: actionType?.value,
             code: {
               coding: [
                 {
@@ -129,7 +157,11 @@ const ActionNode: FC<ActionNodeProps> = ({
 
       const codeSystem = event?.target.value || '';
       const action = currentNode.action[0];
-      action.resource.code.coding[0].system = codeSystem;
+      if (action.resource.medicationCodeableConcept) {
+        action.resource.medicationCodeableConcept.coding[0].system = codeSystem;
+      } else {
+        action.resource.code.coding[0].system = codeSystem;
+      }
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
@@ -139,6 +171,17 @@ const ActionNode: FC<ActionNodeProps> = ({
 
   const action = currentNode.action;
   const resource = action?.length > 0 && action[0].resource;
+  let system = '';
+  let code = '';
+  if (resource.resourceType === 'MedicationRequest' || resource.resourceType === 'ServiceRequest') {
+    system = resource.code
+      ? resource.code.coding[0].system
+      : resource.medicationCodeableConcept.coding[0].system;
+
+    code = resource.code
+      ? resource.code.coding[0].code
+      : resource.medicationCodeableConcept.coding[0].code;
+  }
   // If the node does not have transitions it can be added to
   const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
   return (
@@ -159,31 +202,44 @@ const ActionNode: FC<ActionNodeProps> = ({
             onChange={selectActionType}
             value={resource && resource.resourceType}
           />
-          {(resource.resourceType === 'Medication Request' ||
-            resource.resourceType === 'Service Request') && (
+          {(resource.resourceType === 'MedicationRequest' ||
+            resource.resourceType === 'ServiceRequest') && (
             <>
               <DropDown
                 id="codeSystem"
                 label="Code System"
                 options={codeSystemOptions}
                 onChange={selectCodeSystem}
-                value={resource.code.coding[0].system}
+                value={system}
               />
-              {resource.code.coding[0].system && (
-                <Input
-                  id="code"
+              {system && (
+                <TextField
+                  id="code-input"
                   label="Code"
+                  value={code}
                   onChange={changeCode}
-                  value={resource.code.coding[0].code}
+                  variant="outlined"
+                  error={code === ''}
                 />
               )}
-              {resource.code.coding[0].code && (
-                <SidebarButton
-                  buttonName="Validate"
-                  buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
-                  buttonText="Check validation of the input system and code"
-                  onClick={(): void => console.log('todo')}
-                />
+              {code && (
+                <>
+                  <SidebarButton
+                    buttonName="Validate"
+                    buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
+                    buttonText="Check validation of the input system and code"
+                    onClick={(): void => console.log('todo')}
+                  />
+
+                  <TextField
+                    id="description-input"
+                    label="Description"
+                    value={action[0].description || ''}
+                    onChange={changeDescription}
+                    variant="outlined"
+                    error={action[0].description === ''}
+                  />
+                </>
               )}
             </>
           )}
@@ -200,12 +256,23 @@ const ActionNode: FC<ActionNodeProps> = ({
                 error={resource.title == null}
               />
               {resource.title && (
-                <SidebarButton
-                  buttonName="Validate"
-                  buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
-                  buttonText="Check validation of the input Careplan"
-                  onClick={(): void => console.log('todo')}
-                />
+                <>
+                  <SidebarButton
+                    buttonName="Validate"
+                    buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
+                    buttonText="Check validation of the input Careplan"
+                    onClick={(): void => console.log('todo')}
+                  />
+
+                  <TextField
+                    id="description-input"
+                    label="Description"
+                    value={action[0].description || ''}
+                    onChange={changeDescription}
+                    variant="outlined"
+                    error={action[0].description === ''}
+                  />
+                </>
               )}
             </>
           )}
