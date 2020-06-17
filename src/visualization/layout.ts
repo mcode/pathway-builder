@@ -76,7 +76,8 @@ function layoutDagre(pathway: Pathway, nodeDimensions: NodeDimensions): Layout {
     // further, our renderer expects the Start node to be centered at x: 0
     nodeCoordinates[nodeName] = {
       x: node.x - startNodeShift - node.width / 2,
-      y: node.y - node.height / 2
+      y: node.y - node.height / 2,
+      width: node.width
     };
   }
 

@@ -18,7 +18,7 @@ declare module 'graph-model' {
   }
 
   export interface NodeCoordinates {
-    [key: string]: Coordinate;
+    [key: string]: Coordinate & { width?: number };
   }
 
   export interface Coordinate {

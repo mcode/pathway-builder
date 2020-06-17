@@ -90,6 +90,16 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
     });
   }
 
+  // Find node that is farthest to the right
+  const maxWidth = useMemo(() => {
+    return nodeCoordinates !== undefined
+      ? Object.values(nodeCoordinates)
+          // Add width of the node to account for x coordinate starting at top left corner
+          .map(x => x.x + parentWidth / 2 + (x.width ?? 0))
+          .reduce((a, b) => Math.max(a, b))
+      : 0;
+  }, [nodeCoordinates, parentWidth]);
+
   const [expanded, setExpanded] = useState<ExpandedState>(() =>
     Object.keys(layout).reduce(
       (acc, curr: string) => {
@@ -123,15 +133,6 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   useEffect(() => {
     setLayout(getGraphLayout());
   }, [pathway, expanded, getGraphLayout]);
-
-  // maxWidth finds the edge label that is farthest to the right
-  const maxWidth: number =
-    edges !== undefined
-      ? Object.values(edges)
-          .map(e => e.label)
-          .map(l => (l ? l.x + l.text.length * 10 + parentWidth / 2 : 0))
-          .reduce((a, b) => Math.max(a, b), 0)
-      : parentWidth;
 
   return (
     <GraphMemo
@@ -200,7 +201,6 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       },
       [redirectToNode, toggleExpanded, interactive]
     );
-
     return (
       <div
         ref={graphElement}
@@ -237,8 +237,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         <svg
           xmlns="http://www.w3.org/2000/svg"
           style={{
-            // Adding 5 pixels to maxWidth so that the rightmost edge label is not cut off
-            width: maxWidth + 5,
+            width: maxWidth,
             height: maxHeight,
             zIndex: 1,
             top: 0,
