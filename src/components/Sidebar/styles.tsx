@@ -23,6 +23,9 @@ export default makeStyles(
     headerLabelStart: {
       cursor: 'default'
     },
+    displayText: {
+      margin: '10px 0 10px 0'
+    },
     sidebarHeader: {
       display: 'flex',
       justifyContent: 'space-between'

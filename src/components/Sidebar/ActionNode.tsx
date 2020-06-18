@@ -42,6 +42,7 @@ const ActionNode: FC<ActionNodeProps> = ({
   updatePathway
 }) => {
   const styles = useStyles();
+
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
@@ -70,9 +71,10 @@ const ActionNode: FC<ActionNodeProps> = ({
       if (!currentNode.key) return;
 
       const description = event?.target.value || '';
-      const actionId = currentNode.action[0].id;
+      const actionId = currentNode.action[0].id; // TODO: change this for supporting multiple action
       if (actionId) {
-        setActionDescription(pathway, currentNode.key, actionId, description, updatePathway);
+        setActionDescription(pathway, currentNode.key, actionId, description);
+        updatePathway(setStateAction(pathway, currentNode.key, currentNode.action));
       }
     },
     [currentNode, pathway, updatePathway]
@@ -166,6 +168,25 @@ const ActionNode: FC<ActionNodeProps> = ({
     },
     [currentNode, pathway, updatePathway]
   );
+
+  const validateFunction = (): void => {
+    if (!currentNode.key) return;
+
+    const action = currentNode.action[0];
+    if (action.resource.medicationCodeableConcept) {
+      action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
+    } else {
+      action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
+    }
+    updatePathway(setStateAction(pathway, currentNode.key, [action]));
+  };
+
+  const onEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') {
+      validateFunction();
+    }
+  };
+
   // The node has a key and is not the start node
   const changeNodeTypeEnabled = currentNode.key !== undefined && currentNode.key !== 'Start';
 
@@ -173,14 +194,17 @@ const ActionNode: FC<ActionNodeProps> = ({
   const resource = action?.length > 0 && action[0].resource;
   let system = '';
   let code = '';
+  let display = '';
   if (resource.resourceType === 'MedicationRequest' || resource.resourceType === 'ServiceRequest') {
     system = resource.code
       ? resource.code.coding[0].system
       : resource.medicationCodeableConcept.coding[0].system;
-
     code = resource.code
       ? resource.code.coding[0].code
       : resource.medicationCodeableConcept.coding[0].code;
+    display = resource.code
+      ? resource.code.coding[0].display
+      : resource.medicationCodeableConcept.coding[0].display;
   }
   // If the node does not have transitions it can be added to
   const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
@@ -220,16 +244,23 @@ const ActionNode: FC<ActionNodeProps> = ({
                   onChange={changeCode}
                   variant="outlined"
                   error={code === ''}
+                  inputProps={{ onKeyPress: onEnter }}
                 />
               )}
               {code && (
                 <>
-                  <SidebarButton
-                    buttonName="Validate"
-                    buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
-                    buttonText="Check validation of the input system and code"
-                    onClick={(): void => console.log('todo')}
-                  />
+                  {display ? (
+                    <div className={styles.displayText}>
+                      <FontAwesomeIcon icon={faCheckCircle} /> {display}
+                    </div>
+                  ) : (
+                    <SidebarButton
+                      buttonName="Validate"
+                      buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
+                      buttonText={display || 'Check validation of the input system and code'}
+                      onClick={validateFunction}
+                    />
+                  )}
 
                   <TextField
                     id="description-input"
@@ -261,7 +292,7 @@ const ActionNode: FC<ActionNodeProps> = ({
                     buttonName="Validate"
                     buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
                     buttonText="Check validation of the input Careplan"
-                    onClick={(): void => console.log('todo')}
+                    onClick={validateFunction}
                   />
 
                   <TextField
