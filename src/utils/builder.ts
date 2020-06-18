@@ -513,8 +513,7 @@ export function setActionDescription(
   pathway: Pathway,
   stateKey: string,
   actionId: string,
-  description: string,
-  callback: Function
+  description: string
 ): void {
   const state = (pathway.states[stateKey] as GuidanceState).action;
 
