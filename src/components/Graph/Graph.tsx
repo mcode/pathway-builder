@@ -92,26 +92,25 @@ const Graph: FC<GraphProps> = memo(
       });
     }
 
-<<<<<<< HEAD
-  // Find node that is farthest to the right
-  const maxWidth = useMemo(() => {
-    return nodeCoordinates !== undefined
-      ? Object.values(nodeCoordinates)
-          // Add width of the node to account for x coordinate starting at top left corner
-          .map(x => x.x + parentWidth / 2 + (x.width ?? 0))
-          .reduce((a, b) => Math.max(a, b))
-      : 0;
-  }, [nodeCoordinates, parentWidth]);
+    // Find node that is farthest to the right
+    const maxWidth = useMemo(() => {
+      return nodeCoordinates !== undefined
+        ? Object.values(nodeCoordinates)
+            // Add width of the node to account for x coordinate starting at top left corner
+            .map(x => x.x + parentWidth / 2 + (x.width ?? 0))
+            .reduce((a, b) => Math.max(a, b))
+        : 0;
+    }, [nodeCoordinates, parentWidth]);
 
-  const [expanded, setExpanded] = useState<ExpandedState>(() =>
-    Object.keys(layout).reduce(
-      (acc, curr: string) => {
-        acc[curr] = false;
-        return acc;
-      },
-      { lastSelectedNode: null } as ExpandedState
-    )
-  );
+    const [expanded, setExpanded] = useState<ExpandedState>(() =>
+      Object.keys(layout).reduce(
+        (acc, curr: string) => {
+          acc[curr] = false;
+          return acc;
+        },
+        { lastSelectedNode: null } as ExpandedState
+      )
+    );
 
   const toggleExpanded = useCallback((key: string) => {
     if (key === 'Start') {
