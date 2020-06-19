@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
 import { Edge, Coordinate } from 'graph-model';
 import styles from './Arrow.module.scss';
+import { State } from 'pathways-model';
+import { isBranchState } from 'utils/nodeUtils';
 
 interface ArrowProps {
   edge: Edge;
   edgeName: string;
   widthOffset: number;
-  isBranchArrow: boolean;
+  currentNode: State;
 }
 
 interface ArrowPathProps {
@@ -15,8 +17,9 @@ interface ArrowPathProps {
   widthOffset: number;
 }
 
-const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, isBranchArrow }) => {
-  const className = isBranchArrow ? styles.branchArrow : styles.arrow;
+const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => {
+  const isCurrentBranchArrow = isBranchState(currentNode) && edge.start === currentNode.key;
+  const className = isCurrentBranchArrow ? styles.currentBranchArrow : styles.arrow;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 

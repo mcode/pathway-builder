@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Node from '../Node';
+import { createState } from 'utils/builder';
 
 const testState = {
   label: 'Start',
@@ -10,7 +11,12 @@ const testState = {
 describe('<Node />', () => {
   it('renders a node with text, icon, and correct styles', () => {
     const { container, getByText, getByRole } = render(
-      <Node pathwayState={testState} isCurrentNode={false} xCoordinate={0} yCoordinate={0} />
+      <Node
+        pathwayState={testState}
+        xCoordinate={0}
+        yCoordinate={0}
+        currentNode={createState('TestNode')}
+      />
     );
 
     expect(getByText(testState.label)).toBeVisible();
@@ -23,7 +29,12 @@ describe('<Node />', () => {
 
   it('expands the additional children when clicked', () => {
     const { container } = render(
-      <Node pathwayState={testState} isCurrentNode={false} xCoordinate={0} yCoordinate={0} />
+      <Node
+        pathwayState={testState}
+        xCoordinate={0}
+        yCoordinate={0}
+        currentNode={createState('TestNode')}
+      />
     );
 
     const numberOfChildren = container.children.length;
