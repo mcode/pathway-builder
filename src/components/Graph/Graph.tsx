@@ -111,6 +111,7 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   );
 
   const toggleExpanded = useCallback((key: string) => {
+    if (key === 'Start') return;
     setExpanded(prevState => ({
       ...prevState,
       [key]:

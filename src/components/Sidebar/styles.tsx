@@ -20,6 +20,9 @@ export default makeStyles(
     divider: {
       width: '100%'
     },
+    headerLabelStart: {
+      cursor: 'default'
+    },
     sidebarHeader: {
       display: 'flex',
       justifyContent: 'space-between'

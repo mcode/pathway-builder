@@ -75,7 +75,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
         )}
 
         <div className={styles.headerLabelGroup} onClick={handleShowInput}>
-          {showInput ? (
+          {showInput && currentNodeKey !== 'Start' ? (
             <FormControl className={styles.formControl} fullWidth>
               <Input
                 className={styles.headerLabel}
@@ -85,12 +85,17 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
                 onKeyPress={handleKeyPress}
                 defaultValue={currentNodeLabel}
                 autoFocus
-                readOnly={currentNodeKey === 'Start'}
                 onFocus={(event: FocusEvent<HTMLInputElement>): void => event.target.select()}
               />
             </FormControl>
           ) : (
-            <div className={clsx(styles.headerLabel, styles.headerLabelText)}>
+            <div
+              className={clsx(
+                styles.headerLabel,
+                styles.headerLabelText,
+                currentNodeKey === 'Start' && styles.headerLabelStart
+              )}
+            >
               {currentNodeLabel}
               {currentNodeKey !== 'Start' && (
                 <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
