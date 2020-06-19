@@ -17,7 +17,6 @@ import { Pathway, State } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
-import { isBranchState } from 'utils/nodeUtils';
 
 interface GraphProps {
   pathway: Pathway;
@@ -230,17 +229,6 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       >
         {nodeCoordinates !== undefined
           ? Object.keys(nodeCoordinates).map(nodeName => {
-              let childOfCurrent = false;
-              if (childOfCurrent === false) {
-                for (const edge in edges) {
-                  if (
-                    pathway.states[edges[edge].start].label === currentNode?.label &&
-                    edges[edge].end === nodeName
-                  ) {
-                    childOfCurrent = true;
-                  }
-                }
-              }
               return (
                 <Node
                   key={nodeName}
@@ -250,12 +238,11 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                     else delete nodeRefs.current[nodeName];
                   }}
                   pathwayState={pathway.states[nodeName]}
-                  isCurrentNode={pathway.states[nodeName].label === currentNode?.label}
                   xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
                   yCoordinate={nodeCoordinates[nodeName].y}
                   expanded={Boolean(expanded[nodeName])}
                   onClick={onClickHandler}
-                  isChoiceOfCurrent={isBranchState(currentNode) && childOfCurrent}
+                  currentNode={currentNode}
                 />
               );
             })
@@ -281,10 +268,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                     edge={edge}
                     edgeName={edgeName}
                     widthOffset={parentWidth / 2}
-                    isBranchArrow={
-                      pathway.states[edge.start].label === currentNode.label &&
-                      isBranchState(currentNode)
-                    }
+                    currentNode={currentNode}
                   />
                 );
               })

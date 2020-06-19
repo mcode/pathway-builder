@@ -21,6 +21,6 @@
   @include arrow($blue);
 }
 
-.branchArrow {
+.currentBranchArrow {
   @include arrow($red);
 }

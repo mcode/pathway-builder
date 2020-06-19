@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
-import { isGuidanceState } from 'utils/nodeUtils';
+import { isGuidanceState, isBranchState } from 'utils/nodeUtils';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faMicroscope,
@@ -19,27 +19,17 @@ import {
 interface NodeProps {
   name: string;
   pathwayState: State;
-  isCurrentNode: boolean;
   xCoordinate: number;
   yCoordinate: number;
   expanded?: boolean;
   onClick?: (nodeName: string) => void;
-  isChoiceOfCurrent: boolean;
+  currentNode: State;
 }
 
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      {
-        name,
-        pathwayState,
-        isCurrentNode,
-        xCoordinate,
-        yCoordinate,
-        expanded = false,
-        onClick,
-        isChoiceOfCurrent
-      },
+      { name, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
       ref
     ) => {
       const onClickHandler = useCallback(() => {
@@ -52,11 +42,15 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         left: xCoordinate
       };
 
+      const isCurrentNode = pathwayState.key === currentNode?.key;
+      const isTransitionOfCurrentBranch =
+        isBranchState(currentNode) && currentNode.transitions.some(e => e?.transition === name);
+
       const isActionable = isCurrentNode;
       const topLevelClasses = [styles.node];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
-      if (isActionable || isChoiceOfCurrent) {
+      if (isActionable || isTransitionOfCurrentBranch) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
       } else {
