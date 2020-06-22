@@ -25,7 +25,8 @@ describe('<Arrow />', () => {
     );
 
     expect(getByText(testEdge.label.text)).toBeVisible();
-    expect(container.firstChild).toHaveClass('arrow');
+    const className = container.firstElementChild.getAttribute('class');
+    expect(className.includes('arrow'));
   });
 
   it('renders an arrow on patient path', () => {
@@ -33,6 +34,7 @@ describe('<Arrow />', () => {
       <Arrow edge={testEdge} edgeName="test" widthOffset={0} currentNode={createState('Test')} />
     );
 
-    expect(container.firstChild).toHaveClass('arrow');
+    const className = container.firstElementChild.getAttribute('class');
+    expect(className.includes('arrow'));
   });
 });

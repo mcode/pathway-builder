@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 import { Edge, Coordinate } from 'graph-model';
-import styles from './Arrow.module.scss';
 import { State } from 'pathways-model';
 import { isBranchState } from 'utils/nodeUtils';
+import useStyles from './styles';
+import clsx from 'clsx';
 
 interface ArrowProps {
   edge: Edge;
@@ -18,14 +19,14 @@ interface ArrowPathProps {
 }
 
 const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => {
+  const styles = useStyles();
   const isCurrentBranchArrow = isBranchState(currentNode) && edge.start === currentNode.key;
-  const className = isCurrentBranchArrow ? styles.currentBranchArrow : styles.arrow;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 
   const { label } = edge;
   return (
-    <svg className={className}>
+    <svg className={clsx(styles.arrow, isCurrentBranchArrow && styles.currentBranchArrow)}>
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
         <text x={label.x + widthOffset} y={label.y}>
@@ -35,7 +36,7 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
       <defs>
         <marker
           id={arrowheadId}
-          className={styles.arrowhead}
+          className={clsx(isCurrentBranchArrow ? styles.currentBranchArrowhead : styles.arrowhead)}
           markerWidth="10"
           markerHeight="7"
           refX="0"
