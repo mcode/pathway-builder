@@ -45,7 +45,6 @@ const ActionNode: FC<ActionNodeProps> = ({
   updatePathway
 }) => {
   const styles = useStyles();
-
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');

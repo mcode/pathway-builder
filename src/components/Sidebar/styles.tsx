@@ -24,13 +24,9 @@ export default makeStyles(
       cursor: 'default'
     },
     displayText: {
-<<<<<<< HEAD
       margin: '0 0 5px 0',
       fontWeight: 900,
       fontSize: '1em'
-=======
-      margin: '10px 0 10px 0'
->>>>>>> fix test, add display
     },
     sidebarHeader: {
       display: 'flex',
