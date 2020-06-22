@@ -3,7 +3,7 @@ import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
-import { isBranchState } from 'utils/nodeUtils';
+import { isBranchState, resourceNameConversion } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,14 +13,6 @@ interface ExpandedNodeProps {
   isActionable: boolean;
   isGuidance: boolean;
 }
-type ConversionResource = {
-  [key: string]: string;
-};
-const resourceNameConversion: ConversionResource = {
-  MedicationRequest: 'Medication',
-  ServiceRequest: 'Procedure',
-  Careplan: 'Regimen'
-};
 const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayState, isActionable, isGuidance }) => {
   return (
     <>
@@ -77,17 +69,17 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
     const coding = isMedicationRequest(resource)
       ? resource?.medicationCodeableConcept?.coding
       : resource?.code?.coding;
+
+    const resourceType = resourceNameConversion[resource.resourceType]
+      ? resourceNameConversion[resource.resourceType]
+      : resource.resourceType;
     returnElements = [
       <ExpandedNodeField
         key="Description"
         title="Description"
         description={pathwayState.action[0].description}
       />,
-      <ExpandedNodeField
-        key="Type"
-        title="Type"
-        description={resourceNameConversion[resource.resourceType]}
-      />,
+      <ExpandedNodeField key="Type" title="Type" description={resourceType} />,
       <ExpandedNodeField
         key="System"
         title="System"
