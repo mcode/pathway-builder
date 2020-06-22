@@ -75,7 +75,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
         )}
 
         <div className={styles.headerLabelGroup} onClick={handleShowInput}>
-          {showInput ? (
+          {showInput && currentNodeKey !== 'Start' ? (
             <FormControl className={styles.formControl} fullWidth>
               <Input
                 className={styles.headerLabel}
@@ -89,9 +89,17 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({
               />
             </FormControl>
           ) : (
-            <div className={clsx(styles.headerLabel, styles.headerLabelText)}>
+            <div
+              className={clsx(
+                styles.headerLabel,
+                styles.headerLabelText,
+                currentNodeKey === 'Start' && styles.headerLabelStart
+              )}
+            >
               {currentNodeLabel}
-              <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
+              {currentNodeKey !== 'Start' && (
+                <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
+              )}
             </div>
           )}
         </div>

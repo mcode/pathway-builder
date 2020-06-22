@@ -111,12 +111,19 @@ const Graph: FC<GraphProps> = memo(({ pathway, interactive = true, expandCurrent
   );
 
   const toggleExpanded = useCallback((key: string) => {
-    setExpanded(prevState => ({
-      ...prevState,
-      [key]:
-        !prevState[key] || prevState.lastSelectedNode === key ? !prevState[key] : prevState[key],
-      lastSelectedNode: key
-    }));
+    if (key === 'Start') {
+      setExpanded(prevState => ({
+        ...prevState,
+        lastSelectedNode: key
+      }));
+    } else {
+      setExpanded(prevState => ({
+        ...prevState,
+        [key]:
+          !prevState[key] || prevState.lastSelectedNode === key ? !prevState[key] : prevState[key],
+        lastSelectedNode: key
+      }));
+    }
   }, []);
 
   // Recalculate graph layout if graph container size changes

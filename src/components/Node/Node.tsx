@@ -85,7 +85,7 @@ interface NodeIconProps {
 
 const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
   let icon: IconProp = faMicroscope;
-  if (pathwayState.label === 'Start') icon = faPlay;
+  if (pathwayState.key === 'Start') icon = faPlay;
   if (isGuidance) {
     const guidancePathwayState = pathwayState as GuidanceState;
     if (guidancePathwayState.action.length > 0) {
