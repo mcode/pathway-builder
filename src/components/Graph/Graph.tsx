@@ -112,22 +112,24 @@ const Graph: FC<GraphProps> = memo(
       )
     );
 
-  const toggleExpanded = useCallback((key: string) => {
-    if (key === 'Start') {
-      setExpanded(prevState => ({
-        ...prevState,
-        lastSelectedNode: key
-      }));
-    } else {
-      setExpanded(prevState => ({
-        ...prevState,
-        [key]:
-          !prevState[key] || prevState.lastSelectedNode === key ? !prevState[key] : prevState[key],
-        lastSelectedNode: key
-      }));
-    }
-  }, []);
-  
+    const toggleExpanded = useCallback((key: string) => {
+      if (key === 'Start') {
+        setExpanded(prevState => ({
+          ...prevState,
+          lastSelectedNode: key
+        }));
+      } else {
+        setExpanded(prevState => ({
+          ...prevState,
+          [key]:
+            !prevState[key] || prevState.lastSelectedNode === key
+              ? !prevState[key]
+              : prevState[key],
+          lastSelectedNode: key
+        }));
+      }
+    }, []);
+
     // Recalculate graph layout if graph container size changes
     useEffect(() => {
       if (graphElement.current?.parentElement) {
