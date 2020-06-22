@@ -109,6 +109,10 @@ const materialUiOverridesBase = {
       '&::selection': {
         color: colors.white,
         backgroundColor: colors.grayDark
+      },
+      '&:-webkit-autofill': {
+        transitionDelay: '9999s',
+        transitionProperty: 'background-color, color'
       }
     }
   },

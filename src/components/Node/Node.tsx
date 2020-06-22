@@ -1,4 +1,4 @@
-import React, { FC, Ref, forwardRef, memo, useCallback } from 'react';
+import React, { FC, Ref, forwardRef, memo, useCallback, useState, useEffect } from 'react';
 import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -32,9 +32,20 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       { nodeKey, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
       ref
     ) => {
+      const [hasMetadata, setHasMetadata] = useState<boolean>(
+        isGuidanceState(pathwayState) ? pathwayState.action.length > 0 : false
+      );
+
       const onClickHandler = useCallback(() => {
         if (onClick) onClick(nodeKey);
       }, [onClick, nodeKey]);
+
+      useEffect(() => {
+        if (!hasMetadata && isGuidanceState(pathwayState) && pathwayState.action.length > 0) {
+          setHasMetadata(true);
+          onClickHandler();
+        }
+      }, [hasMetadata, pathwayState, setHasMetadata, onClickHandler]);
 
       const { label } = pathwayState;
       const style = {
@@ -95,7 +106,7 @@ const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
       const resourceType = guidancePathwayState.action[0].resource.resourceType;
       if (resourceType === 'MedicationRequest') icon = faPrescriptionBottleAlt;
       else if (resourceType === 'ServiceRequest') icon = faSyringe;
-      else if (resourceType === 'CarePlan') icon = faBookMedical;
+      else if (resourceType === 'Careplan') icon = faBookMedical;
     }
   } else {
     icon = faMicroscope;

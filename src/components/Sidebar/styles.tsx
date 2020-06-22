@@ -24,7 +24,9 @@ export default makeStyles(
       cursor: 'default'
     },
     displayText: {
-      margin: '10px 0 10px 0'
+      margin: '0 0 5px 0',
+      fontWeight: 900,
+      fontSize: '1em'
     },
     sidebarHeader: {
       display: 'flex',

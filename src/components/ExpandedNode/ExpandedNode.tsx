@@ -13,7 +13,14 @@ interface ExpandedNodeProps {
   isActionable: boolean;
   isGuidance: boolean;
 }
-
+type ConversionResource = {
+  [key: string]: string;
+};
+const resourceNameConversion: ConversionResource = {
+  MedicationRequest: 'Medication',
+  ServiceRequest: 'Procedure',
+  Careplan: 'Regimen'
+};
 const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayState, isActionable, isGuidance }) => {
   return (
     <>
@@ -64,33 +71,39 @@ function isMedicationRequest(
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
 function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
-  const resource = pathwayState.action[0].resource;
-  const coding = isMedicationRequest(resource)
-    ? resource?.medicationCodeableConcept?.coding
-    : resource?.code?.coding;
-
-  const returnElements = [
-    <ExpandedNodeField
-      key="Description"
-      title="Description"
-      description={pathwayState.action[0].description}
-    />,
-    <ExpandedNodeField key="Type" title="Type" description={resource.resourceType} />,
-    <ExpandedNodeField
-      key="System"
-      title="System"
-      description={
-        <>
-          {coding && coding[0].system}
-          <a href={coding && coding[0].system} target="_blank" rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
-          </a>
-        </>
-      }
-    />,
-    <ExpandedNodeField key="Code" title="Code" description={coding && coding[0].code} />,
-    <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />
-  ];
+  let returnElements: ReactElement[] = [];
+  if (pathwayState.action[0]) {
+    const resource = pathwayState.action[0].resource;
+    const coding = isMedicationRequest(resource)
+      ? resource?.medicationCodeableConcept?.coding
+      : resource?.code?.coding;
+    returnElements = [
+      <ExpandedNodeField
+        key="Description"
+        title="Description"
+        description={pathwayState.action[0].description}
+      />,
+      <ExpandedNodeField
+        key="Type"
+        title="Type"
+        description={resourceNameConversion[resource.resourceType]}
+      />,
+      <ExpandedNodeField
+        key="System"
+        title="System"
+        description={
+          <>
+            {coding && coding[0].system}
+            <a href={coding && coding[0].system} target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
+            </a>
+          </>
+        }
+      />,
+      <ExpandedNodeField key="Code" title="Code" description={coding && coding[0].code} />,
+      <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />
+    ];
+  }
 
   return returnElements;
 }

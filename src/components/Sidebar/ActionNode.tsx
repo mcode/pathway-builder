@@ -21,9 +21,12 @@ const actionTypeOptions = [
 ];
 
 const codeSystemOptions = [
-  { label: 'RXNORM', value: 'http://www.nlm.nih.gov/research/umls/rxnorm' },
   { label: 'SNOMED', value: 'http://snomed.info/sct' },
-  { label: 'LOINC', value: ' http://loinc.org' }
+  { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
+  { label: 'ICD-10-CM', value: 'http://hl7.org/fhir/sid/icd-10-cm' },
+  { label: 'NCI', value: 'http://ncimeta.nci.nih.gov' },
+  { label: 'LOINC', value: 'http://loinc.org' },
+  { label: 'RXNORM', value: 'http://www.nlm.nih.gov/research/umls/rxnorm' }
 ];
 
 interface ActionNodeProps {
@@ -42,7 +45,6 @@ const ActionNode: FC<ActionNodeProps> = ({
   updatePathway
 }) => {
   const styles = useStyles();
-
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
