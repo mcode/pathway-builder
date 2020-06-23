@@ -8,13 +8,14 @@ export default makeStyles(
       padding: '2em',
       backgroundColor: theme.palette.background.default,
       color: theme.palette.text.primary,
-      height: '6em'
+      height: '6em',
+      justifyContent: 'space-between'
     },
     backButton: {
       height: '45px',
       width: '45px'
     },
-    backIcon: {
+    navigationIcons: {
       fontSize: '20px',
       color: theme.palette.grey['800'],
       cursor: 'pointer'

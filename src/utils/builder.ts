@@ -28,6 +28,22 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
   };
 }
 
+export function downloadPathway(pathway: Pathway): void {
+  const pathwayString = exportPathway(pathway);
+  // Create blob from pathwayString to save to file system
+  const pathwayBlob = new Blob([pathwayString], {
+    type: 'application/json'
+  });
+  // Temporarily create hidden <a> tag to download pathwayBlob
+  // File name is set to <pathway-name>.json
+  const url = window.URL.createObjectURL(pathwayBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${pathway.name}.json`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
 export function exportPathway(pathway: Pathway): string {
   const elm: ElmLibrary = {
     library: {
@@ -130,18 +146,20 @@ export function exportPathway(pathway: Pathway): string {
 
 function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
   // Merge usings
-  additionalElm.library.usings.def.forEach(using => {
+  additionalElm.library.usings?.def.forEach(using => {
     // Check if it is in ELM
     if (!elm.library.usings.def.find(def => def.uri === using.uri))
       elm.library.usings.def.push(using);
   });
+
   // Merge includes
-  additionalElm.library.includes.def.forEach(include => {
+  additionalElm.library.includes?.def.forEach(include => {
     if (!elm.library.includes.def.find(def => def.path === include.path))
       elm.library.includes.def.push(include);
   });
+
   // Merge valueSets
-  additionalElm.library.valueSets.def.forEach(valueSet => {
+  additionalElm.library.valueSets?.def.forEach(valueSet => {
     if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
       elm.library.valueSets.def.push(valueSet);
   });
