@@ -28,6 +28,19 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
   };
 }
 
+export function downloadPathway(pathway: Pathway): void {
+  const pathwayString = exportPathway(pathway);
+  const pathwayBlob = new Blob([pathwayString], {
+    type: 'application/json'
+  });
+  const url = window.URL.createObjectURL(pathwayBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${pathway.name}.json`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
 export function exportPathway(pathway: Pathway): string {
   const elm: ElmLibrary = {
     library: {

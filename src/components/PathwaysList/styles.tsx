@@ -13,7 +13,7 @@ export default makeStyles(
     pathwayList: {
       marginTop: '2em'
     },
-    editButton: {
+    pathwaysListButton: {
       marginRight: '1em'
     },
     dialogCloseButton: {

@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faFileDownload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
   Table,
@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 
 import { usePathwayContext } from 'components/PathwayProvider';
+import { downloadPathway } from 'utils/builder';
 
 import useStyles from './styles';
 
@@ -44,7 +45,7 @@ const PathwaysTable: FC = () => {
 
               <TableCell align="right">
                 <Button
-                  className={styles.editButton}
+                  className={styles.pathwaysListButton}
                   color="primary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faEdit} />}
@@ -53,7 +54,15 @@ const PathwaysTable: FC = () => {
                 >
                   Edit
                 </Button>
-
+                <Button
+                  className={styles.pathwaysListButton}
+                  color="primary"
+                  size="small"
+                  startIcon={<FontAwesomeIcon icon={faFileDownload} />}
+                  onClick={(): void => downloadPathway(pathway)}
+                >
+                  Export
+                </Button>
                 <Button
                   color="secondary"
                   size="small"
