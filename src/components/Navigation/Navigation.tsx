@@ -2,9 +2,7 @@ import React, { FC, useCallback, useState, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { IconButton } from '@material-ui/core';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 
 import { Pathway } from 'pathways-model';
 import { downloadPathway } from 'utils/builder';
