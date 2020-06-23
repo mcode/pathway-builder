@@ -21,12 +21,12 @@ const actionTypeOptions = [
 ];
 
 const codeSystemOptions = [
-  { label: 'SNOMED', value: 'http://snomed.info/sct' },
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
   { label: 'ICD-10-CM', value: 'http://hl7.org/fhir/sid/icd-10-cm' },
-  { label: 'NCI', value: 'http://ncimeta.nci.nih.gov' },
   { label: 'LOINC', value: 'http://loinc.org' },
-  { label: 'RXNORM', value: 'http://www.nlm.nih.gov/research/umls/rxnorm' }
+  { label: 'NCI', value: 'http://ncimeta.nci.nih.gov' },
+  { label: 'RXNORM', value: 'http://www.nlm.nih.gov/research/umls/rxnorm' },
+  { label: 'SNOMED', value: 'http://snomed.info/sct' }
 ];
 
 interface ActionNodeProps {
@@ -63,6 +63,7 @@ const ActionNode: FC<ActionNodeProps> = ({
       } else {
         action.resource.code.coding[0].code = code;
       }
+      resetDisplay(action);
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
@@ -89,6 +90,7 @@ const ActionNode: FC<ActionNodeProps> = ({
       const title = event?.target.value || '';
       const action = currentNode.action[0];
       action.resource.title = title;
+      resetDisplay(action);
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
@@ -166,6 +168,7 @@ const ActionNode: FC<ActionNodeProps> = ({
       } else {
         action.resource.code.coding[0].system = codeSystem;
       }
+      resetDisplay(action);
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
@@ -177,12 +180,23 @@ const ActionNode: FC<ActionNodeProps> = ({
     const action = currentNode.action[0];
     if (action.resource.medicationCodeableConcept) {
       action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
+    } else if (action.resource.title) {
+      action.resource.description = 'Example Careplan Text';
     } else {
       action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
     }
     updatePathway(setStateAction(pathway, currentNode.key, [action]));
   };
 
+  const resetDisplay = (action: Action): void => {
+    if (action.resource.medicationCodeableConcept) {
+      action.resource.medicationCodeableConcept.coding[0].display = '';
+    } else if (action.resource.title) {
+      action.resource.description = '';
+    } else {
+      action.resource.code.coding[0].display = ''; // TODO: actually validate
+    }
+  };
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       validateFunction();
@@ -207,6 +221,8 @@ const ActionNode: FC<ActionNodeProps> = ({
     display = resource.code
       ? resource.code.coding[0].display
       : resource.medicationCodeableConcept.coding[0].display;
+  } else {
+    display = resource.description;
   }
   // If the node does not have transitions it can be added to
   const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
@@ -287,15 +303,22 @@ const ActionNode: FC<ActionNodeProps> = ({
                 onChange={changeTitle}
                 variant="outlined"
                 error={resource.title == null}
+                inputProps={{ onKeyPress: onEnter }}
               />
               {resource.title && (
                 <>
-                  <SidebarButton
-                    buttonName="Validate"
-                    buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
-                    buttonText="Check validation of the input Careplan"
-                    onClick={validateFunction}
-                  />
+                  {display ? (
+                    <div className={styles.displayText}>
+                      <FontAwesomeIcon icon={faCheckCircle} /> {display}
+                    </div>
+                  ) : (
+                    <SidebarButton
+                      buttonName="Validate"
+                      buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
+                      buttonText={display || 'Check validation of the careplan'}
+                      onClick={validateFunction}
+                    />
+                  )}
 
                   <TextField
                     id="description-input"

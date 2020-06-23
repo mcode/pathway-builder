@@ -28,10 +28,14 @@ type ExpandedNodeFieldProps = {
 
 const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) => {
   return (
-    <tr>
-      <td className={styles.descTitle}>{title}</td>
-      <td className={styles.desc}>{description}</td>
-    </tr>
+    <>
+      {description ? (
+        <tr>
+          <td className={styles.descTitle}>{title}</td>
+          <td className={styles.desc}>{description}</td>
+        </tr>
+      ) : null}
+    </>
   );
 };
 
@@ -84,16 +88,20 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
         key="System"
         title="System"
         description={
-          <>
-            {coding && coding[0].system}
-            <a href={coding && coding[0].system} target="_blank" rel="noopener noreferrer">
-              <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
-            </a>
-          </>
+          coding &&
+          coding[0].system && (
+            <>
+              {coding[0].system}
+              <a href={coding[0].system} target="_blank" rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
+              </a>
+            </>
+          )
         }
       />,
       <ExpandedNodeField key="Code" title="Code" description={coding && coding[0].code} />,
-      <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />
+      <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />,
+      <ExpandedNodeField key="Title" title="Title" description={resource.title} />
     ];
   }
 
