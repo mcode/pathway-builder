@@ -233,7 +233,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
               return (
                 <Node
                   key={nodeName}
-                  name={nodeName}
+                  nodeKey={nodeName}
                   ref={(node: HTMLDivElement): void => {
                     if (node) nodeRefs.current[nodeName] = node;
                     else delete nodeRefs.current[nodeName];

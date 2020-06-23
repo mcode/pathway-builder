@@ -17,7 +17,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 interface NodeProps {
-  name: string;
+  nodeKey: string;
   pathwayState: State;
   xCoordinate: number;
   yCoordinate: number;
@@ -29,12 +29,12 @@ interface NodeProps {
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      { name, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
+      { nodeKey, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
       ref
     ) => {
       const onClickHandler = useCallback(() => {
-        if (onClick) onClick(name);
-      }, [onClick, name]);
+        if (onClick) onClick(nodeKey);
+      }, [onClick, nodeKey]);
 
       const { label } = pathwayState;
       const style = {
@@ -42,9 +42,9 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         left: xCoordinate
       };
 
-      const isCurrentNode = pathwayState.key === currentNode?.key;
+      const isCurrentNode = pathwayState.key === currentNode.key;
       const isTransitionOfCurrentBranch =
-        isBranchState(currentNode) && currentNode.transitions.some(e => e?.transition === name);
+        isBranchState(currentNode) && currentNode.transitions.some(e => e?.transition === nodeKey);
 
       const isActionable = isCurrentNode;
       const topLevelClasses = [styles.node];
