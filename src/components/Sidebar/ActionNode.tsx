@@ -180,7 +180,7 @@ const ActionNode: FC<ActionNodeProps> = ({
     const action = currentNode.action[0];
     if (action.resource.medicationCodeableConcept) {
       action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
-    } else if (action.resource.title) {
+    } else if (action.resource.resourceType === 'Careplan') {
       action.resource.description = 'Example Careplan Text';
     } else {
       action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
@@ -191,7 +191,7 @@ const ActionNode: FC<ActionNodeProps> = ({
   const resetDisplay = (action: Action): void => {
     if (action.resource.medicationCodeableConcept) {
       action.resource.medicationCodeableConcept.coding[0].display = '';
-    } else if (action.resource.title) {
+    } else if (action.resource.resourceType === 'Careplan') {
       action.resource.description = '';
     } else {
       action.resource.code.coding[0].display = ''; // TODO: actually validate
@@ -306,29 +306,14 @@ const ActionNode: FC<ActionNodeProps> = ({
                 inputProps={{ onKeyPress: onEnter }}
               />
               {resource.title && (
-                <>
-                  {display ? (
-                    <div className={styles.displayText}>
-                      <FontAwesomeIcon icon={faCheckCircle} /> {display}
-                    </div>
-                  ) : (
-                    <SidebarButton
-                      buttonName="Validate"
-                      buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
-                      buttonText={display || 'Check validation of the careplan'}
-                      onClick={validateFunction}
-                    />
-                  )}
-
-                  <TextField
-                    id="description-input"
-                    label="Description"
-                    value={action[0].description || ''}
-                    onChange={changeDescription}
-                    variant="outlined"
-                    error={action[0].description === ''}
-                  />
-                </>
+                <TextField
+                  id="description-input"
+                  label="Description"
+                  value={action[0].description || ''}
+                  onChange={changeDescription}
+                  variant="outlined"
+                  error={action[0].description === ''}
+                />
               )}
             </>
           )}

@@ -29,12 +29,12 @@ type ExpandedNodeFieldProps = {
 const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) => {
   return (
     <>
-      {description ? (
+      {description && (
         <tr>
           <td className={styles.descTitle}>{title}</td>
           <td className={styles.desc}>{description}</td>
         </tr>
-      ) : null}
+      )}
     </>
   );
 };
