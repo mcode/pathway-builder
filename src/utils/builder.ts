@@ -30,9 +30,12 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
 
 export function downloadPathway(pathway: Pathway): void {
   const pathwayString = exportPathway(pathway);
+  // Create blob from pathwayString to save to file system
   const pathwayBlob = new Blob([pathwayString], {
     type: 'application/json'
   });
+  // Temporarily create hidden <a> tag to download pathwayBlob
+  // File name is set to <pathway-name>.json
   const url = window.URL.createObjectURL(pathwayBlob);
   const a = document.createElement('a');
   a.href = url;
