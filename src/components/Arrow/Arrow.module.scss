@@ -20,3 +20,7 @@
 .arrow {
   @include arrow($blue);
 }
+
+.currentBranchArrow {
+  @include arrow($red);
+}

@@ -6,5 +6,6 @@ export function isGuidanceState(state: State): boolean {
 }
 
 export function isBranchState(state: State): boolean {
-  return !isGuidanceState(state) && state.transitions.length > 1;
+  const { action, label } = state as GuidanceState;
+  return action === undefined && label !== 'Start';
 }

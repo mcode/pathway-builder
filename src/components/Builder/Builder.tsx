@@ -46,7 +46,7 @@ const Builder: FC<BuilderProps> = ({ pathway, updatePathway, currentNode }) => {
         </MuiThemeProvider>
 
         <div ref={graphContainerElement} className={styles.graph}>
-          <Graph pathway={pathway} expandCurrentNode={true} />
+          <Graph pathway={pathway} expandCurrentNode={true} currentNode={currentNode} />
         </div>
       </div>
     </>
