@@ -146,18 +146,20 @@ export function exportPathway(pathway: Pathway): string {
 
 function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
   // Merge usings
-  additionalElm.library.usings.def.forEach(using => {
+  additionalElm.library.usings?.def.forEach(using => {
     // Check if it is in ELM
     if (!elm.library.usings.def.find(def => def.uri === using.uri))
       elm.library.usings.def.push(using);
   });
+
   // Merge includes
-  additionalElm.library.includes.def.forEach(include => {
+  additionalElm.library.includes?.def.forEach(include => {
     if (!elm.library.includes.def.find(def => def.path === include.path))
       elm.library.includes.def.push(include);
   });
+
   // Merge valueSets
-  additionalElm.library.valueSets.def.forEach(valueSet => {
+  additionalElm.library.valueSets?.def.forEach(valueSet => {
     if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
       elm.library.valueSets.def.push(valueSet);
   });
