@@ -16,5 +16,5 @@ type ConversionResource = {
 export const resourceNameConversion: ConversionResource = {
   MedicationRequest: 'Medication',
   ServiceRequest: 'Procedure',
-  Careplan: 'Regimen'
+  CarePlan: 'Regimen'
 };

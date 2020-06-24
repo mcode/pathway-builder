@@ -99,6 +99,8 @@ const ActionNode: FC<ActionNodeProps> = ({
       action.resource.title = title;
       resetDisplay(action);
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
+
+      addActionCQL(action, currentNode.key);
     },
     [currentNode, pathway, updatePathway]
   );
@@ -111,7 +113,7 @@ const ActionNode: FC<ActionNodeProps> = ({
         return option.value === value;
       });
       let action: Action;
-      if (actionType?.value === 'Careplan') {
+      if (actionType?.value === 'CarePlan') {
         action = {
           type: 'create',
           description: '',
@@ -187,26 +189,30 @@ const ActionNode: FC<ActionNodeProps> = ({
       if (action.resource.medicationCodeableConcept) {
         action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
       } else if (action.resource.title) {
-        action.resource.description = 'Example Careplan Text';
+        action.resource.description = 'Example CarePlan Text';
       } else {
         action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
       }
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
 
-      const cql = createCQL(action, currentNode.key);
-      convertBasicCQL(cql).then(elm => {
-        // eslint-disable-next-line
-        updatePathway(setGuidanceStateElm(pathway, currentNode.key!, elm as ElmLibrary));
-      });
+      addActionCQL(action, currentNode.key);
     } else {
       console.error('No Actions -- Cannot Validate');
     }
   };
 
+  const addActionCQL = (action: Action, currentNodeKey: string): void => {
+    const cql = createCQL(action, currentNodeKey);
+    convertBasicCQL(cql).then(elm => {
+      // eslint-disable-next-line
+      updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
+    });
+  };
+
   const resetDisplay = (action: Action): void => {
     if (action.resource.medicationCodeableConcept) {
       action.resource.medicationCodeableConcept.coding[0].display = '';
-    } else if (action.resource.resourceType === 'Careplan') {
+    } else if (action.resource.resourceType === 'CarePlan') {
       action.resource.description = '';
     } else {
       action.resource.code.coding[0].display = ''; // TODO: actually validate
