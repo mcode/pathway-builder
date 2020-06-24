@@ -48,9 +48,15 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     ]);
   }, []);
 
+  console.log('Pathway Payload');
+  console.log(servicePayload);
+
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload]);
+
+  console.log('Pathway Payload2');
+  console.log(servicePayload);
 
   switch (service.status) {
     case 'error':

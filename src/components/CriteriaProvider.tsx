@@ -5,12 +5,14 @@ import React, {
   useState,
   memo,
   useContext,
-  useCallback
+  useCallback,
+  useEffect
 } from 'react';
 import shortid from 'shortid';
-import { ElmStatement } from 'elm-model';
-import under2cm from 'components/Tumor-Size-2cm-and-Under.json';
-import over2cm from 'components/Tumor-Size-Over-2cm.json';
+import { ElmStatement } from 'pathways-model';
+import config from 'utils/ConfigManager';
+import useGetCriteriaService from './CriteriaService';
+import { ServiceLoaded } from 'pathways-objects';
 
 interface Criteria {
   id: string;
@@ -65,12 +67,20 @@ function JSONtoCriteria(rawElm: string): Criteria | undefined {
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
-  const under2cmCriteria = JSONtoCriteria(JSON.stringify(under2cm));
-  const over2cmCriteria = JSONtoCriteria(JSON.stringify(over2cm));
+  const [criteria, setCriteria] = useState<Criteria[]>([]);
+  const service = useGetCriteriaService(config.get('demoCriteria'));
+  const payload = (service as ServiceLoaded<Criteria[]>).payload;
 
-  let defaultCriteria: Criteria[] = [];
-  if (under2cmCriteria && over2cmCriteria) defaultCriteria = [under2cmCriteria, over2cmCriteria];
-  const [criteria, setCriteria] = useState<Criteria[]>(defaultCriteria);
+  useEffect(() => {
+    const defaultCriteria: Criteria[] = [];
+    if (payload) {
+      payload.forEach(JSONcriterion => {
+        const criterion = JSONtoCriteria(JSON.stringify(JSONcriterion));
+        if (criterion) defaultCriteria.push(criterion);
+      });
+    }
+    setCriteria(defaultCriteria);
+  }, [payload]);
 
   const addCriteria = useCallback((file: File) => {
     const reader = new FileReader();
