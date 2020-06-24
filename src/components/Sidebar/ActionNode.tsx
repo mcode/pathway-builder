@@ -102,7 +102,7 @@ const ActionNode: FC<ActionNodeProps> = ({
 
       addActionCQL(action, currentNode.key);
     },
-    [currentNode, pathway, updatePathway]
+    [currentNode, pathway, updatePathway, addActionCQL]
   );
 
   const selectActionType = useCallback(
