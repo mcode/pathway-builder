@@ -115,7 +115,7 @@ const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
       const resourceType = guidancePathwayState.action[0].resource.resourceType;
       if (resourceType === 'MedicationRequest') icon = faPrescriptionBottleAlt;
       else if (resourceType === 'ServiceRequest') icon = faSyringe;
-      else if (resourceType === 'Careplan') icon = faBookMedical;
+      else if (resourceType === 'CarePlan') icon = faBookMedical;
     }
   } else {
     icon = faMicroscope;
