@@ -59,6 +59,17 @@ const ActionNode: FC<ActionNodeProps> = ({
     [changeNodeType]
   );
 
+  const addActionCQL = useCallback(
+    (action: Action, currentNodeKey: string): void => {
+      const cql = createCQL(action, currentNodeKey);
+      convertBasicCQL(cql).then(elm => {
+        // eslint-disable-next-line
+        updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
+      });
+    },
+    [pathway, updatePathway]
+  );
+
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNode.key) return;
@@ -199,14 +210,6 @@ const ActionNode: FC<ActionNodeProps> = ({
     } else {
       console.error('No Actions -- Cannot Validate');
     }
-  };
-
-  const addActionCQL = (action: Action, currentNodeKey: string): void => {
-    const cql = createCQL(action, currentNodeKey);
-    convertBasicCQL(cql).then(elm => {
-      // eslint-disable-next-line
-      updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
-    });
   };
 
   const resetDisplay = (action: Action): void => {
