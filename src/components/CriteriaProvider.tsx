@@ -11,7 +11,7 @@ import React, {
 import shortid from 'shortid';
 import { ElmStatement } from 'pathways-model';
 import config from 'utils/ConfigManager';
-import useGetCriteriaService from './CriteriaService';
+import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
 
 interface Criteria {
@@ -68,7 +68,8 @@ function JSONtoCriteria(rawElm: string): Criteria | undefined {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const service = useGetCriteriaService(config.get('demoCriteria'));
+  const criteriaObject = {} as Criteria;
+  const service = useGetService(config.get('demoCriteria'), criteriaObject);
   const payload = (service as ServiceLoaded<Criteria[]>).payload;
 
   useEffect(() => {

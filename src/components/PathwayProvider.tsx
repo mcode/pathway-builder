@@ -11,7 +11,7 @@ import React, {
 import { Pathway } from 'pathways-model';
 import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
-import useGetPathwaysService from './PathwaysService';
+import useGetService from './Services';
 
 interface PathwayContextInterface {
   pathways: Pathway[];
@@ -29,7 +29,8 @@ interface PathwayProviderProps {
 
 export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => {
   const [pathways, setPathways] = useState<Pathway[]>([]);
-  const service = useGetPathwaysService(config.get('demoPathwaysService'));
+  const pathwayObject = {} as Pathway;
+  const service = useGetService(config.get('demoPathwaysService'), pathwayObject);
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
 
   const addPathway = useCallback((pathway: Pathway) => {
@@ -48,15 +49,9 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     ]);
   }, []);
 
-  console.log('Pathway Payload');
-  console.log(servicePayload);
-
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload]);
-
-  console.log('Pathway Payload2');
-  console.log(servicePayload);
 
   switch (service.status) {
     case 'error':
