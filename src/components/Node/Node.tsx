@@ -1,19 +1,19 @@
-import React, { FC, Ref, forwardRef, memo, useCallback } from 'react';
+import React, { FC, Ref, forwardRef, memo, useCallback, useState, useEffect } from 'react';
 import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
 import { isGuidanceState, isBranchState } from 'utils/nodeUtils';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faMicroscope,
   faPlay,
   faPrescriptionBottleAlt,
-  faCapsules,
   faSyringe,
   faCheckCircle,
-  faTimesCircle
+  faTimesCircle,
+  faBookMedical
 } from '@fortawesome/free-solid-svg-icons';
 
 interface NodeProps {
@@ -32,9 +32,22 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       { nodeKey, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
       ref
     ) => {
+      const [hasMetadata, setHasMetadata] = useState<boolean>(
+        isGuidanceState(pathwayState) ? pathwayState.action.length > 0 : false
+      );
+
       const onClickHandler = useCallback(() => {
         if (onClick) onClick(nodeKey);
       }, [onClick, nodeKey]);
+
+      useEffect(() => {
+        if (!hasMetadata && isGuidanceState(pathwayState) && pathwayState.action.length > 0) {
+          setHasMetadata(true);
+          if (!expanded) {
+            onClickHandler();
+          }
+        }
+      }, [hasMetadata, pathwayState, setHasMetadata, onClickHandler, expanded]);
 
       const { label } = pathwayState;
       const style = {
@@ -57,7 +70,6 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         expandedNodeClass = styles.childNotActionable;
       }
       const isGuidance = isGuidanceState(pathwayState);
-
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
           <div className={`nodeTitle ${onClickHandler && 'clickable'}`} onClick={onClickHandler}>
@@ -88,18 +100,21 @@ interface NodeIconProps {
 }
 
 const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
-  let icon: IconProp = faMicroscope;
-  if (pathwayState.key === 'Start') icon = faPlay;
-  if (isGuidance) {
+  let icon: IconDefinition | undefined;
+  if (pathwayState.label === 'Start') icon = faPlay;
+  else if (isGuidance) {
     const guidancePathwayState = pathwayState as GuidanceState;
     if (guidancePathwayState.action.length > 0) {
       const resourceType = guidancePathwayState.action[0].resource.resourceType;
       if (resourceType === 'MedicationRequest') icon = faPrescriptionBottleAlt;
-      else if (resourceType === 'MedicationAdministration') icon = faCapsules;
-      else if (resourceType === 'Procedure') icon = faSyringe;
+      else if (resourceType === 'ServiceRequest') icon = faSyringe;
+      else if (resourceType === 'Careplan') icon = faBookMedical;
     }
+  } else {
+    icon = faMicroscope;
   }
-  return <FontAwesomeIcon icon={icon} className={styles.icon} />;
+
+  return icon ? <FontAwesomeIcon icon={icon} className={styles.icon} /> : null;
 };
 
 interface StatusIconProps {

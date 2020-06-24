@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import ExpandedNode from 'components/ExpandedNode';
 import { GuidanceState, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
+import { resourceNameConversion } from 'utils/nodeUtils';
 
 const testActionState: GuidanceState = {
   label: 'Chemotherapy',
@@ -66,8 +67,11 @@ describe('<ExpandedNode />', () => {
 
     const resource = testActionState.action[0].resource as BasicActionResource;
 
+    const resourceType = resourceNameConversion[resource.resourceType]
+      ? resourceNameConversion[resource.resourceType]
+      : resource.resourceType;
     expect(getByText(testActionState.action[0].description)).toBeVisible();
-    expect(getByText(resource.resourceType)).toBeVisible();
+    expect(getByText(resourceType)).toBeVisible();
     expect(getByText(resource.code.coding[0].system)).toBeVisible();
     expect(getByText(resource.code.coding[0].code)).toBeVisible();
     expect(getByText(resource.code.coding[0].display)).toBeVisible();
@@ -92,8 +96,11 @@ describe('<ExpandedNode />', () => {
     const resource = testMedicationRequestState.action[0]
       .resource as BasicMedicationRequestResource;
 
+    const resourceType = resourceNameConversion[resource.resourceType]
+      ? resourceNameConversion[resource.resourceType]
+      : resource.resourceType;
     expect(getByText(testMedicationRequestState.action[0].description)).toBeVisible();
-    expect(getByText(resource.resourceType)).toBeVisible();
+    expect(getByText(resourceType)).toBeVisible();
     expect(getByText(resource.medicationCodeableConcept.coding[0].system)).toBeVisible();
     expect(getByText(resource.medicationCodeableConcept.coding[0].code)).toBeVisible();
     expect(getByText(resource.medicationCodeableConcept.coding[0].display)).toBeVisible();

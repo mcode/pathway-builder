@@ -3,7 +3,7 @@ import { GuidanceState, State } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
-import { isBranchState } from 'utils/nodeUtils';
+import { isBranchState, resourceNameConversion } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,7 +13,6 @@ interface ExpandedNodeProps {
   isActionable: boolean;
   isGuidance: boolean;
 }
-
 const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayState, isActionable, isGuidance }) => {
   return (
     <>
@@ -29,10 +28,14 @@ type ExpandedNodeFieldProps = {
 
 const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) => {
   return (
-    <tr>
-      <td className={styles.descTitle}>{title}</td>
-      <td className={styles.desc}>{description}</td>
-    </tr>
+    <>
+      {description && (
+        <tr>
+          <td className={styles.descTitle}>{title}</td>
+          <td className={styles.desc}>{description}</td>
+        </tr>
+      )}
+    </>
   );
 };
 
@@ -64,37 +67,46 @@ function isMedicationRequest(
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
 function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
-  const resource = pathwayState.action[0].resource;
-  const coding = isMedicationRequest(resource)
-    ? resource?.medicationCodeableConcept?.coding
-    : resource?.code?.coding;
+  let returnElements: ReactElement[] = [];
+  if (pathwayState.action[0]) {
+    const resource = pathwayState.action[0].resource;
+    const coding = isMedicationRequest(resource)
+      ? resource?.medicationCodeableConcept?.coding
+      : resource?.code?.coding;
 
-  const returnElements = [
-    <ExpandedNodeField
-      key="Notes"
-      title="Notes"
-      description={pathwayState.action[0].description}
-    />,
-    <ExpandedNodeField key="Type" title="Type" description={resource.resourceType} />,
-    <ExpandedNodeField
-      key="System"
-      title="System"
-      description={
-        <>
-          {coding && coding[0].system}
-          <a href={coding && coding[0].system} target="_blank" rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
-          </a>
-        </>
-      }
-    />,
-    <ExpandedNodeField key="Code" title="Code" description={coding && coding[0].code} />,
-    <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />
-  ];
+    const resourceType = resourceNameConversion[resource.resourceType]
+      ? resourceNameConversion[resource.resourceType]
+      : resource.resourceType;
+    returnElements = [
+      <ExpandedNodeField
+        key="Description"
+        title="Description"
+        description={pathwayState.action[0].description}
+      />,
+      <ExpandedNodeField key="Type" title="Type" description={resourceType} />,
+      <ExpandedNodeField
+        key="System"
+        title="System"
+        description={
+          coding &&
+          coding[0].system && (
+            <>
+              {coding[0].system}
+              <a href={coding[0].system} target="_blank" rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.externalLink} />
+              </a>
+            </>
+          )
+        }
+      />,
+      <ExpandedNodeField key="Code" title="Code" description={coding && coding[0].code} />,
+      <ExpandedNodeField key="Display" title="Display" description={coding && coding[0].display} />,
+      <ExpandedNodeField key="Title" title="Title" description={resource.title} />
+    ];
+  }
 
   return returnElements;
 }
-
 interface ExpandedNodeMemoProps {
   pathwayState: GuidanceState;
   isGuidance: boolean;

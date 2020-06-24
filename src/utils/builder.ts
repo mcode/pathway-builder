@@ -266,6 +266,70 @@ export function setStateNodeType(pathway: Pathway, stateKey: string, nodeType: s
   }
 }
 
+export function setStateCriteriaSource(
+  pathway: Pathway,
+  key: string,
+  criteriaSource: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        criteriaSource
+      }
+    }
+  };
+}
+
+export function setStateAction(pathway: Pathway, key: string, action: Action[]): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        action
+      }
+    }
+  };
+}
+
+export function setStateMcodeCriteria(
+  pathway: Pathway,
+  key: string,
+  mcodeCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        mcodeCriteria
+      }
+    }
+  };
+}
+
+export function setStateOtherCriteria(
+  pathway: Pathway,
+  key: string,
+  otherCriteria: string
+): Pathway {
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [key]: {
+        ...pathway.states[key],
+        otherCriteria
+      }
+    }
+  };
+}
+
 export function addTransition(
   pathway: Pathway,
   startStateKey: string,
@@ -451,11 +515,13 @@ export function setActionDescription(
   actionId: string,
   description: string
 ): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const action = (pathway.states[stateKey] as GuidanceState).action.find(
-      (action: Action) => action.id === actionId
-    );
-    if (action) action.description = description;
+  const state = (pathway.states[stateKey] as GuidanceState).action;
+
+  if (state) {
+    const action = state.find((action: Action) => action.id === actionId);
+    if (action) {
+      action.description = description;
+    }
   }
 }
 

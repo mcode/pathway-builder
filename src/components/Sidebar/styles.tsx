@@ -23,6 +23,11 @@ export default makeStyles(
     headerLabelStart: {
       cursor: 'default'
     },
+    displayText: {
+      margin: '0 0 5px 0',
+      fontWeight: 900,
+      fontSize: '1em'
+    },
     sidebarHeader: {
       display: 'flex',
       justifyContent: 'space-between'

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { State, GuidanceState, Pathway } from 'pathways-model';
+import { State, GuidanceState, BranchState, Pathway } from 'pathways-model';
 import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
 import useStyles from './styles';
 
@@ -12,7 +12,7 @@ interface SidebarProps {
   pathway: Pathway;
   updatePathway: (pathway: Pathway) => void;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: GuidanceState | State;
+  currentNode: GuidanceState | BranchState | State;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, currentNode }) => {
@@ -51,7 +51,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
       let newPathway = addState(pathway, newState);
       newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
       newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
-
       updatePathway(newPathway);
       redirectToNode(newState.key);
     },
@@ -91,8 +90,9 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
           {nodeType === 'action' && (
             <ActionNode
               pathway={pathway}
-              currentNode={currentNode}
+              currentNode={currentNode as GuidanceState}
               changeNodeType={changeNodeType}
+              updatePathway={updatePathway}
               addNode={addNode}
             />
           )}
