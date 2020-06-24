@@ -43,9 +43,11 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       useEffect(() => {
         if (!hasMetadata && isGuidanceState(pathwayState) && pathwayState.action.length > 0) {
           setHasMetadata(true);
-          onClickHandler();
+          if (!expanded) {
+            onClickHandler();
+          }
         }
-      }, [hasMetadata, pathwayState, setHasMetadata, onClickHandler]);
+      }, [hasMetadata, pathwayState, setHasMetadata, onClickHandler, expanded]);
 
       const { label } = pathwayState;
       const style = {
