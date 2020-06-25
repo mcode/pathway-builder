@@ -63,7 +63,6 @@ const ActionNode: FC<ActionNodeProps> = ({
     (action: Action, currentNodeKey: string): void => {
       const cql = createCQL(action, currentNodeKey);
       convertBasicCQL(cql).then(elm => {
-        // eslint-disable-next-line
         updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
       });
     },
