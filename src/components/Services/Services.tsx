@@ -13,7 +13,7 @@ function typedFetch<T>(url: string, options?: object): Promise<T> {
   return fetch(url, options).then(response => response.json() as Promise<T>);
 }
 
-function useGetService<T>(url: string, type: T): Service<Array<T>> {
+function useGetService<T>(url: string): Service<Array<T>> {
   const [result, setResult] = useState<Service<Array<T>>>({
     status: 'loading'
   });

@@ -29,8 +29,7 @@ interface PathwayProviderProps {
 
 export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => {
   const [pathways, setPathways] = useState<Pathway[]>([]);
-  const pathwayObject = {} as Pathway;
-  const service = useGetService(config.get('demoPathwaysService'), pathwayObject);
+  const service = useGetService<Pathway>(config.get('demoPathwaysService'));
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
 
   const addPathway = useCallback((pathway: Pathway) => {

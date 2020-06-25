@@ -36,7 +36,7 @@ interface CriteriaProviderProps {
   children: ReactNode;
 }
 
-function JSONtoCriteria(rawElm: string): Criteria | undefined {
+function jsonToCriteria(rawElm: string): Criteria | undefined {
   const elm = JSON.parse(rawElm);
   if (!elm.library?.identifier) {
     alert('Please upload ELM file');
@@ -68,15 +68,14 @@ function JSONtoCriteria(rawElm: string): Criteria | undefined {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const criteriaObject = {} as Criteria;
-  const service = useGetService(config.get('demoCriteria'), criteriaObject);
+  const service = useGetService<Criteria>(config.get('demoCriteria'));
   const payload = (service as ServiceLoaded<Criteria[]>).payload;
 
   useEffect(() => {
     const defaultCriteria: Criteria[] = [];
     if (payload) {
-      payload.forEach(JSONcriterion => {
-        const criterion = JSONtoCriteria(JSON.stringify(JSONcriterion));
+      payload.forEach(jsonCriterion => {
+        const criterion = jsonToCriteria(JSON.stringify(jsonCriterion));
         if (criterion) defaultCriteria.push(criterion);
       });
     }
@@ -88,7 +87,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {
         const rawElm = event.target.result as string;
-        const newCriteria = JSONtoCriteria(rawElm);
+        const newCriteria = jsonToCriteria(rawElm);
         if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
       } else alert('Unable to read that file');
     };
