@@ -3,5 +3,6 @@ CONFIG = {
   cqlToElmWebserviceUrl: 'https://cql-translation-service-zfk47ib3kq-uc.a.run.app/cql/translator',
   pathwaysService: 'https://mcode.github.io/pathways/static/pathways/',
   demoPathwaysService: './static/pathways/',
-  demoPatients: './static/demoData/'
+  demoPatients: './static/demoData/',
+  demoCriteria: './static/criteria/'
 };
