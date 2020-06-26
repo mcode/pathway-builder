@@ -62,7 +62,9 @@ const ActionNode: FC<ActionNodeProps> = ({
   const addActionCQL = useCallback(
     (action: Action, currentNodeKey: string): void => {
       const cql = createCQL(action, currentNodeKey);
+      console.log(cql);
       convertBasicCQL(cql).then(elm => {
+        console.log((elm as ElmLibrary).library);
         updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
       });
     },

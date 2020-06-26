@@ -142,30 +142,30 @@ function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
   // Merge usings
   additionalElm.library.usings?.def.forEach(using => {
     // Check if it is in ELM
-    if (!elm.library.usings.def.find(def => def.uri === using.uri))
-      elm.library.usings.def.push(using);
+    if (!elm.library.usings?.def.find(def => def.uri === using.uri))
+      elm.library.usings?.def.push(using);
   });
 
   // Merge includes
   additionalElm.library.includes?.def.forEach(include => {
-    if (!elm.library.includes.def.find(def => def.path === include.path))
-      elm.library.includes.def.push(include);
+    if (!elm.library.includes?.def.find(def => def.path === include.path))
+      elm.library.includes?.def.push(include);
   });
 
   // Merge valueSets
   additionalElm.library.valueSets?.def.forEach(valueSet => {
-    if (!elm.library.valueSets.def.find(def => def.id === valueSet.id))
-      elm.library.valueSets.def.push(valueSet);
+    if (!elm.library.valueSets?.def.find(def => def.id === valueSet.id))
+      elm.library.valueSets?.def.push(valueSet);
   });
   // Merge codes
-  additionalElm.library.codes.def.forEach(code => {
-    if (!elm.library.codes.def.find(def => def.name === code.name))
-      elm.library.codes.def.push(code);
+  additionalElm.library.codes?.def.forEach(code => {
+    if (!elm.library.codes?.def.find(def => def.name === code.name))
+      elm.library.codes?.def.push(code);
   });
   // Merge codesystems
-  additionalElm.library.codeSystems.def.forEach(codesystem => {
-    if (!elm.library.codeSystems.def.find(def => def.name === codesystem.name))
-      elm.library.codeSystems.def.push(codesystem);
+  additionalElm.library.codeSystems?.def.forEach(codesystem => {
+    if (!elm.library.codeSystems?.def.find(def => def.name === codesystem.name))
+      elm.library.codeSystems?.def.push(codesystem);
   });
 
   // TODO: merge concepts
@@ -625,7 +625,7 @@ export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
 export function createCQL(action: Action, stateKey: string): string {
   const resource = action.resource;
   // CQl identifier cannot start with a number or contain '-'
-  const cqlId = `cql${shortid.generate().replace('-', 'a')}`;
+  const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
   let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\n`;
 
   const codesystemStatement = (system: string): string => `codesystem "${system}": '${system}'\n`;
@@ -643,7 +643,9 @@ export function createCQL(action: Action, stateKey: string): string {
     cql += codesystemStatement(coding.system);
 
     // eslint-disable-next-line
-    cql += `code "${cqlId} code": '${coding.code}' from "${coding.system}" display '${coding.display}'\n`;
+    cql += `code "${cqlId} code": '${escape(coding.code)}' from "${coding.system}" display '${
+      coding.display
+    }'\n`;
     cql += `${defineStatement()}
       ${retrieveStatement('MedicationRequest')} R ${returnStatement('MedicationRequest')}`;
   } else if (resource.resourceType === 'ServiceRequest') {
@@ -652,14 +654,18 @@ export function createCQL(action: Action, stateKey: string): string {
     cql += codesystemStatement(coding.system);
 
     // eslint-disable-next-line
-    cql += `code "${cqlId} code": '${coding.code}' from "${coding.system}" display '${coding.display}'\n`;
+    cql += `code "${cqlId} code": '${escape(coding.code)}' from "${coding.system}" display '${
+      coding.display
+    }'\n`;
     cql += `${defineStatement()}
       if exists ${retrieveStatement('Procedure')} 
       then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')} 
       else ${retrieveStatement('ServiceRequest')} R ${returnStatement('ServiceRequest')}`;
   } else if (resource.resourceType === 'CarePlan') {
     cql += `${defineStatement()}
-      [CarePlan] R where R.title.value = '${resource.title}' ${returnStatement('CarePlan')}`;
+      [CarePlan] R where R.title.value = '${escape(resource.title)}' ${returnStatement(
+      'CarePlan'
+    )}`;
   } else {
     console.error(
       'Auto generating CQL for action - unsupported resource type: ' + resource.resourceType

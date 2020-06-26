@@ -9,19 +9,19 @@ declare module 'elm-model' {
         id: string;
         version: string;
       };
-      usings: {
+      usings?: {
         def: ElmUsing[];
       };
-      includes: {
+      includes?: {
         def: ElmIncludes[];
       };
-      valueSets: {
+      valueSets?: {
         def: ElmValueSet[];
       };
-      codes: {
+      codes?: {
         def: ElmCode[];
       };
-      codeSystems: {
+      codeSystems?: {
         def: ElmCodeSystem[];
       };
       concepts?: {
