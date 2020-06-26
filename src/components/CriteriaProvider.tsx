@@ -9,7 +9,7 @@ import React, {
   useEffect
 } from 'react';
 import shortid from 'shortid';
-import { ElmStatement } from 'pathways-model';
+import { ElmStatement } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
