@@ -2,12 +2,19 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { setStateAction, setActionDescription } from 'utils/builder';
+import {
+  setStateAction,
+  createCQL,
+  setActionDescription,
+  setGuidanceStateElm
+} from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
 import { Pathway, GuidanceState, Action } from 'pathways-model';
+import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
@@ -17,7 +24,7 @@ const nodeTypeOptions = [
 const actionTypeOptions = [
   { label: 'Medication', value: 'MedicationRequest' },
   { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'Careplan' }
+  { label: 'Regimen', value: 'CarePlan' }
 ];
 
 const codeSystemOptions = [
@@ -50,6 +57,16 @@ const ActionNode: FC<ActionNodeProps> = ({
       changeNodeType(event?.target.value || '');
     },
     [changeNodeType]
+  );
+
+  const addActionCQL = useCallback(
+    (action: Action, currentNodeKey: string): void => {
+      const cql = createCQL(action, currentNodeKey);
+      convertBasicCQL(cql).then(elm => {
+        updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
+      });
+    },
+    [pathway, updatePathway]
   );
 
   const changeCode = useCallback(
@@ -92,8 +109,10 @@ const ActionNode: FC<ActionNodeProps> = ({
       action.resource.title = title;
       resetDisplay(action);
       updatePathway(setStateAction(pathway, currentNode.key, [action]));
+
+      addActionCQL(action, currentNode.key);
     },
-    [currentNode, pathway, updatePathway]
+    [currentNode, pathway, updatePathway, addActionCQL]
   );
 
   const selectActionType = useCallback(
@@ -104,7 +123,7 @@ const ActionNode: FC<ActionNodeProps> = ({
         return option.value === value;
       });
       let action: Action;
-      if (actionType?.value === 'Careplan') {
+      if (actionType?.value === 'CarePlan') {
         action = {
           type: 'create',
           description: '',
@@ -175,28 +194,33 @@ const ActionNode: FC<ActionNodeProps> = ({
   );
 
   const validateFunction = (): void => {
-    if (!currentNode.key) return;
+    if (currentNode.key && currentNode.action.length) {
+      const action = currentNode.action[0];
+      if (action.resource.medicationCodeableConcept) {
+        action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
+      } else if (action.resource.title) {
+        action.resource.description = 'Example CarePlan Text';
+      } else {
+        action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
+      }
+      updatePathway(setStateAction(pathway, currentNode.key, [action]));
 
-    const action = currentNode.action[0];
-    if (action.resource.medicationCodeableConcept) {
-      action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
-    } else if (action.resource.resourceType === 'Careplan') {
-      action.resource.description = 'Example Careplan Text';
+      addActionCQL(action, currentNode.key);
     } else {
-      action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
+      console.error('No Actions -- Cannot Validate');
     }
-    updatePathway(setStateAction(pathway, currentNode.key, [action]));
   };
 
   const resetDisplay = (action: Action): void => {
     if (action.resource.medicationCodeableConcept) {
       action.resource.medicationCodeableConcept.coding[0].display = '';
-    } else if (action.resource.resourceType === 'Careplan') {
+    } else if (action.resource.resourceType === 'CarePlan') {
       action.resource.description = '';
     } else {
       action.resource.code.coding[0].display = ''; // TODO: actually validate
     }
   };
+
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       validateFunction();
@@ -242,7 +266,7 @@ const ActionNode: FC<ActionNodeProps> = ({
             label="Action Type"
             options={actionTypeOptions}
             onChange={selectActionType}
-            value={resource && resource.resourceType}
+            value={resource.resourceType}
           />
           {(resource.resourceType === 'MedicationRequest' ||
             resource.resourceType === 'ServiceRequest') && (
@@ -293,7 +317,7 @@ const ActionNode: FC<ActionNodeProps> = ({
             </>
           )}
 
-          {resource.resourceType === 'Careplan' && (
+          {resource.resourceType === 'CarePlan' && (
             // design for careplan ?
             <>
               <TextField

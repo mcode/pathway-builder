@@ -68,6 +68,12 @@
                     }
                   ]
                 },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
+                  "def": []
+                },
                 "statements": {
                   "def": [
                     {
@@ -131,6 +137,12 @@
                     }
                   ]
                 },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
+                  "def": []
+                },
                 "statements": {
                   "def": [
                     {
@@ -189,6 +201,12 @@
                 "valueSets": {
                   "def": []
                 },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
+                  "def": []
+                },
                 "statements": {
                   "def": [
                     {
@@ -225,6 +243,12 @@
                   "def": []
                 },
                 "valueSets": {
+                  "def": []
+                },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
                   "def": []
                 },
                 "statements": {
@@ -286,6 +310,12 @@
                 "valueSets": {
                   "def": []
                 },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
+                  "def": []
+                },
                 "statements": {
                   "def": [
                     {
@@ -339,6 +369,12 @@
                   "def": []
                 },
                 "valueSets": {
+                  "def": []
+                },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
                   "def": []
                 },
                 "statements": {
@@ -397,6 +433,12 @@
                 "valueSets": {
                   "def": []
                 },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
+                  "def": []
+                },
                 "statements": {
                   "def": [
                     {
@@ -453,6 +495,27 @@
                 "valueSets": {
                   "def": []
                 },
+                "codeSystems": {
+                  "def": [
+                    {
+                      "id": "http://snomed.info/sct",
+                      "name": "SNOMED",
+                      "accessLevel": "Public"
+                    }
+                  ]
+                },
+                "codes": {
+                  "def": [
+                    {
+                      "id": "367336001",
+                      "name": "Chemotherapy code",
+                      "accessLevel": "Public",
+                      "codeSystem": {
+                        "name": "SNOMED"
+                      }
+                    }
+                  ]
+                },
                 "statements": {
                   "def": [
                     {
@@ -507,6 +570,12 @@
                   "def": []
                 },
                 "valueSets": {
+                  "def": []
+                },
+                "codeSystems": {
+                  "def": []
+                },
+                "codes": {
                   "def": []
                 },
                 "statements": {

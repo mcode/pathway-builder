@@ -177,6 +177,27 @@ describe('builder interface add functions', () => {
               expression: {}
             }
           ]
+        },
+        codeSystems: {
+          def: [
+            {
+              id: 'http://snomed.info/sct',
+              name: 'SNOMED',
+              accessLevel: 'Public'
+            }
+          ]
+        },
+        codes: {
+          def: [
+            {
+              id: '367336001',
+              name: 'Chemotherapy code',
+              accessLevel: 'Public',
+              codeSystem: {
+                name: 'SNOMED'
+              }
+            }
+          ]
         }
       }
     });
@@ -381,9 +402,9 @@ describe('builder interface update functions', () => {
 
   it('set guidance state elm', () => {
     const key = 'Radiation';
-    Builder.setGuidanceStateElm(pathway, key, elm);
-    expect(pathway.states[key].cql).toBe('Tumor Size');
-    expect(pathway.states[key].elm).toEqual(elm);
+    const newPathway = Builder.setGuidanceStateElm(pathway, key, elm);
+    expect(newPathway.states[key].cql).toBe('Tumor Size');
+    expect(newPathway.states[key].elm).toEqual(elm);
   });
 
   it('set state label', () => {
@@ -441,6 +462,13 @@ describe('builder interface update functions', () => {
     };
     Builder.setActionResource(pathway, stateKey, actionId, resource);
     expect(pathway.states[stateKey].action[0].resource).toEqual(resource);
+  });
+
+  it('set action resource display', () => {
+    const stateKey = 'Chemo';
+    const actionId = '1';
+    Builder.setActionResourceDisplay(pathway, stateKey, actionId, 'test');
+    expect(pathway.states[stateKey].action[0].resource.code.coding[0].display).toBe('test');
   });
 
   describe('makeStateGuidance', () => {
@@ -541,5 +569,91 @@ describe('builder interface remove functions', () => {
     const actionId = '1';
     Builder.removeAction(pathway, stateKey, actionId);
     expect(pathway.states[stateKey].action.length).toBe(0);
+  });
+});
+
+describe('builder interface helper functions', () => {
+  it('create CQL from action', () => {
+    const action = {
+      id: '1',
+      type: 'create',
+      description: 'test action',
+      resource: {}
+    };
+
+    // Test MedicationRequest
+    const medicationRequest = {
+      resourceType: 'MedicationRequest',
+      medicationCodeableConcept: {
+        coding: [
+          {
+            system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+            code: '1922509',
+            display: 'trastuzumab'
+          }
+        ],
+        text: 'trastuzumab'
+      }
+    };
+    action.resource = medicationRequest;
+    let cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    expect(cql).toEqual(
+      expect.stringContaining(
+        `Tuple{ resourceType: 'MedicationRequest', id: R.id.value, status: R.status.value}`.replace(
+          /\s+/g,
+          ''
+        )
+      )
+    );
+
+    // Test ServiceRequest
+    const serviceRequest = {
+      resourceType: 'ServiceRequest',
+      code: {
+        coding: [
+          {
+            system: 'http://snomed.info/sct',
+            code: '392021009',
+            display: 'Lumpectomy of breast (procedure)'
+          }
+        ],
+        text: 'Lumpectomy of breast (procedure)'
+      }
+    };
+    action.resource = serviceRequest;
+    cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    expect(cql).toEqual(
+      expect.stringContaining(
+        `return Tuple{ resourceType: 'Procedure', id: R.id.value, status: R.status.value }`.replace(
+          /\s+/g,
+          ''
+        )
+      )
+    );
+    expect(cql).toEqual(
+      expect.stringContaining(
+        `Tuple{ resourceType: 'ServiceRequest', id: R.id.value, status: R.status.value }`.replace(
+          /\s+/g,
+          ''
+        )
+      )
+    );
+
+    // Test CarePlan
+    const carePlan = {
+      resourceType: 'CarePlan',
+      title: 'ChemotherapyTH'
+    };
+    action.resource = carePlan;
+    cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    expect(cql).toEqual(
+      expect.stringContaining(
+        `[CarePlan] R where R.title.value='ChemotherapyTH' 
+        return Tuple{ resourceType: 'CarePlan', id: R.id.value , status: R.status.value}`.replace(
+          /\s+/g,
+          ''
+        )
+      )
+    );
   });
 });

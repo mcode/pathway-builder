@@ -8,7 +8,7 @@ import React, {
   useCallback
 } from 'react';
 import shortid from 'shortid';
-import { ElmStatement } from 'pathways-model';
+import { ElmStatement } from 'elm-model';
 
 interface Criteria {
   id: string;
