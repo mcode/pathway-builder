@@ -37,6 +37,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
   const displayCriteria =
     useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
+  const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && transition.id) {
@@ -47,6 +48,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       setUseCriteriaSelected(!useCriteriaSelected);
     }
   }, [useCriteriaSelected, currentNodeKey, pathway, hasCriteria, transition.id, updatePathway]);
+
+  const handleBuildCriteria = useCallback((): void => {
+    setBuildCriteriaSelected(!buildCriteriaSelected);
+  }, [buildCriteriaSelected]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -92,7 +97,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
 
       <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
 
-      {!displayCriteria && (
+      {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Use Criteria"
           buttonIcon={<FontAwesomeIcon icon={faPlus} />}
@@ -134,11 +139,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
         </OutlinedDiv>
       )}
 
-      {!displayCriteria && (
+      {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Build Criteria"
           buttonIcon={<FontAwesomeIcon icon={faTools} />}
           buttonText="Create new criteria logic to add to branch node."
+          onClick={handleBuildCriteria}
         />
       )}
     </>
