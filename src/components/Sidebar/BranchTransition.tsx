@@ -2,13 +2,19 @@ import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { TextField } from '@material-ui/core';
-import { setTransitionCondition, setTransitionConditionDescription } from 'utils/builder';
+import { TextField, Button } from '@material-ui/core';
+import {
+  setTransitionCondition,
+  setTransitionConditionDescription,
+  removeTransitionCondition
+} from 'utils/builder';
 import { SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
+import OutlinedDiv from './OutlinedDiv';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface BranchTransitionProps {
   pathway: Pathway;
@@ -25,9 +31,30 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const transitionNode = pathway.states[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
 
+  let buttonText =
+    transition.condition?.cql || transition.condition?.description ? 'DELETE' : 'CANCEL';
+  let icon =
+    transition.condition?.cql || transition.condition?.description ? (
+      <FontAwesomeIcon icon={faTrashAlt} />
+    ) : null;
+
   const handleUseCriteria = useCallback((): void => {
-    setUseCriteriaSelected(!useCriteriaSelected);
-  }, [useCriteriaSelected]);
+    if (transition.condition?.cql || transition.condition?.description) {
+      // delete the the transition
+      if (!currentNodeKey || !transition.id) return;
+      updatePathway(removeTransitionCondition(pathway, currentNodeKey, transition.id));
+      setUseCriteriaSelected(false);
+    } else {
+      setUseCriteriaSelected(!useCriteriaSelected);
+    }
+  }, [
+    useCriteriaSelected,
+    currentNodeKey,
+    pathway,
+    transition.condition,
+    transition.id,
+    updatePathway
+  ]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -66,6 +93,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     },
     [currentNodeKey, transition.id, updatePathway, pathway]
   );
+
   return (
     <>
       <hr className={styles.divider} />
@@ -81,7 +109,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       )}
 
       {(useCriteriaSelected || transition.condition?.cql) && (
-        <>
+        <OutlinedDiv
+          label="Criteria Selector"
+          error={!transition.condition?.cql || !transition.condition?.description}
+        >
           <DropDown
             id="Criteria"
             label="Criteria"
@@ -96,14 +127,25 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
             onChange={setCriteriaDisplay}
             error={!transition.condition?.description}
           />
-        </>
+          <Button
+            className={styles.cancelButtion}
+            color="inherit"
+            size="large"
+            variant="outlined"
+            startIcon={icon}
+            onClick={handleUseCriteria}
+          >
+            {buttonText}
+          </Button>
+        </OutlinedDiv>
       )}
-
-      <SidebarButton
-        buttonName="Build Criteria"
-        buttonIcon={<FontAwesomeIcon icon={faTools} />}
-        buttonText="Create new criteria logic to add to branch node."
-      />
+      {!useCriteriaSelected && (
+        <SidebarButton
+          buttonName="Build Criteria"
+          buttonIcon={<FontAwesomeIcon icon={faTools} />}
+          buttonText="Create new criteria logic to add to branch node."
+        />
+      )}
     </>
   );
 };

@@ -85,6 +85,12 @@ export default makeStyles(
       '&:hover': {
         cursor: 'pointer'
       }
+    },
+    cancelButtion: {
+      position: 'absolute',
+      right: '0',
+      bottom: '0',
+      margin: '15px'
     }
   }),
   { name: 'Sidebar' }
