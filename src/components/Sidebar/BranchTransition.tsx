@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useRef, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TextField, Button } from '@material-ui/core';
@@ -38,6 +38,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const displayCriteria =
     useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
+  const criteriaNameRef = useRef<HTMLInputElement>(null);
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && transition.id) {
@@ -146,6 +147,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
           buttonText="Create new criteria logic to add to branch node."
           onClick={handleBuildCriteria}
         />
+      )}
+
+      {buildCriteriaSelected && (
+        <OutlinedDiv label="Criteria Builder" error={true}>
+          <TextField label="Criteria Name" variant="outlined" inputRef={criteriaNameRef} />
+        </OutlinedDiv>
       )}
     </>
   );
