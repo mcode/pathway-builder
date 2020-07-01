@@ -222,10 +222,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       [history, pathwayId]
     );
     const onClickHandler = useCallback(
-      (nodeName: string) => {
+      (nodeKey: string) => {
         if (interactive) {
-          redirectToNode(nodeName);
-          toggleExpanded(nodeName);
+          redirectToNode(nodeKey);
+          toggleExpanded(nodeKey);
           updateBuildCriteriaNodeId('');
         }
       },
@@ -244,20 +244,20 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         }}
       >
         {nodeCoordinates !== undefined
-          ? Object.keys(nodeCoordinates).map(nodeName => {
+          ? Object.keys(nodeCoordinates).map(nodeKey => {
               return (
                 <Node
-                  key={nodeName}
-                  nodeKey={nodeName}
+                  key={nodeKey}
+                  nodeKey={nodeKey}
                   pathway={pathway}
                   ref={(node: HTMLDivElement): void => {
-                    if (node) nodeRefs.current[nodeName] = node;
-                    else delete nodeRefs.current[nodeName];
+                    if (node) nodeRefs.current[nodeKey] = node;
+                    else delete nodeRefs.current[nodeKey];
                   }}
-                  pathwayNode={pathway.nodes[nodeName]}
-                  xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
-                  yCoordinate={nodeCoordinates[nodeName].y}
-                  expanded={Boolean(expanded[nodeName])}
+                  pathwayNode={pathway.nodes[nodeKey]}
+                  xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
+                  yCoordinate={nodeCoordinates[nodeKey].y}
+                  expanded={Boolean(expanded[nodeKey])}
                   onClick={onClickHandler}
                   currentNode={currentNode}
                 />

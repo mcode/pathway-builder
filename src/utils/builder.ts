@@ -93,8 +93,8 @@ export function exportPathway(pathway: Pathway): string {
     nodes: { ...pathway.nodes }
   };
 
-  Object.keys(pathwayToExport.nodes).forEach((nodeName: string) => {
-    const node = pathway.nodes[nodeName];
+  Object.keys(pathwayToExport.nodes).forEach((nodeKey: string) => {
+    const node = pathway.nodes[nodeKey];
     if ('elm' in node && node.elm && node.key) {
       mergeElm(elm, node.elm);
       const elmStatement = getElmStatement(node.elm);
@@ -102,8 +102,8 @@ export function exportPathway(pathway: Pathway): string {
       elm.library.statements.def.push(elmStatement);
     }
 
-    pathwayToExport.nodes[nodeName] = {
-      ...pathwayToExport.nodes[nodeName],
+    pathwayToExport.nodes[nodeKey] = {
+      ...pathwayToExport.nodes[nodeKey],
       // Strip key from each node
       key: undefined,
       elm: undefined,
@@ -694,10 +694,10 @@ export function removeCriteriaElm(pathway: Pathway): void {
 export function removeNode(pathway: Pathway, key: string): void {
   delete pathway.nodes[key];
 
-  Object.keys(pathway.nodes).forEach((nodeName: string) => {
-    const node = pathway.nodes[nodeName];
+  Object.keys(pathway.nodes).forEach((nodeKey: string) => {
+    const node = pathway.nodes[nodeKey];
     node.transitions.forEach((transition: Transition) => {
-      if (transition.transition === key) removeTransition(pathway, nodeName, transition.id ?? '-1');
+      if (transition.transition === key) removeTransition(pathway, nodeKey, transition.id ?? '-1');
     });
   });
 }

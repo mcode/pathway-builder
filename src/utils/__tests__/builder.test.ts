@@ -35,8 +35,8 @@ describe('builder interface add functions', () => {
     );
 
     // Check the key, ids, and elm have been stripped
-    Object.keys(exportedPathwayJson.nodes).forEach((nodeName: string) => {
-      const node = exportedPathwayJson.nodes[nodeName];
+    Object.keys(exportedPathwayJson.nodes).forEach((nodeKey: string) => {
+      const node = exportedPathwayJson.nodes[nodeKey];
       expect('key' in node).toBeFalsy();
 
       node.transitions.forEach((transition: Transition) => {
@@ -541,8 +541,8 @@ describe('builder interface remove functions', () => {
     expect(key in pathway.nodes).toBeFalsy();
 
     // Test removed from all transitions
-    Object.keys(pathway.nodes).forEach((nodeName: string) => {
-      const node = pathway.nodes[nodeName];
+    Object.keys(pathway.nodes).forEach((nodeKey: string) => {
+      const node = pathway.nodes[nodeKey];
       node.transitions.forEach((transition: Transition) =>
         expect(transition.transition).not.toBe(key)
       );

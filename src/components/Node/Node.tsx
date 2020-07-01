@@ -24,7 +24,7 @@ interface NodeProps {
   xCoordinate: number;
   yCoordinate: number;
   expanded?: boolean;
-  onClick?: (nodeName: string) => void;
+  onClick?: (nodeKey: string) => void;
   currentNode: PathwayNode;
 }
 
