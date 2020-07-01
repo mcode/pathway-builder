@@ -98,6 +98,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     [setCriteriaName]
   );
 
+  const handleBuildCriteriaCancel = useCallback((): void => {
+    setBuildCriteriaSelected(false);
+    setCriteriaName('');
+  }, [setBuildCriteriaSelected, setCriteriaName]);
+
   return (
     <>
       <hr className={styles.divider} />
@@ -169,7 +174,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
               label={<Box fontStyle="italic">Add to reusable criteria</Box>}
               control={<Checkbox color="default" />}
             />
-            <Button color="inherit" size="large" variant="outlined">
+            <Button
+              color="inherit"
+              size="large"
+              variant="outlined"
+              onClick={handleBuildCriteriaCancel}
+            >
               Cancel
             </Button>
             <Button
