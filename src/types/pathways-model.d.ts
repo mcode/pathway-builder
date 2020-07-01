@@ -9,7 +9,7 @@ declare module 'pathways-model' {
     library: string;
     criteria: Criteria[];
     nodes: {
-      [key: string]: ActionNode | Branch | PathwayNode;
+      [key: string]: PathwayActionNode | PathwayBranchNode | PathwayNode;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -34,7 +34,7 @@ declare module 'pathways-model' {
     nodeTypeIsUndefined?: boolean;
   }
 
-  export interface ActionNode extends PathwayNode {
+  export interface PathwayActionNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
@@ -44,7 +44,7 @@ declare module 'pathways-model' {
   // but as of right now it has no additional fields not in PathwayNode,
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
-  export interface Branch extends PathwayNode {
+  export interface PathwayBranchNode extends PathwayNode {
     criteriaSource?: string;
     mcodeCriteria?: string;
     otherCriteria?: string;

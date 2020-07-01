@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { ActionNode } from 'pathways-model';
+import { PathwayActionNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ExpandedNode.module.scss';
 import { isBranchNode, resourceNameConversion } from 'utils/nodeUtils';
@@ -8,7 +8,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 interface ExpandedNodeProps {
-  pathwayNode: ActionNode;
+  pathwayNode: PathwayActionNode;
   isActionable: boolean;
   isAction: boolean;
 }
@@ -41,7 +41,7 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
-function renderAction(pathwayNode: ActionNode): ReactElement[] {
+function renderAction(pathwayNode: PathwayActionNode): ReactElement[] {
   let returnElements: ReactElement[] = [];
   if (pathwayNode.action[0]) {
     const resource = pathwayNode.action[0].resource;
@@ -83,7 +83,7 @@ function renderAction(pathwayNode: ActionNode): ReactElement[] {
   return returnElements;
 }
 interface ExpandedNodeMemoProps {
-  pathwayNode: ActionNode;
+  pathwayNode: PathwayActionNode;
   isAction: boolean;
 }
 const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayNode, isAction }) => {

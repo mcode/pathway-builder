@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { setNodeAction, createCQL, setActionDescription, setActionNodeElm } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { Pathway, ActionNode, Action } from 'pathways-model';
+import { Pathway, PathwayActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
@@ -34,7 +34,7 @@ const codeSystemOptions = [
 
 interface ActionNodeProps {
   pathway: Pathway;
-  currentNode: ActionNode;
+  currentNode: PathwayActionNode;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
 }

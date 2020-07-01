@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { PathwayNode, ActionNode, Branch, Pathway } from 'pathways-model';
+import { PathwayNode, PathwayActionNode, PathwayBranchNode, Pathway } from 'pathways-model';
 import { setNodeNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
@@ -12,7 +12,7 @@ import useStyles from './styles';
 interface SidebarProps {
   pathway: Pathway;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: ActionNode | Branch | PathwayNode;
+  currentNode: PathwayActionNode | PathwayBranchNode | PathwayNode;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
@@ -86,7 +86,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
           {nodeType === 'action' && (
             <ActionNode
               pathway={pathway}
-              currentNode={currentNode as ActionNode}
+              currentNode={currentNode as PathwayActionNode}
               changeNodeType={changeNodeType}
               addNode={addPathwayNode}
             />
