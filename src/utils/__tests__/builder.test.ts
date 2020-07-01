@@ -220,9 +220,7 @@ describe('builder interface add functions', () => {
     const existingNodes = Object.keys(pathway.nodes);
     const newPathway = Builder.addActionNode(pathway);
 
-    const newNodeKey = Object.keys(newPathway.nodes).find(
-      node => !existingNodes.includes(node)
-    );
+    const newNodeKey = Object.keys(newPathway.nodes).find(node => !existingNodes.includes(node));
     expect(newPathway.nodes[newNodeKey]).toEqual(
       expect.objectContaining({
         label: 'New Node',

@@ -1,7 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import ExpandedNode from 'components/ExpandedNode';
-import { PathwayActionNode, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
+import {
+  PathwayActionNode,
+  BasicActionResource,
+  BasicMedicationRequestResource
+} from 'pathways-model';
 import { resourceNameConversion } from 'utils/nodeUtils';
 
 const testActionNode: PathwayActionNode = {
@@ -93,8 +97,7 @@ describe('<ExpandedNode />', () => {
       />
     );
 
-    const resource = testMedicationRequestNode.action[0]
-      .resource as BasicMedicationRequestResource;
+    const resource = testMedicationRequestNode.action[0].resource as BasicMedicationRequestResource;
 
     const resourceType = resourceNameConversion[resource.resourceType]
       ? resourceNameConversion[resource.resourceType]
