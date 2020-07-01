@@ -1,17 +1,16 @@
-import React, { FC, memo, useRef, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { TextField, Button } from '@material-ui/core';
-
+import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { SidebarHeader, SidebarButton, OutlinedDiv } from '.';
+import { Button, Checkbox, FormControlLabel, TextField } from '@material-ui/core';
+import {
+  removeTransitionCondition,
+  setTransitionCondition,
+  setTransitionConditionDescription
+} from 'utils/builder';
+import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import {
-  setTransitionCondition,
-  setTransitionConditionDescription,
-  removeTransitionCondition
-} from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
@@ -38,7 +37,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const displayCriteria =
     useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
-  const criteriaNameRef = useRef<HTMLInputElement>(null);
+  const [criteriaName, setCriteriaName] = useState<string>('');
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && transition.id) {
@@ -90,6 +89,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       );
     },
     [currentNodeKey, transition.id, updatePathway, pathway]
+  );
+
+  const handleCriteriaName = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setCriteriaName(event?.target.value || '');
+    },
+    [setCriteriaName]
   );
 
   return (
@@ -150,11 +156,36 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       )}
 
       {buildCriteriaSelected && (
-        <OutlinedDiv label="Criteria Builder" error={true}>
-          <TextField label="Criteria Name" variant="outlined" inputRef={criteriaNameRef} />
+        <OutlinedDiv label="Criteria Builder" error={criteriaName === ''}>
+          <TextField
+            error={criteriaName === ''}
+            label="Criteria Name"
+            variant="outlined"
+            onChange={handleCriteriaName}
+          />
+          <div>
+            <FormControlLabel
+              label="Add to reusable criteria"
+              control={<Checkbox color="default" />}
+            />
+            <Button color="inherit" size="large" variant="outlined">
+              Cancel
+            </Button>
+            <Button
+              className={styles.saveButton}
+              color="inherit"
+              size="large"
+              variant="outlined"
+              startIcon={<FontAwesomeIcon icon={faSave} />}
+              disabled
+            >
+              Save
+            </Button>
+          </div>
         </OutlinedDiv>
       )}
     </>
   );
 };
+
 export default memo(BranchTransition);

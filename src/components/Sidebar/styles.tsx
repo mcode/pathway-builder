@@ -105,6 +105,9 @@ export default makeStyles(
       '&:hover': {
         borderColor: `${theme.palette.error.main} !important`
       }
+    },
+    saveButton: {
+      marginLeft: '1em'
     }
   }),
   { name: 'Sidebar' }

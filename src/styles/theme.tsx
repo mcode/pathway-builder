@@ -58,7 +58,11 @@ const typography = {
 const materialUiOverridesBase = {
   MuiButton: {
     root: {
-      borderRadius: 0
+      borderRadius: 0,
+      '&.Mui-disabled': {
+        backgroundColor: colors.grayMedium,
+        color: colors.white
+      }
     },
     label: {
       fontWeight: 600
