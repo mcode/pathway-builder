@@ -96,7 +96,10 @@ export function exportPathway(pathway: Pathway): string {
   const pathwayToExport: Pathway = {
     ...pathway,
     // Strip id from each precondition
-    precondition: pathway.precondition.map((precondition: Precondition) => ({ ...precondition, id: undefined })),
+    precondition: pathway.precondition.map((precondition: Precondition) => ({
+      ...precondition,
+      id: undefined
+    })),
     nodes: { ...pathway.nodes }
   };
 
@@ -686,7 +689,9 @@ export function removePathwayDescription(pathway: Pathway): void {
 }
 
 export function removePrecondition(pathway: Pathway, id: string): void {
-  const precondition = pathway.precondition.filter((precondition: Precondition) => precondition.id !== id);
+  const precondition = pathway.precondition.filter(
+    (precondition: Precondition) => precondition.id !== id
+  );
   pathway.precondition = precondition;
 }
 
