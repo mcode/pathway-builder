@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 
 import TextField from '@material-ui/core/TextField';
 
-const InputComponent = (props: any) => {
-  let { inputRef, ...others } = props;
-  return <div {...others} />;
+interface InputComponentProps {
+  children?: ReactNode;
+}
+
+const InputComponent: FC<InputComponentProps> = ({ children }) => {
+  return <div>{children}</div>;
 };
-const OutlinedDiv = ({
-  children,
-  label,
-  error
-}: {
-  children: any;
+
+interface OutlinedDivProps {
+  children: ReactNode;
   label: string;
   error: boolean;
-}) => {
+}
+
+const OutlinedDiv: FC<OutlinedDivProps> = ({ children, label, error }) => {
   return (
     <TextField
       variant="outlined"
@@ -29,4 +31,5 @@ const OutlinedDiv = ({
     />
   );
 };
-export default OutlinedDiv;
+
+export default memo(OutlinedDiv);

@@ -111,7 +111,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       {(useCriteriaSelected || transition.condition?.cql) && (
         <OutlinedDiv
           label="Criteria Selector"
-          error={!transition.condition?.cql || !transition.condition?.description}
+          error={false}
+          // all fields inside this seem to set error to true if this one is true
+          // error={!transition.condition?.cql || !transition.condition?.description}
         >
           <DropDown
             id="Criteria"
@@ -139,7 +141,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
           </Button>
         </OutlinedDiv>
       )}
-      {!useCriteriaSelected && (
+      {!(useCriteriaSelected || transition.condition?.cql) && (
         <SidebarButton
           buttonName="Build Criteria"
           buttonIcon={<FontAwesomeIcon icon={faTools} />}
