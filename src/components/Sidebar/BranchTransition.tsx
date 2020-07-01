@@ -1,20 +1,19 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
-import DropDown from 'components/elements/DropDown';
+import { faPlus, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TextField, Button } from '@material-ui/core';
+
+import DropDown from 'components/elements/DropDown';
+import { SidebarHeader, SidebarButton, OutlinedDiv } from '.';
+import { Pathway, Transition } from 'pathways-model';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import {
   setTransitionCondition,
   setTransitionConditionDescription,
   removeTransitionCondition
 } from 'utils/builder';
-import { SidebarHeader, SidebarButton } from '.';
-import { Pathway, Transition } from 'pathways-model';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
-import OutlinedDiv from './OutlinedDiv';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface BranchTransitionProps {
   pathway: Pathway;
@@ -30,10 +29,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const transitionKey = transition?.transition || '';
   const transitionNode = pathway.states[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
+  const criteriaDescription = transition.condition?.description;
+  const criteriaIsValid = criteriaDescription != null;
+  const criteriaDisplayIsValid = criteriaDescription && criteriaDescription !== '';
 
-  let buttonText =
+  const buttonText =
     transition.condition?.cql || transition.condition?.description ? 'DELETE' : 'CANCEL';
-  let icon =
+  const icon =
     transition.condition?.cql || transition.condition?.description ? (
       <FontAwesomeIcon icon={faTrashAlt} />
     ) : null;
@@ -99,6 +101,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       <hr className={styles.divider} />
 
       <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
+
       {!(useCriteriaSelected || transition.condition?.cql) && (
         <SidebarButton
           buttonName="Use Criteria"
@@ -109,30 +112,29 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       )}
 
       {(useCriteriaSelected || transition.condition?.cql) && (
-        <OutlinedDiv
-          label="Criteria Selector"
-          error={false}
-          // all fields inside this seem to set error to true if this one is true
-          // error={!transition.condition?.cql || !transition.condition?.description}
-        >
-          <DropDown
-            id="Criteria"
-            label="Criteria"
-            options={criteriaOptions}
-            onChange={selectCriteriaSource}
-            value={transition.condition?.cql || undefined}
-          />
-          <TextField
-            label="Criteria Display"
-            value={transition.condition?.description || ''}
-            variant="outlined"
-            onChange={setCriteriaDisplay}
-            error={!transition.condition?.description}
-          />
+        <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
+          <>
+            <DropDown
+              id="Criteria"
+              label="Criteria"
+              options={criteriaOptions}
+              onChange={selectCriteriaSource}
+              value={transition.condition?.cql || undefined}
+            />
+
+            <TextField
+              label="Criteria Display"
+              value={transition.condition?.description || ''}
+              variant="outlined"
+              onChange={setCriteriaDisplay}
+              error={!criteriaDisplayIsValid}
+            />
+          </>
+
           <Button
-            className={styles.cancelButtion}
+            className={styles.cancelButton}
             color="inherit"
-            size="large"
+            size="small"
             variant="outlined"
             startIcon={icon}
             onClick={handleUseCriteria}
@@ -141,6 +143,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
           </Button>
         </OutlinedDiv>
       )}
+
       {!(useCriteriaSelected || transition.condition?.cql) && (
         <SidebarButton
           buttonName="Build Criteria"

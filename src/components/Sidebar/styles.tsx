@@ -86,11 +86,25 @@ export default makeStyles(
         cursor: 'pointer'
       }
     },
-    cancelButtion: {
-      position: 'absolute',
-      right: '0',
-      bottom: '0',
-      margin: '15px'
+    cancelButton: {
+      alignSelf: 'flex-end',
+      marginTop: '5px',
+      padding: '5px 15px',
+      fontSize: '1em'
+    },
+    outlinedDiv: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      '& div': {
+        width: '100%'
+      }
+    },
+    outlinedDivError: {
+      borderColor: `${theme.palette.error.main} !important`,
+      '&:hover': {
+        borderColor: `${theme.palette.error.main} !important`
+      }
     }
   }),
   { name: 'Sidebar' }

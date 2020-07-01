@@ -5,3 +5,4 @@ export { default as BranchNode } from './BranchNode';
 export { default as ActionNode } from './ActionNode';
 export { default as NullNode } from './NullNode';
 export { default as BranchTransition } from './BranchTransition';
+export { default as OutlinedDiv } from './OutlinedDiv';
