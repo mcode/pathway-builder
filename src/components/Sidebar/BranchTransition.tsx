@@ -26,7 +26,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
-  const transitionNode = pathway.states[transitionKey];
+  const transitionNode = pathway.nodes[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;

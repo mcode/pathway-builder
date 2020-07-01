@@ -8,8 +8,8 @@ declare module 'pathways-model' {
     description?: string;
     library: string;
     criteria: Criteria[];
-    states: {
-      [key: string]: GuidanceState | BranchState | State;
+    nodes: {
+      [key: string]: GuidanceNode | Branch | PathwayNode;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -27,24 +27,24 @@ declare module 'pathways-model' {
     cql: string; // cql to fetch the value from a patient
   }
 
-  export interface State {
+  export interface PathwayNode {
     key?: string;
     label: string;
     transitions: Transition[];
     nodeTypeIsUndefined?: boolean;
   }
 
-  export interface GuidanceState extends State {
+  export interface GuidanceNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
   }
 
-  // NOTE: the model also includes a BranchState (which extends State),
-  // but as of right now it has no additional fields not in State,
+  // NOTE: the model also includes a BranchNode (which extends PathwayNode),
+  // but as of right now it has no additional fields not in PathwayNode,
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
-  export interface BranchState extends State {
+  export interface Branch extends PathwayNode {
     criteriaSource?: string;
     mcodeCriteria?: string;
     otherCriteria?: string;

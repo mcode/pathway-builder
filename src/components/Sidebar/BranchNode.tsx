@@ -4,9 +4,10 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarButton, BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
-import { addTransition, createState, addState } from 'utils/builder';
-import { Pathway, State } from 'pathways-model';
+import { addTransition, createNode, addNode } from 'utils/builder';
+import { Pathway, PathwayNode } from 'pathways-model';
 import { usePathwayContext } from 'components/PathwayProvider';
+
 import useStyles from './styles';
 
 const nodeTypeOptions = [
@@ -16,7 +17,7 @@ const nodeTypeOptions = [
 
 interface BranchNodeProps {
   pathway: Pathway;
-  currentNode: State;
+  currentNode: PathwayNode;
   changeNodeType: (event: string) => void;
 }
 
@@ -33,10 +34,10 @@ const BranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, changeNodeType 
   );
 
   const handleAddTransition = useCallback((): void => {
-    const newState = createState();
+    const newNode = createNode();
 
-    const newPathway = addState(pathway, newState);
-    updatePathway(addTransition(newPathway, currentNodeKey || '', newState.key as string));
+    const newPathway = addNode(pathway, newNode);
+    updatePathway(addTransition(newPathway, currentNodeKey || '', newNode.key as string));
   }, [pathway, updatePathway, currentNodeKey]);
 
   return (

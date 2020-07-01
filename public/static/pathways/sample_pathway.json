@@ -4,7 +4,7 @@
   "description": "This is a bare bones pathway which can be used instead of creating a new pathway to test features. It represents a pathway directly after creating a new one.",
   "library": "",
   "criteria": [],
-  "states": {
+  "nodes": {
     "Start": {
       "key": "Start",
       "label": "Start",
