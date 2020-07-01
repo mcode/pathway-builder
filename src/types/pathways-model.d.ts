@@ -7,7 +7,7 @@ declare module 'pathways-model' {
     name: string;
     description?: string;
     library: string;
-    criteria: Criteria[];
+    precondition: Precondition[];
     nodes: {
       [key: string]: PathwayActionNode | PathwayBranchNode | PathwayNode;
     };
@@ -17,10 +17,10 @@ declare module 'pathways-model' {
 
   export interface PathwayELM {
     navigational?: object;
-    criteria?: object;
+    precondition?: object;
   }
 
-  export interface Criteria {
+  export interface Precondition {
     id?: string;
     elementName: string; // name of the mCODE element
     expected: string; // human readable value
@@ -45,9 +45,9 @@ declare module 'pathways-model' {
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
   export interface PathwayBranchNode extends PathwayNode {
-    criteriaSource?: string;
-    mcodeCriteria?: string;
-    otherCriteria?: string;
+    preconditionSource?: string;
+    mcodePrecondition?: string;
+    otherPrecondition?: string;
   }
   interface Action {
     id?: string;

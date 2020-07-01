@@ -13,7 +13,7 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test1',
       description: 'test1',
       library: 'test.cql',
-      criteria: [
+      precondition: [
         {
           elementName: 'condition',
           expected: 'breast cancer',
@@ -32,7 +32,7 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test2',
       description: 'test2',
       library: 'test.cql',
-      criteria: [
+      precondition: [
         {
           elementName: 'condition',
           expected: 'gist cancer',
@@ -51,7 +51,7 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test3',
       description: 'test3',
       library: 'test.cql',
-      criteria: [
+      precondition: [
         {
           elementName: 'condition',
           expected: 'lung cancer',

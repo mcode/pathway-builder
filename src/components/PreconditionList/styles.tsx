@@ -11,11 +11,11 @@ export default makeStyles(
       display: 'flex',
       justifyContent: 'flex-end'
     },
-    buildCriteriaButton: {
+    buildPreconditionButton: {
       alignSelf: 'flex-end',
       marginLeft: '20px'
     },
-    criteriaList: {
+    preconditionList: {
       marginTop: '2em'
     },
     editButton: {
@@ -40,5 +40,5 @@ export default makeStyles(
       fontStyle: 'italic'
     }
   }),
-  { name: 'CriteriaList' }
+  { name: 'PreconditionList' }
 );

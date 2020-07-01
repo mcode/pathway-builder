@@ -5,12 +5,12 @@ import { Button } from '@material-ui/core';
 
 import { usePathwayContext } from 'components/PathwayProvider';
 import Loading from 'components/elements/Loading';
-import CriteriaTable from './CriteriaTable';
-import ImportCriteriaModal from './ImportCriteriaModal';
+import PreconditionTable from './PreconditionTable';
+import ImportPreconditionModal from './ImportPreconditionModal';
 
 import useStyles from './styles';
 
-const CriteriaList: FC = () => {
+const PreconditionList: FC = () => {
   const styles = useStyles();
   const { status } = usePathwayContext();
 
@@ -27,7 +27,7 @@ const CriteriaList: FC = () => {
     <div className={styles.root}>
       <div className={styles.buttonRow}>
         <Button
-          className={styles.buildCriteriaButton}
+          className={styles.buildPreconditionButton}
           variant="contained"
           color="primary"
           startIcon={<FontAwesomeIcon icon={faFileImport} />}
@@ -36,20 +36,20 @@ const CriteriaList: FC = () => {
           Import Library
         </Button>
         <Button
-          className={styles.buildCriteriaButton}
+          className={styles.buildPreconditionButton}
           variant="contained"
           color="primary"
           startIcon={<FontAwesomeIcon icon={faTools} />}
         >
-          Build Criteria
+          Build Precondition
         </Button>
       </div>
 
-      <ImportCriteriaModal open={open} onClose={closeImportModal} />
+      <ImportPreconditionModal open={open} onClose={closeImportModal} />
 
-      {status === 'loading' ? <Loading /> : <CriteriaTable />}
+      {status === 'loading' ? <Loading /> : <PreconditionTable />}
     </div>
   );
 };
 
-export default memo(CriteriaList);
+export default memo(PreconditionList);

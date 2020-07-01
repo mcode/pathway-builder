@@ -7,17 +7,17 @@ import BuilderRoute from './BuilderRoute';
 import ThemeProvider from './ThemeProvider';
 import { PathwayProvider } from './PathwayProvider';
 import { UserProvider } from './UserProvider';
-import { CriteriaProvider } from './CriteriaProvider';
+import { PreconditionProvider } from './PreconditionProvider';
 import Tabs from './Tabs';
 import PathwaysList from './PathwaysList';
-import CriteriaList from './CriteriaList';
+import PreconditionList from './PreconditionList';
 
 const App: FC = () => {
   return (
     <ThemeProvider theme="light">
       <UserProvider>
         <PathwayProvider>
-          <CriteriaProvider>
+          <PreconditionProvider>
             <Router>
               <Switch>
                 <Route path="/builder/:id/node/:nodeId">
@@ -31,13 +31,13 @@ const App: FC = () => {
                   <Tabs
                     tabs={[
                       { label: 'Pathway', component: <PathwaysList /> },
-                      { label: 'Criteria', component: <CriteriaList /> }
+                      { label: 'Precondition', component: <PreconditionList /> }
                     ]}
                   />
                 </Route>
               </Switch>
             </Router>
-          </CriteriaProvider>
+          </PreconditionProvider>
         </PathwayProvider>
       </UserProvider>
     </ThemeProvider>

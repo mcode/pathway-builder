@@ -1,6 +1,6 @@
 import {
   Pathway,
-  Criteria,
+  Precondition,
   PathwayNode,
   Transition,
   Action,
@@ -16,7 +16,7 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
     name: name,
     description: description ?? '',
     library: '',
-    criteria: [],
+    precondition: [],
     nodes: {
       Start: {
         key: 'Start',
@@ -95,8 +95,8 @@ export function exportPathway(pathway: Pathway): string {
 
   const pathwayToExport: Pathway = {
     ...pathway,
-    // Strip id from each criteria
-    criteria: pathway.criteria.map((criteria: Criteria) => ({ ...criteria, id: undefined })),
+    // Strip id from each precondition
+    precondition: pathway.precondition.map((precondition: Precondition) => ({ ...precondition, id: undefined })),
     nodes: { ...pathway.nodes }
   };
 
@@ -181,7 +181,7 @@ function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
 function getElmStatement(elm: ElmLibrary): ElmStatement {
   const defaultStatementNames = [
     'Patient',
-    'MeetsInclusionCriteria',
+    'MeetsInclusionPrecondition',
     'InPopulation',
     'Recommendation',
     'Rationale',
@@ -191,26 +191,26 @@ function getElmStatement(elm: ElmLibrary): ElmStatement {
     def => !defaultStatementNames.includes(def.name)
   );
 
-  // elmStatement type is ElmStatement | undefined but criteria
+  // elmStatement type is ElmStatement | undefined but precondition
   // provider validates such a statement exists in the elm
   return elmStatement as ElmStatement;
 }
 
-// TODO: possibly add more criteria methods
-export function addCriteria(
+// TODO: possibly add more precondition methods
+export function addPrecondition(
   pathway: Pathway,
   elementName: string,
   expected: string,
   cql: string
 ): string {
   const id = shortid.generate();
-  const criteria: Criteria = {
+  const precondition: Precondition = {
     id: id,
     elementName: elementName,
     expected: expected,
     cql: cql
   };
-  pathway.criteria.push(criteria);
+  pathway.precondition.push(precondition);
 
   return id;
 }
@@ -220,9 +220,9 @@ export function setNavigationalElm(pathway: Pathway, elm: object): void {
   pathway.elm.navigational = elm;
 }
 
-export function setCriteriaElm(pathway: Pathway, elm: object): void {
+export function setPreconditionElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
-  pathway.elm.criteria = elm;
+  pathway.elm.precondition = elm;
 }
 
 export function createNode(key?: string): PathwayNode {
@@ -278,10 +278,10 @@ export function setNodeNodeType(pathway: Pathway, nodeKey: string, nodeType: str
   }
 }
 
-export function setNodeCriteriaSource(
+export function setNodePreconditionSource(
   pathway: Pathway,
   key: string,
-  criteriaSource: string
+  preconditionSource: string
 ): Pathway {
   return {
     ...pathway,
@@ -289,7 +289,7 @@ export function setNodeCriteriaSource(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        criteriaSource
+        preconditionSource
       }
     }
   };
@@ -308,10 +308,10 @@ export function setNodeAction(pathway: Pathway, key: string, action: Action[]): 
   };
 }
 
-export function setNodeMcodeCriteria(
+export function setNodeMcodePrecondition(
   pathway: Pathway,
   key: string,
-  mcodeCriteria: string
+  mcodePrecondition: string
 ): Pathway {
   return {
     ...pathway,
@@ -319,16 +319,16 @@ export function setNodeMcodeCriteria(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        mcodeCriteria
+        mcodePrecondition
       }
     }
   };
 }
 
-export function setNodeOtherCriteria(
+export function setNodeOtherPrecondition(
   pathway: Pathway,
   key: string,
-  otherCriteria: string
+  otherPrecondition: string
 ): Pathway {
   return {
     ...pathway,
@@ -336,7 +336,7 @@ export function setNodeOtherCriteria(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        otherCriteria
+        otherPrecondition
       }
     }
   };
@@ -366,13 +366,13 @@ export function setTransitionCondition(
   transitionId: string,
   description: string,
   elm: ElmLibrary,
-  criteriaLabel?: string
+  preconditionLabel?: string
 ): Pathway {
   const foundTransition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
-  const cql = criteriaLabel ? criteriaLabel : getElmStatement(elm).name;
+  const cql = preconditionLabel ? preconditionLabel : getElmStatement(elm).name;
 
   if (foundTransition)
     foundTransition.condition = {
@@ -685,17 +685,17 @@ export function removePathwayDescription(pathway: Pathway): void {
   delete pathway.description;
 }
 
-export function removeCriteria(pathway: Pathway, id: string): void {
-  const criteria = pathway.criteria.filter((criteria: Criteria) => criteria.id !== id);
-  pathway.criteria = criteria;
+export function removePrecondition(pathway: Pathway, id: string): void {
+  const precondition = pathway.precondition.filter((precondition: Precondition) => precondition.id !== id);
+  pathway.precondition = precondition;
 }
 
 export function removeNavigationalElm(pathway: Pathway): void {
   delete pathway.elm?.navigational;
 }
 
-export function removeCriteriaElm(pathway: Pathway): void {
-  delete pathway.elm?.criteria;
+export function removePreconditionElm(pathway: Pathway): void {
+  delete pathway.elm?.precondition;
 }
 
 export function removeNode(pathway: Pathway, key: string): void {

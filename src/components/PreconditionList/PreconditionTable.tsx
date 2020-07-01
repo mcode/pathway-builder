@@ -13,22 +13,22 @@ import {
 import moment from 'moment';
 
 import useStyles from './styles';
-import { useCriteriaContext } from 'components/CriteriaProvider';
+import { usePreconditionContext } from 'components/PreconditionProvider';
 
-const CriteriaTable: FC = () => {
+const PreconditionTable: FC = () => {
   const styles = useStyles();
-  const { criteria, deleteCriteria } = useCriteriaContext();
+  const { precondition, deletePrecondition } = usePreconditionContext();
 
   const renderDate = (datetime: number): string => {
     return moment(datetime).fromNow();
   };
 
   return (
-    <TableContainer className={styles.criteriaList}>
-      <Table aria-label="criteria list">
+    <TableContainer className={styles.preconditionList}>
+      <Table aria-label="precondition list">
         <TableHead>
           <TableRow>
-            <TableCell>Criteria Name</TableCell>
+            <TableCell>Precondition Name</TableCell>
             <TableCell>Version</TableCell>
             <TableCell>Added</TableCell>
             <TableCell></TableCell>
@@ -36,7 +36,7 @@ const CriteriaTable: FC = () => {
         </TableHead>
 
         <TableBody>
-          {criteria.map(c => (
+          {precondition.map(c => (
             <TableRow key={c.id}>
               <TableCell component="th" scope="row">
                 {c.label}
@@ -58,7 +58,7 @@ const CriteriaTable: FC = () => {
                   color="secondary"
                   size="small"
                   startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                  onClick={(): void => deleteCriteria(c.id)}
+                  onClick={(): void => deletePrecondition(c.id)}
                 >
                   Delete
                 </Button>
@@ -71,4 +71,4 @@ const CriteriaTable: FC = () => {
   );
 };
 
-export default memo(CriteriaTable);
+export default memo(PreconditionTable);

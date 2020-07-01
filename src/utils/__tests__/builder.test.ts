@@ -1,6 +1,6 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import * as Builder from 'utils/builder';
-import { Pathway, Criteria, Transition, Action } from 'pathways-model';
+import { Pathway, Precondition, Transition, Action } from 'pathways-model';
 
 describe('builder interface add functions', () => {
   // Create a deep copy of the pathway
@@ -13,7 +13,7 @@ describe('builder interface add functions', () => {
       name: 'name',
       description: 'description',
       library: '',
-      criteria: [],
+      precondition: [],
       nodes: {
         Start: {
           key: 'Start',
@@ -29,9 +29,9 @@ describe('builder interface add functions', () => {
     const exportedPathway = Builder.exportPathway(pathway);
     const exportedPathwayJson: Pathway = JSON.parse(exportedPathway);
 
-    // Check the id for criteria has been stripped
-    exportedPathwayJson.criteria.forEach((criteria: Criteria) =>
-      expect('id' in criteria).toBeFalsy()
+    // Check the id for precondition has been stripped
+    exportedPathwayJson.precondition.forEach((precondition: Precondition) =>
+      expect('id' in precondition).toBeFalsy()
     );
 
     // Check the key, ids, and elm have been stripped
@@ -203,17 +203,17 @@ describe('builder interface add functions', () => {
     });
   });
 
-  it('add criteria', () => {
-    const id = Builder.addCriteria(pathway, 'test element name', 'test expected', 'test cql');
-    const criteria = pathway.criteria[pathway.criteria.length - 1];
-    const expectedCriteria = {
+  it('add precondition', () => {
+    const id = Builder.addPrecondition(pathway, 'test element name', 'test expected', 'test cql');
+    const precondition = pathway.precondition[pathway.precondition.length - 1];
+    const expectedPrecondition = {
       id: id,
       elementName: 'test element name',
       expected: 'test expected',
       cql: 'test cql'
     };
-    expect(criteria).toBeDefined();
-    expect(criteria).toEqual(expectedCriteria);
+    expect(precondition).toBeDefined();
+    expect(precondition).toEqual(expectedPrecondition);
   });
 
   it('add action node', () => {
@@ -348,10 +348,10 @@ describe('builder interface update functions', () => {
     expect(pathway.elm?.navigational).toEqual(elm);
   });
 
-  it('set criteria elm', () => {
+  it('set precondition elm', () => {
     const elm = {};
-    Builder.setCriteriaElm(pathway, elm);
-    expect(pathway.elm?.criteria).toEqual(elm);
+    Builder.setPreconditionElm(pathway, elm);
+    expect(pathway.elm?.precondition).toEqual(elm);
   });
 
   it('set transition', () => {
@@ -517,10 +517,10 @@ describe('builder interface remove functions', () => {
     expect('description' in pathway).toBeFalsy();
   });
 
-  it('remove criteria', () => {
+  it('remove precondition', () => {
     const id = '1';
-    Builder.removeCriteria(pathway, id);
-    expect(pathway.criteria.length).toBe(0);
+    Builder.removePrecondition(pathway, id);
+    expect(pathway.precondition.length).toBe(0);
   });
 
   it('remove navigational elm', () => {
@@ -529,9 +529,9 @@ describe('builder interface remove functions', () => {
     else fail();
   });
 
-  it('remove criteria elm', () => {
-    Builder.removeCriteriaElm(pathway);
-    if (pathway.elm) expect('criteria' in pathway.elm).toBeFalsy();
+  it('remove precondition elm', () => {
+    Builder.removePreconditionElm(pathway);
+    if (pathway.elm) expect('precondition' in pathway.elm).toBeFalsy();
     else fail();
   });
 
