@@ -2,7 +2,7 @@ import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { Button, Checkbox, FormControlLabel, TextField } from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
   removeTransitionCondition,
   setTransitionCondition,
@@ -162,10 +162,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
             label="Criteria Name"
             variant="outlined"
             onChange={handleCriteriaName}
+            fullWidth
           />
           <div>
             <FormControlLabel
-              label="Add to reusable criteria"
+              label={<Box fontStyle="italic">Add to reusable criteria</Box>}
               control={<Checkbox color="default" />}
             />
             <Button color="inherit" size="large" variant="outlined">
