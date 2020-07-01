@@ -8,14 +8,14 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 interface ExpandedNodeProps {
-  pathwayNode: PathwayActionNode;
+  actionNode: PathwayActionNode;
   isActionable: boolean;
   isAction: boolean;
 }
-const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayNode, isActionable, isAction }) => {
+const ExpandedNode: FC<ExpandedNodeProps> = memo(({ actionNode, isActionable, isAction }) => {
   return (
     <>
-      <ExpandedNodeMemo isAction={isAction} pathwayNode={pathwayNode} />
+      <ExpandedNodeMemo isAction={isAction} actionNode={actionNode} />
     </>
   );
 });
@@ -41,10 +41,10 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
-function renderAction(pathwayNode: PathwayActionNode): ReactElement[] {
+function renderAction(actionNode: PathwayActionNode): ReactElement[] {
   let returnElements: ReactElement[] = [];
-  if (pathwayNode.action[0]) {
-    const resource = pathwayNode.action[0].resource;
+  if (actionNode.action[0]) {
+    const resource = actionNode.action[0].resource;
     const coding = isMedicationRequest(resource)
       ? resource?.medicationCodeableConcept?.coding
       : resource?.code?.coding;
@@ -56,7 +56,7 @@ function renderAction(pathwayNode: PathwayActionNode): ReactElement[] {
       <ExpandedNodeField
         key="Description"
         title="Description"
-        description={pathwayNode.action[0].description}
+        description={actionNode.action[0].description}
       />,
       <ExpandedNodeField key="Type" title="Type" description={resourceType} />,
       <ExpandedNodeField
@@ -83,12 +83,12 @@ function renderAction(pathwayNode: PathwayActionNode): ReactElement[] {
   return returnElements;
 }
 interface ExpandedNodeMemoProps {
-  pathwayNode: PathwayActionNode;
+  actionNode: PathwayActionNode;
   isAction: boolean;
 }
-const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayNode, isAction }) => {
-  const action = isAction && renderAction(pathwayNode);
-  const branch = isBranchNode(pathwayNode);
+const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ actionNode, isAction }) => {
+  const action = isAction && renderAction(actionNode);
+  const branch = isBranchNode(actionNode);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>

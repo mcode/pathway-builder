@@ -58,7 +58,7 @@ describe('<ExpandedNode />', () => {
   it('renders a ExpandedNode for action node', () => {
     const { getByText, queryByRole, queryByText } = render(
       <ExpandedNode
-        pathwayNode={testActionNode}
+        actionNode={testActionNode}
         isActionable={false}
         isAction={true}
         documentation={undefined}
@@ -86,7 +86,7 @@ describe('<ExpandedNode />', () => {
   it('renders a ExpandedNode for a medication request node', () => {
     const { getByText } = render(
       <ExpandedNode
-        pathwayNode={testMedicationRequestNode}
+        actionNode={testMedicationRequestNode}
         isActionable={false}
         isAction={true}
         documentation={undefined}
