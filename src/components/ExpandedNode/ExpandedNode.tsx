@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceNode } from 'pathways-model';
+import { ActionNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ExpandedNode.module.scss';
 import { isBranchNode, resourceNameConversion } from 'utils/nodeUtils';
@@ -8,14 +8,14 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 interface ExpandedNodeProps {
-  pathwayNode: GuidanceNode;
+  pathwayNode: ActionNode;
   isActionable: boolean;
-  isGuidance: boolean;
+  isAction: boolean;
 }
-const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayNode, isActionable, isGuidance }) => {
+const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayNode, isActionable, isAction }) => {
   return (
     <>
-      <ExpandedNodeMemo isGuidance={isGuidance} pathwayNode={pathwayNode} />
+      <ExpandedNodeMemo isAction={isAction} pathwayNode={pathwayNode} />
     </>
   );
 });
@@ -41,7 +41,7 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
-function renderGuidance(pathwayNode: GuidanceNode): ReactElement[] {
+function renderAction(pathwayNode: ActionNode): ReactElement[] {
   let returnElements: ReactElement[] = [];
   if (pathwayNode.action[0]) {
     const resource = pathwayNode.action[0].resource;
@@ -83,16 +83,16 @@ function renderGuidance(pathwayNode: GuidanceNode): ReactElement[] {
   return returnElements;
 }
 interface ExpandedNodeMemoProps {
-  pathwayNode: GuidanceNode;
-  isGuidance: boolean;
+  pathwayNode: ActionNode;
+  isAction: boolean;
 }
-const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayNode, isGuidance }) => {
-  const guidance = isGuidance && renderGuidance(pathwayNode);
+const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayNode, isAction }) => {
+  const action = isAction && renderAction(pathwayNode);
   const branch = isBranchNode(pathwayNode);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>
-        <tbody>{guidance || branch}</tbody>
+        <tbody>{action || branch}</tbody>
       </table>
     </div>
   );

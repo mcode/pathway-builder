@@ -1,10 +1,10 @@
 import React, { FC, Ref, forwardRef, memo, useCallback, useState, useEffect } from 'react';
-import { GuidanceNode, PathwayNode, Pathway } from 'pathways-model';
+import { ActionNode, PathwayNode, Pathway } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
-import { isGuidanceNode, isBranchNode } from 'utils/nodeUtils';
+import { isActionNode, isBranchNode } from 'utils/nodeUtils';
 import { getNodeType } from 'utils/builder';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -44,7 +44,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       ref
     ) => {
       const [hasMetadata, setHasMetadata] = useState<boolean>(
-        isGuidanceNode(pathwayNode) ? pathwayNode.action.length > 0 : false
+        isActionNode(pathwayNode) ? pathwayNode.action.length > 0 : false
       );
 
       const onClickHandler = useCallback(() => {
@@ -52,7 +52,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       }, [onClick, nodeKey]);
 
       useEffect(() => {
-        if (!hasMetadata && isGuidanceNode(pathwayNode) && pathwayNode.action.length > 0) {
+        if (!hasMetadata && isActionNode(pathwayNode) && pathwayNode.action.length > 0) {
           setHasMetadata(true);
           if (!expanded) {
             onClickHandler();
@@ -80,7 +80,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       } else {
         expandedNodeClass = styles.childNotActionable;
       }
-      const isGuidance = isGuidanceNode(pathwayNode);
+      const isAction = isActionNode(pathwayNode);
       const nodeType = getNodeType(pathway, nodeKey);
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
@@ -94,9 +94,9 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
           {expanded && (
             <div className={`${styles.expandedNode} ${expandedNodeClass}`}>
               <ExpandedNode
-                pathwayNode={pathwayNode as GuidanceNode}
+                pathwayNode={pathwayNode as ActionNode}
                 isActionable={isActionable}
-                isGuidance={isGuidance}
+                isAction={isAction}
               />
             </div>
           )}
@@ -115,7 +115,7 @@ const NodeIcon: FC<NodeIconProps> = ({ pathwayNode, nodeType }) => {
   let icon: IconDefinition | undefined;
   if (pathwayNode.label === 'Start') icon = faPlay;
   else if (nodeType === 'action') {
-    const guidancePathwayNode = pathwayNode as GuidanceNode;
+    const guidancePathwayNode = pathwayNode as ActionNode;
     if (guidancePathwayNode.action.length > 0) {
       const resourceType = guidancePathwayNode.action[0].resource.resourceType;
       if (resourceType === 'MedicationRequest') icon = faPrescriptionBottleAlt;

@@ -216,9 +216,9 @@ describe('builder interface add functions', () => {
     expect(criteria).toEqual(expectedCriteria);
   });
 
-  it('add guidance node', () => {
+  it('add action node', () => {
     const existingNodes = Object.keys(pathway.nodes);
-    const newPathway = Builder.addGuidanceNode(pathway);
+    const newPathway = Builder.addActionNode(pathway);
 
     const newNodeKey = Object.keys(newPathway.nodes).find(
       node => !existingNodes.includes(node)
@@ -400,9 +400,9 @@ describe('builder interface update functions', () => {
     expect(pathway.nodes[startNodeKey].transitions[0].condition.cql).toBe('Tumor Size');
   });
 
-  it('set guidance node elm', () => {
+  it('set action node elm', () => {
     const key = 'Radiation';
-    const newPathway = Builder.setGuidanceNodeElm(pathway, key, elm);
+    const newPathway = Builder.setActionNodeElm(pathway, key, elm);
     expect(newPathway.nodes[key].cql).toBe('Tumor Size');
     expect(newPathway.nodes[key].elm).toEqual(elm);
   });
@@ -417,13 +417,13 @@ describe('builder interface update functions', () => {
   });
 
   describe('setNodeNodeType', () => {
-    it('converts a branch node into a guidance node', () => {
+    it('converts a branch node into a action node', () => {
       const key = 'N-test';
       const newPathway = Builder.setNodeNodeType(pathway, key, 'action');
       expect(newPathway.nodes[key].cql).toEqual('');
     });
 
-    it('converts a guidance node intoa a branch node', () => {
+    it('converts a action node into a branch node', () => {
       const key = 'Surgery';
       const newPathway = Builder.makeNodeBranch(pathway, key);
       expect(newPathway.nodes[key].cql).not.toBeDefined();
@@ -471,10 +471,10 @@ describe('builder interface update functions', () => {
     expect(pathway.nodes[nodeKey].action[0].resource.code.coding[0].display).toBe('test');
   });
 
-  describe('makeNodeGuidance', () => {
-    it('converts a branch node into a guidance node', () => {
+  describe('makeNodeAction', () => {
+    it('converts a branch node into a action node', () => {
       const key = 'N-test';
-      const newPathway = Builder.makeNodeGuidance(pathway, key);
+      const newPathway = Builder.makeNodeAction(pathway, key);
       expect(newPathway.nodes[key].cql).toEqual('');
       expect(newPathway.nodes[key].action).toEqual([]);
       expect(newPathway.nodes[key].nodeTypeIsUndefined).not.toBeDefined();
@@ -482,7 +482,7 @@ describe('builder interface update functions', () => {
 
     it('does not modify its argument', () => {
       const key = 'N-test';
-      Builder.makeNodeGuidance(pathway, key);
+      Builder.makeNodeAction(pathway, key);
 
       expect(pathway.nodes[key].cql).not.toBeDefined();
       expect(pathway.nodes[key].action).not.toBeDefined();
@@ -490,7 +490,7 @@ describe('builder interface update functions', () => {
   });
 
   describe('makeNodeBranch', () => {
-    it('converts a guidance node intoa a branch node', () => {
+    it('converts a action node intoa a branch node', () => {
       const key = 'Surgery';
       const newPathway = Builder.makeNodeBranch(pathway, key);
       expect(newPathway.nodes[key].cql).not.toBeDefined();

@@ -1,4 +1,4 @@
-import { Pathway, Criteria, PathwayNode, Transition, Action, GuidanceNode } from 'pathways-model';
+import { Pathway, Criteria, PathwayNode, Transition, Action, ActionNode } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
@@ -124,9 +124,9 @@ export function exportPathway(pathway: Pathway): string {
       }),
       // Strip id from each node.action
       action:
-        (node as GuidanceNode).action == null
+        (node as ActionNode).action == null
           ? undefined
-          : (node as GuidanceNode).action.map((action: Action) => ({
+          : (node as ActionNode).action.map((action: Action) => ({
               ...action,
               id: undefined
             }))
@@ -240,11 +240,11 @@ export function addNode(pathway: Pathway, node: PathwayNode): Pathway {
   };
 }
 
-export function addGuidanceNode(pathway: Pathway): Pathway {
+export function addActionNode(pathway: Pathway): Pathway {
   const node = createNode();
   const newPathway = addNode(pathway, node);
 
-  return makeNodeGuidance(newPathway, node.key as string);
+  return makeNodeAction(newPathway, node.key as string);
 }
 
 export function setNodeLabel(pathway: Pathway, key: string, label: string): Pathway {
@@ -263,7 +263,7 @@ export function setNodeLabel(pathway: Pathway, key: string, label: string): Path
 export function setNodeNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
   switch (nodeType) {
     case 'action':
-      return makeNodeGuidance(pathway, nodeKey);
+      return makeNodeAction(pathway, nodeKey);
     case 'branch':
       return makeNodeBranch(pathway, nodeKey);
     default:
@@ -385,7 +385,7 @@ export function setTransitionCondition(
   };
 }
 
-export function setGuidanceNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibrary): Pathway {
+export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibrary): Pathway {
   return {
     ...pathway,
     nodes: {
@@ -414,7 +414,7 @@ export function addAction(
     description: description,
     resource: resource
   };
-  (pathway.nodes[key] as GuidanceNode).action.push(action);
+  (pathway.nodes[key] as ActionNode).action.push(action);
   return id;
 }
 
@@ -425,7 +425,7 @@ export function getNodeType(pathway: Pathway, key: string | undefined): string {
   const node = pathway.nodes[key];
   if (node.nodeTypeIsUndefined) {
     return 'null';
-  } else if (!(node as GuidanceNode).action && key !== 'Start') {
+  } else if (!(node as ActionNode).action && key !== 'Start') {
     return 'branch';
   } else {
     return 'action';
@@ -511,8 +511,8 @@ export function setActionType(
   actionId: string,
   type: string
 ): void {
-  if ((pathway.nodes[nodeKey] as GuidanceNode).action) {
-    const action = (pathway.nodes[nodeKey] as GuidanceNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.type = type;
@@ -525,7 +525,7 @@ export function setActionDescription(
   actionId: string,
   description: string
 ): void {
-  const node = (pathway.nodes[nodeKey] as GuidanceNode).action;
+  const node = (pathway.nodes[nodeKey] as ActionNode).action;
 
   if (node) {
     const action = node.find((action: Action) => action.id === actionId);
@@ -541,8 +541,8 @@ export function setActionResource(
   actionId: string,
   resource: MedicationRequest | ServiceRequest
 ): void {
-  if ((pathway.nodes[nodeKey] as GuidanceNode).action) {
-    const action = (pathway.nodes[nodeKey] as GuidanceNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.resource = resource;
@@ -555,8 +555,8 @@ export function setActionResourceDisplay(
   actionId: string,
   display: string
 ): void {
-  if ((pathway.nodes[nodeKey] as GuidanceNode).action) {
-    const action = (pathway.nodes[nodeKey] as GuidanceNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     const resource = action?.resource;
@@ -570,8 +570,8 @@ export function setActionResourceDisplay(
   }
 }
 
-export function makeNodeGuidance(pathway: Pathway, nodeKey: string): Pathway {
-  const node = pathway.nodes[nodeKey] as GuidanceNode;
+export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
   if (node.cql !== undefined && node.action !== undefined) {
     return pathway;
@@ -592,7 +592,7 @@ export function makeNodeGuidance(pathway: Pathway, nodeKey: string): Pathway {
 }
 
 export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
-  const node = pathway.nodes[nodeKey] as GuidanceNode;
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
   if (
     node.cql === undefined &&
@@ -731,10 +731,10 @@ export function removeTransition(pathway: Pathway, nodeKey: string, transitionId
 }
 
 export function removeAction(pathway: Pathway, nodeKey: string, actionId: string): void {
-  if ((pathway.nodes[nodeKey] as GuidanceNode).action) {
-    const actions = (pathway.nodes[nodeKey] as GuidanceNode).action.filter(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const actions = (pathway.nodes[nodeKey] as ActionNode).action.filter(
       (action: Action) => action.id !== actionId
     );
-    (pathway.nodes[nodeKey] as GuidanceNode).action = actions;
+    (pathway.nodes[nodeKey] as ActionNode).action = actions;
   }
 }

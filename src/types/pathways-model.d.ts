@@ -9,7 +9,7 @@ declare module 'pathways-model' {
     library: string;
     criteria: Criteria[];
     nodes: {
-      [key: string]: GuidanceNode | Branch | PathwayNode;
+      [key: string]: ActionNode | Branch | PathwayNode;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -34,7 +34,7 @@ declare module 'pathways-model' {
     nodeTypeIsUndefined?: boolean;
   }
 
-  export interface GuidanceNode extends PathwayNode {
+  export interface ActionNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];

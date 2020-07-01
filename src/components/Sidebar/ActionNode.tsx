@@ -2,9 +2,9 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { setNodeAction, createCQL, setActionDescription, setGuidanceNodeElm } from 'utils/builder';
+import { setNodeAction, createCQL, setActionDescription, setActionNodeElm } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { Pathway, GuidanceNode, Action } from 'pathways-model';
+import { Pathway, ActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
@@ -34,7 +34,7 @@ const codeSystemOptions = [
 
 interface ActionNodeProps {
   pathway: Pathway;
-  currentNode: GuidanceNode;
+  currentNode: ActionNode;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
 }
@@ -53,7 +53,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
     (action: Action, currentNodeKey: string): void => {
       const cql = createCQL(action, currentNodeKey);
       convertBasicCQL(cql).then(elm => {
-        updatePathway(setGuidanceNodeElm(pathway, currentNodeKey, elm as ElmLibrary));
+        updatePathway(setActionNodeElm(pathway, currentNodeKey, elm as ElmLibrary));
       });
     },
     [pathway, updatePathway]
