@@ -43,7 +43,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^4.1.2",
     "@testing-library/react": "^9.3.0",
-    "@welldone-software/why-did-you-render": "^4.0.5",
+    "@welldone-software/why-did-you-render": "^4.2.5",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
     "prettier": "1.19.1"
