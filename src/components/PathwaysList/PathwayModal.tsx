@@ -106,7 +106,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
           <Button
             variant="contained"
             color="primary"
-            startIcon={createNewPathwayMeta ? <FontAwesomeIcon icon={faPlus} /> : undefined}
+            startIcon={createNewPathwayMeta && <FontAwesomeIcon icon={faPlus} />}
             type="submit"
           >
             {createNewPathwayMeta ? 'Create' : 'Save'}
