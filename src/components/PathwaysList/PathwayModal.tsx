@@ -90,6 +90,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
             required={createNewPathwayMeta}
             inputRef={pathwayNameRef}
             defaultValue={createNewPathwayMeta ? undefined : name}
+            multiline
           />
 
           <TextField
@@ -98,6 +99,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
             fullWidth
             inputRef={pathwayDescRef}
             defaultValue={createNewPathwayMeta ? undefined : description}
+            multiline
           />
         </DialogContent>
 
@@ -105,10 +107,10 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
           <Button
             variant="contained"
             color="primary"
-            startIcon={<FontAwesomeIcon icon={faPlus} />}
+            startIcon={createNewPathwayMeta ? <FontAwesomeIcon icon={faPlus} /> : undefined}
             type="submit"
           >
-            {createNewPathwayMeta ? 'Create' : 'Update Info'}
+            {createNewPathwayMeta ? 'Create' : 'Save'}
           </Button>
         </DialogActions>
       </form>
