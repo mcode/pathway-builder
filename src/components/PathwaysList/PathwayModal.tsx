@@ -90,7 +90,6 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
             required={createNewPathwayMeta}
             inputRef={pathwayNameRef}
             defaultValue={createNewPathwayMeta ? undefined : name}
-            multiline
           />
 
           <TextField
