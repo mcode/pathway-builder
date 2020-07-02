@@ -21,11 +21,11 @@ import { Pathway } from 'pathways-model';
 interface PathwayModalProps {
   open: boolean;
   onClose: () => void;
-  editPath?: Pathway;
+  editPathway?: Pathway;
 }
 
-const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPath }) => {
-  const createNewModal = !editPath;
+const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => {
+  const createNewPathwayMeta = !editPathway;
   const styles = useStyles();
   const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
@@ -55,24 +55,22 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPath }) => {
   const handleUpdatePathway = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
-      if (editPath) {
-        if (pathwayNameRef.current?.value) editPath.name = pathwayNameRef.current?.value;
-        if (pathwayDescRef.current?.value !== '')
-          editPath.description = pathwayDescRef.current?.value;
-        const pathwayId = editPath.id;
+      if (editPathway) {
+        if (pathwayNameRef.current?.value) editPathway.name = pathwayNameRef.current?.value;
+        editPathway.description = pathwayDescRef.current?.value;
+        const pathwayId = editPathway.id;
         const pathwayIndex = pathways.findIndex(pathway => pathway.id === pathwayId);
-        updatePathwayAtIndex(editPath, pathwayIndex);
+        updatePathwayAtIndex(editPathway, pathwayIndex);
         onClose();
       }
     },
-    [pathways, updatePathwayAtIndex, editPath, onClose]
+    [pathways, updatePathwayAtIndex, editPathway, onClose]
   );
 
-  let label = 'Pathway Name';
-  let description = 'Pathway Description';
-  if (editPath) {
-    label = editPath.name;
-    const metaDescription = editPath.description;
+  let name, description;
+  if (editPathway) {
+    name = editPathway.name;
+    const metaDescription = editPathway.description;
     if (metaDescription && metaDescription !== '') description = metaDescription;
   }
 
@@ -84,18 +82,25 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPath }) => {
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={createNewModal ? handleCreateNewPathway : handleUpdatePathway}>
+      <form onSubmit={createNewPathwayMeta ? handleCreateNewPathway : handleUpdatePathway}>
         <DialogContent>
           <TextField
             variant="outlined"
             autoFocus
-            label={label}
+            label="Pathway Name"
             fullWidth
-            required={createNewModal}
+            required={createNewPathwayMeta}
             inputRef={pathwayNameRef}
+            defaultValue={createNewPathwayMeta ? undefined : name}
           />
 
-          <TextField variant="outlined" label={description} fullWidth inputRef={pathwayDescRef} />
+          <TextField
+            variant="outlined"
+            label="Pathway Description"
+            fullWidth
+            inputRef={pathwayDescRef}
+            defaultValue={createNewPathwayMeta ? undefined : description}
+          />
         </DialogContent>
 
         <DialogActions>
@@ -105,7 +110,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPath }) => {
             startIcon={<FontAwesomeIcon icon={faPlus} />}
             type="submit"
           >
-            {createNewModal ? 'Create' : 'Update Info'}
+            {createNewPathwayMeta ? 'Create' : 'Update Info'}
           </Button>
         </DialogActions>
       </form>

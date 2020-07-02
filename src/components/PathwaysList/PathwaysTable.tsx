@@ -1,5 +1,4 @@
 import React, { FC, memo, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFileDownload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -9,7 +8,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Link
 } from '@material-ui/core';
 
 import { usePathwayContext } from 'components/PathwayProvider';
@@ -25,10 +25,10 @@ const PathwaysTable: FC = () => {
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
 
-  function openEditPathwayModal(pathway: Pathway): void {
+  const openEditPathwayModal = useCallback((pathway: Pathway): void => {
     setOpen(true);
     setEditablePathway(pathway);
-  }
+  }, []);
 
   const closeEditPathwayModal = useCallback((): void => {
     setOpen(false);
@@ -51,15 +51,13 @@ const PathwaysTable: FC = () => {
             {pathways.map(pathway => (
               <TableRow key={pathway.id}>
                 <TableCell component="th" scope="row">
-                  <Button
-                    className={styles.pathwaysListButton}
+                  <Link
+                    href={`/builder/${encodeURIComponent(pathway.id)}`}
                     color="primary"
-                    size="small"
-                    component={Link}
-                    to={`/builder/${encodeURIComponent(pathway.id)}`}
+                    underline="none"
                   >
                     {pathway.name}
-                  </Button>
+                  </Link>
                 </TableCell>
 
                 <TableCell>draft</TableCell>
@@ -98,7 +96,7 @@ const PathwaysTable: FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <PathwayModal open={open} onClose={closeEditPathwayModal} editPath={editablePathway} />
+      <PathwayModal open={open} onClose={closeEditPathwayModal} editPathway={editablePathway} />
     </div>
   );
 };
