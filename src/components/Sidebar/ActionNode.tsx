@@ -44,12 +44,7 @@ interface ActionNodeProps {
   addNode: (event: string) => void;
 }
 
-const ActionNode: FC<ActionNodeProps> = ({
-  pathway,
-  currentNode,
-  changeNodeType,
-  addNode
-}) => {
+const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType, addNode }) => {
   const { updatePathway } = usePathwayContext();
   const styles = useStyles();
   const selectNodeType = useCallback(

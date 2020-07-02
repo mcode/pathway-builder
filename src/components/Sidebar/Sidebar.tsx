@@ -70,11 +70,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
     <>
       {isExpanded && (
         <div className={styles.root} ref={sidebarContainerElement}>
-          <SidebarHeader
-            pathway={pathway}
-            currentNode={currentNode}
-            isTransition={false}
-          />
+          <SidebarHeader pathway={pathway} currentNode={currentNode} isTransition={false} />
 
           <hr className={styles.divider} />
 

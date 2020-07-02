@@ -20,11 +20,7 @@ interface SidebarHeaderProps {
   isTransition: boolean;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({
-  pathway,
-  currentNode,
-  isTransition
-}) => {
+const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransition }) => {
   const { updatePathway } = usePathwayContext();
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -40,14 +40,17 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     setPathways(currentPathways => currentPathways.filter(pathway => pathway.id !== id));
   }, []);
 
-  const updatePathway = useCallback((newPathway: Pathway) => {
-    const index = pathways.findIndex(pathway => pathway.id === newPathway.id);
-    setPathways(currentPathways => [
-      ...currentPathways.slice(0, index),
-      newPathway,
-      ...currentPathways.slice(index + 1)
-    ]);
-  }, [pathways]);
+  const updatePathway = useCallback(
+    (newPathway: Pathway) => {
+      const index = pathways.findIndex(pathway => pathway.id === newPathway.id);
+      setPathways(currentPathways => [
+        ...currentPathways.slice(0, index),
+        newPathway,
+        ...currentPathways.slice(index + 1)
+      ]);
+    },
+    [pathways]
+  );
 
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);

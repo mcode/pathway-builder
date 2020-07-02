@@ -62,7 +62,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
         onClose();
       }
     },
-    [ updatePathway, editPathway, onClose]
+    [updatePathway, editPathway, onClose]
   );
 
   let name, description;

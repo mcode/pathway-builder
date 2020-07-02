@@ -16,11 +16,7 @@ interface BranchTransitionProps {
   transition: Transition;
 }
 
-const BranchTransition: FC<BranchTransitionProps> = ({
-  pathway,
-  currentNodeKey,
-  transition
-}) => {
+const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, transition }) => {
   const { updatePathway } = usePathwayContext();
   const { criteria } = useCriteriaContext();
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
@@ -74,11 +70,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({
     <>
       <hr className={styles.divider} />
 
-      <SidebarHeader
-        pathway={pathway}
-        currentNode={transitionNode}
-        isTransition={true}
-      />
+      <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
       {!(useCriteriaSelected || transition.condition?.cql) && (
         <SidebarButton
           buttonName="Use Criteria"

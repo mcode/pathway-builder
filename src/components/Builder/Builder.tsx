@@ -36,11 +36,7 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
 
       <div className={styles.display}>
         <MuiThemeProvider theme={theme}>
-          <Sidebar
-            pathway={pathway}
-            headerElement={headerElement}
-            currentNode={currentNode}
-          />
+          <Sidebar pathway={pathway} headerElement={headerElement} currentNode={currentNode} />
         </MuiThemeProvider>
 
         <div ref={graphContainerElement} className={styles.graph}>

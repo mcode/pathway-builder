@@ -20,11 +20,7 @@ interface BranchNodeProps {
   changeNodeType: (event: string) => void;
 }
 
-const BranchNode: FC<BranchNodeProps> = ({
-  pathway,
-  currentNode,
-  changeNodeType,
-}) => {
+const BranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, changeNodeType }) => {
   const { updatePathway } = usePathwayContext();
   const currentNodeKey = currentNode?.key;
   const styles = useStyles();
