@@ -18,6 +18,7 @@ import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 import { Pathway } from 'pathways-model';
+import { Link as RouterLink } from 'react-router-dom';
 
 const PathwaysTable: FC = () => {
   const styles = useStyles();
@@ -52,7 +53,8 @@ const PathwaysTable: FC = () => {
               <TableRow key={pathway.id}>
                 <TableCell component="th" scope="row">
                   <Link
-                    href={`/builder/${encodeURIComponent(pathway.id)}`}
+                    component={RouterLink}
+                    to={`/builder/${encodeURIComponent(pathway.id)}`}
                     color="primary"
                     underline="none"
                   >
