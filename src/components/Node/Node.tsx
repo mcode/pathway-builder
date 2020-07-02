@@ -16,33 +16,25 @@ import {
   faTimesCircle,
   faBookMedical
 } from '@fortawesome/free-solid-svg-icons';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 interface NodeProps {
   nodeKey: string;
   pathwayNode: PathwayNode;
-  pathway: Pathway;
   xCoordinate: number;
   yCoordinate: number;
   expanded?: boolean;
   onClick?: (nodeKey: string) => void;
-  currentNode: PathwayNode;
+  nodeType: string;
 }
 
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      {
-        nodeKey,
-        pathwayNode,
-        pathway,
-        xCoordinate,
-        yCoordinate,
-        expanded = false,
-        onClick,
-        currentNode
-      },
+      { nodeKey, pathwayNode, xCoordinate, yCoordinate, expanded = false, onClick, nodeType },
       ref
     ) => {
+      const { currentNode } = useCurrentNodeContext();
       const [hasMetadata, setHasMetadata] = useState<boolean>(
         isActionNode(pathwayNode) ? pathwayNode.action.length > 0 : false
       );

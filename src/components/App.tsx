@@ -11,34 +11,40 @@ import { CriteriaProvider } from './CriteriaProvider';
 import Tabs from './Tabs';
 import PathwaysList from './PathwaysList';
 import CriteriaList from './CriteriaList';
+import { CurrentPathwayProvider } from './CurrentPathwayProvider';
+import { CurrentNodeProvider } from './CurrentNodeProvider';
 
 const App: FC = () => {
   return (
     <ThemeProvider theme="light">
       <UserProvider>
-        <PathwayProvider>
-          <CriteriaProvider>
-            <Router>
-              <Switch>
-                <Route path="/builder/:id/node/:nodeId">
-                  <BuilderRoute />
-                </Route>
-                <Route path="/builder/:id">
-                  <BuilderRoute />
-                </Route>
-                <Route path="/">
-                  <Header />
-                  <Tabs
-                    tabs={[
-                      { label: 'Pathway', component: <PathwaysList /> },
-                      { label: 'Criteria', component: <CriteriaList /> }
-                    ]}
-                  />
-                </Route>
-              </Switch>
-            </Router>
-          </CriteriaProvider>
-        </PathwayProvider>
+        <CurrentPathwayProvider>
+          <PathwayProvider>
+            <CurrentNodeProvider>
+              <CriteriaProvider>
+                <Router>
+                  <Switch>
+                    <Route path="/builder/:id/node/:nodeId">
+                      <BuilderRoute />
+                    </Route>
+                    <Route path="/builder/:id">
+                      <BuilderRoute />
+                    </Route>
+                    <Route path="/">
+                      <Header />
+                      <Tabs
+                        tabs={[
+                          { label: 'Pathway', component: <PathwaysList /> },
+                          { label: 'Criteria', component: <CriteriaList /> }
+                        ]}
+                      />
+                    </Route>
+                  </Switch>
+                </Router>
+              </CriteriaProvider>
+            </CurrentNodeProvider>
+          </PathwayProvider>
+        </CurrentPathwayProvider>
       </UserProvider>
     </ThemeProvider>
   );

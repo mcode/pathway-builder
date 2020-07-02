@@ -1,12 +1,16 @@
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo, useMemo, useEffect } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
 import Builder from 'components/Builder';
 import { usePathwayContext } from 'components/PathwayProvider';
+import { useCurrentPathwayContext } from './CurrentPathwayProvider';
+import { useCurrentNodeContext } from './CurrentNodeProvider';
 
 const BuilderRoute: FC = () => {
   const { id, nodeId } = useParams();
   const { pathways } = usePathwayContext();
+  const { setPathway } = useCurrentPathwayContext();
+  const { setCurrentNode } = useCurrentNodeContext();
   const pathwayId = decodeURIComponent(id);
   const pathwayIndex = useMemo(() => pathways.findIndex(pathway => pathway.id === pathwayId), [
     pathwayId,
@@ -15,10 +19,18 @@ const BuilderRoute: FC = () => {
   const pathway = pathways[pathwayIndex];
   const currentNode = pathway?.nodes?.[decodeURIComponent(nodeId)];
 
+  useEffect(() => {
+    setPathway(pathway);
+  }, [pathway, setPathway]);
+
+  useEffect(() => {
+    setCurrentNode(currentNode);
+  }, [currentNode, setCurrentNode]);
+
   if (pathway == null) return null;
   if (currentNode == null) return <Redirect to={`/builder/${id}/node/Start`} />;
 
-  return <Builder pathway={pathway} currentNode={currentNode} />;
+  return <Builder />;
 };
 
 export default memo(BuilderRoute);

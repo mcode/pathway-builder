@@ -1,14 +1,14 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { SidebarButton, BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
 import { addTransition, createNode, addNode } from 'utils/builder';
-import { Pathway, PathwayNode } from 'pathways-model';
 import { usePathwayContext } from 'components/PathwayProvider';
 
 import useStyles from './styles';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 const nodeTypeOptions = [
   { value: 'action', label: 'Action' },
@@ -16,14 +16,13 @@ const nodeTypeOptions = [
 ];
 
 interface BranchNodeEditorProps {
-  pathway: Pathway;
-  currentNode: PathwayNode;
   changeNodeType: (event: string) => void;
 }
 
-const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ pathway, currentNode, changeNodeType }) => {
+const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ changeNodeType }) => {
   const { updatePathway } = usePathwayContext();
-  const currentNodeKey = currentNode?.key;
+  const { pathwayRef } = useCurrentPathwayContext();
+  const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();
 
   const selectNodeType = useCallback(
@@ -34,11 +33,15 @@ const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ pathway, currentNode, cha
   );
 
   const handleAddTransition = useCallback((): void => {
+    if (!pathwayRef.current) return;
+
     const newNode = createNode();
 
-    const newPathway = addNode(pathway, newNode);
-    updatePathway(addTransition(newPathway, currentNodeKey || '', newNode.key as string));
-  }, [pathway, updatePathway, currentNodeKey]);
+    const newPathway = addNode(pathwayRef.current, newNode);
+    updatePathway(
+      addTransition(newPathway, currentNodeRef.current?.key || '', newNode.key as string)
+    );
+  }, [pathwayRef, updatePathway, currentNodeRef]);
 
   return (
     <>
@@ -49,22 +52,15 @@ const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ pathway, currentNode, cha
         onChange={selectNodeType}
         value="branch"
       />
-      {currentNode.transitions.map(transition => {
-        return (
-          <BranchTransition
-            key={transition.id}
-            pathway={pathway}
-            currentNodeKey={currentNodeKey || ''}
-            transition={transition}
-          />
-        );
+      {currentNode?.transitions.map(transition => {
+        return <BranchTransition key={transition.id} transition={transition} />;
       })}
 
       <hr className={styles.divider} />
 
       <SidebarButton
         buttonName="Add Transition"
-        buttonIcon={<FontAwesomeIcon icon={faPlus} />}
+        buttonIcon={faPlus}
         buttonText="Add transition logic for a clinical decision within a workflow."
         onClick={handleAddTransition}
       />

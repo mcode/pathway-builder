@@ -75,14 +75,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   const payload = (service as ServiceLoaded<Criteria[]>).payload;
 
   useEffect(() => {
-    const defaultCriteria: Criteria[] = [];
     if (payload) {
+      const newCriteria: Criteria[] = [];
       payload.forEach(jsonCriterion => {
         const criterion = jsonToCriteria(JSON.stringify(jsonCriterion));
-        if (criterion) defaultCriteria.push(criterion);
+        if (criterion) newCriteria.push(criterion);
       });
+      setCriteria(newCriteria);
     }
-    setCriteria(defaultCriteria);
   }, [payload]);
 
   const addCriteria = useCallback((file: File) => {

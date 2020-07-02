@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 import clsx from 'clsx';
 
 import TextField from '@material-ui/core/TextField';
@@ -39,4 +39,5 @@ const OutlinedDiv: FC<OutlinedDivProps> = ({ children, label, error }) => {
   );
 };
 
-export default memo(OutlinedDiv);
+// This is not memoized since one of its props is children
+export default OutlinedDiv;

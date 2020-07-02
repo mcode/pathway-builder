@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 
 import DropDown from 'components/elements/DropDown';
-import { Pathway, PathwayNode } from 'pathways-model';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 const nodeTypeOptions = [
   { label: '', value: '' },
@@ -10,13 +10,11 @@ const nodeTypeOptions = [
 ];
 
 interface NullNodeProps {
-  pathway: Pathway;
-  currentNode: PathwayNode;
   changeNodeType: (event: string) => void;
-  addNode: (event: string) => void;
 }
 
-const NullNode: FC<NullNodeProps> = ({ pathway, currentNode, changeNodeType, addNode }) => {
+const NullNode: FC<NullNodeProps> = ({ changeNodeType }) => {
+  const { currentNode } = useCurrentNodeContext();
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
@@ -25,7 +23,7 @@ const NullNode: FC<NullNodeProps> = ({ pathway, currentNode, changeNodeType, add
   );
 
   // The node has a key and is not the start node
-  const changeNodeTypeEnabled = currentNode.key !== undefined && currentNode.key !== 'Start';
+  const changeNodeTypeEnabled = currentNode?.key !== undefined && currentNode.key !== 'Start';
 
   return (
     <>

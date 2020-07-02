@@ -9,23 +9,23 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, FormControl, Input } from '@material-ui/core';
 
-import { Pathway, PathwayNode } from 'pathways-model';
+import { PathwayNode } from 'pathways-model';
 import { setNodeLabel } from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
 interface SidebarHeaderProps {
-  pathway: Pathway;
-  currentNode: PathwayNode;
+  node: PathwayNode;
   isTransition: boolean;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransition }) => {
+const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
   const { updatePathway } = usePathwayContext();
   const [showInput, setShowInput] = useState<boolean>(false);
+  const { pathwayRef } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
-  const currentNodeKey = currentNode?.key;
-  const currentNodeLabel = currentNode?.label || '';
+  const nodeLabel = node?.label || '';
   const styles = useStyles();
 
   const goToParentNode = useCallback(() => {
@@ -42,9 +42,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransit
 
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
-    if (currentNodeKey) updatePathway(setNodeLabel(pathway, currentNodeKey, label));
+    if (node.key && pathwayRef.current)
+      updatePathway(setNodeLabel(pathwayRef.current, node.key, label));
     setShowInput(false);
-  }, [pathway, updatePathway, currentNodeKey]);
+  }, [pathwayRef, updatePathway, node.key]);
 
   const handleShowInput = useCallback(() => {
     setShowInput(true);
@@ -60,7 +61,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransit
   return (
     <div className={styles.sidebarHeader}>
       <div className={styles.sidebarHeaderGroup}>
-        {currentNodeKey !== 'Start' && !isTransition && (
+        {node.key !== 'Start' && !isTransition && (
           <IconButton
             className={styles.sidebarHeaderButton}
             onClick={goToParentNode}
@@ -71,7 +72,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransit
         )}
 
         <div className={styles.headerLabelGroup} onClick={handleShowInput}>
-          {showInput && currentNodeKey !== 'Start' ? (
+          {showInput && node.key !== 'Start' ? (
             <FormControl className={styles.formControl} fullWidth>
               <Input
                 className={styles.headerLabel}
@@ -79,7 +80,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransit
                 inputRef={inputRef}
                 onBlur={changeNodeLabel}
                 onKeyPress={handleKeyPress}
-                defaultValue={currentNodeLabel}
+                defaultValue={nodeLabel}
                 autoFocus
                 onFocus={(event: FocusEvent<HTMLInputElement>): void => event.target.select()}
               />
@@ -89,11 +90,11 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransit
               className={clsx(
                 styles.headerLabel,
                 styles.headerLabelText,
-                currentNodeKey === 'Start' && styles.headerLabelStart
+                node.key === 'Start' && styles.headerLabelStart
               )}
             >
-              {currentNodeLabel}
-              {currentNodeKey !== 'Start' && (
+              {nodeLabel}
+              {node.key !== 'Start' && (
                 <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
               )}
             </div>

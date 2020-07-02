@@ -1,6 +1,6 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import * as Builder from 'utils/builder';
-import { Pathway, Precondition, Transition, Action } from 'pathways-model';
+import { Pathway, Precondition, Transition, Action, ActionNode } from 'pathways-model';
 
 describe('builder interface add functions', () => {
   // Create a deep copy of the pathway
@@ -268,7 +268,7 @@ describe('builder interface add functions', () => {
       description: 'test description',
       resource: resource
     };
-    expect(pathway.nodes[key].action.pop()).toEqual(expectedAction);
+    expect(pathway.nodes[key].action[1]).toEqual(expectedAction);
   });
 });
 
@@ -326,30 +326,30 @@ describe('builder interface update functions', () => {
   };
 
   it('set pathway name', () => {
-    Builder.setPathwayName(pathway, 'test name');
-    expect(pathway.name).toBe('test name');
+    const newPathway = Builder.setPathwayName(pathway, 'test name');
+    expect(newPathway.name).toBe('test name');
   });
 
   it('set pathway description', () => {
-    Builder.setPathwayDescription(pathway, 'test description');
-    expect(pathway.description).toBe('test description');
+    const newPathway = Builder.setPathwayDescription(pathway, 'test description');
+    expect(newPathway.description).toBe('test description');
   });
 
   it('set library', () => {
-    Builder.setLibrary(pathway, 'library.cql');
-    expect(pathway.library).toBe('library.cql');
+    const newPathway = Builder.setLibrary(pathway, 'library.cql');
+    expect(newPathway.library).toBe('library.cql');
   });
 
   it('set navigational elm', () => {
     const elm = {};
-    Builder.setNavigationalElm(pathway, elm);
-    expect(pathway.elm?.navigational).toEqual(elm);
+    const newPathway = Builder.setNavigationalElm(pathway, elm);
+    expect(newPathway.elm?.navigational).toEqual(elm);
   });
 
   it('set precondition elm', () => {
     const elm = {};
-    Builder.setPreconditionElm(pathway, elm);
-    expect(pathway.elm?.preconditions).toEqual(elm);
+    const newPathway = Builder.setPreconditionElm(pathway, elm);
+    expect(newPathway.elm?.preconditions).toEqual(elm);
   });
 
   it('set transition', () => {
@@ -357,14 +357,20 @@ describe('builder interface update functions', () => {
     const endNodeKey = 'Start';
     const transitionId = '1';
 
-    Builder.setTransition(pathway, startNodeKey, endNodeKey, transitionId);
-    expect(pathway.nodes[startNodeKey].transitions[0].transition).toBe(endNodeKey);
+    const newPathway = Builder.setTransition(pathway, startNodeKey, endNodeKey, transitionId);
+    expect(newPathway.nodes[startNodeKey].transitions[0].transition).toBe(endNodeKey);
   });
 
   it('set transition condition', () => {
     const startNodeKey = 'N-test';
     const transitionId = '1';
-    Builder.setTransitionCondition(pathway, startNodeKey, transitionId, 'test description', elm);
+    const newPathway = Builder.setTransitionCondition(
+      pathway,
+      startNodeKey,
+      transitionId,
+      'test description',
+      elm
+    );
     const expectedTransition = {
       id: '1',
       transition: 'Radiation',
@@ -374,19 +380,19 @@ describe('builder interface update functions', () => {
         elm: elm
       }
     };
-    expect(pathway.nodes[startNodeKey].transitions[0]).toEqual(expectedTransition);
+    expect(newPathway.nodes[startNodeKey].transitions[0]).toEqual(expectedTransition);
   });
 
   it('set transition condition description', () => {
     const startNodeKey = 'T-test';
     const transitionId = '1';
-    Builder.setTransitionConditionDescription(
+    const newPathway = Builder.setTransitionConditionDescription(
       pathway,
       startNodeKey,
       transitionId,
       'test description'
     );
-    expect(pathway.nodes[startNodeKey].transitions[0].condition.description).toBe(
+    expect(newPathway.nodes[startNodeKey].transitions[0].condition.description).toBe(
       'test description'
     );
   });
@@ -394,8 +400,8 @@ describe('builder interface update functions', () => {
   it('set transition condition elm', () => {
     const startNodeKey = 'T-test';
     const transitionId = '1';
-    Builder.setTransitionConditionElm(pathway, startNodeKey, transitionId, elm);
-    expect(pathway.nodes[startNodeKey].transitions[0].condition.cql).toBe('Tumor Size');
+    const newPathway = Builder.setTransitionConditionElm(pathway, startNodeKey, transitionId, elm);
+    expect(newPathway.nodes[startNodeKey].transitions[0].condition.cql).toBe('Tumor Size');
   });
 
   it('set action node elm', () => {
@@ -431,15 +437,15 @@ describe('builder interface update functions', () => {
   it('set action type', () => {
     const nodeKey = 'Chemo';
     const actionId = '1';
-    Builder.setActionType(pathway, nodeKey, actionId, 'delete');
-    expect(pathway.nodes[nodeKey].action[0].type).toBe('delete');
+    const newPathway = Builder.setActionType(pathway, nodeKey, actionId, 'delete');
+    expect(newPathway.nodes[nodeKey].action[0].type).toBe('delete');
   });
 
   it('set action descrtiption', () => {
     const nodeKey = 'Chemo';
     const actionId = '1';
-    Builder.setActionDescription(pathway, nodeKey, actionId, 'test description');
-    expect(pathway.nodes[nodeKey].action[0].description).toBe('test description');
+    const newPathway = Builder.setActionDescription(pathway, nodeKey, actionId, 'test description');
+    expect(newPathway.nodes[nodeKey].action[0].description).toBe('test description');
   });
 
   it('set action resource', () => {
@@ -458,15 +464,17 @@ describe('builder interface update functions', () => {
         text: 'Test procedure'
       }
     };
-    Builder.setActionResource(pathway, nodeKey, actionId, resource);
-    expect(pathway.nodes[nodeKey].action[0].resource).toEqual(resource);
+    const newPathway = Builder.setActionResource(pathway, nodeKey, actionId, resource);
+    expect(newPathway.nodes[nodeKey].action[0].resource).toEqual(resource);
   });
 
   it('set action resource display', () => {
     const nodeKey = 'Chemo';
-    const actionId = '1';
-    Builder.setActionResourceDisplay(pathway, nodeKey, actionId, 'test');
-    expect(pathway.nodes[nodeKey].action[0].resource.code.coding[0].display).toBe('test');
+    const newAction = Builder.setActionResourceDisplay(
+      (pathway.nodes[nodeKey] as ActionNode).action[0],
+      'test'
+    );
+    expect(newAction.resource.code.coding[0].display).toBe('test');
   });
 
   describe('makeNodeAction', () => {
@@ -511,36 +519,36 @@ describe('builder interface remove functions', () => {
   const pathway = JSON.parse(JSON.stringify(samplepathway)) as Pathway;
 
   it('remove pathway description', () => {
-    Builder.removePathwayDescription(pathway);
-    expect('description' in pathway).toBeFalsy();
+    const newPathway = Builder.removePathwayDescription(pathway);
+    expect('description' in newPathway).toBeFalsy();
   });
 
   it('remove preconditions', () => {
     const id = '1';
-    Builder.removePrecondition(pathway, id);
-    expect(pathway.preconditions.length).toBe(0);
+    const newPathway = Builder.removePrecondition(pathway, id);
+    expect(newPathway.preconditions.length).toBe(0);
   });
 
   it('remove navigational elm', () => {
-    Builder.removeNavigationalElm(pathway);
-    if (pathway.elm) expect('navigational' in pathway.elm).toBeFalsy();
+    const newPathway = Builder.removeNavigationalElm(pathway);
+    if (newPathway.elm) expect('navigational' in newPathway.elm).toBeFalsy();
     else fail();
   });
 
-  it('remove preconditions elm', () => {
-    Builder.removePreconditionElm(pathway);
-    if (pathway.elm) expect('preconditions' in pathway.elm).toBeFalsy();
+  it('remove criteria elm', () => {
+    const newPathway = Builder.removePreconditionElm(pathway);
+    if (newPathway.elm) expect('preconditions' in newPathway.elm).toBeFalsy();
     else fail();
   });
 
   it('remove node', () => {
     const key = 'ChemoMedication';
-    Builder.removeNode(pathway, key);
-    expect(key in pathway.nodes).toBeFalsy();
+    const newPathway = Builder.removeNode(pathway, key);
+    expect(key in newPathway.nodes).toBeFalsy();
 
     // Test removed from all transitions
-    Object.keys(pathway.nodes).forEach((nodeKey: string) => {
-      const node = pathway.nodes[nodeKey];
+    Object.keys(newPathway.nodes).forEach((nodeKey: string) => {
+      const node = newPathway.nodes[nodeKey];
       node.transitions.forEach((transition: Transition) =>
         expect(transition.transition).not.toBe(key)
       );
@@ -550,23 +558,23 @@ describe('builder interface remove functions', () => {
   it('remove transition condition', () => {
     const nodeKey = 'N-test';
     const transitionId = '2';
-    Builder.removeTransitionCondition(pathway, nodeKey, transitionId);
-    expect('condition' in pathway.nodes[nodeKey].transitions[1]).toBeFalsy();
+    const newPathway = Builder.removeTransitionCondition(pathway, nodeKey, transitionId);
+    expect('condition' in newPathway.nodes[nodeKey].transitions[1]).toBeFalsy();
   });
 
   it('remove transition', () => {
     const nodeKey = 'T-test';
     const transitionId = '1';
-    Builder.removeTransition(pathway, nodeKey, transitionId);
-    expect(pathway.nodes[nodeKey].transitions.length).toBe(1);
-    expect(pathway.nodes[nodeKey].transitions[0].id).not.toBe(transitionId);
+    const newPathway = Builder.removeTransition(pathway, nodeKey, transitionId);
+    expect(newPathway.nodes[nodeKey].transitions.length).toBe(1);
+    expect(newPathway.nodes[nodeKey].transitions[0].id).not.toBe(transitionId);
   });
 
   it('remove action', () => {
     const nodeKey = 'Surgery';
     const actionId = '1';
-    Builder.removeAction(pathway, nodeKey, actionId);
-    expect(pathway.nodes[nodeKey].action.length).toBe(0);
+    const newPathway = Builder.removeAction(pathway, nodeKey, actionId);
+    expect(newPathway.nodes[nodeKey].action.length).toBe(0);
   });
 });
 
