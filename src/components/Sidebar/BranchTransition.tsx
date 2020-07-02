@@ -7,21 +7,21 @@ import { setTransitionCondition, setTransitionConditionDescription } from 'utils
 import { SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
+import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 interface BranchTransitionProps {
   pathway: Pathway;
   currentNodeKey: string;
   transition: Transition;
-  updatePathway: (pathway: Pathway) => void;
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({
   pathway,
   currentNodeKey,
-  transition,
-  updatePathway
+  transition
 }) => {
+  const { updatePathway } = usePathwayContext();
   const { criteria } = useCriteriaContext();
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
@@ -77,7 +77,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({
       <SidebarHeader
         pathway={pathway}
         currentNode={transitionNode}
-        updatePathway={updatePathway}
         isTransition={true}
       />
       {!(useCriteriaSelected || transition.condition?.cql) && (

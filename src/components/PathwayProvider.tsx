@@ -18,7 +18,7 @@ interface PathwayContextInterface {
   status: string;
   addPathway: (pathway: Pathway) => void;
   deletePathway: (id: string) => void;
-  updatePathwayAtIndex: (pathway: Pathway, index: number) => void;
+  updatePathway: (pathway: Pathway) => void;
 }
 
 export const PathwayContext = createContext<PathwayContextInterface>({} as PathwayContextInterface);
@@ -40,13 +40,14 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
     setPathways(currentPathways => currentPathways.filter(pathway => pathway.id !== id));
   }, []);
 
-  const updatePathwayAtIndex = useCallback((pathway: Pathway, index: number) => {
+  const updatePathway = useCallback((newPathway: Pathway) => {
+    const index = pathways.findIndex(pathway => pathway.id === newPathway.id);
     setPathways(currentPathways => [
       ...currentPathways.slice(0, index),
-      pathway,
+      newPathway,
       ...currentPathways.slice(index + 1)
     ]);
-  }, []);
+  }, [pathways]);
 
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
@@ -63,7 +64,7 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
             pathways,
             addPathway,
             deletePathway,
-            updatePathwayAtIndex,
+            updatePathway,
             status: service.status
           }}
         >

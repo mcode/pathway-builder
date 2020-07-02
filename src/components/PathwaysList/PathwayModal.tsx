@@ -30,7 +30,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
   const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
-  const { addPathway, updatePathwayAtIndex, pathways } = usePathwayContext();
+  const { addPathway, updatePathway } = usePathwayContext();
 
   const closeModal = useCallback(
     (pathwayId: string): void => {
@@ -58,13 +58,11 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
       if (editPathway) {
         if (pathwayNameRef.current?.value) editPathway.name = pathwayNameRef.current?.value;
         editPathway.description = pathwayDescRef.current?.value;
-        const pathwayId = editPathway.id;
-        const pathwayIndex = pathways.findIndex(pathway => pathway.id === pathwayId);
-        updatePathwayAtIndex(editPathway, pathwayIndex);
+        updatePathway(editPathway);
         onClose();
       }
     },
-    [pathways, updatePathwayAtIndex, editPathway, onClose]
+    [ updatePathway, editPathway, onClose]
   );
 
   let name, description;

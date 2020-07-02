@@ -6,16 +6,17 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
 import { State, GuidanceState, BranchState, Pathway } from 'pathways-model';
 import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
+import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 interface SidebarProps {
   pathway: Pathway;
-  updatePathway: (pathway: Pathway) => void;
   headerElement: RefObject<HTMLDivElement>;
   currentNode: GuidanceState | BranchState | State;
 }
 
-const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, currentNode }) => {
+const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
+  const { updatePathway } = usePathwayContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
   const history = useHistory();
@@ -72,7 +73,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
           <SidebarHeader
             pathway={pathway}
             currentNode={currentNode}
-            updatePathway={updatePathway}
             isTransition={false}
           />
 
@@ -92,7 +92,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
               pathway={pathway}
               currentNode={currentNode as GuidanceState}
               changeNodeType={changeNodeType}
-              updatePathway={updatePathway}
               addNode={addNode}
             />
           )}
@@ -102,7 +101,6 @@ const Sidebar: FC<SidebarProps> = ({ pathway, updatePathway, headerElement, curr
               pathway={pathway}
               currentNode={currentNode}
               changeNodeType={changeNodeType}
-              updatePathway={updatePathway}
             />
           )}
         </div>

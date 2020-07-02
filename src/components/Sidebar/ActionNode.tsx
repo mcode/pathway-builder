@@ -15,6 +15,7 @@ import useStyles from './styles';
 import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
+import { usePathwayContext } from 'components/PathwayProvider';
 
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
@@ -41,16 +42,15 @@ interface ActionNodeProps {
   currentNode: GuidanceState;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
-  updatePathway: (pathway: Pathway) => void;
 }
 
 const ActionNode: FC<ActionNodeProps> = ({
   pathway,
   currentNode,
   changeNodeType,
-  addNode,
-  updatePathway
+  addNode
 }) => {
+  const { updatePathway } = usePathwayContext();
   const styles = useStyles();
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {

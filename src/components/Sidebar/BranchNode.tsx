@@ -6,6 +6,7 @@ import { SidebarButton, BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
 import { addTransition, createState, addState } from 'utils/builder';
 import { Pathway, State } from 'pathways-model';
+import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 const nodeTypeOptions = [
@@ -17,15 +18,14 @@ interface BranchNodeProps {
   pathway: Pathway;
   currentNode: State;
   changeNodeType: (event: string) => void;
-  updatePathway: (pathway: Pathway) => void;
 }
 
 const BranchNode: FC<BranchNodeProps> = ({
   pathway,
   currentNode,
   changeNodeType,
-  updatePathway
 }) => {
+  const { updatePathway } = usePathwayContext();
   const currentNodeKey = currentNode?.key;
   const styles = useStyles();
 
@@ -59,7 +59,6 @@ const BranchNode: FC<BranchNodeProps> = ({
             pathway={pathway}
             currentNodeKey={currentNodeKey || ''}
             transition={transition}
-            updatePathway={updatePathway}
           />
         );
       })}
