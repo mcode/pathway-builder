@@ -10,7 +10,7 @@ import {
 } from 'utils/builder';
 import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
-import { usePreconditionContext } from 'components/PreconditionProvider';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
@@ -49,14 +49,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     }
   }, [useCriteriaSelected, currentNodeKey, pathway, hasCriteria, transition.id, updatePathway]);
 
-  const selectPreconditionSource = useCallback(
+  const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeKey || !transition.id) return;
 
-      const preconditionSource = event?.target.value || '';
+      const criteriaSource = event?.target.value || '';
       let elm = undefined;
-      precondition.forEach(c => {
-        if (c.id === preconditionSource) {
+      criteria.forEach(c => {
+        if (c.id === criteriaSource) {
           elm = c.elm;
         }
       });
@@ -68,25 +68,20 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
           transition.id,
           transition.condition?.description || '',
           elm,
-          preconditionSource
+          criteriaSource
         )
       );
     },
-    [currentNodeKey, transition.id, updatePathway, pathway, transition.condition, precondition]
+    [currentNodeKey, transition.id, updatePathway, pathway, transition.condition, criteria]
   );
 
-  const setPreconditionDisplay = useCallback(
+  const setCriteriaDisplay = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeKey || !transition.id) return;
 
-      const preconditionDisplay = event?.target.value || '';
+      const criteriaDisplay = event?.target.value || '';
       updatePathway(
-        setTransitionConditionDescription(
-          pathway,
-          currentNodeKey,
-          transition.id,
-          preconditionDisplay
-        )
+        setTransitionConditionDescription(pathway, currentNodeKey, transition.id, criteriaDisplay)
       );
     },
     [currentNodeKey, transition.id, updatePathway, pathway]
@@ -125,10 +120,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
 
       {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
-          buttonName="Use Precondition"
+          buttonName="Use Criteria"
           buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-          buttonText="Add previously built or imported precondition logic to branch node."
-          onClick={handleUsePrecondition}
+          buttonText="Add previously built or imported criteria logic to branch node."
+          onClick={handleUseCriteria}
         />
       )}
 

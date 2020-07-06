@@ -11,30 +11,30 @@ import {
   IconButton
 } from '@material-ui/core';
 
-import { usePreconditionContext } from 'components/PreconditionProvider';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import useStyles from './styles';
 
-interface ImportPreconditionModalProps {
+interface ImportCriteriaModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const ImportPreconditionModal: FC<ImportPreconditionModalProps> = ({ open, onClose }) => {
+const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
 
-  const { addPrecondition } = usePreconditionContext();
+  const { addCriteria } = useCriteriaContext();
 
   const selectFile = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const files = importFileRef?.current?.files;
-      if (files?.length) addPrecondition(files[0]);
+      if (files?.length) addCriteria(files[0]);
       onClose();
       setFileName('');
     },
-    [addPrecondition, onClose]
+    [addCriteria, onClose]
   );
 
   const handleChooseFile = useCallback(() => {
@@ -42,13 +42,7 @@ const ImportPreconditionModal: FC<ImportPreconditionModalProps> = ({ open, onClo
   }, [importFileRef]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="import-precondition"
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog open={open} onClose={onClose} aria-labelledby="import-criteria" fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
         <IconButton aria-label="close" onClick={onClose} className={styles.dialogCloseButton}>
           <FontAwesomeIcon icon={faTimes} />
@@ -99,4 +93,4 @@ const ImportPreconditionModal: FC<ImportPreconditionModalProps> = ({ open, onClo
   );
 };
 
-export default memo(ImportPreconditionModal);
+export default memo(ImportCriteriaModal);

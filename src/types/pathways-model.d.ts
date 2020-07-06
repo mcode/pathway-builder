@@ -45,9 +45,9 @@ declare module 'pathways-model' {
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
   export interface PathwayBranchNode extends PathwayNode {
-    preconditionSource?: string;
-    mcodePrecondition?: string;
-    otherPrecondition?: string;
+    criteriaSource?: string;
+    mcodeCriteria?: string;
+    otherCriteria?: string;
   }
   interface Action {
     id?: string;

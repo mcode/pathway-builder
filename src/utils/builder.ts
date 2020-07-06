@@ -184,7 +184,7 @@ function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
 function getElmStatement(elm: ElmLibrary): ElmStatement {
   const defaultStatementNames = [
     'Patient',
-    'MeetsInclusionPrecondition',
+    'MeetsInclusionCriteria',
     'InPopulation',
     'Recommendation',
     'Rationale',
@@ -194,7 +194,7 @@ function getElmStatement(elm: ElmLibrary): ElmStatement {
     def => !defaultStatementNames.includes(def.name)
   );
 
-  // elmStatement type is ElmStatement | undefined but precondition
+  // elmStatement type is ElmStatement | undefined but criteria
   // provider validates such a statement exists in the elm
   return elmStatement as ElmStatement;
 }
@@ -281,10 +281,10 @@ export function setNodeNodeType(pathway: Pathway, nodeKey: string, nodeType: str
   }
 }
 
-export function setNodePreconditionSource(
+export function setNodeCriteriaSource(
   pathway: Pathway,
   key: string,
-  preconditionSource: string
+  criteriaSource: string
 ): Pathway {
   return {
     ...pathway,
@@ -292,7 +292,7 @@ export function setNodePreconditionSource(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        preconditionSource
+        criteriaSource
       }
     }
   };
@@ -311,10 +311,10 @@ export function setNodeAction(pathway: Pathway, key: string, action: Action[]): 
   };
 }
 
-export function setNodeMcodePrecondition(
+export function setNodeMcodeCriteria(
   pathway: Pathway,
   key: string,
-  mcodePrecondition: string
+  mcodeCriteria: string
 ): Pathway {
   return {
     ...pathway,
@@ -322,16 +322,16 @@ export function setNodeMcodePrecondition(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        mcodePrecondition
+        mcodeCriteria
       }
     }
   };
 }
 
-export function setNodeOtherPrecondition(
+export function setNodeOtherCriteria(
   pathway: Pathway,
   key: string,
-  otherPrecondition: string
+  otherCriteria: string
 ): Pathway {
   return {
     ...pathway,
@@ -339,7 +339,7 @@ export function setNodeOtherPrecondition(
       ...pathway.nodes,
       [key]: {
         ...pathway.nodes[key],
-        otherPrecondition
+        otherCriteria
       }
     }
   };
@@ -369,13 +369,13 @@ export function setTransitionCondition(
   transitionId: string,
   description: string,
   elm: ElmLibrary,
-  preconditionLabel?: string
+  criteriaLabel?: string
 ): Pathway {
   const foundTransition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
-  const cql = preconditionLabel ? preconditionLabel : getElmStatement(elm).name;
+  const cql = criteriaLabel ? criteriaLabel : getElmStatement(elm).name;
 
   if (foundTransition)
     foundTransition.condition = {

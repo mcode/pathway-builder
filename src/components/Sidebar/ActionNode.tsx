@@ -346,7 +346,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
           <SidebarButton
             buttonName="Add Branch Node"
             buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-            buttonText="A logical branching point based on clinical or workflow precondition."
+            buttonText="A logical branching point based on clinical or workflow criteria."
             onClick={(): void => addNode('branch')}
           />
         </>
