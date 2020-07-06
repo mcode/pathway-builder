@@ -234,6 +234,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
                 <Node
                   key={nodeName}
                   nodeKey={nodeName}
+                  pathway={pathway}
                   ref={(node: HTMLDivElement): void => {
                     if (node) nodeRefs.current[nodeName] = node;
                     else delete nodeRefs.current[nodeName];
