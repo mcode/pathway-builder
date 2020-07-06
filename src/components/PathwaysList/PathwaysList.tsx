@@ -6,7 +6,7 @@ import { Button } from '@material-ui/core';
 import { usePathwayContext } from 'components/PathwayProvider';
 import Loading from 'components/elements/Loading';
 import PathwaysTable from './PathwaysTable';
-import NewPathwayModal from './NewPathwayModal';
+import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 
@@ -35,7 +35,7 @@ const PathwaysList: FC = () => {
         Create Pathway
       </Button>
 
-      <NewPathwayModal open={open} onClose={closeNewPathwayModal} />
+      <PathwayModal open={open} onClose={closeNewPathwayModal} />
       {status === 'loading' ? <Loading /> : <PathwaysTable />}
     </div>
   );

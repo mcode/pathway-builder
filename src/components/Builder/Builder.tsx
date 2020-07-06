@@ -12,11 +12,10 @@ import styles from './Builder.module.scss';
 
 interface BuilderProps {
   pathway: Pathway;
-  updatePathway: (pathway: Pathway) => void;
   currentNode: State;
 }
 
-const Builder: FC<BuilderProps> = ({ pathway, updatePathway, currentNode }) => {
+const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
@@ -37,12 +36,7 @@ const Builder: FC<BuilderProps> = ({ pathway, updatePathway, currentNode }) => {
 
       <div className={styles.display}>
         <MuiThemeProvider theme={theme}>
-          <Sidebar
-            pathway={pathway}
-            updatePathway={updatePathway}
-            headerElement={headerElement}
-            currentNode={currentNode}
-          />
+          <Sidebar pathway={pathway} headerElement={headerElement} currentNode={currentNode} />
         </MuiThemeProvider>
 
         <div ref={graphContainerElement} className={styles.graph}>

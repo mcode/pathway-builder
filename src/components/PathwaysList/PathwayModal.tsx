@@ -16,18 +16,21 @@ import shortid from 'shortid';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';
+import { Pathway } from 'pathways-model';
 
-interface NewPathwayModalProps {
+interface PathwayModalProps {
   open: boolean;
   onClose: () => void;
+  editPathway?: Pathway;
 }
 
-const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
+const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => {
+  const createNewPathwayMeta = !editPathway;
   const styles = useStyles();
   const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
-  const { addPathway } = usePathwayContext();
+  const { addPathway, updatePathway } = usePathwayContext();
 
   const closeModal = useCallback(
     (pathwayId: string): void => {
@@ -49,6 +52,26 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
     [addPathway, closeModal]
   );
 
+  const handleUpdatePathway = useCallback(
+    (event: FormEvent<HTMLFormElement>): void => {
+      event.preventDefault();
+      if (editPathway) {
+        if (pathwayNameRef.current?.value) editPathway.name = pathwayNameRef.current?.value;
+        editPathway.description = pathwayDescRef.current?.value;
+        updatePathway(editPathway);
+        onClose();
+      }
+    },
+    [updatePathway, editPathway, onClose]
+  );
+
+  let name, description;
+  if (editPathway) {
+    name = editPathway.name;
+    const metaDescription = editPathway.description;
+    if (metaDescription && metaDescription !== '') description = metaDescription;
+  }
+
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="create-pathway" fullWidth maxWidth="md">
       <DialogTitle disableTypography>
@@ -57,15 +80,16 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={handleCreateNewPathway}>
+      <form onSubmit={createNewPathwayMeta ? handleCreateNewPathway : handleUpdatePathway}>
         <DialogContent>
           <TextField
             variant="outlined"
             autoFocus
             label="Pathway Name"
             fullWidth
-            required
+            required={createNewPathwayMeta}
             inputRef={pathwayNameRef}
+            defaultValue={createNewPathwayMeta ? undefined : name}
           />
 
           <TextField
@@ -73,6 +97,8 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
             label="Pathway Description"
             fullWidth
             inputRef={pathwayDescRef}
+            defaultValue={createNewPathwayMeta ? undefined : description}
+            multiline
           />
         </DialogContent>
 
@@ -80,10 +106,10 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
           <Button
             variant="contained"
             color="primary"
-            startIcon={<FontAwesomeIcon icon={faPlus} />}
+            startIcon={createNewPathwayMeta && <FontAwesomeIcon icon={faPlus} />}
             type="submit"
           >
-            Create
+            {createNewPathwayMeta ? 'Create' : 'Save'}
           </Button>
         </DialogActions>
       </form>
@@ -91,4 +117,4 @@ const NewPathwayModal: FC<NewPathwayModalProps> = ({ open, onClose }) => {
   );
 };
 
-export default memo(NewPathwayModal);
+export default memo(PathwayModal);

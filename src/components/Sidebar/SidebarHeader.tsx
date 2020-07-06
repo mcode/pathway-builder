@@ -11,21 +11,17 @@ import { IconButton, FormControl, Input } from '@material-ui/core';
 
 import { Pathway, State } from 'pathways-model';
 import { setStateLabel } from 'utils/builder';
+import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 interface SidebarHeaderProps {
   pathway: Pathway;
   currentNode: State;
-  updatePathway: (pathway: Pathway) => void;
   isTransition: boolean;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({
-  pathway,
-  currentNode,
-  updatePathway,
-  isTransition
-}) => {
+const SidebarHeader: FC<SidebarHeaderProps> = ({ pathway, currentNode, isTransition }) => {
+  const { updatePathway } = usePathwayContext();
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const currentNodeKey = currentNode?.key;
