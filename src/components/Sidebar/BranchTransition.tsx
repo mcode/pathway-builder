@@ -163,7 +163,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       )}
 
       {buildCriteriaSelected && (
-        <OutlinedDiv label="Criteria Builder" error={criteriaName === ''}>
+        <OutlinedDiv label="Criteria Builder" error={true}>
           <TextField
             error={criteriaName === ''}
             label="Criteria Name"

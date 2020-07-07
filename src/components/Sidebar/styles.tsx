@@ -71,6 +71,20 @@ export default makeStyles(
     sidebarButtonText: {
       fontStyle: 'italic'
     },
+    outlinedDiv: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      '& div': {
+        width: '100%'
+      }
+    },
+    outlinedDivError: {
+      borderColor: `${theme.palette.error.main} !important`,
+      '&:hover': {
+        borderColor: `${theme.palette.error.main} !important`
+      }
+    },
     toggleSidebar: {
       display: 'inline-flex',
       alignItems: 'center',
