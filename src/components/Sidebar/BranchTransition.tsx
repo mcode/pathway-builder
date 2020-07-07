@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useState, useCallback, ChangeEvent, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
@@ -22,7 +22,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, transition }) => {
   const { updatePathway } = usePathwayContext();
-  const { criteria, toggleBuildCriteria } = useCriteriaContext();
+  const { criteria, buildCriteriaNodeId, updateBuildCriteriaNodeId } = useCriteriaContext();
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
@@ -95,15 +95,22 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   );
 
   const handleBuildCriteria = useCallback((): void => {
-    toggleBuildCriteria();
+    updateBuildCriteriaNodeId(transition.id ?? '');
     setBuildCriteriaSelected(!buildCriteriaSelected);
-  }, [buildCriteriaSelected, toggleBuildCriteria]);
+  }, [buildCriteriaSelected, updateBuildCriteriaNodeId, transition]);
 
   const handleBuildCriteriaCancel = useCallback((): void => {
-    toggleBuildCriteria();
-    setBuildCriteriaSelected(!buildCriteriaSelected);
+    if (buildCriteriaNodeId === transition.id) updateBuildCriteriaNodeId('');
+    setBuildCriteriaSelected(false);
     setCriteriaName('');
-  }, [toggleBuildCriteria, setCriteriaName, buildCriteriaSelected]);
+  }, [updateBuildCriteriaNodeId, setCriteriaName, buildCriteriaNodeId, transition]);
+
+  // Cancel current build criteria if clicked on another BranchTransition
+  useEffect(() => {
+    if (buildCriteriaNodeId !== '' && buildCriteriaNodeId !== transition.id) {
+      handleBuildCriteriaCancel();
+    }
+  }, [buildCriteriaNodeId, handleBuildCriteriaCancel, transition]);
 
   return (
     <>

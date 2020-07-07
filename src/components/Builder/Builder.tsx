@@ -21,7 +21,7 @@ interface BuilderProps {
 
 const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
   const styles = useStyles();
-  const { buildCriteria } = useCriteriaContext();
+  const { buildCriteriaNodeId } = useCriteriaContext();
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
@@ -38,6 +38,11 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
         window.innerHeight - headerElement.current.clientHeight + 'px';
   }, [pathway, headerElement, graphContainerElement]);
 
+  // Reset criteriaBuilderToggle to true if not currently building criteria
+  useEffect(() => {
+    if (!criteriaBuilderToggle && buildCriteriaNodeId === '') setCriteriaBuilderToggle(true);
+  }, [buildCriteriaNodeId, criteriaBuilderToggle]);
+
   return (
     <>
       <div ref={headerElement}>
@@ -52,7 +57,7 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
 
         <div ref={graphContainerElement} className={styles.graph}>
           <div className={styles.graphHeader}>
-            {buildCriteria && (
+            {buildCriteriaNodeId !== '' && (
               <>
                 <div className={styles.graphHeaderText}>
                   <span>Criteria Builder</span>
@@ -66,7 +71,7 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
               </>
             )}
           </div>
-          {buildCriteria && criteriaBuilderToggle ? (
+          {buildCriteriaNodeId !== '' && criteriaBuilderToggle ? (
             // Empty section for authoring tool
             <div />
           ) : (

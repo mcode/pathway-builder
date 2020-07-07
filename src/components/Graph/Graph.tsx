@@ -13,6 +13,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import { Pathway, State } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
@@ -212,6 +213,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
   }) => {
     const { id: pathwayId } = useParams();
     const history = useHistory();
+    const { updateBuildCriteriaNodeId } = useCriteriaContext();
     const redirectToNode = useCallback(
       nodeId => {
         const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
@@ -226,9 +228,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         if (interactive) {
           redirectToNode(nodeName);
           toggleExpanded(nodeName);
+          updateBuildCriteriaNodeId('');
         }
       },
-      [redirectToNode, toggleExpanded, interactive]
+      [redirectToNode, toggleExpanded, updateBuildCriteriaNodeId, interactive]
     );
     return (
       <div
