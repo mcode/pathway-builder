@@ -1,7 +1,6 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceState, State } from 'pathways-model';
+import { GuidanceState } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import MissingDataPopup from 'components/MissingDataPopup';
 import styles from './ExpandedNode.module.scss';
 import { isBranchState, resourceNameConversion } from 'utils/nodeUtils';
 
@@ -36,28 +35,6 @@ const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) =
     </tr>
   );
 };
-
-function renderBranch(pathwayState: State): ReactElement[] {
-  const returnElements: ReactElement[] = [];
-
-  const values: string[] = pathwayState.transitions
-    .map(transition => {
-      const description = transition.condition?.description;
-      return description ? description : '';
-    })
-    // Remove duplicate values
-    .filter((v, i, arr) => arr.indexOf(v) === i);
-
-  returnElements.push(
-    <ExpandedNodeField
-      key="value"
-      title="Value"
-      description={<MissingDataPopup values={values} />}
-    />
-  );
-
-  return returnElements;
-}
 
 function isMedicationRequest(
   request: MedicationRequest | ServiceRequest
@@ -111,7 +88,7 @@ interface ExpandedNodeMemoProps {
 }
 const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayState, isGuidance }) => {
   const guidance = isGuidance && renderGuidance(pathwayState);
-  const branch = isBranchState(pathwayState) && renderBranch(pathwayState);
+  const branch = isBranchState(pathwayState);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>
