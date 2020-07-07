@@ -16,7 +16,6 @@ import useStyles from './styles';
 
 interface BuilderProps {
   pathway: Pathway;
-  updatePathway: (pathway: Pathway) => void;
   currentNode: PathwayNode;
 }
 
