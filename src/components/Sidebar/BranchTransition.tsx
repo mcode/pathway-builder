@@ -22,7 +22,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, transition }) => {
   const { updatePathway } = usePathwayContext();
-  const { criteria } = useCriteriaContext();
+  const { criteria, buildCriteria, toggleBuildCriteria } = useCriteriaContext();
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
@@ -48,10 +48,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       setUseCriteriaSelected(!useCriteriaSelected);
     }
   }, [useCriteriaSelected, currentNodeKey, pathway, hasCriteria, transition.id, updatePathway]);
-
-  const handleBuildCriteria = useCallback((): void => {
-    setBuildCriteriaSelected(!buildCriteriaSelected);
-  }, [buildCriteriaSelected]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -99,9 +95,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   );
 
   const handleBuildCriteriaCancel = useCallback((): void => {
-    setBuildCriteriaSelected(false);
+    toggleBuildCriteria();
     setCriteriaName('');
-  }, [setBuildCriteriaSelected, setCriteriaName]);
+  }, [toggleBuildCriteria, setCriteriaName]);
 
   return (
     <>
@@ -156,11 +152,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
           buttonName="Build Criteria"
           buttonIcon={<FontAwesomeIcon icon={faTools} />}
           buttonText="Create new criteria logic to add to branch node."
-          onClick={handleBuildCriteria}
+          onClick={toggleBuildCriteria}
         />
       )}
 
-      {buildCriteriaSelected && (
+      {buildCriteria && (
         <OutlinedDiv label="Criteria Builder" error={criteriaName === ''}>
           <TextField
             error={criteriaName === ''}

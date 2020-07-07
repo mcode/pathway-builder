@@ -24,8 +24,10 @@ interface Criteria {
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
+  buildCriteria: boolean;
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
+  toggleBuildCriteria: () => void;
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -68,6 +70,7 @@ function jsonToCriteria(rawElm: string): Criteria | undefined {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
+  const [buildCriteria, setBuildCriteria] = useState<boolean>(false);
   const service = useGetService<Criteria>(config.get('demoCriteria'));
   const payload = (service as ServiceLoaded<Criteria[]>).payload;
 
@@ -98,8 +101,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
   }, []);
 
+  const toggleBuildCriteria = useCallback(() => {
+    setBuildCriteria(!buildCriteria);
+  }, [buildCriteria]);
+
   return (
-    <CriteriaContext.Provider value={{ criteria, addCriteria, deleteCriteria }}>
+    <CriteriaContext.Provider
+      value={{ criteria, buildCriteria, addCriteria, deleteCriteria, toggleBuildCriteria }}
+    >
       {children}
     </CriteriaContext.Provider>
   );

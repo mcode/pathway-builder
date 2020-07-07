@@ -1,6 +1,7 @@
 import React, { FC, useRef, useEffect, memo, useState, useCallback } from 'react';
 import { Pathway, State } from 'pathways-model';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
@@ -20,14 +21,15 @@ interface BuilderProps {
 
 const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
   const styles = useStyles();
+  const { buildCriteria } = useCriteriaContext();
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
-  const [toggle, setToggle] = useState<boolean>(false);
+  const [criteriaBuilderToggle, setCriteriaBuilderToggle] = useState<boolean>(true);
 
   const handleToggle = useCallback((): void => {
-    setToggle(!toggle);
-  }, [toggle]);
+    setCriteriaBuilderToggle(!criteriaBuilderToggle);
+  }, [criteriaBuilderToggle]);
 
   // Set the height of the graph container
   useEffect(() => {
@@ -50,14 +52,23 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
 
         <div ref={graphContainerElement} className={styles.graph}>
           <div className={styles.graphHeader}>
-            <div className={styles.graphHeaderText}>
-              <span>Criteria Builder</span>
-            </div>
-            <IconButton className={styles.toggleButton} onClick={handleToggle}>
-              <FontAwesomeIcon icon={toggle ? faToggleOn : faToggleOff} />
-            </IconButton>
+            {buildCriteria && (
+              <>
+                <div className={styles.graphHeaderText}>
+                  <span>Criteria Builder</span>
+                </div>
+                <IconButton className={styles.toggleButton} onClick={handleToggle}>
+                  <FontAwesomeIcon icon={criteriaBuilderToggle ? faToggleOn : faToggleOff} />
+                </IconButton>
+              </>
+            )}
           </div>
-          <Graph pathway={pathway} expandCurrentNode={true} currentNode={currentNode} />
+          {buildCriteria && criteriaBuilderToggle ? (
+            // Empty section for authoring tool
+            <div />
+          ) : (
+            <Graph pathway={pathway} expandCurrentNode={true} currentNode={currentNode} />
+          )}
         </div>
       </div>
     </>
