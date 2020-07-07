@@ -132,13 +132,27 @@ const Graph: FC<GraphProps> = memo(
 
     // Recalculate graph layout if graph container size changes
     useEffect(() => {
+      // Keeps track of whether the current useEffect cycle has ended
+      let cancel = false;
+
       if (graphElement.current?.parentElement) {
         new ResizeSensor(graphElement.current.parentElement, function() {
+          if (!cancel) {
+            setParentWidth(graphElement.current?.parentElement?.clientWidth ?? 0);
+            setLayout(getGraphLayout());
+          }
+        });
+        const { clientWidth } = graphElement.current.parentElement;
+        if (clientWidth && parentWidth !== clientWidth) {
           setParentWidth(graphElement.current?.parentElement?.clientWidth ?? 0);
           setLayout(getGraphLayout());
-        });
+        }
       }
-    }, [getGraphLayout]);
+
+      return (): void => {
+        cancel = true;
+      };
+    }, [getGraphLayout, parentWidth]);
 
     // Recalculate graph layout if a node is expanded
     useEffect(() => {

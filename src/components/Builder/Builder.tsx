@@ -11,7 +11,7 @@ import { useTheme } from 'components/ThemeProvider';
 
 import { IconButton } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToggleOff, faToggleOn } from '@fortawesome/free-solid-svg-icons';
+import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import useStyles from './styles';
 
 interface BuilderProps {
@@ -57,8 +57,11 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
                 <div className={styles.graphHeaderText}>
                   <span>Criteria Builder</span>
                 </div>
-                <IconButton className={styles.toggleButton} onClick={handleToggle}>
-                  <FontAwesomeIcon icon={criteriaBuilderToggle ? faToggleOn : faToggleOff} />
+                <IconButton
+                  className={`${styles.toggleButton}-${criteriaBuilderToggle ? 'on' : 'off'}`}
+                  onClick={handleToggle}
+                >
+                  <FontAwesomeIcon className={styles.toggleIcon} icon={faProjectDiagram} />
                 </IconButton>
               </>
             )}
