@@ -1,10 +1,11 @@
 import React, { FC, Ref, forwardRef, memo, useCallback, useState, useEffect } from 'react';
-import { GuidanceState, State } from 'pathways-model';
+import { GuidanceState, State, Pathway } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
 import { isGuidanceState, isBranchState } from 'utils/nodeUtils';
+import { getNodeType } from 'utils/builder';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faMicroscope,
@@ -19,6 +20,7 @@ import {
 interface NodeProps {
   nodeKey: string;
   pathwayState: State;
+  pathway: Pathway;
   xCoordinate: number;
   yCoordinate: number;
   expanded?: boolean;
@@ -29,7 +31,16 @@ interface NodeProps {
 const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
   forwardRef<HTMLDivElement, NodeProps>(
     (
-      { nodeKey, pathwayState, xCoordinate, yCoordinate, expanded = false, onClick, currentNode },
+      {
+        nodeKey,
+        pathwayState,
+        pathway,
+        xCoordinate,
+        yCoordinate,
+        expanded = false,
+        onClick,
+        currentNode
+      },
       ref
     ) => {
       const [hasMetadata, setHasMetadata] = useState<boolean>(
@@ -70,11 +81,12 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         expandedNodeClass = styles.childNotActionable;
       }
       const isGuidance = isGuidanceState(pathwayState);
+      const nodeType = getNodeType(pathway, nodeKey);
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
           <div className={`nodeTitle ${onClickHandler && 'clickable'}`} onClick={onClickHandler}>
             <div className="iconAndLabel">
-              <NodeIcon pathwayState={pathwayState} isGuidance={isGuidance} />
+              <NodeIcon pathwayState={pathwayState} nodeType={nodeType} />
               {label}
             </div>
             <StatusIcon status={null} />
@@ -96,13 +108,13 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
 
 interface NodeIconProps {
   pathwayState: State;
-  isGuidance: boolean;
+  nodeType: string;
 }
 
-const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
+const NodeIcon: FC<NodeIconProps> = ({ pathwayState, nodeType }) => {
   let icon: IconDefinition | undefined;
-  if (pathwayState.label === 'Start') icon = faPlay;
-  else if (isGuidance) {
+  if (pathwayState.key === 'Start') icon = faPlay;
+  else if (nodeType === 'action') {
     const guidancePathwayState = pathwayState as GuidanceState;
     if (guidancePathwayState.action.length > 0) {
       const resourceType = guidancePathwayState.action[0].resource.resourceType;
@@ -110,7 +122,7 @@ const NodeIcon: FC<NodeIconProps> = ({ pathwayState, isGuidance }) => {
       else if (resourceType === 'ServiceRequest') icon = faSyringe;
       else if (resourceType === 'CarePlan') icon = faBookMedical;
     }
-  } else {
+  } else if (nodeType === 'branch') {
     icon = faMicroscope;
   }
 

@@ -1,12 +1,17 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { TextField, Button } from '@material-ui/core';
+
 import DropDown from 'components/elements/DropDown';
-import { TextField } from '@material-ui/core';
-import { setTransitionCondition, setTransitionConditionDescription } from 'utils/builder';
-import { SidebarHeader, SidebarButton } from '.';
+import { SidebarHeader, SidebarButton, OutlinedDiv } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
+import {
+  setTransitionCondition,
+  setTransitionConditionDescription,
+  removeTransitionCondition
+} from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
@@ -24,10 +29,24 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const transitionKey = transition?.transition || '';
   const transitionNode = pathway.states[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
+  const criteriaDescription = transition.condition?.description;
+  const criteriaIsValid = criteriaDescription != null;
+  const criteriaDisplayIsValid = criteriaDescription && criteriaDescription !== '';
+  const hasCriteria = transition.condition?.cql || transition.condition?.description;
+  const buttonText = hasCriteria ? 'DELETE' : 'CANCEL';
+  const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
+  const displayCriteria =
+    useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
 
   const handleUseCriteria = useCallback((): void => {
-    setUseCriteriaSelected(!useCriteriaSelected);
-  }, [useCriteriaSelected]);
+    if (hasCriteria && transition.id) {
+      // delete the transition criteria
+      updatePathway(removeTransitionCondition(pathway, currentNodeKey, transition.id));
+      setUseCriteriaSelected(false);
+    } else {
+      setUseCriteriaSelected(!useCriteriaSelected);
+    }
+  }, [useCriteriaSelected, currentNodeKey, pathway, hasCriteria, transition.id, updatePathway]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -66,12 +85,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     },
     [currentNodeKey, transition.id, updatePathway, pathway]
   );
+
   return (
     <>
       <hr className={styles.divider} />
 
       <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
-      {!(useCriteriaSelected || transition.condition?.cql) && (
+
+      {!displayCriteria && (
         <SidebarButton
           buttonName="Use Criteria"
           buttonIcon={<FontAwesomeIcon icon={faPlus} />}
@@ -80,30 +101,46 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
         />
       )}
 
-      {(useCriteriaSelected || transition.condition?.cql) && (
-        <>
-          <DropDown
-            id="Criteria"
-            label="Criteria"
-            options={criteriaOptions}
-            onChange={selectCriteriaSource}
-            value={transition.condition?.cql || undefined}
-          />
-          <TextField
-            label="Criteria Display"
-            value={transition.condition?.description || ''}
+      {displayCriteria && (
+        <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
+          <>
+            <DropDown
+              id="Criteria"
+              label="Criteria"
+              options={criteriaOptions}
+              onChange={selectCriteriaSource}
+              value={transition.condition?.cql || undefined}
+            />
+
+            <TextField
+              label="Criteria Display"
+              value={transition.condition?.description || ''}
+              variant="outlined"
+              onChange={setCriteriaDisplay}
+              error={!criteriaDisplayIsValid}
+            />
+          </>
+
+          <Button
+            className={styles.cancelButton}
+            color="inherit"
+            size="small"
             variant="outlined"
-            onChange={setCriteriaDisplay}
-            error={!transition.condition?.description}
-          />
-        </>
+            startIcon={icon}
+            onClick={handleUseCriteria}
+          >
+            {buttonText}
+          </Button>
+        </OutlinedDiv>
       )}
 
-      <SidebarButton
-        buttonName="Build Criteria"
-        buttonIcon={<FontAwesomeIcon icon={faTools} />}
-        buttonText="Create new criteria logic to add to branch node."
-      />
+      {!displayCriteria && (
+        <SidebarButton
+          buttonName="Build Criteria"
+          buttonIcon={<FontAwesomeIcon icon={faTools} />}
+          buttonText="Create new criteria logic to add to branch node."
+        />
+      )}
     </>
   );
 };

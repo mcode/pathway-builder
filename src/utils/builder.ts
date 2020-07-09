@@ -711,11 +711,21 @@ export function removeTransitionCondition(
   pathway: Pathway,
   stateKey: string,
   transitionId: string
-): void {
+): Pathway {
   const transition = pathway.states[stateKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
   if (transition) delete transition.condition;
+
+  return {
+    ...pathway,
+    states: {
+      ...pathway.states,
+      [stateKey]: {
+        ...pathway.states[stateKey]
+      }
+    }
+  };
 }
 
 export function removeTransition(pathway: Pathway, stateKey: string, transitionId: string): void {

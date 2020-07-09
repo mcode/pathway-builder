@@ -9,7 +9,7 @@ const testState = {
 };
 
 describe('<Node />', () => {
-  it('renders a node with text, icon, and correct styles', () => {
+  it('renders a node with text, no icon, and correct styles', () => {
     const { container, getByText, getByRole } = render(
       <Node
         pathwayState={testState}
@@ -20,7 +20,10 @@ describe('<Node />', () => {
     );
 
     expect(getByText(testState.label)).toBeVisible();
-    expect(getByRole('img', { hidden: true })).toBeVisible();
+    // The created node does not have a type therefore no icon will be displayed
+    expect(() => {
+      getByRole('img', { hidden: true });
+    }).toThrowError();
 
     expect(container.firstChild).toHaveClass('node');
     expect(container.firstChild).toHaveStyle(`top: 0px`);
