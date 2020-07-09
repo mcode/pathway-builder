@@ -178,7 +178,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
             onChange={handleCriteriaName}
             fullWidth
           />
-          <div>
+          <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
               label={<Box fontStyle="italic">Add to reusable criteria</Box>}
               control={<Checkbox color="default" />}

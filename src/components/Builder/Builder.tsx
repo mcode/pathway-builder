@@ -25,11 +25,11 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
   const headerElement = useRef<HTMLDivElement>(null);
   const graphContainerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
-  const [criteriaBuilderToggle, setCriteriaBuilderToggle] = useState<boolean>(true);
+  const [showCriteriaBuilder, setShowCriteriaBuilder] = useState<boolean>(true);
 
-  const handleToggle = useCallback((): void => {
-    setCriteriaBuilderToggle(!criteriaBuilderToggle);
-  }, [criteriaBuilderToggle]);
+  const toggleShowCriteria = useCallback((): void => {
+    setShowCriteriaBuilder(!showCriteriaBuilder);
+  }, [showCriteriaBuilder]);
 
   // Set the height of the graph container
   useEffect(() => {
@@ -40,8 +40,8 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
 
   // Reset criteriaBuilderToggle to true if not currently building criteria
   useEffect(() => {
-    if (!criteriaBuilderToggle && buildCriteriaNodeId === '') setCriteriaBuilderToggle(true);
-  }, [buildCriteriaNodeId, criteriaBuilderToggle]);
+    if (!showCriteriaBuilder && buildCriteriaNodeId === '') setShowCriteriaBuilder(true);
+  }, [buildCriteriaNodeId, showCriteriaBuilder]);
 
   return (
     <>
@@ -56,22 +56,20 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
         </MuiThemeProvider>
 
         <div ref={graphContainerElement} className={styles.graph}>
-          <div className={styles.graphHeader}>
-            {buildCriteriaNodeId !== '' && (
-              <>
-                <div className={styles.graphHeaderText}>
-                  <span>Criteria Builder</span>
-                </div>
-                <IconButton
-                  className={`${styles.toggleButton}-${criteriaBuilderToggle ? 'on' : 'off'}`}
-                  onClick={handleToggle}
-                >
-                  <FontAwesomeIcon className={styles.toggleIcon} icon={faProjectDiagram} />
-                </IconButton>
-              </>
-            )}
-          </div>
-          {buildCriteriaNodeId !== '' && criteriaBuilderToggle ? (
+          {buildCriteriaNodeId !== '' && (
+            <div className={styles.graphHeader}>
+              <div className={styles.graphHeaderText}>
+                <span>Criteria Builder</span>
+              </div>
+              <IconButton
+                className={`${styles.toggleButton}-${showCriteriaBuilder ? 'on' : 'off'}`}
+                onClick={toggleShowCriteria}
+              >
+                <FontAwesomeIcon className={styles.toggleIcon} icon={faProjectDiagram} />
+              </IconButton>
+            </div>
+          )}
+          {buildCriteriaNodeId !== '' && showCriteriaBuilder ? (
             // Empty section for authoring tool
             <div />
           ) : (

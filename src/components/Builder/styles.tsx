@@ -3,7 +3,7 @@ import { makeStyles, Theme as AugmentedTheme, darken } from '@material-ui/core/s
 const toggleButtonCss = {
   borderRadius: '0%',
   marginLeft: '1px',
-  width: '6%',
+  width: '50px',
   height: '50px'
 };
 
@@ -26,7 +26,7 @@ export default makeStyles(
     graphHeaderText: {
       height: '50px',
       display: 'flex',
-      width: '95%',
+      width: '100%',
       backgroundColor: theme.palette.primary.main,
       alignItems: 'center',
       color: theme.palette.common.white,

@@ -120,6 +120,10 @@ export default makeStyles(
         borderColor: `${theme.palette.error.main} !important`
       }
     },
+    buildCriteriaContainer: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
     saveButton: {
       marginLeft: '1em'
     }
