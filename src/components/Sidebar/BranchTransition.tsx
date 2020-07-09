@@ -1,17 +1,16 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useState, useCallback, ChangeEvent, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { TextField, Button } from '@material-ui/core';
-
+import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { SidebarHeader, SidebarButton, OutlinedDiv } from '.';
+import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
+import {
+  removeTransitionCondition,
+  setTransitionCondition,
+  setTransitionConditionDescription
+} from 'utils/builder';
+import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
 import { Pathway, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import {
-  setTransitionCondition,
-  setTransitionConditionDescription,
-  removeTransitionCondition
-} from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
@@ -23,7 +22,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, transition }) => {
   const { updatePathway } = usePathwayContext();
-  const { criteria } = useCriteriaContext();
+  const { criteria, buildCriteriaNodeId, updateBuildCriteriaNodeId } = useCriteriaContext();
   const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
@@ -37,6 +36,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
   const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
   const displayCriteria =
     useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
+  const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
+  const [criteriaName, setCriteriaName] = useState<string>('');
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && transition.id) {
@@ -86,13 +87,38 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     [currentNodeKey, transition.id, updatePathway, pathway]
   );
 
+  const handleCriteriaName = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setCriteriaName(event?.target.value || '');
+    },
+    [setCriteriaName]
+  );
+
+  const handleBuildCriteria = useCallback((): void => {
+    updateBuildCriteriaNodeId(transition.id ?? '');
+    setBuildCriteriaSelected(!buildCriteriaSelected);
+  }, [buildCriteriaSelected, updateBuildCriteriaNodeId, transition]);
+
+  const handleBuildCriteriaCancel = useCallback((): void => {
+    if (buildCriteriaNodeId === transition.id) updateBuildCriteriaNodeId('');
+    setBuildCriteriaSelected(false);
+    setCriteriaName('');
+  }, [updateBuildCriteriaNodeId, setCriteriaName, buildCriteriaNodeId, transition]);
+
+  // Cancel current build criteria if clicked on another BranchTransition
+  useEffect(() => {
+    if (buildCriteriaNodeId !== '' && buildCriteriaNodeId !== transition.id) {
+      handleBuildCriteriaCancel();
+    }
+  }, [buildCriteriaNodeId, handleBuildCriteriaCancel, transition]);
+
   return (
     <>
       <hr className={styles.divider} />
 
       <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
 
-      {!displayCriteria && (
+      {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Use Criteria"
           buttonIcon={<FontAwesomeIcon icon={faPlus} />}
@@ -134,14 +160,52 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
         </OutlinedDiv>
       )}
 
-      {!displayCriteria && (
+      {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Build Criteria"
           buttonIcon={<FontAwesomeIcon icon={faTools} />}
           buttonText="Create new criteria logic to add to branch node."
+          onClick={handleBuildCriteria}
         />
+      )}
+
+      {buildCriteriaSelected && (
+        <OutlinedDiv label="Criteria Builder" error={true}>
+          <TextField
+            error={criteriaName === ''}
+            label="Criteria Name"
+            variant="outlined"
+            onChange={handleCriteriaName}
+            fullWidth
+          />
+          <div className={styles.buildCriteriaContainer}>
+            <FormControlLabel
+              label={<Box fontStyle="italic">Add to reusable criteria</Box>}
+              control={<Checkbox color="default" />}
+            />
+            <Button
+              color="inherit"
+              size="large"
+              variant="outlined"
+              onClick={handleBuildCriteriaCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              className={styles.saveButton}
+              color="inherit"
+              size="large"
+              variant="outlined"
+              startIcon={<FontAwesomeIcon icon={faSave} />}
+              disabled
+            >
+              Save
+            </Button>
+          </div>
+        </OutlinedDiv>
       )}
     </>
   );
 };
+
 export default memo(BranchTransition);

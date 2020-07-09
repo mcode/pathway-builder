@@ -6,6 +6,7 @@ import { IconButton, Menu, MenuItem } from '@material-ui/core';
 
 import { Pathway } from 'pathways-model';
 import { downloadPathway } from 'utils/builder';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import useStyles from './styles';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const Navigation: FC<Props> = ({ pathway }) => {
+  const { updateBuildCriteriaNodeId } = useCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const styles = useStyles();
   const history = useHistory();
@@ -26,8 +28,9 @@ const Navigation: FC<Props> = ({ pathway }) => {
   }, []);
 
   const handleGoBack = useCallback((): void => {
+    updateBuildCriteriaNodeId('');
     history.push('/');
-  }, [history]);
+  }, [history, updateBuildCriteriaNodeId]);
 
   return (
     <nav className={styles.root}>

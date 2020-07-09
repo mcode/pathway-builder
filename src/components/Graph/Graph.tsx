@@ -13,6 +13,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 import { Pathway, State } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
@@ -132,13 +133,27 @@ const Graph: FC<GraphProps> = memo(
 
     // Recalculate graph layout if graph container size changes
     useEffect(() => {
+      // Keeps track of whether the current useEffect cycle has ended
+      let cancel = false;
+
       if (graphElement.current?.parentElement) {
         new ResizeSensor(graphElement.current.parentElement, function() {
+          if (!cancel) {
+            setParentWidth(graphElement.current?.parentElement?.clientWidth ?? 0);
+            setLayout(getGraphLayout());
+          }
+        });
+        const { clientWidth } = graphElement.current.parentElement;
+        if (clientWidth && parentWidth !== clientWidth) {
           setParentWidth(graphElement.current?.parentElement?.clientWidth ?? 0);
           setLayout(getGraphLayout());
-        });
+        }
       }
-    }, [getGraphLayout]);
+
+      return (): void => {
+        cancel = true;
+      };
+    }, [getGraphLayout, parentWidth]);
 
     // Recalculate graph layout if a node is expanded
     useEffect(() => {
@@ -198,6 +213,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(
   }) => {
     const { id: pathwayId } = useParams();
     const history = useHistory();
+    const { updateBuildCriteriaNodeId } = useCriteriaContext();
     const redirectToNode = useCallback(
       nodeId => {
         const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
@@ -212,9 +228,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         if (interactive) {
           redirectToNode(nodeName);
           toggleExpanded(nodeName);
+          updateBuildCriteriaNodeId('');
         }
       },
-      [redirectToNode, toggleExpanded, interactive]
+      [redirectToNode, toggleExpanded, updateBuildCriteriaNodeId, interactive]
     );
     return (
       <div

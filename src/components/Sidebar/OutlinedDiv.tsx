@@ -34,9 +34,7 @@ const OutlinedDiv: FC<OutlinedDivProps> = ({ children, label, error }) => {
           notchedOutline: clsx(error && styles.outlinedDivError)
         }
       }}
-      inputProps={{
-        children: children
-      }}
+      inputProps={{ children }}
     />
   );
 };

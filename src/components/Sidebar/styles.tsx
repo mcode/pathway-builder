@@ -71,6 +71,20 @@ export default makeStyles(
     sidebarButtonText: {
       fontStyle: 'italic'
     },
+    outlinedDiv: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      '& div': {
+        width: '100%'
+      }
+    },
+    outlinedDivError: {
+      borderColor: `${theme.palette.error.main} !important`,
+      '&:hover': {
+        borderColor: `${theme.palette.error.main} !important`
+      }
+    },
     toggleSidebar: {
       display: 'inline-flex',
       alignItems: 'center',
@@ -92,19 +106,12 @@ export default makeStyles(
       padding: '5px 15px',
       fontSize: '1em'
     },
-    outlinedDiv: {
+    buildCriteriaContainer: {
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      '& div': {
-        width: '100%'
-      }
+      justifyContent: 'space-between'
     },
-    outlinedDivError: {
-      borderColor: `${theme.palette.error.main} !important`,
-      '&:hover': {
-        borderColor: `${theme.palette.error.main} !important`
-      }
+    saveButton: {
+      marginLeft: '1em'
     }
   }),
   { name: 'Sidebar' }
