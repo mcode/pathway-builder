@@ -113,8 +113,9 @@ interface NodeIconProps {
 
 const NodeIcon: FC<NodeIconProps> = ({ pathwayNode, nodeType }) => {
   let icon: IconDefinition | undefined;
-  if (pathwayNode.label === 'Start') icon = faPlay;
-  else if (nodeType === 'action') {
+  if (pathwayNode.label === 'Start') {
+    icon = faPlay;
+  } else if (nodeType === 'action') {
     const actionNode = pathwayNode as ActionNode;
     if (actionNode.action.length > 0) {
       const resourceType = actionNode.action[0].resource.resourceType;

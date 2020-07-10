@@ -4,7 +4,7 @@ import Node from '../Node';
 import { createNode } from 'utils/builder';
 
 const testNode = {
-  label: 'Start',
+  label: 'NotStart',
   transitions: []
 };
 
