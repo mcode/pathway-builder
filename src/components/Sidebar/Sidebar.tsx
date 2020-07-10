@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { PathwayNode, PathwayActionNode, PathwayBranchNode, Pathway } from 'pathways-model';
+import { SidebarHeader, BranchNodeEditor, ActionNodeEditor, NullNode } from '.';
+import { PathwayNode, ActionNode, BranchNode, Pathway } from 'pathways-model';
 import { setNodeNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
@@ -12,7 +12,7 @@ import useStyles from './styles';
 interface SidebarProps {
   pathway: Pathway;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: PathwayActionNode | PathwayBranchNode | PathwayNode;
+  currentNode: ActionNode | BranchNode | PathwayNode;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
@@ -84,16 +84,16 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
           )}
 
           {nodeType === 'action' && (
-            <ActionNode
+            <ActionNodeEditor
               pathway={pathway}
-              currentNode={currentNode as PathwayActionNode}
+              currentNode={currentNode as ActionNode}
               changeNodeType={changeNodeType}
               addNode={addPathwayNode}
             />
           )}
 
           {nodeType === 'branch' && (
-            <BranchNode
+            <BranchNodeEditor
               pathway={pathway}
               currentNode={currentNode}
               changeNodeType={changeNodeType}

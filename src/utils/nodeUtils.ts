@@ -1,12 +1,12 @@
-import { PathwayNode, PathwayActionNode } from 'pathways-model';
+import { PathwayNode, ActionNode } from 'pathways-model';
 
-export function isActionNode(node: PathwayNode): node is PathwayActionNode {
-  const { action } = node as PathwayActionNode;
+export function isActionNode(node: PathwayNode): node is ActionNode {
+  const { action } = node as ActionNode;
   return action !== undefined;
 }
 
 export function isBranchNode(node: PathwayNode): boolean {
-  const { action, label } = node as PathwayActionNode;
+  const { action, label } = node as ActionNode;
   return action === undefined && label !== 'Start';
 }
 

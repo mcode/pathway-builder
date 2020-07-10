@@ -1,11 +1,4 @@
-import {
-  Pathway,
-  Precondition,
-  PathwayNode,
-  Transition,
-  Action,
-  PathwayActionNode
-} from 'pathways-model';
+import { Pathway, Precondition, PathwayNode, Transition, Action, ActionNode } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
@@ -16,7 +9,7 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
     name: name,
     description: description ?? '',
     library: '',
-    precondition: [],
+    preconditions: [],
     nodes: {
       Start: {
         key: 'Start',
@@ -96,7 +89,7 @@ export function exportPathway(pathway: Pathway): string {
   const pathwayToExport: Pathway = {
     ...pathway,
     // Strip id from each precondition
-    precondition: pathway.precondition.map((precondition: Precondition) => ({
+    preconditions: pathway.preconditions.map((precondition: Precondition) => ({
       ...precondition,
       id: undefined
     })),
@@ -134,9 +127,9 @@ export function exportPathway(pathway: Pathway): string {
       }),
       // Strip id from each node.action
       action:
-        (node as PathwayActionNode).action == null
+        (node as ActionNode).action == null
           ? undefined
-          : (node as PathwayActionNode).action.map((action: Action) => ({
+          : (node as ActionNode).action.map((action: Action) => ({
               ...action,
               id: undefined
             }))
@@ -213,7 +206,7 @@ export function addPrecondition(
     expected: expected,
     cql: cql
   };
-  pathway.precondition.push(precondition);
+  pathway.preconditions.push(precondition);
 
   return id;
 }
@@ -225,7 +218,7 @@ export function setNavigationalElm(pathway: Pathway, elm: object): void {
 
 export function setPreconditionElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
-  pathway.elm.precondition = elm;
+  pathway.elm.preconditions = elm;
 }
 
 export function createNode(key?: string): PathwayNode {
@@ -424,7 +417,7 @@ export function addAction(
     description: description,
     resource: resource
   };
-  (pathway.nodes[key] as PathwayActionNode).action.push(action);
+  (pathway.nodes[key] as ActionNode).action.push(action);
   return id;
 }
 
@@ -435,7 +428,7 @@ export function getNodeType(pathway: Pathway, key: string | undefined): string {
   const node = pathway.nodes[key];
   if (node.nodeTypeIsUndefined) {
     return 'null';
-  } else if (!(node as PathwayActionNode).action && key !== 'Start') {
+  } else if (!(node as ActionNode).action && key !== 'Start') {
     return 'branch';
   } else {
     return 'action';
@@ -521,8 +514,8 @@ export function setActionType(
   actionId: string,
   type: string
 ): void {
-  if ((pathway.nodes[nodeKey] as PathwayActionNode).action) {
-    const action = (pathway.nodes[nodeKey] as PathwayActionNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.type = type;
@@ -535,7 +528,7 @@ export function setActionDescription(
   actionId: string,
   description: string
 ): void {
-  const node = (pathway.nodes[nodeKey] as PathwayActionNode).action;
+  const node = (pathway.nodes[nodeKey] as ActionNode).action;
 
   if (node) {
     const action = node.find((action: Action) => action.id === actionId);
@@ -551,8 +544,8 @@ export function setActionResource(
   actionId: string,
   resource: MedicationRequest | ServiceRequest
 ): void {
-  if ((pathway.nodes[nodeKey] as PathwayActionNode).action) {
-    const action = (pathway.nodes[nodeKey] as PathwayActionNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.resource = resource;
@@ -565,8 +558,8 @@ export function setActionResourceDisplay(
   actionId: string,
   display: string
 ): void {
-  if ((pathway.nodes[nodeKey] as PathwayActionNode).action) {
-    const action = (pathway.nodes[nodeKey] as PathwayActionNode).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     const resource = action?.resource;
@@ -581,7 +574,7 @@ export function setActionResourceDisplay(
 }
 
 export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
-  const node = pathway.nodes[nodeKey] as PathwayActionNode;
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
   if (node.cql !== undefined && node.action !== undefined) {
     return pathway;
@@ -602,7 +595,7 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
 }
 
 export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
-  const node = pathway.nodes[nodeKey] as PathwayActionNode;
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
   if (
     node.cql === undefined &&
@@ -689,10 +682,10 @@ export function removePathwayDescription(pathway: Pathway): void {
 }
 
 export function removePrecondition(pathway: Pathway, id: string): void {
-  const precondition = pathway.precondition.filter(
+  const preconditions = pathway.preconditions.filter(
     (precondition: Precondition) => precondition.id !== id
   );
-  pathway.precondition = precondition;
+  pathway.preconditions = preconditions;
 }
 
 export function removeNavigationalElm(pathway: Pathway): void {
@@ -700,7 +693,7 @@ export function removeNavigationalElm(pathway: Pathway): void {
 }
 
 export function removePreconditionElm(pathway: Pathway): void {
-  delete pathway.elm?.precondition;
+  delete pathway.elm?.preconditions;
 }
 
 export function removeNode(pathway: Pathway, key: string): void {
@@ -743,10 +736,10 @@ export function removeTransition(pathway: Pathway, nodeKey: string, transitionId
 }
 
 export function removeAction(pathway: Pathway, nodeKey: string, actionId: string): void {
-  if ((pathway.nodes[nodeKey] as PathwayActionNode).action) {
-    const actions = (pathway.nodes[nodeKey] as PathwayActionNode).action.filter(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const actions = (pathway.nodes[nodeKey] as ActionNode).action.filter(
       (action: Action) => action.id !== actionId
     );
-    (pathway.nodes[nodeKey] as PathwayActionNode).action = actions;
+    (pathway.nodes[nodeKey] as ActionNode).action = actions;
   }
 }

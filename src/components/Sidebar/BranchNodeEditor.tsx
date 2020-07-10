@@ -15,13 +15,13 @@ const nodeTypeOptions = [
   { value: 'branch', label: 'Branch' }
 ];
 
-interface BranchNodeProps {
+interface BranchNodeEditorProps {
   pathway: Pathway;
   currentNode: PathwayNode;
   changeNodeType: (event: string) => void;
 }
 
-const BranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, changeNodeType }) => {
+const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ pathway, currentNode, changeNodeType }) => {
   const { updatePathway } = usePathwayContext();
   const currentNodeKey = currentNode?.key;
   const styles = useStyles();
@@ -72,4 +72,4 @@ const BranchNode: FC<BranchNodeProps> = ({ pathway, currentNode, changeNodeType 
   );
 };
 
-export default memo(BranchNode);
+export default memo(BranchNodeEditor);

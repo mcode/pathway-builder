@@ -7,9 +7,9 @@ declare module 'pathways-model' {
     name: string;
     description?: string;
     library: string;
-    precondition: Precondition[];
+    preconditions: Precondition[];
     nodes: {
-      [key: string]: PathwayActionNode | PathwayBranchNode | PathwayNode;
+      [key: string]: ActionNode | BranchNode | PathwayNode;
     };
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
@@ -17,7 +17,7 @@ declare module 'pathways-model' {
 
   export interface PathwayELM {
     navigational?: object;
-    precondition?: object;
+    preconditions?: object;
   }
 
   export interface Precondition {
@@ -34,7 +34,7 @@ declare module 'pathways-model' {
     nodeTypeIsUndefined?: boolean;
   }
 
-  export interface PathwayActionNode extends PathwayNode {
+  export interface ActionNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
     action: Action[];
@@ -44,7 +44,7 @@ declare module 'pathways-model' {
   // but as of right now it has no additional fields not in PathwayNode,
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
-  export interface PathwayBranchNode extends PathwayNode {
+  export interface BranchNode extends PathwayNode {
     criteriaSource?: string;
     mcodeCriteria?: string;
     otherCriteria?: string;

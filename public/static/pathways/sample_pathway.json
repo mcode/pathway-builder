@@ -3,7 +3,7 @@
   "name": "Sample Pathway for Testing",
   "description": "This is a bare bones pathway which can be used instead of creating a new pathway to test features. It represents a pathway directly after creating a new one.",
   "library": "",
-  "precondition": [],
+  "preconditions": [],
   "nodes": {
     "Start": {
       "key": "Start",

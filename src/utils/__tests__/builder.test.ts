@@ -13,7 +13,7 @@ describe('builder interface add functions', () => {
       name: 'name',
       description: 'description',
       library: '',
-      precondition: [],
+      preconditions: [],
       nodes: {
         Start: {
           key: 'Start',
@@ -30,7 +30,7 @@ describe('builder interface add functions', () => {
     const exportedPathwayJson: Pathway = JSON.parse(exportedPathway);
 
     // Check the id for precondition has been stripped
-    exportedPathwayJson.precondition.forEach((precondition: Precondition) =>
+    exportedPathwayJson.preconditions.forEach((precondition: Precondition) =>
       expect('id' in precondition).toBeFalsy()
     );
 
@@ -203,9 +203,9 @@ describe('builder interface add functions', () => {
     });
   });
 
-  it('add precondition', () => {
+  it('add preconditions', () => {
     const id = Builder.addPrecondition(pathway, 'test element name', 'test expected', 'test cql');
-    const precondition = pathway.precondition[pathway.precondition.length - 1];
+    const precondition = pathway.preconditions[pathway.preconditions.length - 1];
     const expectedPrecondition = {
       id: id,
       elementName: 'test element name',
@@ -349,7 +349,7 @@ describe('builder interface update functions', () => {
   it('set precondition elm', () => {
     const elm = {};
     Builder.setPreconditionElm(pathway, elm);
-    expect(pathway.elm?.precondition).toEqual(elm);
+    expect(pathway.elm?.preconditions).toEqual(elm);
   });
 
   it('set transition', () => {
@@ -515,10 +515,10 @@ describe('builder interface remove functions', () => {
     expect('description' in pathway).toBeFalsy();
   });
 
-  it('remove precondition', () => {
+  it('remove preconditions', () => {
     const id = '1';
     Builder.removePrecondition(pathway, id);
-    expect(pathway.precondition.length).toBe(0);
+    expect(pathway.preconditions.length).toBe(0);
   });
 
   it('remove navigational elm', () => {
@@ -527,9 +527,9 @@ describe('builder interface remove functions', () => {
     else fail();
   });
 
-  it('remove precondition elm', () => {
+  it('remove preconditions elm', () => {
     Builder.removePreconditionElm(pathway);
-    if (pathway.elm) expect('precondition' in pathway.elm).toBeFalsy();
+    if (pathway.elm) expect('preconditions' in pathway.elm).toBeFalsy();
     else fail();
   });
 

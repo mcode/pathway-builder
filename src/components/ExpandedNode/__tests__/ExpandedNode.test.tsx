@@ -1,14 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import ExpandedNode from 'components/ExpandedNode';
-import {
-  PathwayActionNode,
-  BasicActionResource,
-  BasicMedicationRequestResource
-} from 'pathways-model';
+import { ActionNode, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
 import { resourceNameConversion } from 'utils/nodeUtils';
 
-const testActionNode: PathwayActionNode = {
+const testActionNode: ActionNode = {
   label: 'Chemotherapy',
   action: [
     {
@@ -33,7 +29,7 @@ const testActionNode: PathwayActionNode = {
   transitions: []
 };
 
-const testMedicationRequestNode: PathwayActionNode = {
+const testMedicationRequestNode: ActionNode = {
   label: 'ChemoMedication Request',
   action: [
     {

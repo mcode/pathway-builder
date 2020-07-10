@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { setNodeAction, createCQL, setActionDescription, setActionNodeElm } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { Pathway, PathwayActionNode, Action } from 'pathways-model';
+import { Pathway, ActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
@@ -32,14 +32,19 @@ const codeSystemOptions = [
   { label: 'SNOMED', value: 'http://snomed.info/sct' }
 ];
 
-interface ActionNodeProps {
+interface ActionNodeEditorProps {
   pathway: Pathway;
-  currentNode: PathwayActionNode;
+  currentNode: ActionNode;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
 }
 
-const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType, addNode }) => {
+const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
+  pathway,
+  currentNode,
+  changeNodeType,
+  addNode
+}) => {
   const { updatePathway } = usePathwayContext();
   const styles = useStyles();
   const selectNodeType = useCallback(
@@ -355,4 +360,4 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
   );
 };
 
-export default memo(ActionNode);
+export default memo(ActionNodeEditor);
