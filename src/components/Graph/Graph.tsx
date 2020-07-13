@@ -14,7 +14,7 @@ import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import { Pathway, State } from 'pathways-model';
+import { Pathway, PathwayNode } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
@@ -23,10 +23,10 @@ interface GraphProps {
   pathway: Pathway;
   interactive?: boolean;
   expandCurrentNode?: boolean;
-  currentNode: State;
+  currentNode: PathwayNode;
 }
 
-interface ExpandedState {
+interface ExpandedNode {
   [key: string]: boolean | string | null;
 }
 
@@ -103,29 +103,27 @@ const Graph: FC<GraphProps> = memo(
         : 0;
     }, [nodeCoordinates, parentWidth]);
 
-    const [expanded, setExpanded] = useState<ExpandedState>(() =>
+    const [expanded, setExpanded] = useState<ExpandedNode>(() =>
       Object.keys(layout).reduce(
         (acc, curr: string) => {
           acc[curr] = false;
           return acc;
         },
-        { lastSelectedNode: null } as ExpandedState
+        { lastSelectedNode: null } as ExpandedNode
       )
     );
 
     const toggleExpanded = useCallback((key: string) => {
       if (key === 'Start') {
-        setExpanded(prevState => ({
-          ...prevState,
+        setExpanded(prevNode => ({
+          ...prevNode,
           lastSelectedNode: key
         }));
       } else {
-        setExpanded(prevState => ({
-          ...prevState,
+        setExpanded(prevNode => ({
+          ...prevNode,
           [key]:
-            !prevState[key] || prevState.lastSelectedNode === key
-              ? !prevState[key]
-              : prevState[key],
+            !prevNode[key] || prevNode.lastSelectedNode === key ? !prevNode[key] : prevNode[key],
           lastSelectedNode: key
         }));
       }
@@ -191,9 +189,9 @@ interface GraphMemoProps {
   }>;
   parentWidth: number;
   maxWidth: number;
-  expanded: ExpandedState;
+  expanded: ExpandedNode;
   toggleExpanded: (key: string) => void;
-  currentNode: State;
+  currentNode: PathwayNode;
 }
 
 const GraphMemo: FC<GraphMemoProps> = memo(
@@ -224,10 +222,10 @@ const GraphMemo: FC<GraphMemoProps> = memo(
       [history, pathwayId]
     );
     const onClickHandler = useCallback(
-      (nodeName: string) => {
+      (nodeKey: string) => {
         if (interactive) {
-          redirectToNode(nodeName);
-          toggleExpanded(nodeName);
+          redirectToNode(nodeKey);
+          toggleExpanded(nodeKey);
           updateBuildCriteriaNodeId('');
         }
       },
@@ -246,20 +244,20 @@ const GraphMemo: FC<GraphMemoProps> = memo(
         }}
       >
         {nodeCoordinates !== undefined
-          ? Object.keys(nodeCoordinates).map(nodeName => {
+          ? Object.keys(nodeCoordinates).map(nodeKey => {
               return (
                 <Node
-                  key={nodeName}
-                  nodeKey={nodeName}
+                  key={nodeKey}
+                  nodeKey={nodeKey}
                   pathway={pathway}
                   ref={(node: HTMLDivElement): void => {
-                    if (node) nodeRefs.current[nodeName] = node;
-                    else delete nodeRefs.current[nodeName];
+                    if (node) nodeRefs.current[nodeKey] = node;
+                    else delete nodeRefs.current[nodeKey];
                   }}
-                  pathwayState={pathway.states[nodeName]}
-                  xCoordinate={nodeCoordinates[nodeName].x + parentWidth / 2}
-                  yCoordinate={nodeCoordinates[nodeName].y}
-                  expanded={Boolean(expanded[nodeName])}
+                  pathwayNode={pathway.nodes[nodeKey]}
+                  xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
+                  yCoordinate={nodeCoordinates[nodeKey].y}
+                  expanded={Boolean(expanded[nodeKey])}
                   onClick={onClickHandler}
                   currentNode={currentNode}
                 />

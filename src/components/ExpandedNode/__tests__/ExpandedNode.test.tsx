@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import ExpandedNode from 'components/ExpandedNode';
-import { GuidanceState, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
+import { ActionNode, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
 import { resourceNameConversion } from 'utils/nodeUtils';
 
-const testActionState: GuidanceState = {
+const testActionNode: ActionNode = {
   label: 'Chemotherapy',
   action: [
     {
@@ -29,7 +29,7 @@ const testActionState: GuidanceState = {
   transitions: []
 };
 
-const testMedicationRequestState: GuidanceState = {
+const testMedicationRequestNode: ActionNode = {
   label: 'ChemoMedication Request',
   action: [
     {
@@ -55,22 +55,22 @@ const testMedicationRequestState: GuidanceState = {
 };
 
 describe('<ExpandedNode />', () => {
-  it('renders a ExpandedNode for action state', () => {
+  it('renders a ExpandedNode for action node', () => {
     const { getByText, queryByRole, queryByText } = render(
       <ExpandedNode
-        pathwayState={testActionState}
+        actionNode={testActionNode}
         isActionable={false}
-        isGuidance={true}
+        isAction={true}
         documentation={undefined}
       />
     );
 
-    const resource = testActionState.action[0].resource as BasicActionResource;
+    const resource = testActionNode.action[0].resource as BasicActionResource;
 
     const resourceType = resourceNameConversion[resource.resourceType]
       ? resourceNameConversion[resource.resourceType]
       : resource.resourceType;
-    expect(getByText(testActionState.action[0].description)).toBeVisible();
+    expect(getByText(testActionNode.action[0].description)).toBeVisible();
     expect(getByText(resourceType)).toBeVisible();
     expect(getByText(resource.code.coding[0].system)).toBeVisible();
     expect(getByText(resource.code.coding[0].code)).toBeVisible();
@@ -83,23 +83,22 @@ describe('<ExpandedNode />', () => {
     expect(queryByText('Use Default Text')).toBeNull();
   });
 
-  it('renders a ExpandedNode for a medication request state', () => {
+  it('renders a ExpandedNode for a medication request node', () => {
     const { getByText } = render(
       <ExpandedNode
-        pathwayState={testMedicationRequestState}
+        actionNode={testMedicationRequestNode}
         isActionable={false}
-        isGuidance={true}
+        isAction={true}
         documentation={undefined}
       />
     );
 
-    const resource = testMedicationRequestState.action[0]
-      .resource as BasicMedicationRequestResource;
+    const resource = testMedicationRequestNode.action[0].resource as BasicMedicationRequestResource;
 
     const resourceType = resourceNameConversion[resource.resourceType]
       ? resourceNameConversion[resource.resourceType]
       : resource.resourceType;
-    expect(getByText(testMedicationRequestState.action[0].description)).toBeVisible();
+    expect(getByText(testMedicationRequestNode.action[0].description)).toBeVisible();
     expect(getByText(resourceType)).toBeVisible();
     expect(getByText(resource.medicationCodeableConcept.coding[0].system)).toBeVisible();
     expect(getByText(resource.medicationCodeableConcept.coding[0].code)).toBeVisible();

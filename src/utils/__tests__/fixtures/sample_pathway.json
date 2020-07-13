@@ -3,7 +3,7 @@
   "id": "test_breast_cancer",
   "description": "Mock breast cancer pathway used for testing the system",
   "library": "mCODE_Library.cql",
-  "criteria": [
+  "preconditions": [
     {
       "id": "1",
       "elementName": "Condition",
@@ -11,7 +11,7 @@
       "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
     }
   ],
-  "states": {
+  "nodes": {
     "Start": {
       "key": "Start",
       "label": "Start",
@@ -594,6 +594,6 @@
   },
   "elm": {
     "navigational": {"test": 1},
-    "criteria": {"test": 1}
+    "preconditions": {"test": 1}
   }
 }

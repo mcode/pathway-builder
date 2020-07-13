@@ -1,21 +1,21 @@
 import React, { FC, ReactNode, ReactElement, memo } from 'react';
-import { GuidanceState } from 'pathways-model';
+import { ActionNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ExpandedNode.module.scss';
-import { isBranchState, resourceNameConversion } from 'utils/nodeUtils';
+import { isBranchNode, resourceNameConversion } from 'utils/nodeUtils';
 
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 interface ExpandedNodeProps {
-  pathwayState: GuidanceState;
+  actionNode: ActionNode;
   isActionable: boolean;
-  isGuidance: boolean;
+  isAction: boolean;
 }
-const ExpandedNode: FC<ExpandedNodeProps> = memo(({ pathwayState, isActionable, isGuidance }) => {
+const ExpandedNode: FC<ExpandedNodeProps> = memo(({ actionNode, isActionable, isAction }) => {
   return (
     <>
-      <ExpandedNodeMemo isGuidance={isGuidance} pathwayState={pathwayState} />
+      <ExpandedNodeMemo isAction={isAction} actionNode={actionNode} />
     </>
   );
 });
@@ -41,10 +41,10 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
-function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
+function renderAction(actionNode: ActionNode): ReactElement[] {
   let returnElements: ReactElement[] = [];
-  if (pathwayState.action[0]) {
-    const resource = pathwayState.action[0].resource;
+  if (actionNode.action[0]) {
+    const resource = actionNode.action[0].resource;
     const coding = isMedicationRequest(resource)
       ? resource?.medicationCodeableConcept?.coding
       : resource?.code?.coding;
@@ -56,7 +56,7 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
       <ExpandedNodeField
         key="Description"
         title="Description"
-        description={pathwayState.action[0].description}
+        description={actionNode.action[0].description}
       />,
       <ExpandedNodeField key="Type" title="Type" description={resourceType} />,
       <ExpandedNodeField
@@ -83,16 +83,16 @@ function renderGuidance(pathwayState: GuidanceState): ReactElement[] {
   return returnElements;
 }
 interface ExpandedNodeMemoProps {
-  pathwayState: GuidanceState;
-  isGuidance: boolean;
+  actionNode: ActionNode;
+  isAction: boolean;
 }
-const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ pathwayState, isGuidance }) => {
-  const guidance = isGuidance && renderGuidance(pathwayState);
-  const branch = isBranchState(pathwayState);
+const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ actionNode, isAction }) => {
+  const action = isAction && renderAction(actionNode);
+  const branch = isBranchNode(actionNode);
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>
-        <tbody>{guidance || branch}</tbody>
+        <tbody>{action || branch}</tbody>
       </table>
     </div>
   );

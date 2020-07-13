@@ -13,14 +13,14 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test1',
       description: 'test1',
       library: 'test.cql',
-      criteria: [
+      preconditions: [
         {
           elementName: 'condition',
           expected: 'breast cancer',
           cql: 'some fancy CQL statement'
         }
       ],
-      states: {
+      nodes: {
         Start: {
           label: 'Start',
           transitions: []
@@ -32,14 +32,14 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test2',
       description: 'test2',
       library: 'test.cql',
-      criteria: [
+      preconditions: [
         {
           elementName: 'condition',
           expected: 'gist cancer',
           cql: 'some fancy CQL statement'
         }
       ],
-      states: {
+      nodes: {
         Start: {
           label: 'Start',
           transitions: []
@@ -51,14 +51,14 @@ export const loadedService: Service<Array<Pathway>> = {
       name: 'test3',
       description: 'test3',
       library: 'test.cql',
-      criteria: [
+      preconditions: [
         {
           elementName: 'condition',
           expected: 'lung cancer',
           cql: 'some fancy CQL statement'
         }
       ],
-      states: {
+      nodes: {
         Start: {
           label: 'Start',
           transitions: []

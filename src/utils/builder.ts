@@ -1,4 +1,4 @@
-import { Pathway, Criteria, State, Transition, Action, GuidanceState } from 'pathways-model';
+import { Pathway, Precondition, PathwayNode, Transition, Action, ActionNode } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
@@ -9,8 +9,8 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
     name: name,
     description: description ?? '',
     library: '',
-    criteria: [],
-    states: {
+    preconditions: [],
+    nodes: {
       Start: {
         key: 'Start',
         label: 'Start',
@@ -88,27 +88,30 @@ export function exportPathway(pathway: Pathway): string {
 
   const pathwayToExport: Pathway = {
     ...pathway,
-    // Strip id from each criteria
-    criteria: pathway.criteria.map((criteria: Criteria) => ({ ...criteria, id: undefined })),
-    states: { ...pathway.states }
+    // Strip id from each precondition
+    preconditions: pathway.preconditions.map((precondition: Precondition) => ({
+      ...precondition,
+      id: undefined
+    })),
+    nodes: { ...pathway.nodes }
   };
 
-  Object.keys(pathwayToExport.states).forEach((stateName: string) => {
-    const state = pathway.states[stateName];
-    if ('elm' in state && state.elm && state.key) {
-      mergeElm(elm, state.elm);
-      const elmStatement = getElmStatement(state.elm);
-      elmStatement.name = state.key;
+  Object.keys(pathwayToExport.nodes).forEach((nodeKey: string) => {
+    const node = pathway.nodes[nodeKey];
+    if ('elm' in node && node.elm && node.key) {
+      mergeElm(elm, node.elm);
+      const elmStatement = getElmStatement(node.elm);
+      elmStatement.name = node.key;
       elm.library.statements.def.push(elmStatement);
     }
 
-    pathwayToExport.states[stateName] = {
-      ...pathwayToExport.states[stateName],
-      // Strip key from each state
+    pathwayToExport.nodes[nodeKey] = {
+      ...pathwayToExport.nodes[nodeKey],
+      // Strip key from each node
       key: undefined,
       elm: undefined,
-      // Strip id from each state.transition
-      transitions: state.transitions.map((transition: Transition) => {
+      // Strip id from each node.transition
+      transitions: node.transitions.map((transition: Transition) => {
         if (transition.condition?.elm) {
           // Add tranistion.condition.elm to elm
           mergeElm(elm, transition.condition.elm);
@@ -122,11 +125,11 @@ export function exportPathway(pathway: Pathway): string {
           condition: transition.condition ? { ...transition.condition, elm: undefined } : undefined
         };
       }),
-      // Strip id from each state.action
+      // Strip id from each node.action
       action:
-        (state as GuidanceState).action == null
+        (node as ActionNode).action == null
           ? undefined
-          : (state as GuidanceState).action.map((action: Action) => ({
+          : (node as ActionNode).action.map((action: Action) => ({
               ...action,
               id: undefined
             }))
@@ -189,21 +192,21 @@ function getElmStatement(elm: ElmLibrary): ElmStatement {
   return elmStatement as ElmStatement;
 }
 
-// TODO: possibly add more criteria methods
-export function addCriteria(
+// TODO: possibly add more precondition methods
+export function addPrecondition(
   pathway: Pathway,
   elementName: string,
   expected: string,
   cql: string
 ): string {
   const id = shortid.generate();
-  const criteria: Criteria = {
+  const precondition: Precondition = {
     id: id,
     elementName: elementName,
     expected: expected,
     cql: cql
   };
-  pathway.criteria.push(criteria);
+  pathway.preconditions.push(precondition);
 
   return id;
 }
@@ -213,145 +216,141 @@ export function setNavigationalElm(pathway: Pathway, elm: object): void {
   pathway.elm.navigational = elm;
 }
 
-export function setCriteriaElm(pathway: Pathway, elm: object): void {
+export function setPreconditionElm(pathway: Pathway, elm: object): void {
   if (!pathway.elm) pathway.elm = {};
-  pathway.elm.criteria = elm;
+  pathway.elm.preconditions = elm;
 }
 
-export function createState(key?: string): State {
+export function createNode(key?: string): PathwayNode {
   if (!key) key = shortid.generate();
-  const state: State = {
+  const node: PathwayNode = {
     key,
     label: 'New Node',
     transitions: [],
     nodeTypeIsUndefined: true
   };
 
-  return state;
+  return node;
 }
 
-export function addState(pathway: Pathway, state: State): Pathway {
+export function addNode(pathway: Pathway, node: PathwayNode): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [state.key as string]: state
+    nodes: {
+      ...pathway.nodes,
+      [node.key as string]: node
     }
   };
 }
 
-export function addGuidanceState(pathway: Pathway): Pathway {
-  const state = createState();
-  const newPathway = addState(pathway, state);
+export function addActionNode(pathway: Pathway): Pathway {
+  const node = createNode();
+  const newPathway = addNode(pathway, node);
 
-  return makeStateGuidance(newPathway, state.key as string);
+  return makeNodeAction(newPathway, node.key as string);
 }
 
-export function setStateLabel(pathway: Pathway, key: string, label: string): Pathway {
+export function setNodeLabel(pathway: Pathway, key: string, label: string): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [key]: {
-        ...pathway.states[key],
+        ...pathway.nodes[key],
         label
       }
     }
   };
 }
 
-export function setStateNodeType(pathway: Pathway, stateKey: string, nodeType: string): Pathway {
+export function setNodeNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
   switch (nodeType) {
     case 'action':
-      return makeStateGuidance(pathway, stateKey);
+      return makeNodeAction(pathway, nodeKey);
     case 'branch':
-      return makeStateBranch(pathway, stateKey);
+      return makeNodeBranch(pathway, nodeKey);
     default:
       return pathway;
   }
 }
 
-export function setStateCriteriaSource(
+export function setNodeCriteriaSource(
   pathway: Pathway,
   key: string,
   criteriaSource: string
 ): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [key]: {
-        ...pathway.states[key],
+        ...pathway.nodes[key],
         criteriaSource
       }
     }
   };
 }
 
-export function setStateAction(pathway: Pathway, key: string, action: Action[]): Pathway {
+export function setNodeAction(pathway: Pathway, key: string, action: Action[]): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [key]: {
-        ...pathway.states[key],
+        ...pathway.nodes[key],
         action
       }
     }
   };
 }
 
-export function setStateMcodeCriteria(
+export function setNodeMcodeCriteria(
   pathway: Pathway,
   key: string,
   mcodeCriteria: string
 ): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [key]: {
-        ...pathway.states[key],
+        ...pathway.nodes[key],
         mcodeCriteria
       }
     }
   };
 }
 
-export function setStateOtherCriteria(
+export function setNodeOtherCriteria(
   pathway: Pathway,
   key: string,
   otherCriteria: string
 ): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [key]: {
-        ...pathway.states[key],
+        ...pathway.nodes[key],
         otherCriteria
       }
     }
   };
 }
 
-export function addTransition(
-  pathway: Pathway,
-  startStateKey: string,
-  endStateKey: string
-): Pathway {
+export function addTransition(pathway: Pathway, startNodeKey: string, endNodeKey: string): Pathway {
   const transition: Transition = {
     id: shortid.generate(),
-    transition: endStateKey
+    transition: endNodeKey
   };
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [startStateKey]: {
-        ...pathway.states[startStateKey],
-        transitions: [...pathway.states[startStateKey].transitions, transition]
+    nodes: {
+      ...pathway.nodes,
+      [startNodeKey]: {
+        ...pathway.nodes[startNodeKey],
+        transitions: [...pathway.nodes[startNodeKey].transitions, transition]
       }
     }
   };
@@ -365,7 +364,7 @@ export function setTransitionCondition(
   elm: ElmLibrary,
   criteriaLabel?: string
 ): Pathway {
-  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
+  const foundTransition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -380,22 +379,22 @@ export function setTransitionCondition(
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [startNodeKey]: {
-        ...pathway.states[startNodeKey]
+        ...pathway.nodes[startNodeKey]
       }
     }
   };
 }
 
-export function setGuidanceStateElm(pathway: Pathway, stateKey: string, elm: ElmLibrary): Pathway {
+export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibrary): Pathway {
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [stateKey]: {
-        ...pathway.states[stateKey],
+    nodes: {
+      ...pathway.nodes,
+      [nodeKey]: {
+        ...pathway.nodes[nodeKey],
         elm: elm,
         cql: getElmStatement(elm).name
       }
@@ -418,7 +417,7 @@ export function addAction(
     description: description,
     resource: resource
   };
-  (pathway.states[key] as GuidanceState).action.push(action);
+  (pathway.nodes[key] as ActionNode).action.push(action);
   return id;
 }
 
@@ -426,10 +425,10 @@ export function getNodeType(pathway: Pathway, key: string | undefined): string {
   if (!key) {
     return 'null';
   }
-  const state = pathway.states[key];
-  if (state.nodeTypeIsUndefined) {
+  const node = pathway.nodes[key];
+  if (node.nodeTypeIsUndefined) {
     return 'null';
-  } else if (!(state as GuidanceState).action && key !== 'Start') {
+  } else if (!(node as ActionNode).action && key !== 'Start') {
     return 'branch';
   } else {
     return 'action';
@@ -453,14 +452,14 @@ export function setLibrary(pathway: Pathway, library: string): void {
 
 export function setTransition(
   pathway: Pathway,
-  startStateKey: string,
-  endStateKey: string,
+  startNodeKey: string,
+  endNodeKey: string,
   transitionId: string
 ): void {
-  const transition = pathway.states[startStateKey]?.transitions?.find(
+  const transition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
-  if (transition) transition.transition = endStateKey;
+  if (transition) transition.transition = endNodeKey;
 }
 
 export function setTransitionConditionDescription(
@@ -469,7 +468,7 @@ export function setTransitionConditionDescription(
   transitionId: string,
   description: string
 ): Pathway {
-  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
+  const foundTransition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -484,10 +483,10 @@ export function setTransitionConditionDescription(
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
+    nodes: {
+      ...pathway.nodes,
       [startNodeKey]: {
-        ...pathway.states[startNodeKey]
+        ...pathway.nodes[startNodeKey]
       }
     }
   };
@@ -499,7 +498,7 @@ export function setTransitionConditionElm(
   transitionId: string,
   elm: ElmLibrary
 ): void {
-  const foundTransition = pathway.states[startNodeKey]?.transitions?.find(
+  const foundTransition = pathway.nodes[startNodeKey]?.transitions?.find(
     (transition: Transition) => transition.id === transitionId
   );
 
@@ -511,12 +510,12 @@ export function setTransitionConditionElm(
 
 export function setActionType(
   pathway: Pathway,
-  stateKey: string,
+  nodeKey: string,
   actionId: string,
   type: string
 ): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.type = type;
@@ -525,14 +524,14 @@ export function setActionType(
 
 export function setActionDescription(
   pathway: Pathway,
-  stateKey: string,
+  nodeKey: string,
   actionId: string,
   description: string
 ): void {
-  const state = (pathway.states[stateKey] as GuidanceState).action;
+  const node = (pathway.nodes[nodeKey] as ActionNode).action;
 
-  if (state) {
-    const action = state.find((action: Action) => action.id === actionId);
+  if (node) {
+    const action = node.find((action: Action) => action.id === actionId);
     if (action) {
       action.description = description;
     }
@@ -541,12 +540,12 @@ export function setActionDescription(
 
 export function setActionResource(
   pathway: Pathway,
-  stateKey: string,
+  nodeKey: string,
   actionId: string,
   resource: MedicationRequest | ServiceRequest
 ): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     if (action) action.resource = resource;
@@ -555,12 +554,12 @@ export function setActionResource(
 
 export function setActionResourceDisplay(
   pathway: Pathway,
-  stateKey: string,
+  nodeKey: string,
   actionId: string,
   display: string
 ): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const action = (pathway.states[stateKey] as GuidanceState).action.find(
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const action = (pathway.nodes[nodeKey] as ActionNode).action.find(
       (action: Action) => action.id === actionId
     );
     const resource = action?.resource;
@@ -574,19 +573,19 @@ export function setActionResourceDisplay(
   }
 }
 
-export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
-  const state = pathway.states[stateKey] as GuidanceState;
+export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
-  if (state.cql !== undefined && state.action !== undefined) {
+  if (node.cql !== undefined && node.action !== undefined) {
     return pathway;
   }
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [stateKey]: {
-        ...state,
+    nodes: {
+      ...pathway.nodes,
+      [nodeKey]: {
+        ...node,
         cql: '',
         action: [],
         nodeTypeIsUndefined: undefined
@@ -595,24 +594,24 @@ export function makeStateGuidance(pathway: Pathway, stateKey: string): Pathway {
   };
 }
 
-export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
-  const state = pathway.states[stateKey] as GuidanceState;
+export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
+  const node = pathway.nodes[nodeKey] as ActionNode;
 
   if (
-    state.cql === undefined &&
-    state.elm === undefined &&
-    state.action === undefined &&
-    state.nodeTypeIsUndefined === undefined
+    node.cql === undefined &&
+    node.elm === undefined &&
+    node.action === undefined &&
+    node.nodeTypeIsUndefined === undefined
   ) {
     return pathway;
   }
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [stateKey]: {
-        ...state,
+    nodes: {
+      ...pathway.nodes,
+      [nodeKey]: {
+        ...node,
         cql: undefined,
         elm: undefined,
         action: undefined,
@@ -622,7 +621,7 @@ export function makeStateBranch(pathway: Pathway, stateKey: string): Pathway {
   };
 }
 
-export function createCQL(action: Action, stateKey: string): string {
+export function createCQL(action: Action, nodeKey: string): string {
   const resource = action.resource;
   // CQl identifier cannot start with a number or contain '-'
   const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
@@ -635,7 +634,7 @@ export function createCQL(action: Action, stateKey: string): string {
 
   const retrieveStatement = (resourceType: string): string => `[${resourceType}: "${cqlId} code"]`;
 
-  const defineStatement = (): string => `define "${stateKey}":`;
+  const defineStatement = (): string => `define "${nodeKey}":`;
 
   if (resource.resourceType === 'MedicationRequest') {
     const coding = resource.medicationCodeableConcept.coding[0];
@@ -682,64 +681,65 @@ export function removePathwayDescription(pathway: Pathway): void {
   delete pathway.description;
 }
 
-export function removeCriteria(pathway: Pathway, id: string): void {
-  const criteria = pathway.criteria.filter((criteria: Criteria) => criteria.id !== id);
-  pathway.criteria = criteria;
+export function removePrecondition(pathway: Pathway, id: string): void {
+  const preconditions = pathway.preconditions.filter(
+    (precondition: Precondition) => precondition.id !== id
+  );
+  pathway.preconditions = preconditions;
 }
 
 export function removeNavigationalElm(pathway: Pathway): void {
   delete pathway.elm?.navigational;
 }
 
-export function removeCriteriaElm(pathway: Pathway): void {
-  delete pathway.elm?.criteria;
+export function removePreconditionElm(pathway: Pathway): void {
+  delete pathway.elm?.preconditions;
 }
 
-export function removeState(pathway: Pathway, key: string): void {
-  delete pathway.states[key];
+export function removeNode(pathway: Pathway, key: string): void {
+  delete pathway.nodes[key];
 
-  Object.keys(pathway.states).forEach((stateName: string) => {
-    const state = pathway.states[stateName];
-    state.transitions.forEach((transition: Transition) => {
-      if (transition.transition === key)
-        removeTransition(pathway, stateName, transition.id ?? '-1');
+  Object.keys(pathway.nodes).forEach((nodeKey: string) => {
+    const node = pathway.nodes[nodeKey];
+    node.transitions.forEach((transition: Transition) => {
+      if (transition.transition === key) removeTransition(pathway, nodeKey, transition.id ?? '-1');
     });
   });
 }
 
 export function removeTransitionCondition(
   pathway: Pathway,
-  stateKey: string,
+  nodeKey: string,
   transitionId: string
 ): Pathway {
-  const transition = pathway.states[stateKey].transitions.find(
+  const transition = pathway.nodes[nodeKey].transitions.find(
     (transition: Transition) => transition.id === transitionId
   );
   if (transition) delete transition.condition;
 
   return {
     ...pathway,
-    states: {
-      ...pathway.states,
-      [stateKey]: {
-        ...pathway.states[stateKey]
+    nodes: {
+      ...pathway.nodes,
+      [nodeKey]: {
+        ...pathway.nodes[nodeKey]
       }
     }
   };
 }
 
-export function removeTransition(pathway: Pathway, stateKey: string, transitionId: string): void {
-  const transitions = pathway.states[stateKey].transitions.filter(
+export function removeTransition(pathway: Pathway, nodeKey: string, transitionId: string): void {
+  const transitions = pathway.nodes[nodeKey].transitions.filter(
     (transition: Transition) => transition.id !== transitionId
   );
-  pathway.states[stateKey].transitions = transitions;
+  pathway.nodes[nodeKey].transitions = transitions;
 }
 
-export function removeAction(pathway: Pathway, stateKey: string, actionId: string): void {
-  if ((pathway.states[stateKey] as GuidanceState).action) {
-    const actions = (pathway.states[stateKey] as GuidanceState).action.filter(
+export function removeAction(pathway: Pathway, nodeKey: string, actionId: string): void {
+  if ((pathway.nodes[nodeKey] as ActionNode).action) {
+    const actions = (pathway.nodes[nodeKey] as ActionNode).action.filter(
       (action: Action) => action.id !== actionId
     );
-    (pathway.states[stateKey] as GuidanceState).action = actions;
+    (pathway.nodes[nodeKey] as ActionNode).action = actions;
   }
 }

@@ -1,5 +1,5 @@
 import React, { FC, useRef, useEffect, memo, useState, useCallback } from 'react';
-import { Pathway, State } from 'pathways-model';
+import { Pathway, PathwayNode } from 'pathways-model';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 
@@ -16,7 +16,7 @@ import useStyles from './styles';
 
 interface BuilderProps {
   pathway: Pathway;
-  currentNode: State;
+  currentNode: PathwayNode;
 }
 
 const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {

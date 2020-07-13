@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Node from '../Node';
-import { createState } from 'utils/builder';
+import { createNode } from 'utils/builder';
 
-const testState = {
-  label: 'Start',
+const testNode = {
+  label: 'NotStart',
   transitions: []
 };
 
@@ -12,14 +12,14 @@ describe('<Node />', () => {
   it('renders a node with text, no icon, and correct styles', () => {
     const { container, getByText, getByRole } = render(
       <Node
-        pathwayState={testState}
+        pathwayNode={testNode}
         xCoordinate={0}
         yCoordinate={0}
-        currentNode={createState('TestNode')}
+        currentNode={createNode('TestNode')}
       />
     );
 
-    expect(getByText(testState.label)).toBeVisible();
+    expect(getByText(testNode.label)).toBeVisible();
     // The created node does not have a type therefore no icon will be displayed
     expect(() => {
       getByRole('img', { hidden: true });
@@ -33,10 +33,10 @@ describe('<Node />', () => {
   it('expands the additional children when clicked', () => {
     const { container } = render(
       <Node
-        pathwayState={testState}
+        pathwayNode={testNode}
         xCoordinate={0}
         yCoordinate={0}
-        currentNode={createState('TestNode')}
+        currentNode={createNode('TestNode')}
       />
     );
 

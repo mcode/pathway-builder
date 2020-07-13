@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Edge, Coordinate } from 'graph-model';
-import { State } from 'pathways-model';
-import { isBranchState } from 'utils/nodeUtils';
+import { PathwayNode } from 'pathways-model';
+import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
 
@@ -9,7 +9,7 @@ interface ArrowProps {
   edge: Edge;
   edgeName: string;
   widthOffset: number;
-  currentNode: State;
+  currentNode: PathwayNode;
 }
 
 interface ArrowPathProps {
@@ -20,7 +20,7 @@ interface ArrowPathProps {
 
 const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => {
   const styles = useStyles();
-  const isCurrentBranchArrow = isBranchState(currentNode) && edge.start === currentNode.key;
+  const isCurrentBranchArrow = isBranchNode(currentNode) && edge.start === currentNode.key;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 

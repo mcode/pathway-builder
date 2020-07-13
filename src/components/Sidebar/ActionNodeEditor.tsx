@@ -2,14 +2,9 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import {
-  setStateAction,
-  createCQL,
-  setActionDescription,
-  setGuidanceStateElm
-} from 'utils/builder';
+import { setNodeAction, createCQL, setActionDescription, setActionNodeElm } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { Pathway, GuidanceState, Action } from 'pathways-model';
+import { Pathway, ActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
@@ -37,14 +32,19 @@ const codeSystemOptions = [
   { label: 'SNOMED', value: 'http://snomed.info/sct' }
 ];
 
-interface ActionNodeProps {
+interface ActionNodeEditorProps {
   pathway: Pathway;
-  currentNode: GuidanceState;
+  currentNode: ActionNode;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
 }
 
-const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType, addNode }) => {
+const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
+  pathway,
+  currentNode,
+  changeNodeType,
+  addNode
+}) => {
   const { updatePathway } = usePathwayContext();
   const styles = useStyles();
   const selectNodeType = useCallback(
@@ -58,7 +58,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
     (action: Action, currentNodeKey: string): void => {
       const cql = createCQL(action, currentNodeKey);
       convertBasicCQL(cql).then(elm => {
-        updatePathway(setGuidanceStateElm(pathway, currentNodeKey, elm as ElmLibrary));
+        updatePathway(setActionNodeElm(pathway, currentNodeKey, elm as ElmLibrary));
       });
     },
     [pathway, updatePathway]
@@ -76,7 +76,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
         action.resource.code.coding[0].code = code;
       }
       resetDisplay(action);
-      updatePathway(setStateAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
   );
@@ -89,7 +89,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
       const actionId = currentNode.action[0].id; // TODO: change this for supporting multiple action
       if (actionId) {
         setActionDescription(pathway, currentNode.key, actionId, description);
-        updatePathway(setStateAction(pathway, currentNode.key, currentNode.action));
+        updatePathway(setNodeAction(pathway, currentNode.key, currentNode.action));
       }
     },
     [currentNode, pathway, updatePathway]
@@ -103,7 +103,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
       const action = currentNode.action[0];
       action.resource.title = title;
       resetDisplay(action);
-      updatePathway(setStateAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
 
       addActionCQL(action, currentNode.key);
     },
@@ -166,7 +166,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
         };
       }
 
-      updatePathway(setStateAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
   );
@@ -183,7 +183,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
         action.resource.code.coding[0].system = codeSystem;
       }
       resetDisplay(action);
-      updatePathway(setStateAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
     },
     [currentNode, pathway, updatePathway]
   );
@@ -198,7 +198,7 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
       } else {
         action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
       }
-      updatePathway(setStateAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
 
       addActionCQL(action, currentNode.key);
     } else {
@@ -360,4 +360,4 @@ const ActionNode: FC<ActionNodeProps> = ({ pathway, currentNode, changeNodeType,
   );
 };
 
-export default memo(ActionNode);
+export default memo(ActionNodeEditor);

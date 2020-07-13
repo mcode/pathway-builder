@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 
 import DropDown from 'components/elements/DropDown';
-import { Pathway, State } from 'pathways-model';
+import { Pathway, PathwayNode } from 'pathways-model';
 
 const nodeTypeOptions = [
   { label: '', value: '' },
@@ -11,7 +11,7 @@ const nodeTypeOptions = [
 
 interface NullNodeProps {
   pathway: Pathway;
-  currentNode: State;
+  currentNode: PathwayNode;
   changeNodeType: (event: string) => void;
   addNode: (event: string) => void;
 }

@@ -3,16 +3,16 @@ import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import { SidebarHeader, BranchNode, ActionNode, NullNode } from '.';
-import { State, GuidanceState, BranchState, Pathway } from 'pathways-model';
-import { setStateNodeType, addTransition, createState, addState, getNodeType } from 'utils/builder';
+import { SidebarHeader, BranchNodeEditor, ActionNodeEditor, NullNode } from '.';
+import { PathwayNode, ActionNode, BranchNode, Pathway } from 'pathways-model';
+import { setNodeNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 
 interface SidebarProps {
   pathway: Pathway;
   headerElement: RefObject<HTMLDivElement>;
-  currentNode: GuidanceState | BranchState | State;
+  currentNode: ActionNode | BranchNode | PathwayNode;
 }
 
 const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
@@ -29,7 +29,7 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
 
   const changeNodeType = useCallback(
     (nodeType: string): void => {
-      if (currentNodeKey) updatePathway(setStateNodeType(pathway, currentNodeKey, nodeType));
+      if (currentNodeKey) updatePathway(setNodeNodeType(pathway, currentNodeKey, nodeType));
     },
     [pathway, updatePathway, currentNodeKey]
   );
@@ -44,16 +44,16 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
     [history, pathway.id]
   );
 
-  const addNode = useCallback(
+  const addPathwayNode = useCallback(
     (nodeType: string): void => {
       if (!currentNodeKey) return;
 
-      const newState = createState();
-      let newPathway = addState(pathway, newState);
-      newPathway = addTransition(newPathway, currentNodeKey, newState.key as string);
-      newPathway = setStateNodeType(newPathway, newState.key as string, nodeType);
+      const newNode = createNode();
+      let newPathway = addNode(pathway, newNode);
+      newPathway = addTransition(newPathway, currentNodeKey, newNode.key as string);
+      newPathway = setNodeNodeType(newPathway, newNode.key as string, nodeType);
       updatePathway(newPathway);
-      redirectToNode(newState.key);
+      redirectToNode(newNode.key);
     },
     [pathway, updatePathway, currentNodeKey, redirectToNode]
   );
@@ -79,21 +79,21 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
               pathway={pathway}
               currentNode={currentNode}
               changeNodeType={changeNodeType}
-              addNode={addNode}
+              addNode={addPathwayNode}
             />
           )}
 
           {nodeType === 'action' && (
-            <ActionNode
+            <ActionNodeEditor
               pathway={pathway}
-              currentNode={currentNode as GuidanceState}
+              currentNode={currentNode as ActionNode}
               changeNodeType={changeNodeType}
-              addNode={addNode}
+              addNode={addPathwayNode}
             />
           )}
 
           {nodeType === 'branch' && (
-            <BranchNode
+            <BranchNodeEditor
               pathway={pathway}
               currentNode={currentNode}
               changeNodeType={changeNodeType}
