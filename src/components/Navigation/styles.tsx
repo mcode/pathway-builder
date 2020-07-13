@@ -25,5 +25,5 @@ export default makeStyles(
       marginLeft: '1.5em'
     }
   }),
-  { name: 'Navigation' }
+  { name: 'Navigation', index: 1 }
 );

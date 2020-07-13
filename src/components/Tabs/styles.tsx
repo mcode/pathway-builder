@@ -13,5 +13,5 @@ export default makeStyles(
       fontWeight: 100
     }
   }),
-  { name: 'Tabs' }
+  { name: 'Tabs', index: 1 }
 );

@@ -27,5 +27,5 @@ export default makeStyles(
       }
     }
   }),
-  { name: 'Arrow' }
+  { name: 'Arrow', index: 1 }
 );

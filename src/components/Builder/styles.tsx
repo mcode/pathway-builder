@@ -54,5 +54,5 @@ export default makeStyles(
       color: theme.palette.common.white
     }
   }),
-  { name: 'Builder' }
+  { name: 'Builder', index: 1 }
 );
