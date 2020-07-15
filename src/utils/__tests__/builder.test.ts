@@ -420,10 +420,10 @@ describe('builder interface update functions', () => {
     expect(newPathway.nodes[key].label).toBe('test label');
   });
 
-  describe('setNodeNodeType', () => {
+  describe('setNodeType', () => {
     it('converts a branch node into a action node', () => {
       const key = 'N-test';
-      const newPathway = Builder.setNodeNodeType(pathway, key, 'action');
+      const newPathway = Builder.setNodeType(pathway, key, 'action');
       expect(newPathway.nodes[key].cql).toEqual('');
     });
 

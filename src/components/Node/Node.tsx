@@ -1,11 +1,10 @@
 import React, { FC, Ref, forwardRef, memo, useCallback, useState, useEffect } from 'react';
-import { ActionNode, PathwayNode, Pathway } from 'pathways-model';
+import { ActionNode, PathwayNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
 import { isActionNode, isBranchNode } from 'utils/nodeUtils';
-import { getNodeType } from 'utils/builder';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faMicroscope,
@@ -58,9 +57,11 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         left: xCoordinate
       };
 
-      const isCurrentNode = pathwayNode.key === currentNode.key;
+      const isCurrentNode = pathwayNode.key === currentNode?.key;
       const isTransitionOfCurrentBranch =
-        isBranchNode(currentNode) && currentNode.transitions.some(e => e?.transition === nodeKey);
+        currentNode &&
+        isBranchNode(currentNode) &&
+        currentNode.transitions.some(e => e?.transition === nodeKey);
 
       const isActionable = isCurrentNode;
       const topLevelClasses = [styles.node];
@@ -73,7 +74,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
         expandedNodeClass = styles.childNotActionable;
       }
       const isAction = isActionNode(pathwayNode);
-      const nodeType = getNodeType(pathway, nodeKey);
+
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
           <div className={`nodeTitle ${onClickHandler && 'clickable'}`} onClick={onClickHandler}>

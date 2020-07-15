@@ -9,11 +9,11 @@ const nodeTypeOptions = [
   { label: 'Branch', value: 'branch' }
 ];
 
-interface NullNodeProps {
+interface NullNodeEditorProps {
   changeNodeType: (event: string) => void;
 }
 
-const NullNode: FC<NullNodeProps> = ({ changeNodeType }) => {
+const NullNodeEditor: FC<NullNodeEditorProps> = ({ changeNodeType }) => {
   const { currentNode } = useCurrentNodeContext();
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -40,4 +40,4 @@ const NullNode: FC<NullNodeProps> = ({ changeNodeType }) => {
   );
 };
 
-export default memo(NullNode);
+export default memo(NullNodeEditor);

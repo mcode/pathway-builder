@@ -7,13 +7,13 @@ import React, {
   FC,
   useContext
 } from 'react';
-import { State } from 'pathways-model';
+import { PathwayNode } from 'pathways-model';
 import useRefState from 'utils/useRefState';
 
 interface CurrentNodeContextInterface {
-  currentNode: State | null;
-  currentNodeRef: MutableRefObject<State | null>;
-  setCurrentNode: (value: State) => void;
+  currentNode: PathwayNode | null;
+  currentNodeRef: MutableRefObject<PathwayNode | null>;
+  setCurrentNode: (value: PathwayNode) => void;
 }
 
 export const CurrentNodeContext = createContext<CurrentNodeContextInterface>(
@@ -25,10 +25,10 @@ interface CurrentNodeProviderProps {
 }
 
 export const CurrentNodeProvider: FC<CurrentNodeProviderProps> = memo(({ children }) => {
-  const [currentNode, currentNodeRef, _setCurrentNode] = useRefState<State | null>(null);
+  const [currentNode, currentNodeRef, _setCurrentNode] = useRefState<PathwayNode | null>(null);
 
   const setCurrentNode = useCallback(
-    (value: State) => {
+    (value: PathwayNode) => {
       _setCurrentNode(value);
     },
     [_setCurrentNode]

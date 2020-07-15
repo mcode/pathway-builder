@@ -3,8 +3,14 @@ import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { SidebarHeader, BranchNodeEditor, ActionNodeEditor, NullNode, SidebarButton } from '.';
-import { setNodeNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
+import {
+  SidebarHeader,
+  ActionNodeEditor,
+  BranchNodeEditor,
+  NullNodeEditor,
+  SidebarButton
+} from 'components/Sidebar';
+import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
 import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
@@ -30,7 +36,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   const changeNodeType = useCallback(
     (nodeType: string): void => {
       if (currentNodeRef.current?.key && pathwayRef.current)
-        updatePathway(setNodeNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
+        updatePathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
     [pathwayRef, updatePathway, currentNodeRef]
   );
@@ -56,7 +62,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
       const newNode = createNode();
       let newPathway = addNode(pathwayRef.current, newNode);
       newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key as string);
-      newPathway = setNodeNodeType(newPathway, newNode.key as string, nodeType);
+      newPathway = setNodeType(newPathway, newNode.key as string, nodeType);
       updatePathway(newPathway);
       redirectToNode(newNode.key);
     },
@@ -93,7 +99,7 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
 
           <hr className={styles.divider} />
 
-          {nodeType === 'null' && <NullNode changeNodeType={changeNodeType} />}
+          {nodeType === 'null' && <NullNodeEditor changeNodeType={changeNodeType} />}
 
           {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
 

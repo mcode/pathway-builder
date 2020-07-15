@@ -270,7 +270,7 @@ export function setNodeLabel(pathway: Pathway, key: string, label: string): Path
   });
 }
 
-export function setNodeNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
+export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
   switch (nodeType) {
     case 'action':
       return makeNodeAction(pathway, nodeKey);
