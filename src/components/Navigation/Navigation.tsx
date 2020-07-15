@@ -5,12 +5,12 @@ import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 
 import { downloadPathway } from 'utils/builder';
-import { useCriteriaContext } from 'components/CriteriaProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
 const Navigation: FC = () => {
-  const { updateBuildCriteriaNodeId } = useCriteriaContext();
+  const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { pathway } = useCurrentPathwayContext();
   const styles = useStyles();

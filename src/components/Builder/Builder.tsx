@@ -1,6 +1,6 @@
 import React, { FC, useRef, useEffect, memo, useState, useCallback } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
-import { useCriteriaContext } from 'components/CriteriaProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
@@ -17,7 +17,7 @@ import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 const Builder: FC = () => {
   const styles = useStyles();
   const { pathway } = useCurrentPathwayContext();
-  const { buildCriteriaNodeId } = useCriteriaContext();
+  const { buildCriteriaNodeId } = useBuildCriteriaContext();
   const headerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
   const [showCriteriaBuilder, setShowCriteriaBuilder] = useState<boolean>(true);

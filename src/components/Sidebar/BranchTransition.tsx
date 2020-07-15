@@ -24,6 +24,7 @@ import { usePathwayContext } from 'components/PathwayProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -31,7 +32,8 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwayContext();
-  const { criteria, buildCriteriaNodeId, updateBuildCriteriaNodeId } = useCriteriaContext();
+  const { criteria } = useCriteriaContext();
+  const { buildCriteriaNodeId, updateBuildCriteriaNodeId } = useBuildCriteriaContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
