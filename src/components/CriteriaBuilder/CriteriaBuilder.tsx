@@ -1,6 +1,7 @@
 import React, { FC, memo, useCallback, useState, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@material-ui/core';
 
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
@@ -9,10 +10,29 @@ const CriteriaBuilder: FC = () => {
   const styles = useStyles();
   const [selectedElement, setSelectedElement] = useState<string>('');
   const [selectedDemoElement, setSelectedDemoElement] = useState<string>('');
+  const [gender, setGender] = useState<string>('');
   const elementOptions = [{ value: 'demographics', label: 'Demographics' }];
   const demoElementOptions = [
     { value: 'age range', label: 'Age Range' },
     { value: 'gender', label: 'Gender' }
+  ];
+  const genderOptions = [
+    {
+      label: 'Male',
+      value: 'male'
+    },
+    {
+      label: 'Female',
+      value: 'female'
+    },
+    {
+      label: 'Other',
+      value: 'other'
+    },
+    {
+      label: 'Unknown',
+      value: 'unknown'
+    }
   ];
 
   const onElementSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
@@ -21,6 +41,16 @@ const CriteriaBuilder: FC = () => {
 
   const onDemoElementSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
     setSelectedDemoElement(event?.target.value || '');
+  }, []);
+
+  const onGenderSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
+    setGender(event?.target.value || '');
+  }, []);
+
+  const resetElements = useCallback(() => {
+    setSelectedElement('');
+    setSelectedDemoElement('');
+    setGender('');
   }, []);
 
   return (
@@ -55,8 +85,21 @@ const CriteriaBuilder: FC = () => {
 
         {!(selectedElement === '' || selectedDemoElement === '') && (
           <>
-          {selectedDemoElement === 'gender' && <div>gender</div>}
-          {selectedDemoElement === 'age range' && <div>age range</div>}
+            <span>{selectedDemoElement}</span>
+            <IconButton onClick={resetElements}>
+              <FontAwesomeIcon icon={faTimes} />
+            </IconButton>
+            <hr />
+            {selectedDemoElement === 'gender' && (
+              <DropDown
+                id="Select Gender"
+                label="Gender"
+                options={genderOptions}
+                onChange={onGenderSelected}
+                value={gender}
+              />
+            )}
+            {selectedDemoElement === 'age range' && <div>age range</div>}
           </>
         )}
       </div>
