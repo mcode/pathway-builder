@@ -11,6 +11,8 @@ const CriteriaBuilder: FC = () => {
   const [selectedElement, setSelectedElement] = useState<string>('');
   const [selectedDemoElement, setSelectedDemoElement] = useState<string>('');
   const [gender, setGender] = useState<string>('');
+  const [minimumAge, setMinimumAge] = useState<number>(0);
+  const [maximumAge, setMaximumAge] = useState<number>(0);
   const elementOptions = [{ value: 'demographics', label: 'Demographics' }];
   const demoElementOptions = [
     { value: 'age range', label: 'Age Range' },
@@ -45,6 +47,14 @@ const CriteriaBuilder: FC = () => {
 
   const onGenderSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
     setGender(event?.target.value || '');
+  }, []);
+
+  const onMinimumAgeChange = useCallback((event: ChangeEvent<{ value: string }>): void => {
+    setMinimumAge(parseInt(event?.target.value) || 0);
+  }, []);
+
+  const onMaximumAgeChange = useCallback((event: ChangeEvent<{ value: string }>): void => {
+    setMaximumAge(parseInt(event?.target.value) || 0);
   }, []);
 
   const resetElements = useCallback(() => {
@@ -99,7 +109,18 @@ const CriteriaBuilder: FC = () => {
                 value={gender}
               />
             )}
-            {selectedDemoElement === 'age range' && <div>age range</div>}
+            {selectedDemoElement === 'age range' && (
+              <>
+                <div>
+                  <span>Minimum Age:</span>
+                  <input type="number" value={minimumAge} onChange={onMinimumAgeChange} />
+                </div>
+                <div>
+                  <span>Maximum Age:</span>
+                  <input type="number" value={maximumAge} onChange={onMaximumAgeChange} />
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
