@@ -6,6 +6,7 @@ import Header from 'components/Header';
 import Navigation from 'components/Navigation';
 import Sidebar from 'components/Sidebar';
 import Graph from 'components/Graph';
+import CriteriaBuilder from 'components/CriteriaBuilder';
 import { useTheme } from 'components/ThemeProvider';
 import useStyles from './styles';
 import { IconButton } from '@material-ui/core';
@@ -89,8 +90,7 @@ const Builder: FC = () => {
               </div>
             )}
             {buildCriteriaNodeId !== '' && showCriteriaBuilder ? (
-              // Empty section for authoring tool
-              <div />
+              <CriteriaBuilder />
             ) : (
               <Graph graphContainerWidth={graphContainerWidth} />
             )}
