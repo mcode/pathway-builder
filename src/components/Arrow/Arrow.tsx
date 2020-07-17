@@ -30,7 +30,7 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
         <text x={label.x + widthOffset} y={label.y}>
-          {label.text}
+          {label.text.length > 12 ? label.text.substring(0, 11) + '...' : label.text}
         </text>
       ) : null}
       <defs>
