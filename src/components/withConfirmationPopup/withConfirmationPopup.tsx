@@ -4,6 +4,8 @@ import PathwayPopup from 'components/PathwayPopup';
 import ActionButton from 'components/ActionButton';
 
 type ConfirmationProps = {
+  deleteType: string;
+  deleteName: string;
   onConfirm: () => void;
 };
 
@@ -12,13 +14,25 @@ type WithConfirmationPopupProps<T> = T & ConfirmationProps;
 const withConfirmationPopup = <T extends object>(
   WrappedComponent: FC<T>
 ): FC<WithConfirmationPopupProps<T>> => {
-  const PopupComponent: FC<WithConfirmationPopupProps<T>> = ({ onConfirm, ...wrappedProps }) => {
+  const PopupComponent: FC<WithConfirmationPopupProps<T>> = ({
+    deleteType,
+    deleteName,
+    onConfirm,
+    ...wrappedProps
+  }) => {
     const [open, setOpen] = useState<boolean>(false);
-    // https://github.com/Semantic-Org/Semantic-UI-React/issues/2487
+    // https://github.com/Semantic-Org/Semantic-UI-React/issues/2487]
     return (
       <PathwayPopup
         className={styles.withConfirmationPopup}
-        Content={<PopupContent setOpen={setOpen} onConfirm={onConfirm} />}
+        Content={
+          <PopupContent
+            deleteType={deleteType}
+            deleteName={deleteName}
+            setOpen={setOpen}
+            onConfirm={onConfirm}
+          />
+        }
         open={open}
         setOpen={setOpen}
         Trigger={
@@ -33,14 +47,18 @@ const withConfirmationPopup = <T extends object>(
 };
 
 interface PopupContentProps {
+  deleteType: string;
+  deleteName: string;
   setOpen: Function;
   onConfirm: () => void;
 }
 
-const PopupContent: FC<PopupContentProps> = ({ setOpen, onConfirm }) => {
+const PopupContent: FC<PopupContentProps> = ({ deleteType, deleteName, setOpen, onConfirm }) => {
   return (
     <div className={styles.popupContent}>
-      <div>Are you sure?</div>
+      <div>
+        Are you sure you would like to delete the {deleteName} {deleteType}?{' '}
+      </div>
       <div>
         <ActionButton
           size="small"

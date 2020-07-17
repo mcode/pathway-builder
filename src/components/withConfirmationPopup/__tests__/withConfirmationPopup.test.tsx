@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import withConfirmationPopup from '../withConfirmationPopup';
 
 const containerText = 'Lorem Ipsum';
-const popupText = 'Are you sure?';
+const popupText = 'Are you sure you would like to delete the test sample?';
 const mockCallback = jest.fn();
 
 const MockComponent: FC = () => {
@@ -19,7 +19,9 @@ describe('withConfirmationPopup', () => {
   });
 
   it('renders the popup when clicked', () => {
-    const { getByText, queryByText } = render(<MockWithConfirmation />);
+    const { getByText, queryByText } = render(
+      <MockWithConfirmation deleteName="test" deleteType="sample" />
+    );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText(containerText));
     expect(queryByText(popupText)).not.toBeNull();
@@ -35,7 +37,9 @@ describe('withConfirmationPopup', () => {
   });
 
   it('closes the popup when the confirmation is denied', () => {
-    const { getByText, queryByText, getByTestId } = render(<MockWithConfirmation />);
+    const { getByText, queryByText, getByTestId } = render(
+      <MockWithConfirmation deleteName="test" deleteType="sample" />
+    );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText(containerText));
     expect(queryByText(popupText)).not.toBeNull();

@@ -1,6 +1,6 @@
 import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faFileDownload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
   Table,
@@ -19,6 +19,7 @@ import PathwayModal from './PathwayModal';
 import useStyles from './styles';
 import { Pathway } from 'pathways-model';
 import { Link as RouterLink } from 'react-router-dom';
+import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 
 const PathwaysTable: FC = () => {
   const styles = useStyles();
@@ -84,14 +85,11 @@ const PathwaysTable: FC = () => {
                   >
                     Export
                   </Button>
-                  <Button
-                    color="secondary"
-                    size="small"
-                    startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                    onClick={(): void => deletePathway(pathway.id)}
-                  >
-                    Delete
-                  </Button>
+                  <ConfirmedDeletionButton
+                    deleteType="pathway"
+                    deleteName={pathway.name}
+                    deleteMethod={(): void => deletePathway(pathway.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

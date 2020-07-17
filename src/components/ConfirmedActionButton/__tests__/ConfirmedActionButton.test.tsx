@@ -2,11 +2,13 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { ConfirmedActionButton } from '../ConfirmedActionButton';
 
-const popupText = 'Are you sure?';
+const popupText = 'Are you sure you would like to delete the test sample?';
 
 describe('<ConfirmedActionButton />', () => {
   it('renders the popup when clicked', () => {
-    const { queryByText, getByText } = render(<ConfirmedActionButton size="large" type="accept" />);
+    const { queryByText, getByText } = render(
+      <ConfirmedActionButton size="large" type="accept" deleteType="sample" deleteName="test" />
+    );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText('Accept'));
     expect(queryByText(popupText)).not.toBeNull();
