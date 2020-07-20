@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import withConfirmationPopup from 'components/withConfirmationPopup';
 
 import { Button } from '@material-ui/core';
@@ -32,4 +32,4 @@ const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
   );
 };
 
-export default ConfirmedDeletionButton;
+export default memo(ConfirmedDeletionButton);
