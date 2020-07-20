@@ -36,6 +36,13 @@ const PathwaysTable: FC = () => {
     setOpen(false);
   }, []);
 
+  const deletion = useCallback(
+    (id: string): void => {
+      deletePathway(id);
+    },
+    [deletePathway]
+  );
+
   return (
     <div>
       <TableContainer className={styles.pathwayList}>
@@ -88,7 +95,7 @@ const PathwaysTable: FC = () => {
                   <ConfirmedDeletionButton
                     deleteType="pathway"
                     deleteName={pathway.name}
-                    deleteMethod={(): void => deletePathway(pathway.id)}
+                    deleteMethod={(): void => deletion(pathway.id)}
                   />
                 </TableCell>
               </TableRow>

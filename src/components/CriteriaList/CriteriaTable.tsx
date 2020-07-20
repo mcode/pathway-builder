@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -23,6 +23,13 @@ const CriteriaTable: FC = () => {
   const renderDate = (datetime: number): string => {
     return moment(datetime).fromNow();
   };
+
+  const deletion = useCallback(
+    (id: string): void => {
+      deleteCriteria(id);
+    },
+    [deleteCriteria]
+  );
 
   return (
     <TableContainer className={styles.criteriaList}>
@@ -57,7 +64,7 @@ const CriteriaTable: FC = () => {
                 <ConfirmedDeletionButton
                   deleteType="criterion"
                   deleteName={c.label}
-                  deleteMethod={(): void => deleteCriteria(c.id)}
+                  deleteMethod={(): void => deletion(c.id)}
                 />
               </TableCell>
             </TableRow>
