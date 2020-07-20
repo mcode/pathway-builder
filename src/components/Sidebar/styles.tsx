@@ -114,5 +114,5 @@ export default makeStyles(
       marginLeft: '1em'
     }
   }),
-  { name: 'Sidebar' }
+  { name: 'Sidebar', index: 1 }
 );

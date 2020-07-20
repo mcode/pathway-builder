@@ -40,5 +40,5 @@ export default makeStyles(
       fontStyle: 'italic'
     }
   }),
-  { name: 'CriteriaList' }
+  { name: 'CriteriaList', index: 1 }
 );

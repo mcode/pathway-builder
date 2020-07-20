@@ -21,5 +21,5 @@ export default makeStyles(
       width: '45px'
     }
   }),
-  { name: 'PathwaysList' }
+  { name: 'PathwaysList', index: 1 }
 );
