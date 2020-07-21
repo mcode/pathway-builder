@@ -4,6 +4,7 @@ import { PathwayNode } from 'pathways-model';
 import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
+import { Tooltip } from '@material-ui/core';
 
 interface ArrowProps {
   edge: Edge;
@@ -29,9 +30,17 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
     <svg className={clsx(styles.arrow, isCurrentBranchArrow && styles.currentBranchArrow)}>
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
-        <text x={label.x + widthOffset} y={label.y}>
-          {label.text.length > 12 ? label.text.substring(0, 11) + '...' : label.text}
-        </text>
+        label.text.length > 12 ? (
+          <Tooltip title={label.text} aria-label="tooltip">
+            <text x={label.x + widthOffset} y={label.y}>
+              {label.text.substring(0, 11) + '...'}
+            </text>
+          </Tooltip>
+        ) : (
+          <text x={label.x + widthOffset} y={label.y}>
+            {label.text}
+          </text>
+        )
       ) : null}
       <defs>
         <marker
