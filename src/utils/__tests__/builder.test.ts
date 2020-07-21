@@ -423,14 +423,16 @@ describe('builder interface update functions', () => {
   describe('setNodeType', () => {
     it('converts a branch node into a action node', () => {
       const key = 'N-test';
-      const newPathway = Builder.setNodeType(pathway, key, 'action');
+      const newPathway = Builder.setNodeType(pathway, key, 'ServiceRequest');
       expect(newPathway.nodes[key].cql).toEqual('');
+      expect(newPathway.nodes[key].action).toBeDefined();
     });
 
     it('converts a action node into a branch node', () => {
       const key = 'Surgery';
-      const newPathway = Builder.makeNodeBranch(pathway, key);
+      const newPathway = Builder.setNodeType(pathway, key, 'Observation');
       expect(newPathway.nodes[key].cql).not.toBeDefined();
+      expect(newPathway.nodes[key].action).not.toBeDefined();
     });
   });
 
@@ -484,6 +486,9 @@ describe('builder interface update functions', () => {
       expect(newPathway.nodes[key].cql).toEqual('');
       expect(newPathway.nodes[key].action).toEqual([]);
       expect(newPathway.nodes[key].nodeTypeIsUndefined).not.toBeDefined();
+      newPathway.nodes[key].transitions.forEach(transition => {
+        expect(transition.condition).not.toBeDefined();
+      });
     });
 
     it('does not modify its argument', () => {

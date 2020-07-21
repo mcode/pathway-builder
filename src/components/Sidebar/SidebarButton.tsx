@@ -9,14 +9,21 @@ interface SidebarButtonProps {
   buttonName: string;
   buttonIcon: IconDefinition;
   buttonText: string;
+  extraMargin?: boolean;
   onClick?: () => void;
 }
 
-const SidebarButton: FC<SidebarButtonProps> = ({ buttonName, buttonIcon, buttonText, onClick }) => {
+const SidebarButton: FC<SidebarButtonProps> = ({
+  buttonName,
+  buttonIcon,
+  buttonText,
+  extraMargin = false,
+  onClick
+}) => {
   const styles = useStyles();
 
   return (
-    <div className={styles.sidebarButtonGroup}>
+    <div className={extraMargin ? styles.sidebarButtonGroupExtraMargin : styles.sidebarButtonGroup}>
       <Button
         className={styles.sidebarButton}
         variant="contained"

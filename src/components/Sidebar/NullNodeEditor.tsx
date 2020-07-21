@@ -2,11 +2,13 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 
 import DropDown from 'components/elements/DropDown';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import useStyles from './styles';
 
 const nodeTypeOptions = [
-  { label: '', value: '' },
-  { label: 'Action', value: 'action' },
-  { label: 'Branch', value: 'branch' }
+  { label: 'Medication', value: 'MedicationRequest' },
+  { label: 'Procedure', value: 'ServiceRequest' },
+  { label: 'Regimen', value: 'CarePlan' },
+  { label: 'Observation', value: 'Observation' }
 ];
 
 interface NullNodeEditorProps {
@@ -15,6 +17,7 @@ interface NullNodeEditorProps {
 
 const NullNodeEditor: FC<NullNodeEditorProps> = ({ changeNodeType }) => {
   const { currentNode } = useCurrentNodeContext();
+  const styles = useStyles();
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
@@ -36,6 +39,9 @@ const NullNodeEditor: FC<NullNodeEditorProps> = ({ changeNodeType }) => {
           value=""
         />
       )}
+      <h5 className={styles.dividerHeader}>
+        <span>Transitions</span>
+      </h5>
     </>
   );
 };
