@@ -7,7 +7,11 @@ const popupText = 'Are you sure you would like to delete the test sample?';
 describe('<ConfirmedActionButton />', () => {
   it('renders the popup when clicked', () => {
     const { queryByText, getByText } = render(
-      <ConfirmedActionButton size="large" type="accept" deleteType="sample" deleteName="test" />
+      <ConfirmedActionButton
+        size="large"
+        type="accept"
+        displayText="Are you sure you would like to delete the test sample?"
+      />
     );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText('Accept'));

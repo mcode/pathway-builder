@@ -8,24 +8,28 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 interface ConfirmedDeletionButtonProps {
   deleteType: string;
   deleteName: string;
-  deleteMethod: () => void;
+  deleteId: string;
+  deleteMethod: (id: string) => void;
 }
 
 const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
   deleteType,
   deleteName,
+  deleteId,
   deleteMethod
 }) => {
   const ButtonPopup = withConfirmationPopup(Button);
+  const confirmationText =
+    'Are you sure you would like to delete the ' + deleteName + ' ' + deleteType + ' ?';
 
   return (
     <ButtonPopup
+      onConfirm={deleteMethod}
+      onConfirmParameter={deleteId}
       color="secondary"
       size="small"
       startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-      deleteType={deleteType}
-      deleteName={deleteName}
-      onConfirm={deleteMethod}
+      displayText={confirmationText}
     >
       Delete
     </ButtonPopup>

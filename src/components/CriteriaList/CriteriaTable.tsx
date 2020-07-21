@@ -64,7 +64,8 @@ const CriteriaTable: FC = () => {
                 <ConfirmedDeletionButton
                   deleteType="criterion"
                   deleteName={c.label}
-                  deleteMethod={(): void => deletion(c.id)}
+                  deleteId={c.id}
+                  deleteMethod={deletion}
                 />
               </TableCell>
             </TableRow>

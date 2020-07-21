@@ -95,7 +95,8 @@ const PathwaysTable: FC = () => {
                   <ConfirmedDeletionButton
                     deleteType="pathway"
                     deleteName={pathway.name}
-                    deleteMethod={(): void => deletion(pathway.id)}
+                    deleteId={pathway.id}
+                    deleteMethod={deletion}
                   />
                 </TableCell>
               </TableRow>

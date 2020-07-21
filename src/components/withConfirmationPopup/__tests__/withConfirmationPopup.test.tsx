@@ -20,7 +20,7 @@ describe('withConfirmationPopup', () => {
 
   it('renders the popup when clicked', () => {
     const { getByText, queryByText } = render(
-      <MockWithConfirmation deleteName="test" deleteType="sample" />
+      <MockWithConfirmation displayText="Are you sure you would like to delete the test sample?" />
     );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText(containerText));
@@ -38,7 +38,7 @@ describe('withConfirmationPopup', () => {
 
   it('closes the popup when the confirmation is denied', () => {
     const { getByText, queryByText, getByTestId } = render(
-      <MockWithConfirmation deleteName="test" deleteType="sample" />
+      <MockWithConfirmation displayText="Are you sure you would like to delete the test sample?" />
     );
     expect(queryByText(popupText)).toBeNull();
     fireEvent.click(getByText(containerText));

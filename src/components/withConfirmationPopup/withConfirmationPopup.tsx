@@ -4,9 +4,9 @@ import PathwayPopup from 'components/PathwayPopup';
 import ActionButton from 'components/ActionButton';
 
 type ConfirmationProps = {
-  deleteType: string;
-  deleteName: string;
-  onConfirm: () => void;
+  onConfirm: (id: string) => void;
+  onConfirmParameter: string;
+  displayText?: string;
 };
 
 type WithConfirmationPopupProps<T> = T & ConfirmationProps;
@@ -15,9 +15,9 @@ const withConfirmationPopup = <T extends object>(
   WrappedComponent: FC<T>
 ): FC<WithConfirmationPopupProps<T>> => {
   const PopupComponent: FC<WithConfirmationPopupProps<T>> = ({
-    deleteType,
-    deleteName,
     onConfirm,
+    onConfirmParameter,
+    displayText,
     ...wrappedProps
   }) => {
     const [open, setOpen] = useState<boolean>(false);
@@ -27,16 +27,15 @@ const withConfirmationPopup = <T extends object>(
         className={styles.withConfirmationPopup}
         Content={
           <PopupContent
-            deleteType={deleteType}
-            deleteName={deleteName}
+            displayText={displayText}
             setOpen={setOpen}
-            onConfirm={onConfirm}
+            onConfirm={(): void => onConfirm(onConfirmParameter)}
           />
         }
         open={open}
         setOpen={setOpen}
         Trigger={
-          <div className={styles.triggerContainer} {...wrappedProps}>
+          <div className={styles.triggerContainer}>
             <WrappedComponent {...(wrappedProps as T)} />
           </div>
         }
@@ -47,18 +46,15 @@ const withConfirmationPopup = <T extends object>(
 };
 
 interface PopupContentProps {
-  deleteType: string;
-  deleteName: string;
   setOpen: Function;
   onConfirm: () => void;
+  displayText?: string;
 }
 
-const PopupContent: FC<PopupContentProps> = ({ deleteType, deleteName, setOpen, onConfirm }) => {
+const PopupContent: FC<PopupContentProps> = ({ setOpen, onConfirm, displayText }) => {
   return (
     <div className={styles.popupContent}>
-      <div>
-        Are you sure you would like to delete the {deleteName} {deleteType}?{' '}
-      </div>
+      <div>{displayText || 'Are you sure?'}</div>
       <div>
         <ActionButton
           size="small"
