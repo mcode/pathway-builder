@@ -89,8 +89,9 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   if (!currentNode) return <div>Error: No current node</div>;
 
   const nodeType = getNodeType(pathway, currentNode.key);
-  // If the node does not have transitions it can be added to
-  const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
+  const displayAddButtons =
+    currentNode.key !== undefined &&
+    (currentNode.key !== 'Start' || currentNode.transitions.length === 0);
   return (
     <>
       {isExpanded && (
