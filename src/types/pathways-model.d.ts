@@ -49,6 +49,7 @@ declare module 'pathways-model' {
     mcodeCriteria?: string;
     otherCriteria?: string;
   }
+
   interface Action {
     id?: string;
     type: string;

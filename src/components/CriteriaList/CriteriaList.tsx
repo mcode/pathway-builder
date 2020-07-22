@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 import ImportCriteriaModal from './ImportCriteriaModal';
@@ -12,7 +12,7 @@ import useStyles from './styles';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
-  const { status } = usePathwayContext();
+  const { status } = usePathwaysContext();
 
   const [open, setOpen] = useState<boolean>(false);
   const openImportModal = useCallback((): void => {

@@ -1,4 +1,13 @@
-import React, { FC, memo, useState, useCallback, ChangeEvent, useEffect } from 'react';
+import React, {
+  FC,
+  memo,
+  useState,
+  useCallback,
+  ChangeEvent,
+  useEffect,
+  useMemo,
+  useRef
+} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
@@ -9,24 +18,30 @@ import {
   setTransitionConditionDescription
 } from 'utils/builder';
 import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
-import { Pathway, Transition } from 'pathways-model';
+import { Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 
 interface BranchTransitionProps {
-  pathway: Pathway;
-  currentNodeKey: string;
   transition: Transition;
 }
 
-const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, transition }) => {
-  const { updatePathway } = usePathwayContext();
-  const { criteria, buildCriteriaNodeId, updateBuildCriteriaNodeId } = useCriteriaContext();
-  const criteriaOptions = criteria.map(c => ({ value: c.id, label: c.label }));
+const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
+  const { updatePathway } = usePathwaysContext();
+  const { criteria } = useCriteriaContext();
+  const { buildCriteriaNodeId, updateBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const { pathway, pathwayRef } = useCurrentPathwayContext();
+  const { currentNodeRef } = useCurrentNodeContext();
+  const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
+    criteria
+  ]);
   const styles = useStyles();
   const transitionKey = transition?.transition || '';
-  const transitionNode = pathway.nodes[transitionKey];
+  const transitionNode = pathway?.nodes[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;
@@ -38,20 +53,23 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
+  const transitionRef = useRef(transition);
 
   const handleUseCriteria = useCallback((): void => {
-    if (hasCriteria && transition.id) {
+    if (hasCriteria && transition.id && currentNodeRef.current?.key && pathwayRef.current) {
       // delete the transition criteria
-      updatePathway(removeTransitionCondition(pathway, currentNodeKey, transition.id));
+      updatePathway(
+        removeTransitionCondition(pathwayRef.current, currentNodeRef.current.key, transition.id)
+      );
       setUseCriteriaSelected(false);
     } else {
       setUseCriteriaSelected(!useCriteriaSelected);
     }
-  }, [useCriteriaSelected, currentNodeKey, pathway, hasCriteria, transition.id, updatePathway]);
+  }, [useCriteriaSelected, currentNodeRef, pathwayRef, hasCriteria, transition.id, updatePathway]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey || !transition.id) return;
+      if (!currentNodeRef.current?.key || !transitionRef.current.id || !pathwayRef.current) return;
 
       const criteriaSource = event?.target.value || '';
       let elm = undefined;
@@ -61,30 +79,35 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
         }
       });
       if (!elm) return;
-      updatePathway(
-        setTransitionCondition(
-          pathway,
-          currentNodeKey,
-          transition.id,
-          transition.condition?.description || '',
-          elm,
-          criteriaSource
-        )
+      const newPathway = setTransitionCondition(
+        pathwayRef.current,
+        currentNodeRef.current.key,
+        transitionRef.current.id,
+        transitionRef.current.condition?.description || '',
+        elm,
+        criteriaSource
       );
+
+      updatePathway(newPathway);
     },
-    [currentNodeKey, transition.id, updatePathway, pathway, transition.condition, criteria]
+    [currentNodeRef, updatePathway, pathwayRef, transitionRef, criteria]
   );
 
   const setCriteriaDisplay = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeKey || !transition.id) return;
+      if (!currentNodeRef.current?.key || !transition.id || !pathwayRef.current) return;
 
       const criteriaDisplay = event?.target.value || '';
       updatePathway(
-        setTransitionConditionDescription(pathway, currentNodeKey, transition.id, criteriaDisplay)
+        setTransitionConditionDescription(
+          pathwayRef.current,
+          currentNodeRef.current.key,
+          transition.id,
+          criteriaDisplay
+        )
       );
     },
-    [currentNodeKey, transition.id, updatePathway, pathway]
+    [currentNodeRef, transition.id, updatePathway, pathwayRef]
   );
 
   const handleCriteriaName = useCallback(
@@ -116,12 +139,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
     <>
       <hr className={styles.divider} />
 
-      <SidebarHeader pathway={pathway} currentNode={transitionNode} isTransition={true} />
+      {transitionNode && <SidebarHeader node={transitionNode} isTransition={true} />}
 
       {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Use Criteria"
-          buttonIcon={<FontAwesomeIcon icon={faPlus} />}
+          buttonIcon={faPlus}
           buttonText="Add previously built or imported criteria logic to branch node."
           onClick={handleUseCriteria}
         />
@@ -163,7 +186,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ pathway, currentNodeKey, 
       {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Build Criteria"
-          buttonIcon={<FontAwesomeIcon icon={faTools} />}
+          buttonIcon={faTools}
           buttonText="Create new criteria logic to add to branch node."
           onClick={handleBuildCriteria}
         />

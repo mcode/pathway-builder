@@ -4,18 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 
-import { Pathway } from 'pathways-model';
 import { downloadPathway } from 'utils/builder';
-import { useCriteriaContext } from 'components/CriteriaProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import useStyles from './styles';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
-interface Props {
-  pathway: Pathway;
-}
-
-const Navigation: FC<Props> = ({ pathway }) => {
-  const { updateBuildCriteriaNodeId } = useCriteriaContext();
+const Navigation: FC = () => {
+  const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { pathway } = useCurrentPathwayContext();
   const styles = useStyles();
   const history = useHistory();
 
@@ -55,7 +52,8 @@ const Navigation: FC<Props> = ({ pathway }) => {
       >
         <MenuItem
           onClick={(): void => {
-            downloadPathway(pathway);
+            if (pathway) downloadPathway(pathway);
+            else alert('No pathway to download!');
             closeMenu();
           }}
         >

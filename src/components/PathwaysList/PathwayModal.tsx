@@ -12,8 +12,9 @@ import {
   IconButton
 } from '@material-ui/core';
 import shortid from 'shortid';
+import produce from 'immer';
 
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
@@ -30,7 +31,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
   const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
-  const { addPathway, updatePathway } = usePathwayContext();
+  const { addPathway, updatePathway } = usePathwaysContext();
 
   const closeModal = useCallback(
     (pathwayId: string): void => {
@@ -55,12 +56,18 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
   const handleUpdatePathway = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
-      if (editPathway) {
-        if (pathwayNameRef.current?.value) editPathway.name = pathwayNameRef.current?.value;
-        editPathway.description = pathwayDescRef.current?.value;
-        updatePathway(editPathway);
-        onClose();
+      if (
+        editPathway &&
+        (pathwayNameRef.current?.value !== editPathway.name ||
+          pathwayDescRef.current?.value !== editPathway.description)
+      ) {
+        const newEditPathway = produce(editPathway, (draftEditPathway: Pathway) => {
+          if (pathwayNameRef.current?.value) draftEditPathway.name = pathwayNameRef.current?.value;
+          draftEditPathway.description = pathwayDescRef.current?.value;
+        });
+        updatePathway(newEditPathway);
       }
+      onClose();
     },
     [updatePathway, editPathway, onClose]
   );

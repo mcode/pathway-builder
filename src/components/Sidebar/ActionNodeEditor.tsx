@@ -1,16 +1,24 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import { SidebarButton } from '.';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { setNodeAction, createCQL, setActionDescription, setActionNodeElm } from 'utils/builder';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  setNodeAction,
+  createCQL,
+  setActionNodeElm,
+  setActionResourceDisplay
+} from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { Pathway, ActionNode, Action } from 'pathways-model';
+import { ActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import produce from 'immer';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 const nodeTypeOptions = [
   { label: 'Action', value: 'action' },
@@ -33,20 +41,15 @@ const codeSystemOptions = [
 ];
 
 interface ActionNodeEditorProps {
-  pathway: Pathway;
-  currentNode: ActionNode;
   changeNodeType: (event: string) => void;
-  addNode: (event: string) => void;
 }
 
-const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
-  pathway,
-  currentNode,
-  changeNodeType,
-  addNode
-}) => {
-  const { updatePathway } = usePathwayContext();
+const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
+  const { updatePathway } = usePathwaysContext();
+  const { pathwayRef } = useCurrentPathwayContext();
+  const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();
+
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
@@ -56,63 +59,79 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
 
   const addActionCQL = useCallback(
     (action: Action, currentNodeKey: string): void => {
+      if (!pathwayRef.current) return;
+
       const cql = createCQL(action, currentNodeKey);
       convertBasicCQL(cql).then(elm => {
-        updatePathway(setActionNodeElm(pathway, currentNodeKey, elm as ElmLibrary));
+        // Disable lint for no-null assertion since it is already checked above
+        // eslint-disable-next-line
+        updatePathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm as ElmLibrary));
       });
     },
-    [pathway, updatePathway]
+    [pathwayRef, updatePathway]
   );
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNode.key) return;
+      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
       const code = event?.target.value || '';
-      const action: Action = currentNode.action[0];
-      if (action.resource.medicationCodeableConcept) {
-        action.resource.medicationCodeableConcept.coding[0].code = code;
-      } else {
-        action.resource.code.coding[0].code = code;
-      }
-      resetDisplay(action);
-      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
+      const action = produce(
+        (currentNodeRef.current as ActionNode).action[0],
+        (draftAction: Action) => {
+          if (draftAction.resource.medicationCodeableConcept) {
+            draftAction.resource.medicationCodeableConcept.coding[0].code = code;
+          } else {
+            draftAction.resource.code.coding[0].code = code;
+          }
+        }
+      );
+      updatePathway(
+        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
+      );
     },
-    [currentNode, pathway, updatePathway]
+    [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const changeDescription = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNode.key) return;
+      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
       const description = event?.target.value || '';
-      const actionId = currentNode.action[0].id; // TODO: change this for supporting multiple action
-      if (actionId) {
-        setActionDescription(pathway, currentNode.key, actionId, description);
-        updatePathway(setNodeAction(pathway, currentNode.key, currentNode.action));
-      }
+      const action = produce(
+        (currentNodeRef.current as ActionNode).action[0],
+        (draftAction: Action) => {
+          draftAction.description = description;
+        }
+      );
+      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
     },
-    [currentNode, pathway, updatePathway]
+    [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const changeTitle = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNode.key) return;
+      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
       const title = event?.target.value || '';
-      const action = currentNode.action[0];
-      action.resource.title = title;
-      resetDisplay(action);
-      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
+      const action = produce(
+        (currentNodeRef.current as ActionNode).action[0],
+        (draftAction: Action) => {
+          draftAction.resource.title = title;
+        }
+      );
+      updatePathway(
+        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
+      );
 
-      addActionCQL(action, currentNode.key);
+      addActionCQL(action, currentNodeRef.current.key);
     },
-    [currentNode, pathway, updatePathway, addActionCQL]
+    [currentNodeRef, pathwayRef, updatePathway, addActionCQL]
   );
 
   const selectActionType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNode.key) return;
+      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
       const value = event?.target.value || '';
       const actionType = actionTypeOptions.find(option => {
         return option.value === value;
@@ -166,54 +185,61 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
         };
       }
 
-      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
+      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
     },
-    [currentNode, pathway, updatePathway]
+    [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const selectCodeSystem = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNode.key) return;
+      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
       const codeSystem = event?.target.value || '';
-      const action = currentNode.action[0];
-      if (action.resource.medicationCodeableConcept) {
-        action.resource.medicationCodeableConcept.coding[0].system = codeSystem;
-      } else {
-        action.resource.code.coding[0].system = codeSystem;
-      }
-      resetDisplay(action);
-      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
+      const action = produce(
+        (currentNodeRef.current as ActionNode).action[0],
+        (draftAction: Action) => {
+          if (draftAction.resource.medicationCodeableConcept) {
+            draftAction.resource.medicationCodeableConcept.coding[0].system = codeSystem;
+          } else {
+            draftAction.resource.code.coding[0].system = codeSystem;
+          }
+        }
+      );
+      updatePathway(
+        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
+      );
     },
-    [currentNode, pathway, updatePathway]
+    [currentNodeRef, pathwayRef, updatePathway]
   );
 
-  const validateFunction = (): void => {
-    if (currentNode.key && currentNode.action.length) {
-      const action = currentNode.action[0];
-      if (action.resource.medicationCodeableConcept) {
-        action.resource.medicationCodeableConcept.coding[0].display = 'Example display text';
-      } else if (action.resource.title) {
-        action.resource.description = 'Example CarePlan Text';
-      } else {
-        action.resource.code.coding[0].display = 'Example display text'; // TODO: actually validate
-      }
-      updatePathway(setNodeAction(pathway, currentNode.key, [action]));
+  const validateFunction = useCallback((): void => {
+    if (
+      currentNodeRef.current?.key &&
+      (currentNodeRef.current as ActionNode).action.length &&
+      pathwayRef.current
+    ) {
+      const action = setActionResourceDisplay(
+        (currentNodeRef.current as ActionNode).action[0],
+        'Example Text'
+      );
+      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
 
-      addActionCQL(action, currentNode.key);
+      addActionCQL(action, currentNodeRef.current.key);
     } else {
       console.error('No Actions -- Cannot Validate');
     }
-  };
+  }, [currentNodeRef, pathwayRef, updatePathway, addActionCQL]);
 
-  const resetDisplay = (action: Action): void => {
-    if (action.resource.medicationCodeableConcept) {
-      action.resource.medicationCodeableConcept.coding[0].display = '';
-    } else if (action.resource.resourceType === 'CarePlan') {
-      action.resource.description = '';
-    } else {
-      action.resource.code.coding[0].display = ''; // TODO: actually validate
-    }
+  const resetDisplay = (action: Action): Action => {
+    return produce(action, (draftAction: Action) => {
+      if (draftAction.resource.medicationCodeableConcept) {
+        draftAction.resource.medicationCodeableConcept.coding[0].display = '';
+      } else if (draftAction.resource.resourceType === 'CarePlan') {
+        draftAction.resource.description = '';
+      } else {
+        draftAction.resource.code.coding[0].display = ''; // TODO: actually validate
+      }
+    });
   };
 
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -223,9 +249,8 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
   };
 
   // The node has a key and is not the start node
-  const changeNodeTypeEnabled = currentNode.key !== undefined && currentNode.key !== 'Start';
-
-  const action = currentNode.action;
+  const changeNodeTypeEnabled = currentNode?.key !== undefined && currentNode.key !== 'Start';
+  const action = (currentNode as ActionNode).action;
   const resource = action?.length > 0 && action[0].resource;
   let system = '';
   let code = '';
@@ -243,8 +268,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
   } else {
     display = resource.description;
   }
-  // If the node does not have transitions it can be added to
-  const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
+
   return (
     <>
       {changeNodeTypeEnabled && (
@@ -293,7 +317,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
                   ) : (
                     <SidebarButton
                       buttonName="Validate"
-                      buttonIcon={<FontAwesomeIcon icon={faCheckCircle} />}
+                      buttonIcon={faCheckCircle}
                       buttonText={display || 'Check validation of the input system and code'}
                       onClick={validateFunction}
                     />
@@ -336,24 +360,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({
               )}
             </>
           )}
-        </>
-      )}
-      {displayAddButtons && (
-        <>
-          {changeNodeTypeEnabled && <hr className={styles.divider} />}
-          <SidebarButton
-            buttonName="Add Action Node"
-            buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-            buttonText="Any clinical or workflow step which is not a decision."
-            onClick={(): void => addNode('action')}
-          />
-
-          <SidebarButton
-            buttonName="Add Branch Node"
-            buttonIcon={<FontAwesomeIcon icon={faPlus} />}
-            buttonText="A logical branching point based on clinical or workflow criteria."
-            onClick={(): void => addNode('branch')}
-          />
         </>
       )}
     </>

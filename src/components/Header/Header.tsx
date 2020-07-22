@@ -5,14 +5,14 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { useCriteriaContext } from 'components/CriteriaProvider';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import { useThemeToggle } from '../ThemeProvider';
 
 import logo from 'camino-logo-dark.png';
 import styles from './Header.module.scss';
 
 const Header: FC = () => {
-  const { updateBuildCriteriaNodeId } = useCriteriaContext();
+  const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const toggleTheme = useThemeToggle();
 

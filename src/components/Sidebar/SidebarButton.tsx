@@ -1,11 +1,13 @@
-import React, { FC, memo, ReactNode } from 'react';
+import React, { FC, memo } from 'react';
 import { Button } from '@material-ui/core';
 
 import useStyles from './styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 interface SidebarButtonProps {
   buttonName: string;
-  buttonIcon: ReactNode;
+  buttonIcon: IconDefinition;
   buttonText: string;
   onClick?: () => void;
 }
@@ -19,7 +21,7 @@ const SidebarButton: FC<SidebarButtonProps> = ({ buttonName, buttonIcon, buttonT
         className={styles.sidebarButton}
         variant="contained"
         color="primary"
-        startIcon={buttonIcon}
+        startIcon={<FontAwesomeIcon icon={buttonIcon} />}
         onClick={onClick}
       >
         {buttonName}

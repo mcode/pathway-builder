@@ -5,15 +5,15 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useState,
   ReactNode
 } from 'react';
 import { Pathway } from 'pathways-model';
 import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
+import useRefState from 'utils/useRefState';
 
-interface PathwayContextInterface {
+interface PathwaysContextInterface {
   pathways: Pathway[];
   status: string;
   addPathway: (pathway: Pathway) => void;
@@ -21,40 +21,52 @@ interface PathwayContextInterface {
   updatePathway: (pathway: Pathway) => void;
 }
 
-export const PathwayContext = createContext<PathwayContextInterface>({} as PathwayContextInterface);
+export const PathwaysContext = createContext<PathwaysContextInterface>(
+  {} as PathwaysContextInterface
+);
 
-interface PathwayProviderProps {
+interface PathwaysProviderProps {
   children: ReactNode;
 }
 
-export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => {
-  const [pathways, setPathways] = useState<Pathway[]>([]);
+export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function PathwaysProvider({
+  children
+}) {
+  const [pathways, pathwaysRef, setPathways] = useRefState<Pathway[]>([]);
   const service = useGetService<Pathway>(config.get('demoPathwaysService'));
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
 
-  const addPathway = useCallback((pathway: Pathway) => {
-    setPathways(currentPathways => [...currentPathways, pathway]);
-  }, []);
+  const addPathway = useCallback(
+    (pathway: Pathway) => {
+      setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
+    },
+    [setPathways]
+  );
 
-  const deletePathway = useCallback((id: string) => {
-    setPathways(currentPathways => currentPathways.filter(pathway => pathway.id !== id));
-  }, []);
+  const deletePathway = useCallback(
+    (id: string) => {
+      setPathways((currentPathways: Pathway[]) =>
+        currentPathways.filter(pathway => pathway.id !== id)
+      );
+    },
+    [setPathways]
+  );
 
   const updatePathway = useCallback(
     (newPathway: Pathway) => {
-      const index = pathways.findIndex(pathway => pathway.id === newPathway.id);
-      setPathways(currentPathways => [
+      const index = pathwaysRef.current.findIndex(pathway => pathway.id === newPathway.id);
+      setPathways((currentPathways: Pathway[]) => [
         ...currentPathways.slice(0, index),
         newPathway,
         ...currentPathways.slice(index + 1)
       ]);
     },
-    [pathways]
+    [pathwaysRef, setPathways]
   );
 
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
-  }, [servicePayload]);
+  }, [servicePayload, setPathways]);
 
   switch (service.status) {
     case 'error':
@@ -62,7 +74,7 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
 
     default:
       return (
-        <PathwayContext.Provider
+        <PathwaysContext.Provider
           value={{
             pathways,
             addPathway,
@@ -72,9 +84,9 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(({ children }) => 
           }}
         >
           {children}
-        </PathwayContext.Provider>
+        </PathwaysContext.Provider>
       );
   }
 });
 
-export const usePathwayContext = (): PathwayContextInterface => useContext(PathwayContext);
+export const usePathwaysContext = (): PathwaysContextInterface => useContext(PathwaysContext);

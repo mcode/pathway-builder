@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 
 import DropDown from 'components/elements/DropDown';
-import { Pathway, PathwayNode } from 'pathways-model';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 const nodeTypeOptions = [
   { label: '', value: '' },
@@ -9,14 +9,12 @@ const nodeTypeOptions = [
   { label: 'Branch', value: 'branch' }
 ];
 
-interface NullNodeProps {
-  pathway: Pathway;
-  currentNode: PathwayNode;
+interface NullNodeEditorProps {
   changeNodeType: (event: string) => void;
-  addNode: (event: string) => void;
 }
 
-const NullNode: FC<NullNodeProps> = ({ pathway, currentNode, changeNodeType, addNode }) => {
+const NullNodeEditor: FC<NullNodeEditorProps> = ({ changeNodeType }) => {
+  const { currentNode } = useCurrentNodeContext();
   const selectNodeType = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       changeNodeType(event?.target.value || '');
@@ -25,7 +23,7 @@ const NullNode: FC<NullNodeProps> = ({ pathway, currentNode, changeNodeType, add
   );
 
   // The node has a key and is not the start node
-  const changeNodeTypeEnabled = currentNode.key !== undefined && currentNode.key !== 'Start';
+  const changeNodeTypeEnabled = currentNode?.key !== undefined && currentNode.key !== 'Start';
 
   return (
     <>
@@ -42,4 +40,4 @@ const NullNode: FC<NullNodeProps> = ({ pathway, currentNode, changeNodeType, add
   );
 };
 
-export default memo(NullNode);
+export default memo(NullNodeEditor);
