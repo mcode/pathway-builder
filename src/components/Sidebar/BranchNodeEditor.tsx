@@ -4,7 +4,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { SidebarButton, BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
 import { addTransition, createNode, addNode } from 'utils/builder';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
@@ -20,7 +20,7 @@ interface BranchNodeEditorProps {
 }
 
 const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ changeNodeType }) => {
-  const { updatePathway } = usePathwayContext();
+  const { updatePathway } = usePathwaysContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();

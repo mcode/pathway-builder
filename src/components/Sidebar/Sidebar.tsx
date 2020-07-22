@@ -11,7 +11,7 @@ import {
   SidebarButton
 } from 'components/Sidebar';
 import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -21,7 +21,7 @@ interface SidebarProps {
 }
 
 const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
-  const { updatePathway } = usePathwayContext();
+  const { updatePathway } = usePathwaysContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);

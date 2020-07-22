@@ -20,7 +20,7 @@ import {
 import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
 import { Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -31,7 +31,7 @@ interface BranchTransitionProps {
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
-  const { updatePathway } = usePathwayContext();
+  const { updatePathway } = usePathwaysContext();
   const { criteria } = useCriteriaContext();
   const { buildCriteriaNodeId, updateBuildCriteriaNodeId } = useBuildCriteriaContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();

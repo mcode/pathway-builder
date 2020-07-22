@@ -12,7 +12,7 @@ import {
   Link
 } from '@material-ui/core';
 
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import { downloadPathway } from 'utils/builder';
 import PathwayModal from './PathwayModal';
 
@@ -22,7 +22,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 const PathwaysTable: FC = () => {
   const styles = useStyles();
-  const { pathways, deletePathway } = usePathwayContext();
+  const { pathways, deletePathway } = usePathwaysContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
 

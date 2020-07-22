@@ -2,13 +2,13 @@ import React, { FC, memo, useMemo, useEffect } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
 import Builder from 'components/Builder';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from './CurrentPathwayProvider';
 import { useCurrentNodeContext } from './CurrentNodeProvider';
 
 const BuilderRoute: FC = () => {
   const { id, nodeId } = useParams();
-  const { pathways } = usePathwayContext();
+  const { pathways } = usePathwaysContext();
   const { setPathway } = useCurrentPathwayContext();
   const { setCurrentNode } = useCurrentNodeContext();
   const pathwayId = decodeURIComponent(id);

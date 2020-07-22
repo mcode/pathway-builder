@@ -15,7 +15,7 @@ import useStyles from './styles';
 import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -45,7 +45,7 @@ interface ActionNodeEditorProps {
 }
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
-  const { updatePathway } = usePathwayContext();
+  const { updatePathway } = usePathwaysContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();

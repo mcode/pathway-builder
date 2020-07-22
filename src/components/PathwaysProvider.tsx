@@ -13,7 +13,7 @@ import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import useRefState from 'utils/useRefState';
 
-interface PathwayContextInterface {
+interface PathwaysContextInterface {
   pathways: Pathway[];
   status: string;
   addPathway: (pathway: Pathway) => void;
@@ -21,13 +21,15 @@ interface PathwayContextInterface {
   updatePathway: (pathway: Pathway) => void;
 }
 
-export const PathwayContext = createContext<PathwayContextInterface>({} as PathwayContextInterface);
+export const PathwaysContext = createContext<PathwaysContextInterface>(
+  {} as PathwaysContextInterface
+);
 
-interface PathwayProviderProps {
+interface PathwaysProviderProps {
   children: ReactNode;
 }
 
-export const PathwayProvider: FC<PathwayProviderProps> = memo(function PathwayProvider({
+export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function PathwaysProvider({
   children
 }) {
   const [pathways, pathwaysRef, setPathways] = useRefState<Pathway[]>([]);
@@ -72,7 +74,7 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(function PathwayPr
 
     default:
       return (
-        <PathwayContext.Provider
+        <PathwaysContext.Provider
           value={{
             pathways,
             addPathway,
@@ -82,9 +84,9 @@ export const PathwayProvider: FC<PathwayProviderProps> = memo(function PathwayPr
           }}
         >
           {children}
-        </PathwayContext.Provider>
+        </PathwaysContext.Provider>
       );
   }
 });
 
-export const usePathwayContext = (): PathwayContextInterface => useContext(PathwayContext);
+export const usePathwaysContext = (): PathwaysContextInterface => useContext(PathwaysContext);

@@ -14,7 +14,7 @@ import {
 import shortid from 'shortid';
 import produce from 'immer';
 
-import { usePathwayContext } from 'components/PathwayProvider';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
@@ -31,7 +31,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
   const history = useHistory();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
-  const { addPathway, updatePathway } = usePathwayContext();
+  const { addPathway, updatePathway } = usePathwaysContext();
 
   const closeModal = useCallback(
     (pathwayId: string): void => {

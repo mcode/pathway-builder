@@ -5,7 +5,7 @@ import Header from 'components/Header';
 
 import BuilderRoute from './BuilderRoute';
 import ThemeProvider from './ThemeProvider';
-import { PathwayProvider } from './PathwayProvider';
+import { PathwaysProvider } from './PathwaysProvider';
 import { UserProvider } from './UserProvider';
 import { CriteriaProvider } from './CriteriaProvider';
 import Tabs from './Tabs';
@@ -20,7 +20,7 @@ const App: FC = () => {
     <ThemeProvider theme="light">
       <UserProvider>
         <CurrentPathwayProvider>
-          <PathwayProvider>
+          <PathwaysProvider>
             <CurrentNodeProvider>
               <CriteriaProvider>
                 <BuildCriteriaProvider>
@@ -46,7 +46,7 @@ const App: FC = () => {
                 </BuildCriteriaProvider>
               </CriteriaProvider>
             </CurrentNodeProvider>
-          </PathwayProvider>
+          </PathwaysProvider>
         </CurrentPathwayProvider>
       </UserProvider>
     </ThemeProvider>
