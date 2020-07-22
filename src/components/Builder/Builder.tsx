@@ -33,9 +33,14 @@ const Builder: FC<BuilderProps> = ({ pathway, currentNode }) => {
 
   // Set the height of the graph container
   useEffect(() => {
-    if (graphContainerElement?.current && headerElement?.current)
-      graphContainerElement.current.style.height =
-        window.innerHeight - headerElement.current.clientHeight + 'px';
+    const resize = (): void => {
+      if (graphContainerElement?.current && headerElement?.current)
+        graphContainerElement.current.style.height =
+          window.innerHeight - headerElement.current.clientHeight + 'px';
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return (): void => window.removeEventListener('resize', resize);
   }, [pathway, headerElement, graphContainerElement]);
 
   // Reset criteriaBuilderToggle to true if not currently building criteria

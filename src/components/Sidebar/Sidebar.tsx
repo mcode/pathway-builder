@@ -60,9 +60,14 @@ const Sidebar: FC<SidebarProps> = ({ pathway, headerElement, currentNode }) => {
 
   // Set the height of the sidebar container
   useEffect(() => {
-    if (sidebarContainerElement?.current && headerElement?.current)
-      sidebarContainerElement.current.style.height =
-        window.innerHeight - headerElement.current.clientHeight + 'px';
+    const resize = (): void => {
+      if (sidebarContainerElement?.current && headerElement?.current)
+        sidebarContainerElement.current.style.height =
+          window.innerHeight - headerElement.current.clientHeight + 'px';
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return (): void => window.removeEventListener('resize', resize);
   }, [isExpanded, headerElement]);
 
   const nodeType = getNodeType(pathway, currentNodeKey);
