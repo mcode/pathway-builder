@@ -5,6 +5,7 @@ import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 interface ArrowProps {
   edge: Edge;
@@ -25,17 +26,23 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 
+  const CustomTooltip = withStyles({
+    tooltip: {
+      fontSize: 14
+    }
+  })(Tooltip);
+
   const { label } = edge;
   return (
     <svg className={clsx(styles.arrow, isCurrentBranchArrow && styles.currentBranchArrow)}>
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
         label.text.length > 12 ? (
-          <Tooltip title={label.text} aria-label="tooltip">
+          <CustomTooltip title={label.text} aria-label="tooltip">
             <text x={label.x + widthOffset} y={label.y}>
               {label.text.substring(0, 11) + '...'}
             </text>
-          </Tooltip>
+          </CustomTooltip>
         ) : (
           <text x={label.x + widthOffset} y={label.y}>
             {label.text}
