@@ -2,11 +2,6 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 
 import { BranchTransition } from '.';
 import DropDown from 'components/elements/DropDown';
-<<<<<<< HEAD
-import { addTransition, createNode, addNode } from 'utils/builder';
-import { usePathwaysContext } from 'components/PathwaysProvider';
-=======
->>>>>>> Support multiple transitions and update designs
 
 import useStyles from './styles';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -23,13 +18,7 @@ interface BranchNodeEditorProps {
 }
 
 const BranchNodeEditor: FC<BranchNodeEditorProps> = ({ changeNodeType }) => {
-<<<<<<< HEAD
-  const { updatePathway } = usePathwaysContext();
-  const { pathwayRef } = useCurrentPathwayContext();
-  const { currentNode, currentNodeRef } = useCurrentNodeContext();
-=======
   const { currentNode } = useCurrentNodeContext();
->>>>>>> Support multiple transitions and update designs
   const styles = useStyles();
 
   const selectNodeType = useCallback(
