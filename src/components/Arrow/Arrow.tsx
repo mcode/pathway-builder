@@ -4,7 +4,7 @@ import { PathwayNode } from 'pathways-model';
 import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
-import { CustomTooltip } from 'styles/theme';
+import { Tooltip } from '@material-ui/core';
 
 interface ArrowProps {
   edge: Edge;
@@ -31,11 +31,11 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
         label.text.length > 12 ? (
-          <CustomTooltip title={label.text} aria-label="tooltip">
+          <Tooltip title={label.text} aria-label="tooltip">
             <text x={label.x + widthOffset} y={label.y}>
               {label.text.substring(0, 11) + '...'}
             </text>
-          </CustomTooltip>
+          </Tooltip>
         ) : (
           <text x={label.x + widthOffset} y={label.y}>
             {label.text}
