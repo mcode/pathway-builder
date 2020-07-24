@@ -4,8 +4,7 @@ import { PathwayNode } from 'pathways-model';
 import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
-import { Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { CustomTooltip } from 'styles/theme';
 
 interface ArrowProps {
   edge: Edge;
@@ -25,12 +24,6 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
   const isCurrentBranchArrow = isBranchNode(currentNode) && edge.start === currentNode.key;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
-
-  const CustomTooltip = withStyles({
-    tooltip: {
-      fontSize: 14
-    }
-  })(Tooltip);
 
   const { label } = edge;
   return (

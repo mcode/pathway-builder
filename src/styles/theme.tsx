@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import deepmerge from 'deepmerge';
+import { Tooltip } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -262,5 +264,11 @@ const projectorTheme = createMuiTheme({
   variables: { ...variables }
 });
 
+const CustomTooltip = withStyles({
+  tooltip: {
+    fontSize: 14
+  }
+})(Tooltip);
+
 export default lightTheme;
-export { lightTheme, darkTheme, projectorTheme };
+export { lightTheme, darkTheme, projectorTheme, CustomTooltip };
