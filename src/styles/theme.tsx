@@ -120,6 +120,11 @@ const materialUiOverridesBase = {
       }
     }
   },
+  MuiTooltip: {
+    tooltip: {
+      fontSize: 14
+    }
+  },
   MuiOutlinedInput: {
     root: {
       borderRadius: '0'
@@ -175,6 +180,11 @@ const materialUiOverridesDark = {
         borderColor: colors.white,
         backgroundColor: colors.grayDark
       }
+    }
+  },
+  MuiTooltip: {
+    tooltip: {
+      fontSize: 14
     }
   },
   MuiOutlinedInput: {

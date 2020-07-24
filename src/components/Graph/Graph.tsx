@@ -230,7 +230,7 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
       <svg
         xmlns="http://www.w3.org/2000/svg"
         style={{
-          width: maxWidth,
+          width: maxWidth + 100,
           height: maxHeight,
           zIndex: 1,
           top: 0,
