@@ -208,22 +208,24 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
     >
       {nodeCoordinates !== undefined
         ? Object.keys(nodeCoordinates).map(nodeKey => {
-            return (
-              <Node
-                key={nodeKey}
-                nodeKey={nodeKey}
-                ref={(node: HTMLDivElement): void => {
-                  if (node) nodeRefs.current[nodeKey] = node;
-                  else delete nodeRefs.current[nodeKey];
-                }}
-                pathwayNode={pathway.nodes[nodeKey]}
-                xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
-                yCoordinate={nodeCoordinates[nodeKey].y}
-                expanded={Boolean(expanded[nodeKey])}
-                onClick={onClickHandler}
-                nodeType={getNodeType(pathway, nodeKey)}
-              />
-            );
+            if (Object.keys(pathway.nodes).includes(nodeKey)) {
+              return (
+                <Node
+                  key={nodeKey}
+                  nodeKey={nodeKey}
+                  ref={(node: HTMLDivElement): void => {
+                    if (node) nodeRefs.current[nodeKey] = node;
+                    else delete nodeRefs.current[nodeKey];
+                  }}
+                  pathwayNode={pathway.nodes[nodeKey]}
+                  xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
+                  yCoordinate={nodeCoordinates[nodeKey].y}
+                  expanded={Boolean(expanded[nodeKey])}
+                  onClick={onClickHandler}
+                  nodeType={getNodeType(pathway, nodeKey)}
+                />
+              );
+            } else return null;
           })
         : []}
 

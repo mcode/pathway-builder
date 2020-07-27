@@ -39,7 +39,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
   const redirectToNode = useCallback(() => {
     if (!pathwayRef.current || !node.key) return;
     redirect(pathwayRef.current.id, node.key, history);
-  }, [history, pathwayRef, node.key, redirect]);
+  }, [history, pathwayRef, node.key]);
 
   const openNodeOptions = useCallback(() => {
     // TODO
@@ -58,9 +58,9 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
 
   const deleteNode = useCallback(() => {
     if (node.key && pathwayRef.current && canDeleteNode(pathwayRef.current, node)) {
-      // const parents = findParents(pathwayRef.current, node.key);
+      const parents = findParents(pathwayRef.current, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
-      // redirect(pathwayRef.current.id, parents[0], history);
+      redirect(pathwayRef.current.id, parents[0], history);
     }
   }, [pathwayRef, updatePathway, node, history]);
 

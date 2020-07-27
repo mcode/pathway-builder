@@ -441,7 +441,7 @@ export function getNodeType(pathway: Pathway, key: string | undefined): string {
     return 'null';
   }
   const node = pathway.nodes[key];
-  if (node.nodeTypeIsUndefined) {
+  if (!node || node.nodeTypeIsUndefined) {
     return 'null';
   } else if (!(node as ActionNode).action && key !== 'Start') {
     return 'branch';
