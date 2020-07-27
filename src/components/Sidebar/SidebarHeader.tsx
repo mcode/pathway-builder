@@ -5,16 +5,18 @@ import {
   faEdit,
   faEllipsisH,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, FormControl, Input } from '@material-ui/core';
 
 import { PathwayNode } from 'pathways-model';
-import { setNodeLabel } from 'utils/builder';
+import { setNodeLabel, removeNode } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useHistory } from 'react-router-dom';
+import { canDeleteNode, redirect, findParents } from 'utils/nodeUtils';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -36,14 +38,8 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
 
   const redirectToNode = useCallback(() => {
     if (!pathwayRef.current || !node.key) return;
-
-    const url = `/builder/${encodeURIComponent(pathwayRef.current.id)}/node/${encodeURIComponent(
-      node.key
-    )}`;
-    if (url !== history.location.pathname) {
-      history.push(url);
-    }
-  }, [history, pathwayRef, node.key]);
+    redirect(pathwayRef.current.id, node.key, history);
+  }, [history, pathwayRef, node.key, redirect]);
 
   const openNodeOptions = useCallback(() => {
     // TODO
@@ -58,6 +54,18 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
 
   const handleShowInput = useCallback(() => {
     setShowInput(true);
+  }, []);
+
+  const deleteNode = useCallback(() => {
+    if (node.key && pathwayRef.current && canDeleteNode(pathwayRef.current, node)) {
+      // const parents = findParents(pathwayRef.current, node.key);
+      updatePathway(removeNode(pathwayRef.current, node.key));
+      // redirect(pathwayRef.current.id, parents[0], history);
+    }
+  }, [pathwayRef, updatePathway, node, history]);
+
+  const deleteTransition = useCallback(() => {
+    console.log('delete transition');
   }, []);
 
   const handleKeyPress = useCallback(
@@ -112,6 +120,15 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
       </div>
 
       <div className={styles.sidebarHeaderGroup}>
+        {node.key !== 'Start' && (
+          <IconButton
+            className={styles.sidebarHeaderButton}
+            onClick={isTransition ? deleteTransition : deleteNode}
+            aria-label={isTransition ? 'delete transition' : 'delete node'}
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </IconButton>
+        )}
         <IconButton
           className={styles.sidebarHeaderButton}
           onClick={isTransition ? redirectToNode : openNodeOptions}

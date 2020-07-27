@@ -237,8 +237,8 @@ describe('builder interface add functions', () => {
 
     const newPathway = Builder.addTransition(pathway, startNodeKey, endNodeKey);
 
-    expect(pathway.nodes[startNodeKey].transitions).toEqual([]);
-    expect(newPathway.nodes[startNodeKey].transitions[0]).toEqual(
+    expect(pathway.nodes[startNodeKey].transitions.length).toEqual(1);
+    expect(newPathway.nodes[startNodeKey].transitions[1]).toEqual(
       expect.objectContaining({
         transition: endNodeKey
       })
