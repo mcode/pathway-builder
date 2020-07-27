@@ -8,7 +8,7 @@ import {
   faChevronRight,
   faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
-import { IconButton, FormControl, Input } from '@material-ui/core';
+import { IconButton, FormControl, Input, Tooltip } from '@material-ui/core';
 
 import { PathwayNode } from 'pathways-model';
 import { setNodeLabel, removeNode } from 'utils/builder';
@@ -17,6 +17,7 @@ import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useHistory } from 'react-router-dom';
 import { canDeleteNode, redirect, findParents } from 'utils/nodeUtils';
+import { DeleteModal } from '.';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -26,7 +27,9 @@ interface SidebarHeaderProps {
 const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
   const { updatePathway } = usePathwaysContext();
   const [showInput, setShowInput] = useState<boolean>(false);
-  const { pathwayRef } = useCurrentPathwayContext();
+  const [openTooltip, setOpenTooltip] = useState<boolean>(false);
+  const [openDeleteNode, setOpenDeleteNode] = useState<boolean>(false);
+  const { pathway, pathwayRef } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
   const styles = useStyles();
@@ -61,11 +64,28 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
       const parents = findParents(pathwayRef.current, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
+      setOpenDeleteNode(false);
     }
   }, [pathwayRef, updatePathway, node, history]);
 
   const deleteTransition = useCallback(() => {
     console.log('delete transition');
+  }, []);
+
+  const openDeleteNodeModal = useCallback((): void => {
+    setOpenDeleteNode(true);
+  }, []);
+
+  const closeDeleteNodeModal = useCallback((): void => {
+    setOpenDeleteNode(false);
+  }, []);
+
+  const handleOpenTooltip = useCallback((): void => {
+    setOpenTooltip(true);
+  }, []);
+
+  const handleCloseTooltip = useCallback((): void => {
+    setOpenTooltip(false);
   }, []);
 
   const handleKeyPress = useCallback(
@@ -74,6 +94,8 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
     },
     [changeNodeLabel]
   );
+
+  const deleteDisabled = !isTransition && pathway ? !canDeleteNode(pathway, node) : true;
 
   return (
     <div className={styles.sidebarHeader}>
@@ -121,13 +143,25 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
 
       <div className={styles.sidebarHeaderGroup}>
         {node.key !== 'Start' && (
-          <IconButton
-            className={styles.sidebarHeaderButton}
-            onClick={isTransition ? deleteTransition : deleteNode}
-            aria-label={isTransition ? 'delete transition' : 'delete node'}
+          <Tooltip
+            placement="top"
+            open={deleteDisabled ? openTooltip : false}
+            onClose={handleCloseTooltip}
+            onOpen={handleOpenTooltip}
+            title="Disabled"
+            arrow
           >
-            <FontAwesomeIcon icon={faTrashAlt} />
-          </IconButton>
+            <span>
+              <IconButton
+                className={styles.sidebarHeaderButton}
+                onClick={isTransition ? deleteTransition : openDeleteNodeModal}
+                aria-label={isTransition ? 'delete transition' : 'delete node'}
+                disabled={deleteDisabled}
+              >
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
         <IconButton
           className={styles.sidebarHeaderButton}
@@ -137,6 +171,14 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
           <FontAwesomeIcon icon={isTransition ? faChevronRight : faEllipsisH} />
         </IconButton>
       </div>
+
+      <DeleteModal
+        nodeLabel={node.label}
+        isTransition={false}
+        open={openDeleteNode}
+        onDelete={deleteNode}
+        onClose={closeDeleteNodeModal}
+      />
     </div>
   );
 };

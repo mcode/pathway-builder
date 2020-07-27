@@ -11,6 +11,7 @@ import styles from './Graph.module.scss';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { getNodeType } from 'utils/builder';
+import { redirect } from 'utils/nodeUtils';
 
 interface GraphProps {
   graphContainerWidth: number;
@@ -175,24 +176,15 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
   const { id: pathwayId } = useParams();
   const history = useHistory();
   const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
-  const redirectToNode = useCallback(
-    nodeId => {
-      const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
-      if (url !== history.location.pathname) {
-        history.push(url);
-      }
-    },
-    [history, pathwayId]
-  );
   const onClickHandler = useCallback(
     (nodeKey: string) => {
       if (interactive) {
-        redirectToNode(nodeKey);
+        redirect(pathwayId, nodeKey, history);
         toggleExpanded(nodeKey);
         updateBuildCriteriaNodeId('');
       }
     },
-    [redirectToNode, toggleExpanded, updateBuildCriteriaNodeId, interactive]
+    [toggleExpanded, updateBuildCriteriaNodeId, interactive, history, pathwayId]
   );
 
   return (

@@ -176,6 +176,13 @@ const materialUiOverridesBase = {
     root: {
       overflow: 'visible'
     }
+  },
+  MuiIconButton: {
+    root: {
+      '&:disabled': {
+        color: colors.grayMedium
+      }
+    }
   }
 };
 

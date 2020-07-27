@@ -135,6 +135,24 @@ export default makeStyles(
         background: theme.palette.common.gray,
         padding: '0 10px'
       }
+    },
+    dialogCloseButton: {
+      float: 'right',
+      width: '45px'
+    },
+    dialogContent: {
+      color: theme.palette.common.black,
+      fontSize: '16px',
+      display: 'flex',
+      marginTop: '-25px'
+    },
+    dialogContentText: {
+      paddingLeft: '10px',
+      lineHeight: '40px'
+    },
+    alertIcon: {
+      color: theme.palette.common.red,
+      fontSize: '40px'
     }
   }),
   { name: 'Sidebar', index: 1 }
