@@ -18,3 +18,10 @@ export const resourceNameConversion: ConversionResource = {
   ServiceRequest: 'Procedure',
   CarePlan: 'Regimen'
 };
+
+export const nodeTypeOptions = [
+  { label: 'Medication', value: 'MedicationRequest' },
+  { label: 'Procedure', value: 'ServiceRequest' },
+  { label: 'Regimen', value: 'CarePlan' },
+  { label: 'Observation', value: 'Observation' }
+];

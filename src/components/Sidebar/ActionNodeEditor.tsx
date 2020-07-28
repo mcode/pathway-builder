@@ -18,13 +18,7 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-
-const nodeTypeOptions = [
-  { label: 'Medication', value: 'MedicationRequest' },
-  { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'CarePlan' },
-  { label: 'Observation', value: 'Observation' }
-];
+import { nodeTypeOptions } from 'utils/nodeUtils';
 
 const codeSystemOptions = [
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },

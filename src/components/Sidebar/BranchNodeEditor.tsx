@@ -5,13 +5,7 @@ import DropDown from 'components/elements/DropDown';
 
 import useStyles from './styles';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-
-const nodeTypeOptions = [
-  { label: 'Medication', value: 'MedicationRequest' },
-  { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'CarePlan' },
-  { label: 'Observation', value: 'Observation' }
-];
+import { nodeTypeOptions } from 'utils/nodeUtils';
 
 interface BranchNodeEditorProps {
   changeNodeType: (event: string) => void;

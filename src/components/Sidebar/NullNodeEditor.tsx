@@ -3,13 +3,7 @@ import React, { FC, memo, useCallback, ChangeEvent } from 'react';
 import DropDown from 'components/elements/DropDown';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import useStyles from './styles';
-
-const nodeTypeOptions = [
-  { label: 'Medication', value: 'MedicationRequest' },
-  { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'CarePlan' },
-  { label: 'Observation', value: 'Observation' }
-];
+import { nodeTypeOptions } from 'utils/nodeUtils';
 
 interface NullNodeEditorProps {
   changeNodeType: (event: string) => void;
