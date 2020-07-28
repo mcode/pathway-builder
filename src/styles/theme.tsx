@@ -49,6 +49,7 @@ const colors = {
   gray: '#4a4a4a',
   grayMedium: '#bbbdc0',
   grayBlue: '#cbd5df',
+  grayLight: '#6c6c6c',
   grayLighter: '#eaeef2',
   grayDark: '#444',
   grayVeryDark: '#3a3a3a',
@@ -139,7 +140,11 @@ const materialUiOverridesBase = {
   },
   MuiTooltip: {
     tooltip: {
-      fontSize: 14
+      fontSize: 14,
+      backgroundColor: colors.grayVeryDark
+    },
+    arrow: {
+      color: colors.grayVeryDark
     }
   },
   MuiOutlinedInput: {
@@ -180,7 +185,7 @@ const materialUiOverridesBase = {
   MuiIconButton: {
     root: {
       '&:disabled': {
-        color: colors.grayMedium
+        color: colors.grayLight
       }
     }
   }

@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 
 import useStyles from './styles';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 interface DeleteModalProps {
   open: boolean;
@@ -29,6 +30,7 @@ const DeleteModal: FC<DeleteModalProps> = ({
   onDelete
 }) => {
   const styles = useStyles();
+  const { currentNode } = useCurrentNodeContext();
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
   const handleDelete = useCallback((): void => {
@@ -42,8 +44,9 @@ const DeleteModal: FC<DeleteModalProps> = ({
 
   const text = isTransition ? (
     <span>
-      Delete the transition from <strong>{nodeLabel}</strong>? This will not delete either node,
-      just the transition between them.
+      Delete the transition from <strong>{currentNode?.label}</strong> to{' '}
+      <strong>{nodeLabel}</strong>? This will not delete either node, just the transition between
+      them.
     </span>
   ) : (
     <span>

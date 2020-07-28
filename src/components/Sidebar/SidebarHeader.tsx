@@ -11,13 +11,14 @@ import {
 import { IconButton, FormControl, Input, Tooltip } from '@material-ui/core';
 
 import { PathwayNode } from 'pathways-model';
-import { setNodeLabel, removeNode } from 'utils/builder';
+import { setNodeLabel, removeNode, removeTransition } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useHistory } from 'react-router-dom';
-import { canDeleteNode, redirect, findParents } from 'utils/nodeUtils';
+import { canDeleteNode, redirect, findParents, willOrphanChild } from 'utils/nodeUtils';
 import { DeleteModal } from '.';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -28,7 +29,8 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
   const { updatePathway } = usePathwaysContext();
   const [showInput, setShowInput] = useState<boolean>(false);
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
-  const [openDeleteNode, setOpenDeleteNode] = useState<boolean>(false);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const { currentNodeRef } = useCurrentNodeContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
@@ -64,20 +66,28 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
       const parents = findParents(pathwayRef.current, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
-      setOpenDeleteNode(false);
+      setOpenDelete(false);
     }
   }, [pathwayRef, updatePathway, node, history]);
 
   const deleteTransition = useCallback(() => {
-    console.log('delete transition');
+    if (
+      node.key &&
+      currentNodeRef.current?.key &&
+      pathwayRef.current &&
+      !willOrphanChild(pathwayRef.current, node.key)
+    ) {
+      updatePathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
+      setOpenDelete(false);
+    }
+  }, [pathwayRef, currentNodeRef, updatePathway, node]);
+
+  const openDeleteModal = useCallback((): void => {
+    setOpenDelete(true);
   }, []);
 
-  const openDeleteNodeModal = useCallback((): void => {
-    setOpenDeleteNode(true);
-  }, []);
-
-  const closeDeleteNodeModal = useCallback((): void => {
-    setOpenDeleteNode(false);
+  const closeDeleteModal = useCallback((): void => {
+    setOpenDelete(false);
   }, []);
 
   const handleOpenTooltip = useCallback((): void => {
@@ -95,7 +105,12 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
     [changeNodeLabel]
   );
 
-  const deleteDisabled = !isTransition && pathway ? !canDeleteNode(pathway, node) : true;
+  const deleteNodeDisabled = pathway ? !canDeleteNode(pathway, node) : true;
+  const deleteTransitionDisabled = pathway && node.key ? willOrphanChild(pathway, node.key) : true;
+  const deleteDisabled = isTransition ? deleteTransitionDisabled : deleteNodeDisabled;
+  const titleText = isTransition
+    ? 'Deleting this transition would result in an orphaned node. To delete, first add the child node as a transition to another node, or delete it directly.'
+    : 'Deleting this node would result in an orphaned descendent node. To delete, first add another transition to the would-be orphaned node from another node, or delete it directly.';
 
   return (
     <div className={styles.sidebarHeader}>
@@ -148,13 +163,13 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
             open={deleteDisabled ? openTooltip : false}
             onClose={handleCloseTooltip}
             onOpen={handleOpenTooltip}
-            title="Disabled"
+            title={titleText}
             arrow
           >
             <span>
               <IconButton
                 className={styles.sidebarHeaderButton}
-                onClick={isTransition ? deleteTransition : openDeleteNodeModal}
+                onClick={openDeleteModal}
                 aria-label={isTransition ? 'delete transition' : 'delete node'}
                 disabled={deleteDisabled}
               >
@@ -174,10 +189,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
 
       <DeleteModal
         nodeLabel={node.label}
-        isTransition={false}
-        open={openDeleteNode}
-        onDelete={deleteNode}
-        onClose={closeDeleteNodeModal}
+        isTransition={isTransition}
+        open={openDelete}
+        onDelete={isTransition ? deleteTransition : deleteNode}
+        onClose={closeDeleteModal}
       />
     </div>
   );

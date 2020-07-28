@@ -1,4 +1,5 @@
-import { PathwayNode, ActionNode, Pathway, Transition } from 'pathways-model';
+import { PathwayNode, ActionNode, Pathway } from 'pathways-model';
+import { History } from 'history';
 
 export function isActionNode(node: PathwayNode): node is ActionNode {
   const { action } = node as ActionNode;
@@ -29,7 +30,7 @@ export const nodeTypeOptions = [
 export function findParents(pathway: Pathway, childNodeKey: string): string[] {
   const parents: string[] = [];
   Object.keys(pathway.nodes).forEach(parentNodeKey => {
-    for (let transition of pathway.nodes[parentNodeKey].transitions) {
+    for (const transition of pathway.nodes[parentNodeKey].transitions) {
       if (transition.transition === childNodeKey) {
         parents.push(parentNodeKey);
         break;
@@ -39,12 +40,12 @@ export function findParents(pathway: Pathway, childNodeKey: string): string[] {
   return parents;
 }
 
-export function willOrphanChild(pathway: Pathway, transitionToDelete: Transition): boolean {
+export function willOrphanChild(pathway: Pathway, childNodeKey: string): boolean {
   // Count the number of transitions into the node
   let transitionCount = 0;
   Object.keys(pathway.nodes).forEach(nodeKey => {
     pathway.nodes[nodeKey].transitions.forEach(transition => {
-      if (transition.transition === transitionToDelete.transition) transitionCount += 1;
+      if (transition.transition === childNodeKey) transitionCount += 1;
     });
   });
 
@@ -54,12 +55,16 @@ export function willOrphanChild(pathway: Pathway, transitionToDelete: Transition
 export function canDeleteNode(pathway: Pathway, node: PathwayNode): boolean {
   let canDeleteAllTransitions = true;
   node.transitions.forEach(transition => {
-    if (willOrphanChild(pathway, transition)) canDeleteAllTransitions = false;
+    if (willOrphanChild(pathway, transition.transition)) canDeleteAllTransitions = false;
   });
   return canDeleteAllTransitions;
 }
 
-export function redirect(pathwayId: string, nodeId: string, history: any): void {
+export function redirect(
+  pathwayId: string,
+  nodeId: string,
+  history: History<History.PoorMansUnknown>
+): void {
   const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
   if (url !== history.location.pathname) {
     history.push(url);

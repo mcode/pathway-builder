@@ -6,13 +6,16 @@ describe('node util methods', () => {
     it('returns true for single parent', () => {
       const value = willOrphanChild(
         samplepathway,
-        samplepathway.nodes['ChemoMedication'].transitions[0]
+        samplepathway.nodes['ChemoMedication'].transitions[0].transition
       );
       expect(value).toBeTruthy();
     });
 
     it('returns false for multiple parents', () => {
-      const value = willOrphanChild(samplepathway, samplepathway.nodes['Surgery'].transitions[0]);
+      const value = willOrphanChild(
+        samplepathway,
+        samplepathway.nodes['Surgery'].transitions[0].transition
+      );
       expect(value).toBeFalsy();
     });
   });

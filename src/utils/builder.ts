@@ -733,12 +733,16 @@ export function removeTransitionCondition(
   });
 }
 
-export function removeTransition(pathway: Pathway, nodeKey: string, transitionId: string): Pathway {
+export function removeTransition(
+  pathway: Pathway,
+  parentNodeKey: string,
+  childNodeKey: string
+): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    const transitions = draftPathway.nodes[nodeKey].transitions.filter(
-      (transition: Transition) => transition.id !== transitionId
+    const transitions = draftPathway.nodes[parentNodeKey].transitions.filter(
+      (transition: Transition) => transition.transition !== childNodeKey
     );
-    draftPathway.nodes[nodeKey].transitions = transitions;
+    draftPathway.nodes[parentNodeKey].transitions = transitions;
   });
 }
 
