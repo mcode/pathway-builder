@@ -7,9 +7,9 @@ export default makeStyles(
       flexDirection: 'column',
       padding: theme.variables.spacing.globalPadding,
       color: theme.palette.text.primary,
-      backgroundColor: theme.palette.grey['800'],
+      backgroundColor: theme.palette.common.gray,
       width: '33%',
-      minWidth: '500px',
+      minWidth: '550px',
       overflowY: 'scroll',
       float: 'left'
     },
@@ -64,6 +64,10 @@ export default makeStyles(
       display: 'flex',
       margin: '10px 0'
     },
+    sidebarButtonGroupExtraMargin: {
+      display: 'flex',
+      margin: '20px 0 10px 0'
+    },
     sidebarButton: {
       minWidth: 180,
       marginRight: '20px'
@@ -112,6 +116,25 @@ export default makeStyles(
     },
     saveButton: {
       marginLeft: '1em'
+    },
+    transitionContainer: {
+      backgroundColor: theme.palette.common.grayVeryDark,
+      padding: '0 15px 10px 15px',
+      margin: '15px 0'
+    },
+    dividerHeader: {
+      width: '100%',
+      textTransform: 'uppercase',
+      borderBottom: '1px solid ' + theme.palette.common.blueLighter,
+      color: theme.palette.common.blueLighter,
+      lineHeight: '0.1em',
+      margin: '10px 0 20px',
+      fontWeight: 800,
+      paddingLeft: '15px',
+      '& span': {
+        background: theme.palette.common.gray,
+        padding: '0 10px'
+      }
     }
   }),
   { name: 'Sidebar', index: 1 }

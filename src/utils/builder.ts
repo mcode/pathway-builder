@@ -271,12 +271,65 @@ export function setNodeLabel(pathway: Pathway, key: string, label: string): Path
 }
 
 export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
+  let action: Action;
+  let newPathway: Pathway;
   switch (nodeType) {
-    case 'action':
-      return makeNodeAction(pathway, nodeKey);
-    case 'branch':
+    case 'MedicationRequest':
+      newPathway = makeNodeAction(pathway, nodeKey);
+      action = {
+        type: 'create',
+        description: '',
+        id: shortid.generate(),
+        resource: {
+          resourceType: nodeType,
+          medicationCodeableConcept: {
+            coding: [
+              {
+                system: '',
+                code: '',
+                display: ''
+              }
+            ]
+          }
+        }
+      };
+      return setNodeAction(newPathway, nodeKey, [action]);
+    case 'ServiceRequest':
+      newPathway = makeNodeAction(pathway, nodeKey);
+      action = {
+        type: 'create',
+        description: '',
+        id: shortid.generate(),
+        resource: {
+          resourceType: nodeType,
+          code: {
+            coding: [
+              {
+                system: '',
+                code: '',
+                display: ''
+              }
+            ]
+          }
+        }
+      };
+      return setNodeAction(newPathway, nodeKey, [action]);
+    case 'CarePlan':
+      newPathway = makeNodeAction(pathway, nodeKey);
+      action = {
+        type: 'create',
+        description: '',
+        id: shortid.generate(),
+        resource: {
+          resourceType: nodeType,
+          title: ''
+        }
+      };
+      return setNodeAction(newPathway, nodeKey, [action]);
+    case 'Observation':
       return makeNodeBranch(pathway, nodeKey);
     default:
+      console.error('Unknown nodeType: ' + nodeType);
       return pathway;
   }
 }
@@ -543,6 +596,10 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
       node.action = [];
       node.nodeTypeIsUndefined = undefined;
     }
+
+    node.transitions.forEach(transition => {
+      delete transition.condition;
+    });
   });
 }
 

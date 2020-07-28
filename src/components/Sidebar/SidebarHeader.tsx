@@ -14,6 +14,7 @@ import { setNodeLabel } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { useHistory } from 'react-router-dom';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -27,14 +28,22 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
   const styles = useStyles();
+  const history = useHistory();
 
   const goToParentNode = useCallback(() => {
     // TODO
   }, []);
 
-  const goToNode = useCallback(() => {
-    // TODO
-  }, []);
+  const redirectToNode = useCallback(() => {
+    if (!pathwayRef.current || !node.key) return;
+
+    const url = `/builder/${encodeURIComponent(pathwayRef.current.id)}/node/${encodeURIComponent(
+      node.key
+    )}`;
+    if (url !== history.location.pathname) {
+      history.push(url);
+    }
+  }, [history, pathwayRef, node.key]);
 
   const openNodeOptions = useCallback(() => {
     // TODO
@@ -105,7 +114,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
       <div className={styles.sidebarHeaderGroup}>
         <IconButton
           className={styles.sidebarHeaderButton}
-          onClick={isTransition ? goToNode : openNodeOptions}
+          onClick={isTransition ? redirectToNode : openNodeOptions}
           aria-label={isTransition ? 'go to transition node' : 'open node options'}
         >
           <FontAwesomeIcon icon={isTransition ? faChevronRight : faEllipsisH} />

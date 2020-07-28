@@ -9,9 +9,9 @@ import React, {
   useRef
 } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSave, faTools, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, TextField, Box, Card } from '@material-ui/core';
 import {
   removeTransitionCondition,
   setTransitionCondition,
@@ -136,15 +136,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   }, [buildCriteriaNodeId, handleBuildCriteriaCancel, transition]);
 
   return (
-    <>
-      <hr className={styles.divider} />
-
+    <Card raised className={styles.transitionContainer}>
       {transitionNode && <SidebarHeader node={transitionNode} isTransition={true} />}
 
       {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
-          buttonName="Use Criteria"
-          buttonIcon={faPlus}
+          buttonName="Select Criteria"
+          buttonIcon={faThList}
           buttonText="Add previously built or imported criteria logic to branch node."
           onClick={handleUseCriteria}
         />
@@ -188,6 +186,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           buttonName="Build Criteria"
           buttonIcon={faTools}
           buttonText="Create new criteria logic to add to branch node."
+          extraMargin
           onClick={handleBuildCriteria}
         />
       )}
@@ -227,7 +226,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           </div>
         </OutlinedDiv>
       )}
-    </>
+    </Card>
   );
 };
 

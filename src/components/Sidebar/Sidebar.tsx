@@ -1,7 +1,12 @@
 import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronLeft,
+  faChevronRight,
+  faPlus,
+  faLevelDownAlt
+} from '@fortawesome/free-solid-svg-icons';
 
 import {
   SidebarHeader,
@@ -15,6 +20,7 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { isBranchNode } from 'utils/nodeUtils';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -42,8 +48,8 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   );
 
   const redirectToNode = useCallback(
-    nodeKey => {
-      if (!pathwayRef.current) return;
+    (nodeKey: string | undefined) => {
+      if (!pathwayRef.current || !nodeKey) return;
 
       const url = `/builder/${encodeURIComponent(pathwayRef.current.id)}/node/${encodeURIComponent(
         nodeKey
@@ -55,23 +61,19 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
     [history, pathwayRef]
   );
 
-  const addPathwayNode = useCallback(
-    (nodeType: string): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+  const addPathwayNode = useCallback((): void => {
+    if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
-      const newNode = createNode();
-      let newPathway = addNode(pathwayRef.current, newNode);
-      newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key as string);
-      newPathway = setNodeType(newPathway, newNode.key as string, nodeType);
-      updatePathway(newPathway);
-      redirectToNode(newNode.key);
-    },
-    [pathwayRef, updatePathway, currentNodeRef, redirectToNode]
-  );
+    const newNode = createNode();
+    let newPathway = addNode(pathwayRef.current, newNode);
+    newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key as string);
+    updatePathway(newPathway);
+    if (!isBranchNode(currentNodeRef.current)) redirectToNode(newNode.key);
+  }, [pathwayRef, updatePathway, currentNodeRef, redirectToNode]);
 
-  const addBranchNode = useCallback((): void => addPathwayNode('branch'), [addPathwayNode]);
-
-  const addActionNode = useCallback((): void => addPathwayNode('action'), [addPathwayNode]);
+  const connectToNode = useCallback((): void => {
+    console.log('Connect to existing node');
+  }, []);
 
   // Set the height of the sidebar container
   useEffect(() => {
@@ -89,15 +91,18 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   if (!currentNode) return <div>Error: No current node</div>;
 
   const nodeType = getNodeType(pathway, currentNode.key);
-  // If the node does not have transitions it can be added to
-  const displayAddButtons = currentNode.key !== undefined && currentNode.transitions.length === 0;
+  const displayTransitions =
+    currentNode.key !== undefined &&
+    (currentNode.key !== 'Start' || currentNode.transitions.length === 0);
   return (
     <>
       {isExpanded && (
         <div className={styles.root} ref={sidebarContainerElement}>
           <SidebarHeader node={currentNode} isTransition={false} />
 
-          <hr className={styles.divider} />
+          <h5 className={styles.dividerHeader}>
+            <span>Details</span>
+          </h5>
 
           {nodeType === 'null' && <NullNodeEditor changeNodeType={changeNodeType} />}
 
@@ -105,21 +110,20 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
 
           {nodeType === 'branch' && <BranchNodeEditor changeNodeType={changeNodeType} />}
 
-          {displayAddButtons && (
+          {displayTransitions && (
             <>
-              {currentNode.key !== 'Start' && <hr className={styles.divider} />}
               <SidebarButton
-                buttonName="Add Action Node"
+                buttonName="Add New Node"
                 buttonIcon={faPlus}
-                buttonText="Any clinical or workflow step which is not a decision."
-                onClick={addActionNode}
+                buttonText="Add a new transition to a new node in the pathway."
+                onClick={addPathwayNode}
               />
 
               <SidebarButton
-                buttonName="Add Branch Node"
-                buttonIcon={faPlus}
-                buttonText="A logical branching point based on clinical or workflow criteria."
-                onClick={addBranchNode}
+                buttonName="Connect Node"
+                buttonIcon={faLevelDownAlt}
+                buttonText="Create a transition to an existing node in the pathway."
+                onClick={connectToNode}
               />
             </>
           )}

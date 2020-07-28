@@ -12,24 +12,13 @@ import DropDown from 'components/elements/DropDown';
 import { ActionNode, Action } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
-import shortid from 'shortid';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-
-const nodeTypeOptions = [
-  { label: 'Action', value: 'action' },
-  { label: 'Branch', value: 'branch' }
-];
-
-const actionTypeOptions = [
-  { label: 'Medication', value: 'MedicationRequest' },
-  { label: 'Procedure', value: 'ServiceRequest' },
-  { label: 'Regimen', value: 'CarePlan' }
-];
+import { nodeTypeOptions } from 'utils/nodeUtils';
 
 const codeSystemOptions = [
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
@@ -129,67 +118,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
     [currentNodeRef, pathwayRef, updatePathway, addActionCQL]
   );
 
-  const selectActionType = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
-      const value = event?.target.value || '';
-      const actionType = actionTypeOptions.find(option => {
-        return option.value === value;
-      });
-      let action: Action;
-      if (actionType?.value === 'CarePlan') {
-        action = {
-          type: 'create',
-          description: '',
-          id: shortid.generate(),
-          resource: {
-            resourceType: actionType?.value,
-            title: ''
-          }
-        };
-      } else if (actionType?.value === 'MedicationRequest') {
-        action = {
-          type: 'create',
-          description: '',
-          id: shortid.generate(),
-          resource: {
-            resourceType: actionType?.value,
-            medicationCodeableConcept: {
-              coding: [
-                {
-                  system: '',
-                  code: '',
-                  display: ''
-                }
-              ]
-            }
-          }
-        };
-      } else {
-        action = {
-          type: 'create',
-          description: '',
-          id: shortid.generate(),
-          resource: {
-            resourceType: actionType?.value,
-            code: {
-              coding: [
-                {
-                  system: '',
-                  code: '',
-                  display: ''
-                }
-              ]
-            }
-          }
-        };
-      }
-
-      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
-    },
-    [currentNodeRef, pathwayRef, updatePathway]
-  );
-
   const selectCodeSystem = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeRef.current?.key || !pathwayRef.current) return;
@@ -278,15 +206,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
             label="Node Type"
             options={nodeTypeOptions}
             onChange={selectNodeType}
-            value="action"
-          />
-          <DropDown
-            id="actionType"
-            label="Action Type"
-            options={actionTypeOptions}
-            onChange={selectActionType}
             value={resource.resourceType}
           />
+
           {(resource.resourceType === 'MedicationRequest' ||
             resource.resourceType === 'ServiceRequest') && (
             <>
@@ -337,7 +259,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
           )}
 
           {resource.resourceType === 'CarePlan' && (
-            // design for careplan ?
             <>
               <TextField
                 id="title-input"
@@ -360,6 +281,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
               )}
             </>
           )}
+
+          <h5 className={styles.dividerHeader}>
+            <span>Transitions</span>
+          </h5>
         </>
       )}
     </>

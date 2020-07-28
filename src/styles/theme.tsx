@@ -19,6 +19,21 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
+declare module '@material-ui/core/styles/createPalette' {
+  interface CommonColors {
+    blue: string;
+    blueLighter: string;
+    red: string;
+    gray: string;
+    grayMedium: string;
+    grayBlue: string;
+    grayLighter: string;
+    grayDark: string;
+    grayVeryDark: string;
+    green: string;
+  }
+}
+
 const variables = {
   spacing: {
     globalPadding: '2em'
@@ -28,13 +43,15 @@ const variables = {
 const colors = {
   white: '#fff',
   black: '#222',
-  blue: '#5d89a1',
   red: '#d95d77',
+  blue: '#5d89a1',
+  blueLighter: '#9ad2f0',
   gray: '#4a4a4a',
   grayMedium: '#bbbdc0',
   grayBlue: '#cbd5df',
   grayLighter: '#eaeef2',
   grayDark: '#444',
+  grayVeryDark: '#3a3a3a',
   green: '#2fa874'
 };
 
@@ -154,6 +171,11 @@ const materialUiOverridesBase = {
     root: {
       padding: '2em 4em'
     }
+  },
+  MuiCard: {
+    root: {
+      overflow: 'visible'
+    }
   }
 };
 
@@ -234,7 +256,7 @@ const paletteBase = {
     secondary: colors.gray
   },
   grey: {
-    800: '#4a4a4a'
+    800: colors.gray
   }
 };
 

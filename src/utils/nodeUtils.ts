@@ -6,8 +6,8 @@ export function isActionNode(node: PathwayNode): node is ActionNode {
 }
 
 export function isBranchNode(node: PathwayNode): boolean {
-  const { action, label } = node as ActionNode;
-  return action === undefined && label !== 'Start';
+  const { action, label, nodeTypeIsUndefined } = node as ActionNode;
+  return action === undefined && label !== 'Start' && !nodeTypeIsUndefined;
 }
 
 type ConversionResource = {
@@ -18,3 +18,10 @@ export const resourceNameConversion: ConversionResource = {
   ServiceRequest: 'Procedure',
   CarePlan: 'Regimen'
 };
+
+export const nodeTypeOptions = [
+  { label: 'Medication', value: 'MedicationRequest' },
+  { label: 'Procedure', value: 'ServiceRequest' },
+  { label: 'Regimen', value: 'CarePlan' },
+  { label: 'Observation', value: 'Observation' }
+];

@@ -35,6 +35,7 @@ const OutlinedDiv: FC<OutlinedDivProps> = ({ children, label, error }) => {
         }
       }}
       inputProps={{ children }}
+      fullWidth={true}
     />
   );
 };
