@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import Popover from '@material-ui/core/Popover';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import useStyles from './styles';
 
 import ActionButton from 'components/ActionButton';
@@ -47,14 +48,16 @@ const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
 
   return (
     <div className={styles.container}>
-      <Button
-        color="secondary"
-        size="small"
-        startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-        onClick={onClickHandler}
-      >
-        Delete
-      </Button>
+      <ClickAwayListener onClickAway={(): void => onCloseHandler(false)}>
+        <Button
+          color="secondary"
+          size="small"
+          startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
+          onClick={onClickHandler}
+        >
+          Delete
+        </Button>
+      </ClickAwayListener>
       <Popover
         classes={{ paper: styles.paper }}
         open={open}
