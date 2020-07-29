@@ -1,6 +1,6 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
   Table,
@@ -14,6 +14,7 @@ import moment from 'moment';
 
 import useStyles from './styles';
 import { useCriteriaContext } from 'components/CriteriaProvider';
+import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 
 const CriteriaTable: FC = () => {
   const styles = useStyles();
@@ -22,6 +23,13 @@ const CriteriaTable: FC = () => {
   const renderDate = (datetime: number): string => {
     return moment(datetime).fromNow();
   };
+
+  const deletion = useCallback(
+    (id: string): void => {
+      deleteCriteria(id);
+    },
+    [deleteCriteria]
+  );
 
   return (
     <TableContainer className={styles.criteriaList}>
@@ -53,15 +61,12 @@ const CriteriaTable: FC = () => {
                 >
                   Edit
                 </Button>
-
-                <Button
-                  color="secondary"
-                  size="small"
-                  startIcon={<FontAwesomeIcon icon={faTrashAlt} />}
-                  onClick={(): void => deleteCriteria(c.id)}
-                >
-                  Delete
-                </Button>
+                <ConfirmedDeletionButton
+                  deleteType="criterion"
+                  deleteName={c.label}
+                  deleteId={c.id}
+                  deleteMethod={deletion}
+                />
               </TableCell>
             </TableRow>
           ))}

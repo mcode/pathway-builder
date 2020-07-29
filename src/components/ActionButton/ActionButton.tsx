@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import styles from './ActionButton.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -68,4 +68,4 @@ const ActionButton: FC<ActionButtonProps> = ({ type, size, onClick }) => {
   }
 };
 
-export default ActionButton;
+export default memo(ActionButton);
