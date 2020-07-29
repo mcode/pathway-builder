@@ -27,9 +27,9 @@ const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const displayText =
-    'Are you sure ' +
+    'Are you sure' +
     (deleteType && deleteMethod
-      ? 'that you would like to delete the ' + deleteName + ' ' + deleteType + ' ?'
+      ? ' that you would like to delete the ' + deleteName + ' ' + deleteType + ' ?'
       : '?');
 
   const onClickHandler = useCallback((event: MouseEvent<HTMLButtonElement>): void => {
@@ -37,18 +37,20 @@ const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
     setOpen(true);
   }, []);
 
-  const onCloseHandler = useCallback(
-    (accept?: boolean): void => {
-      if (accept) deleteMethod(deleteId);
-      setOpen(false);
-      setAnchorEl(null);
-    },
-    [deleteId, deleteMethod]
-  );
+  const onAcceptHandler = useCallback((): void => {
+    deleteMethod(deleteId);
+    setOpen(false);
+    setAnchorEl(null);
+  }, [deleteId, deleteMethod]);
+
+  const onDeclineHandler = useCallback((): void => {
+    setOpen(false);
+    setAnchorEl(null);
+  }, []);
 
   return (
     <div className={styles.container}>
-      <ClickAwayListener onClickAway={(): void => onCloseHandler(false)}>
+      <ClickAwayListener onClickAway={onDeclineHandler}>
         <Button
           color="secondary"
           size="small"
@@ -67,8 +69,8 @@ const ConfirmedDeletionButton: FC<ConfirmedDeletionButtonProps> = ({
       >
         <div className={styles.displayText}> {displayText} </div>
         <div className={styles.buttons}>
-          <ActionButton size="small" type="accept" onClick={(): void => onCloseHandler(true)} />
-          <ActionButton size="small" type="decline" onClick={(): void => onCloseHandler(false)} />
+          <ActionButton size="small" type="accept" onClick={onAcceptHandler} />
+          <ActionButton size="small" type="decline" onClick={onDeclineHandler} />
         </div>
       </Popover>
     </div>
