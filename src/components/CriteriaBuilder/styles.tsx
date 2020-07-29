@@ -9,10 +9,16 @@ export default makeStyles(
     },
     elementContainer: {
       padding: '0',
+      marginRight: '10px',
       border: '0.1em solid',
       borderRadius: '0.2em',
       fontWeight: 500,
-      width: '100%'
+      width: 'auto'
+    },
+    headerText: {
+      marginRight: '10px',
+      fontStyle: 'italic',
+      fontSize: '0.8em'
     }
   }),
   { name: 'CriteriaBuilder' }

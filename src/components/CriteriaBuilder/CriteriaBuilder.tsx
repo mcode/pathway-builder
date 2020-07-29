@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useState, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback, useState, useMemo, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@material-ui/core';
@@ -63,9 +63,17 @@ const CriteriaBuilder: FC = () => {
     setGender('');
   }, []);
 
+  const ageCql: string = useMemo((): string => {
+    return `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
+  }, [minimumAge, maximumAge]);
+
+  const genderCql: string = useMemo((): string => {
+    return `Patient.gender.value = '${gender}'`;
+  }, [gender]);
+
   return (
     <>
-      <div>
+      <div className={styles.headerText}>
         Specify criteria to identify a target population that should receive a recommendation from
         this artifact. Examples might include an age range, gender, presence of a certain condition,
         or lab results within a specific range.
