@@ -1,4 +1,13 @@
-import React, { FC, memo, useCallback, useState, useEffect, useRef, RefObject } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  RefObject,
+  ChangeEvent
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -11,9 +20,9 @@ import {
 import {
   SidebarHeader,
   ActionNodeEditor,
-  BranchNodeEditor,
-  NullNodeEditor,
-  SidebarButton
+  SidebarButton,
+  TransitionEditor,
+  BranchTransition
 } from 'components/Sidebar';
 import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
@@ -21,6 +30,8 @@ import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { isBranchNode } from 'utils/nodeUtils';
+import { nodeTypeOptions } from 'utils/nodeUtils';
+import DropDown from 'components/elements/DropDown';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -45,6 +56,13 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
         updatePathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
     [pathwayRef, updatePathway, currentNodeRef]
+  );
+
+  const selectNodeType = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      changeNodeType(event?.target.value || '');
+    },
+    [changeNodeType]
   );
 
   const redirectToNode = useCallback(
@@ -90,51 +108,103 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;
 
-  const nodeType = getNodeType(pathway, currentNode.key);
-  const displayTransitions =
-    currentNode.key !== undefined &&
-    (currentNode.key !== 'Start' || currentNode.transitions.length === 0);
-  return (
-    <>
-      {isExpanded && (
-        <div className={styles.root} ref={sidebarContainerElement}>
-          <SidebarHeader node={currentNode} isTransition={false} />
+  if (currentNode.key === 'Start') {
+    return (
+      <>
+        {isExpanded && (
+          <div className={styles.root} ref={sidebarContainerElement}>
+            <SidebarHeader node={currentNode} isTransition={false} />
+            <h5 className={styles.dividerHeader}>
+              <></>{' '}
+            </h5>
+            <SidebarButton
+              buttonName="Add Node"
+              buttonIcon={faPlus}
+              buttonText="Add a new transition to a new node in the pathway."
+              onClick={addPathwayNode}
+            />
+          </div>
+        )}
+      </>
+    );
+  } else {
+    const nodeType = getNodeType(pathway, currentNode.key);
+    const displayTransitions =
+      currentNode.key !== undefined &&
+      (currentNode.key !== 'Start' || currentNode.transitions.length === 0);
 
-          <h5 className={styles.dividerHeader}>
-            <span>Details</span>
-          </h5>
+    return (
+      <>
+        {isExpanded && (
+          <div className={styles.root} ref={sidebarContainerElement}>
+            <SidebarHeader node={currentNode} isTransition={false} />
 
-          {nodeType === 'null' && <NullNodeEditor changeNodeType={changeNodeType} />}
+            <h5 className={styles.dividerHeader}>
+              <span>Details</span>
+            </h5>
 
-          {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
-
-          {nodeType === 'branch' && <BranchNodeEditor changeNodeType={changeNodeType} />}
-
-          {displayTransitions && (
-            <>
-              <SidebarButton
-                buttonName="Add New Node"
-                buttonIcon={faPlus}
-                buttonText="Add a new transition to a new node in the pathway."
-                onClick={addPathwayNode}
+            {nodeType === 'null' && (
+              <DropDown
+                id="nodeType"
+                label="Node Type"
+                options={nodeTypeOptions}
+                onChange={selectNodeType}
+                value=""
               />
+            )}
 
-              <SidebarButton
-                buttonName="Connect Node"
-                buttonIcon={faLevelDownAlt}
-                buttonText="Create a transition to an existing node in the pathway."
-                onClick={connectToNode}
+            {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
+
+            {nodeType === 'branch' && (
+              <DropDown
+                id="nodeType"
+                label="Node Type"
+                options={nodeTypeOptions}
+                onChange={selectNodeType}
+                value="Observation"
               />
-            </>
-          )}
+            )}
+
+            <h5 className={styles.dividerHeader}>
+              <span>Transitions</span>
+            </h5>
+
+            {currentNode?.transitions.map(transition => {
+              return (
+                <TransitionEditor key={transition.id} transition={transition}>
+                  {nodeType === 'branch' && (
+                    <BranchTransition key={transition.id} transition={transition} />
+                  )}
+                </TransitionEditor>
+              );
+            })}
+
+            {displayTransitions && (
+              <>
+                <SidebarButton
+                  buttonName="Add New Node"
+                  buttonIcon={faPlus}
+                  buttonText="Add a new transition to a new node in the pathway."
+                  onClick={addPathwayNode}
+                />
+
+                <SidebarButton
+                  buttonName="Connect Node"
+                  buttonIcon={faLevelDownAlt}
+                  buttonText="Create a transition to an existing node in the pathway."
+                  onClick={connectToNode}
+                />
+              </>
+            )}
+          </div>
+        )}
+
+        <div className={styles.toggleSidebar} onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
         </div>
-      )}
-
-      <div className={styles.toggleSidebar} onClick={toggleSidebar}>
-        <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 };
 
 export default memo(Sidebar);

@@ -119,7 +119,7 @@ export default makeStyles(
     },
     transitionContainer: {
       backgroundColor: theme.palette.common.grayVeryDark,
-      padding: '0 15px 10px 15px',
+      padding: '5px 15px',
       margin: '15px 0'
     },
     dividerHeader: {
