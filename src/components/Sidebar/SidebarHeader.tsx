@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEdit,
-  faEllipsisH,
   faChevronLeft,
   faChevronRight,
   faTrashAlt
@@ -22,10 +21,10 @@ import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
-  isTransition: boolean;
+  isTransition?: boolean;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
+const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) => {
   const { updatePathway } = usePathwaysContext();
   const [showInput, setShowInput] = useState<boolean>(false);
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
@@ -45,10 +44,6 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
     if (!pathwayRef.current || !node.key) return;
     redirect(pathwayRef.current.id, node.key, history);
   }, [history, pathwayRef, node.key]);
-
-  const openNodeOptions = useCallback(() => {
-    // TODO
-  }, []);
 
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
@@ -178,13 +173,16 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition }) => {
             </span>
           </Tooltip>
         )}
-        <IconButton
-          className={styles.sidebarHeaderButton}
-          onClick={isTransition ? redirectToNode : openNodeOptions}
-          aria-label={isTransition ? 'go to transition node' : 'open node options'}
-        >
-          <FontAwesomeIcon icon={isTransition ? faChevronRight : faEllipsisH} />
-        </IconButton>
+
+        {isTransition && (
+          <IconButton
+            className={styles.sidebarHeaderButton}
+            onClick={redirectToNode}
+            aria-label={'go to transition node'}
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </IconButton>
+        )}
       </div>
 
       <DeleteModal

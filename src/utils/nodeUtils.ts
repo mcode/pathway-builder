@@ -62,10 +62,10 @@ export function canDeleteNode(pathway: Pathway, node: PathwayNode): boolean {
 
 export function redirect(
   pathwayId: string,
-  nodeId: string,
+  nodeKey: string,
   history: History<History.PoorMansUnknown>
 ): void {
-  const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
+  const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeKey)}`;
   if (url !== history.location.pathname) {
     history.push(url);
   }

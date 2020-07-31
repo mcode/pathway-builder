@@ -29,7 +29,7 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-import { isBranchNode } from 'utils/nodeUtils';
+import { isBranchNode, redirect } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 
@@ -65,20 +65,6 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
     [changeNodeType]
   );
 
-  const redirectToNode = useCallback(
-    (nodeKey: string | undefined) => {
-      if (!pathwayRef.current || !nodeKey) return;
-
-      const url = `/builder/${encodeURIComponent(pathwayRef.current.id)}/node/${encodeURIComponent(
-        nodeKey
-      )}`;
-      if (url !== history.location.pathname) {
-        history.push(url);
-      }
-    },
-    [history, pathwayRef]
-  );
-
   const addPathwayNode = useCallback((): void => {
     if (!currentNodeRef.current?.key || !pathwayRef.current) return;
 
@@ -86,8 +72,9 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
     let newPathway = addNode(pathwayRef.current, newNode);
     newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key as string);
     updatePathway(newPathway);
-    if (!isBranchNode(currentNodeRef.current)) redirectToNode(newNode.key);
-  }, [pathwayRef, updatePathway, currentNodeRef, redirectToNode]);
+    if (!isBranchNode(currentNodeRef.current) && newNode.key)
+      redirect(pathwayRef.current.id, newNode.key, history);
+  }, [pathwayRef, updatePathway, currentNodeRef, history]);
 
   const connectToNode = useCallback((): void => {
     console.log('Connect to existing node');

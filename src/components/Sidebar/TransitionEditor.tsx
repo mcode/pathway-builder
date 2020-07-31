@@ -18,7 +18,7 @@ const TransitionEditor: FC<TransitionEditorProps> = ({ transition, children }) =
 
   return (
     <Card raised className={styles.transitionContainer}>
-      {transitionNode && <SidebarHeader node={transitionNode} isTransition={true} />}
+      {transitionNode && <SidebarHeader node={transitionNode} isTransition />}
 
       {children}
     </Card>
