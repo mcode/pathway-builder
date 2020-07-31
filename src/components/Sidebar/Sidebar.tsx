@@ -27,7 +27,7 @@ import { isBranchNode, redirect } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
-import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
+import ConnectNodeButton from 'components/ConnectNode';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
