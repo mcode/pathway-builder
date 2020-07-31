@@ -37,8 +37,10 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const history = useHistory();
 
   const goToParentNode = useCallback(() => {
-    // TODO
-  }, []);
+    if (!pathwayRef.current || !node.key) return;
+    const parents = findParents(pathwayRef.current, node.key);
+    redirect(pathwayRef.current.id, parents[0], history);
+  }, [history, pathwayRef, node.key]);
 
   const redirectToNode = useCallback(() => {
     if (!pathwayRef.current || !node.key) return;
