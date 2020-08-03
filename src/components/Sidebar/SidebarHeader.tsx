@@ -18,6 +18,7 @@ import { useHistory } from 'react-router-dom';
 import { canDeleteNode, redirect, findParents, willOrphanChild } from 'utils/nodeUtils';
 import { DeleteModal } from '.';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useSnackbarContext } from 'components/SnackbarProvider';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -30,6 +31,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const { currentNodeRef } = useCurrentNodeContext();
+  const { setSnackbarText, setOpenSnackbar } = useSnackbarContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
@@ -59,13 +61,24 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   }, []);
 
   const deleteNode = useCallback(() => {
-    if (node.key && pathwayRef.current && canDeleteNode(pathwayRef.current, node)) {
+    if (node.key && pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
       const parents = findParents(pathwayRef.current, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
       setOpenDelete(false);
+      setSnackbarText(`${node.label} node deleted successfully`);
+      setOpenSnackbar(true);
     }
-  }, [pathwayRef, updatePathway, node, history]);
+  }, [
+    pathwayRef,
+    updatePathway,
+    setSnackbarText,
+    setOpenSnackbar,
+    node.key,
+    node.label,
+    node.transitions,
+    history
+  ]);
 
   const deleteTransition = useCallback(() => {
     if (
@@ -76,8 +89,12 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
     ) {
       updatePathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
       setOpenDelete(false);
+      setSnackbarText(
+        `Transition from ${currentNodeRef.current.label} to ${node.label} deleted successfully`
+      );
+      setOpenSnackbar(true);
     }
-  }, [pathwayRef, currentNodeRef, updatePathway, node]);
+  }, [pathwayRef, currentNodeRef, updatePathway, setSnackbarText, setOpenSnackbar, node]);
 
   const openDeleteModal = useCallback((): void => {
     setOpenDelete(true);
@@ -102,7 +119,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
     [changeNodeLabel]
   );
 
-  const deleteNodeDisabled = pathway ? !canDeleteNode(pathway, node) : true;
+  const deleteNodeDisabled = pathway ? !canDeleteNode(pathway, node.transitions) : true;
   const deleteTransitionDisabled = pathway && node.key ? willOrphanChild(pathway, node.key) : true;
   const deleteDisabled = isTransition ? deleteTransitionDisabled : deleteNodeDisabled;
   const titleText = isTransition

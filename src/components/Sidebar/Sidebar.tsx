@@ -32,6 +32,7 @@ import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { isBranchNode, redirect } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
+import DeleteSnackbar from './DeleteSnackbar';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -112,6 +113,8 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
             />
           </div>
         )}
+
+        <DeleteSnackbar />
       </>
     );
   } else {
@@ -189,6 +192,8 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
         <div className={styles.toggleSidebar} onClick={toggleSidebar}>
           <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
         </div>
+
+        <DeleteSnackbar />
       </>
     );
   }

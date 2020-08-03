@@ -1,4 +1,4 @@
-import { PathwayNode, ActionNode, Pathway } from 'pathways-model';
+import { PathwayNode, ActionNode, Pathway, Transition } from 'pathways-model';
 import { History } from 'history';
 
 export function isActionNode(node: PathwayNode): node is ActionNode {
@@ -52,9 +52,9 @@ export function willOrphanChild(pathway: Pathway, childNodeKey: string): boolean
   return transitionCount >= 2 ? false : true;
 }
 
-export function canDeleteNode(pathway: Pathway, node: PathwayNode): boolean {
+export function canDeleteNode(pathway: Pathway, transitions: Transition[]): boolean {
   let canDeleteAllTransitions = true;
-  node.transitions.forEach(transition => {
+  transitions.forEach(transition => {
     if (willOrphanChild(pathway, transition.transition)) canDeleteAllTransitions = false;
   });
   return canDeleteAllTransitions;

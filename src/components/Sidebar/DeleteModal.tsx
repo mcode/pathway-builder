@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback } from 'react';
+import React, { FC, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -7,8 +7,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
-  Snackbar
+  IconButton
 } from '@material-ui/core';
 
 import useStyles from './styles';
@@ -31,16 +30,6 @@ const DeleteModal: FC<DeleteModalProps> = ({
 }) => {
   const styles = useStyles();
   const { currentNode } = useCurrentNodeContext();
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-
-  const handleDelete = useCallback((): void => {
-    setOpenSnackbar(true);
-    onDelete();
-  }, [onDelete]);
-
-  const handleCloseSnackbar = useCallback((): void => {
-    setOpenSnackbar(false);
-  }, []);
 
   const text = isTransition ? (
     <span>
@@ -54,10 +43,6 @@ const DeleteModal: FC<DeleteModalProps> = ({
       node.
     </span>
   );
-
-  const snackbarMessage = isTransition
-    ? 'Transition deleted successfully'
-    : 'Node deleted successfully';
 
   return (
     <>
@@ -83,37 +68,11 @@ const DeleteModal: FC<DeleteModalProps> = ({
           <Button variant="text" color="primary" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleDelete}>
+          <Button variant="contained" color="secondary" onClick={onDelete}>
             Delete
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        action={
-          <React.Fragment>
-            <Button color="secondary" size="small" onClick={handleCloseSnackbar}>
-              UNDO
-            </Button>
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={handleCloseSnackbar}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
     </>
   );
 };
