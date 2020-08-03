@@ -22,14 +22,14 @@ describe('node util methods', () => {
 
   describe('can delete node', () => {
     it('returns true when no orphaned children', () => {
-      let value = canDeleteNode(samplepathway, samplepathway.nodes['Surgery']);
+      let value = canDeleteNode(samplepathway, samplepathway.nodes['Surgery'].transitions);
       expect(value).toBeTruthy();
-      value = canDeleteNode(samplepathway, samplepathway.nodes['Radiation']);
+      value = canDeleteNode(samplepathway, samplepathway.nodes['Radiation'].transitions);
       expect(value).toBeTruthy();
     });
 
     it('returns false when orphaned children', () => {
-      const value = canDeleteNode(samplepathway, samplepathway.nodes['N-test']);
+      const value = canDeleteNode(samplepathway, samplepathway.nodes['N-test'].transitions);
       expect(value).toBeFalsy();
     });
   });
