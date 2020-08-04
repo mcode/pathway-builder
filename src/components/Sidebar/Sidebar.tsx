@@ -10,8 +10,12 @@ import React, {
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
-
+import {
+  faChevronLeft,
+  faChevronRight,
+  faPlus,
+  faLevelDownAlt
+} from '@fortawesome/free-solid-svg-icons';
 import {
   SidebarHeader,
   ActionNodeEditor,
@@ -24,15 +28,84 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-import { isBranchNode, redirect } from 'utils/nodeUtils';
+import { isBranchNode, redirect, getConnectableNodes } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
-import ConnectNodeButton from 'components/ConnectNode';
+import { Button } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Pathway, PathwayNode } from 'pathways-model';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
 }
+
+interface ConnectNodeButtonProps {
+  pathway: Pathway;
+  rootNode: PathwayNode;
+}
+
+const ConnectNodeButton: FC<ConnectNodeButtonProps> = ({ pathway, rootNode }) => {
+  const styles = useStyles();
+  const [open, setOpen] = useState(false);
+  const { updatePathway } = usePathwaysContext();
+
+  const options = getConnectableNodes(pathway, rootNode);
+  const optionsAvailable = options.length > 0;
+
+  const connectToNode = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      const nodeKey = event?.target.value;
+      if (pathway && rootNode) updatePathway(addTransition(pathway, rootNode.key ?? '', nodeKey));
+      setOpen(false);
+    },
+    [pathway, rootNode, updatePathway]
+  );
+
+  const showDropdown = useCallback(() => {
+    if (optionsAvailable) setOpen(true);
+  }, [optionsAvailable]);
+
+  return (
+    <div>
+      {!open && (
+        <Tooltip
+          title="There are no possible nodes to connect to."
+          open={!optionsAvailable}
+          placement="top"
+        >
+          <SidebarButton
+            buttonName="Connect Node"
+            buttonIcon={faLevelDownAlt}
+            buttonText="Create a transition to an existing node in the pathway."
+            onClick={showDropdown}
+          />
+        </Tooltip>
+      )}
+      {open && optionsAvailable && (
+        <div className={styles.connectDropdown}>
+          <DropDown
+            id="transitions"
+            label="Node To Connect To"
+            options={options}
+            onChange={connectToNode}
+          />
+          <div className={styles.connectText}>
+            Select node from list or click node on the right to add transition.
+            <Button
+              className={styles.cancelButtonDropdown}
+              size="small"
+              variant="text"
+              onClick={(): void => setOpen(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
   const { updatePathway } = usePathwaysContext();

@@ -153,6 +153,29 @@ export default makeStyles(
     alertIcon: {
       color: theme.palette.common.red,
       fontSize: '40px'
+    },
+    connectDropdown: {
+      margin: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      flexWrap: 'nowrap',
+      alignContent: 'center'
+    },
+    connectText: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      fontSize: '0.95em',
+      fontStyle: 'italic'
+    },
+    cancelButtonDropdown: {
+      marginLeft: 'auto',
+      border: 'none',
+      alignSelf: 'center',
+      color: theme.palette.common.blueLighter,
+      fontSize: '1em',
+      fontStyle: 'italic',
+      textTransform: 'none'
     }
   }),
   { name: 'Sidebar', index: 1 }
