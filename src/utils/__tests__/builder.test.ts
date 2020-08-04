@@ -237,8 +237,8 @@ describe('builder interface add functions', () => {
 
     const newPathway = Builder.addTransition(pathway, startNodeKey, endNodeKey);
 
-    expect(pathway.nodes[startNodeKey].transitions).toEqual([]);
-    expect(newPathway.nodes[startNodeKey].transitions[0]).toEqual(
+    expect(pathway.nodes[startNodeKey].transitions.length).toEqual(1);
+    expect(newPathway.nodes[startNodeKey].transitions[1]).toEqual(
       expect.objectContaining({
         transition: endNodeKey
       })
@@ -568,11 +568,11 @@ describe('builder interface remove functions', () => {
   });
 
   it('remove transition', () => {
-    const nodeKey = 'T-test';
-    const transitionId = '1';
-    const newPathway = Builder.removeTransition(pathway, nodeKey, transitionId);
-    expect(newPathway.nodes[nodeKey].transitions.length).toBe(1);
-    expect(newPathway.nodes[nodeKey].transitions[0].id).not.toBe(transitionId);
+    const parentNodeKey = 'T-test';
+    const childNodeKey = 'N-test';
+    const newPathway = Builder.removeTransition(pathway, parentNodeKey, childNodeKey);
+    expect(newPathway.nodes[parentNodeKey].transitions.length).toBe(1);
+    expect(newPathway.nodes[parentNodeKey].transitions[0].transition).not.toBe(childNodeKey);
   });
 
   it('remove action', () => {

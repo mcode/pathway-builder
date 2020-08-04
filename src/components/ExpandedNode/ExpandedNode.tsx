@@ -2,20 +2,18 @@ import React, { FC, ReactNode, ReactElement, memo } from 'react';
 import { ActionNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ExpandedNode.module.scss';
-import { isBranchNode, resourceNameConversion } from 'utils/nodeUtils';
-
+import { isBranchNode, resourceNameConversion, isActionNode } from 'utils/nodeUtils';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
+
 interface ExpandedNodeProps {
   actionNode: ActionNode;
-  isActionable: boolean;
-  isAction: boolean;
 }
-const ExpandedNode: FC<ExpandedNodeProps> = memo(({ actionNode, isActionable, isAction }) => {
+
+const ExpandedNode: FC<ExpandedNodeProps> = memo(({ actionNode }) => {
   return (
     <>
-      <ExpandedNodeMemo isAction={isAction} actionNode={actionNode} />
+      <ExpandedNodeMemo actionNode={actionNode} />
     </>
   );
 });
@@ -41,6 +39,7 @@ function isMedicationRequest(
 ): request is MedicationRequest {
   return (request as MedicationRequest).medicationCodeableConcept !== undefined;
 }
+
 function renderAction(actionNode: ActionNode): ReactElement[] {
   let returnElements: ReactElement[] = [];
   if (actionNode.action[0]) {
@@ -82,13 +81,18 @@ function renderAction(actionNode: ActionNode): ReactElement[] {
 
   return returnElements;
 }
+
+function renderBranch(): ReactElement {
+  return <ExpandedNodeField key="Type" title="Type" description="Observation" />;
+}
+
 interface ExpandedNodeMemoProps {
   actionNode: ActionNode;
-  isAction: boolean;
 }
-const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ actionNode, isAction }) => {
-  const action = isAction && renderAction(actionNode);
-  const branch = isBranchNode(actionNode);
+
+const ExpandedNodeMemo: FC<ExpandedNodeMemoProps> = memo(({ actionNode }) => {
+  const action = isActionNode(actionNode) && renderAction(actionNode);
+  const branch = isBranchNode(actionNode) && renderBranch();
   return (
     <div className="expandedNode">
       <table className={styles.infoTable}>

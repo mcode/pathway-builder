@@ -11,6 +11,7 @@ import styles from './Graph.module.scss';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { getNodeType } from 'utils/builder';
+import { redirect } from 'utils/nodeUtils';
 
 interface GraphProps {
   graphContainerWidth: number;
@@ -175,24 +176,15 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
   const { id: pathwayId } = useParams();
   const history = useHistory();
   const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
-  const redirectToNode = useCallback(
-    nodeId => {
-      const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
-      if (url !== history.location.pathname) {
-        history.push(url);
-      }
-    },
-    [history, pathwayId]
-  );
   const onClickHandler = useCallback(
     (nodeKey: string) => {
       if (interactive) {
-        redirectToNode(nodeKey);
+        redirect(pathwayId, nodeKey, history);
         toggleExpanded(nodeKey);
         updateBuildCriteriaNodeId('');
       }
     },
-    [redirectToNode, toggleExpanded, updateBuildCriteriaNodeId, interactive]
+    [toggleExpanded, updateBuildCriteriaNodeId, interactive, history, pathwayId]
   );
 
   return (
@@ -208,22 +200,24 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
     >
       {nodeCoordinates !== undefined
         ? Object.keys(nodeCoordinates).map(nodeKey => {
-            return (
-              <Node
-                key={nodeKey}
-                nodeKey={nodeKey}
-                ref={(node: HTMLDivElement): void => {
-                  if (node) nodeRefs.current[nodeKey] = node;
-                  else delete nodeRefs.current[nodeKey];
-                }}
-                pathwayNode={pathway.nodes[nodeKey]}
-                xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
-                yCoordinate={nodeCoordinates[nodeKey].y}
-                expanded={Boolean(expanded[nodeKey])}
-                onClick={onClickHandler}
-                nodeType={getNodeType(pathway, nodeKey)}
-              />
-            );
+            if (Object.keys(pathway.nodes).includes(nodeKey)) {
+              return (
+                <Node
+                  key={nodeKey}
+                  nodeKey={nodeKey}
+                  ref={(node: HTMLDivElement): void => {
+                    if (node) nodeRefs.current[nodeKey] = node;
+                    else delete nodeRefs.current[nodeKey];
+                  }}
+                  pathwayNode={pathway.nodes[nodeKey]}
+                  xCoordinate={nodeCoordinates[nodeKey].x + parentWidth / 2}
+                  yCoordinate={nodeCoordinates[nodeKey].y}
+                  expanded={Boolean(expanded[nodeKey])}
+                  onClick={onClickHandler}
+                  nodeType={getNodeType(pathway, nodeKey)}
+                />
+              );
+            } else return null;
           })
         : []}
 

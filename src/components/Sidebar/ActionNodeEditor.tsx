@@ -281,10 +281,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
               )}
             </>
           )}
-
-          <h5 className={styles.dividerHeader}>
-            <span>Transitions</span>
-          </h5>
         </>
       )}
     </>

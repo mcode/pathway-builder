@@ -441,7 +441,7 @@ export function getNodeType(pathway: Pathway, key: string | undefined): string {
     return 'null';
   }
   const node = pathway.nodes[key];
-  if (node.nodeTypeIsUndefined) {
+  if (!node || node.nodeTypeIsUndefined) {
     return 'null';
   } else if (!(node as ActionNode).action && key !== 'Start') {
     return 'branch';
@@ -733,12 +733,16 @@ export function removeTransitionCondition(
   });
 }
 
-export function removeTransition(pathway: Pathway, nodeKey: string, transitionId: string): Pathway {
+export function removeTransition(
+  pathway: Pathway,
+  parentNodeKey: string,
+  childNodeKey: string
+): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    const transitions = draftPathway.nodes[nodeKey].transitions.filter(
-      (transition: Transition) => transition.id !== transitionId
+    const transitions = draftPathway.nodes[parentNodeKey].transitions.filter(
+      (transition: Transition) => transition.transition !== childNodeKey
     );
-    draftPathway.nodes[nodeKey].transitions = transitions;
+    draftPathway.nodes[parentNodeKey].transitions = transitions;
   });
 }
 

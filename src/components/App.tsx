@@ -14,6 +14,7 @@ import CriteriaList from './CriteriaList';
 import { CurrentPathwayProvider } from './CurrentPathwayProvider';
 import { CurrentNodeProvider } from './CurrentNodeProvider';
 import { BuildCriteriaProvider } from './BuildCriteriaProvider';
+import { SnackbarProvider } from './SnackbarProvider';
 
 const App: FC = () => {
   return (
@@ -23,27 +24,29 @@ const App: FC = () => {
           <PathwaysProvider>
             <CurrentNodeProvider>
               <CriteriaProvider>
-                <BuildCriteriaProvider>
-                  <Router>
-                    <Switch>
-                      <Route path="/builder/:id/node/:nodeId">
-                        <BuilderRoute />
-                      </Route>
-                      <Route path="/builder/:id">
-                        <BuilderRoute />
-                      </Route>
-                      <Route path="/">
-                        <Header />
-                        <Tabs
-                          tabs={[
-                            { label: 'Pathway', component: <PathwaysList /> },
-                            { label: 'Criteria', component: <CriteriaList /> }
-                          ]}
-                        />
-                      </Route>
-                    </Switch>
-                  </Router>
-                </BuildCriteriaProvider>
+                <SnackbarProvider>
+                  <BuildCriteriaProvider>
+                    <Router>
+                      <Switch>
+                        <Route path="/builder/:id/node/:nodeId">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/builder/:id">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/">
+                          <Header />
+                          <Tabs
+                            tabs={[
+                              { label: 'Pathway', component: <PathwaysList /> },
+                              { label: 'Criteria', component: <CriteriaList /> }
+                            ]}
+                          />
+                        </Route>
+                      </Switch>
+                    </Router>
+                  </BuildCriteriaProvider>
+                </SnackbarProvider>
               </CriteriaProvider>
             </CurrentNodeProvider>
           </PathwaysProvider>

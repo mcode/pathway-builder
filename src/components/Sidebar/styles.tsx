@@ -119,7 +119,7 @@ export default makeStyles(
     },
     transitionContainer: {
       backgroundColor: theme.palette.common.grayVeryDark,
-      padding: '0 15px 10px 15px',
+      padding: '5px 15px',
       margin: '15px 0'
     },
     dividerHeader: {
@@ -135,6 +135,24 @@ export default makeStyles(
         background: theme.palette.common.gray,
         padding: '0 10px'
       }
+    },
+    dialogCloseButton: {
+      float: 'right',
+      width: '45px'
+    },
+    dialogContent: {
+      color: theme.palette.common.black,
+      fontSize: '16px',
+      display: 'flex',
+      marginTop: '-25px'
+    },
+    dialogContentText: {
+      paddingLeft: '10px',
+      lineHeight: '40px'
+    },
+    alertIcon: {
+      color: theme.palette.common.red,
+      fontSize: '40px'
     }
   }),
   { name: 'Sidebar', index: 1 }

@@ -73,7 +73,6 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       } else {
         expandedNodeClass = styles.childNotActionable;
       }
-      const isAction = isActionNode(pathwayNode);
 
       return (
         <div className={topLevelClasses.join(' ')} style={style} ref={ref}>
@@ -86,11 +85,7 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
           </div>
           {expanded && (
             <div className={`${styles.expandedNode} ${expandedNodeClass}`}>
-              <ExpandedNode
-                actionNode={pathwayNode as ActionNode}
-                isActionable={isActionable}
-                isAction={isAction}
-              />
+              <ExpandedNode actionNode={pathwayNode as ActionNode} />
             </div>
           )}
         </div>

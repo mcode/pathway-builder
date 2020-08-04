@@ -57,12 +57,7 @@ const testMedicationRequestNode: ActionNode = {
 describe('<ExpandedNode />', () => {
   it('renders a ExpandedNode for action node', () => {
     const { getByText, queryByRole, queryByText } = render(
-      <ExpandedNode
-        actionNode={testActionNode}
-        isActionable={false}
-        isAction={true}
-        documentation={undefined}
-      />
+      <ExpandedNode actionNode={testActionNode} />
     );
 
     const resource = testActionNode.action[0].resource as BasicActionResource;
@@ -84,14 +79,7 @@ describe('<ExpandedNode />', () => {
   });
 
   it('renders a ExpandedNode for a medication request node', () => {
-    const { getByText } = render(
-      <ExpandedNode
-        actionNode={testMedicationRequestNode}
-        isActionable={false}
-        isAction={true}
-        documentation={undefined}
-      />
-    );
+    const { getByText } = render(<ExpandedNode actionNode={testMedicationRequestNode} />);
 
     const resource = testMedicationRequestNode.action[0].resource as BasicMedicationRequestResource;
 

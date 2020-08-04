@@ -11,13 +11,13 @@ import React, {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
-import { Button, Checkbox, FormControlLabel, TextField, Box, Card } from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
   removeTransitionCondition,
   setTransitionCondition,
   setTransitionConditionDescription
 } from 'utils/builder';
-import { OutlinedDiv, SidebarHeader, SidebarButton } from '.';
+import { OutlinedDiv, SidebarButton } from '.';
 import { Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { usePathwaysContext } from 'components/PathwaysProvider';
@@ -34,14 +34,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
   const { criteria } = useCriteriaContext();
   const { buildCriteriaNodeId, updateBuildCriteriaNodeId } = useBuildCriteriaContext();
-  const { pathway, pathwayRef } = useCurrentPathwayContext();
+  const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
   ]);
   const styles = useStyles();
-  const transitionKey = transition?.transition || '';
-  const transitionNode = pathway?.nodes[transitionKey];
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;
@@ -136,9 +134,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   }, [buildCriteriaNodeId, handleBuildCriteriaCancel, transition]);
 
   return (
-    <Card raised className={styles.transitionContainer}>
-      {transitionNode && <SidebarHeader node={transitionNode} isTransition={true} />}
-
+    <>
       {!displayCriteria && !buildCriteriaSelected && (
         <SidebarButton
           buttonName="Select Criteria"
@@ -226,7 +222,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           </div>
         </OutlinedDiv>
       )}
-    </Card>
+    </>
   );
 };
 
