@@ -41,7 +41,6 @@ describe('node util methods', () => {
 
   describe('get connectable nodes', () => {
     it('returns true when every node has potentially connectable nodes', () => {
-      let connectableNodes: [];
       let value = true;
       for (const nodeKey of Object.keys(samplepathway.nodes)) {
         const connectableNodes = getConnectableNodes(samplepathway, samplepathway.nodes[nodeKey]);
