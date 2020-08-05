@@ -20,13 +20,13 @@ interface ArrowPathProps {
 
 const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => {
   const styles = useStyles();
-  const isCurrentBranchArrow = edge.start === currentNode.key;
+  const isCurrentArrow = edge.start === currentNode.key;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 
   const { label } = edge;
   return (
-    <svg className={clsx(styles.arrow, isCurrentBranchArrow && styles.currentBranchArrow)}>
+    <svg className={clsx(styles.arrow, isCurrentArrow && styles.currentArrow)}>
       <ArrowPath points={edge.points} arrowheadId={arrowheadId} widthOffset={widthOffset} />
       {label ? (
         label.text.length > 12 ? (
@@ -44,7 +44,7 @@ const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => 
       <defs>
         <marker
           id={arrowheadId}
-          className={clsx(isCurrentBranchArrow ? styles.currentBranchArrowhead : styles.arrowhead)}
+          className={clsx(isCurrentArrow ? styles.currentArrowhead : styles.arrowhead)}
           markerWidth="10"
           markerHeight="7"
           refX="0"
