@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Edge, Coordinate } from 'graph-model';
 import { PathwayNode } from 'pathways-model';
-import { isBranchNode } from 'utils/nodeUtils';
 import useStyles from './styles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
@@ -21,7 +20,7 @@ interface ArrowPathProps {
 
 const Arrow: FC<ArrowProps> = ({ edge, edgeName, widthOffset, currentNode }) => {
   const styles = useStyles();
-  const isCurrentBranchArrow = isBranchNode(currentNode) && edge.start === currentNode.key;
+  const isCurrentBranchArrow = edge.start === currentNode.key;
   const edgeNameNoWhitespace = edgeName.replace(' ', '');
   const arrowheadId = `arrowhead-${edgeNameNoWhitespace}`;
 

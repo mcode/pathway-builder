@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from './Node.module.scss';
 import ExpandedNode from 'components/ExpandedNode';
-import { isActionNode, isBranchNode } from 'utils/nodeUtils';
+import { isActionNode } from 'utils/nodeUtils';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faMicroscope,
@@ -58,16 +58,12 @@ const Node: FC<NodeProps & { ref: Ref<HTMLDivElement> }> = memo(
       };
 
       const isCurrentNode = pathwayNode.key === currentNode?.key;
-      const isTransitionOfCurrentBranch =
-        currentNode &&
-        isBranchNode(currentNode) &&
-        currentNode.transitions.some(e => e?.transition === nodeKey);
 
       const isActionable = isCurrentNode;
       const topLevelClasses = [styles.node];
       let expandedNodeClass = '';
       if (expanded) topLevelClasses.push('expanded');
-      if (isActionable || isTransitionOfCurrentBranch) {
+      if (isActionable) {
         topLevelClasses.push(styles.actionable);
         expandedNodeClass = styles.childActionable;
       } else {
