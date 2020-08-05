@@ -55,8 +55,7 @@ describe('node util methods', () => {
         { label: 'Chemotherapy', value: 'Chemo' }
       ];
       const connectableNodes = getConnectableNodes(samplepathway, samplepathway.nodes['N-test']);
-      const value: boolean = connectableNodes.length === expectedConnectableNodes.length;
-      expect(value).toBeTruthy();
+      expect(connectableNodes).toEqual(expectedConnectableNodes);
     });
   });
 });

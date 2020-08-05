@@ -20,15 +20,14 @@ const ConnectNodeButton: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
 
-  let options: Array<{ label: string; value: string }> = [];
-  if (currentNode && pathway) options = getConnectableNodes(pathway, currentNode);
+  const options: Array<{ label: string; value: string }> = currentNode && pathway ? getConnectableNodes(pathway, currentNode) : [];
   const optionsAvailable = options.length > 0;
 
   const connectToNode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       const nodeKey = event?.target.value;
-      if (pathwayRef.current && currentNodeRef.current)
-        updatePathway(addTransition(pathwayRef.current, currentNodeRef.current.key ?? '', nodeKey));
+      if (pathwayRef.current && currentNodeRef.current?.key)
+        updatePathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
       setOpen(false);
     },
     [updatePathway, currentNodeRef, pathwayRef]
