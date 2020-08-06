@@ -10,7 +10,6 @@ import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
 
 const ConnectNodeButton: FC = () => {
   const { pathway, pathwayRef } = useCurrentPathwayContext();
@@ -35,24 +34,21 @@ const ConnectNodeButton: FC = () => {
   );
 
   const showDropdown = useCallback(() => {
-    if (optionsAvailable) setOpen(true);
-  }, [optionsAvailable]);
+    setOpen(!open);
+  }, [open]);
 
   return (
     <div>
       {!open && (
-        <Tooltip
-          title="There are no possible nodes to connect to."
-          open={!optionsAvailable}
-          placement="top"
-        >
-          <SidebarButton
-            buttonName="Connect Node"
-            buttonIcon={faLevelDownAlt}
-            buttonText="Create a transition to an existing node in the pathway."
-            onClick={showDropdown}
-          />
-        </Tooltip>
+        <SidebarButton
+          buttonName="Connect Node"
+          buttonIcon={faLevelDownAlt}
+          buttonText="Create a transition to an existing node in the pathway."
+          onClick={showDropdown}
+          disabled={!optionsAvailable}
+          hasTooltip={!optionsAvailable}
+          tooltipTitle="There are no possible nodes to connect to."
+        />
       )}
       {open && optionsAvailable && (
         <div className={styles.connectDropdown}>
@@ -63,12 +59,12 @@ const ConnectNodeButton: FC = () => {
             onChange={connectToNode}
           />
           <div className={styles.connectText}>
-            Select node from list or click node on the right to add transition.
+            Select node from list to add transition.
             <Button
               className={styles.cancelButtonDropdown}
               size="small"
               variant="text"
-              onClick={(): void => setOpen(false)}
+              onClick={showDropdown}
             >
               Cancel
             </Button>
