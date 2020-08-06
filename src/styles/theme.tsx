@@ -77,7 +77,13 @@ const materialUiOverridesBase = {
   MuiButton: {
     root: {
       borderRadius: 0,
-      '&.Mui-disabled': {
+      '&$disabled': {
+        backgroundColor: colors.grayMedium,
+        color: colors.white
+      }
+    },
+    contained: {
+      '&$disabled': {
         backgroundColor: colors.grayMedium,
         color: colors.white
       }

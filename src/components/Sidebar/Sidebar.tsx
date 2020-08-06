@@ -10,13 +10,7 @@ import React, {
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChevronLeft,
-  faChevronRight,
-  faPlus,
-  faLevelDownAlt
-} from '@fortawesome/free-solid-svg-icons';
-
+import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
   SidebarHeader,
   ActionNodeEditor,
@@ -33,6 +27,7 @@ import { isBranchNode, redirect } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
+import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -76,10 +71,6 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
     if (!isBranchNode(currentNodeRef.current) && newNode.key)
       redirect(pathwayRef.current.id, newNode.key, history);
   }, [pathwayRef, updatePathway, currentNodeRef, history]);
-
-  const connectToNode = useCallback((): void => {
-    console.log('Connect to existing node');
-  }, []);
 
   // Set the height of the sidebar container
   useEffect(() => {
@@ -177,22 +168,14 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
                   buttonText="Add a new transition to a new node in the pathway."
                   onClick={addPathwayNode}
                 />
-
-                <SidebarButton
-                  buttonName="Connect Node"
-                  buttonIcon={faLevelDownAlt}
-                  buttonText="Create a transition to an existing node in the pathway."
-                  onClick={connectToNode}
-                />
+                <ConnectNodeButton />
               </>
             )}
           </div>
         )}
-
         <div className={styles.toggleSidebar} onClick={toggleSidebar}>
           <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
         </div>
-
         <DeleteSnackbar />
       </>
     );

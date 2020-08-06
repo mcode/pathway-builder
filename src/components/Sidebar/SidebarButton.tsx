@@ -1,9 +1,9 @@
 import React, { FC, memo } from 'react';
-import { Button } from '@material-ui/core';
-
-import useStyles from './styles';
+import { Button, Tooltip } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+
+import useStyles from './styles';
 
 interface SidebarButtonProps {
   buttonName: string;
@@ -11,6 +11,9 @@ interface SidebarButtonProps {
   buttonText: string;
   extraMargin?: boolean;
   onClick?: () => void;
+  hasTooltip?: boolean;
+  tooltipTitle?: string;
+  disabled?: boolean;
 }
 
 const SidebarButton: FC<SidebarButtonProps> = ({
@@ -18,22 +21,36 @@ const SidebarButton: FC<SidebarButtonProps> = ({
   buttonIcon,
   buttonText,
   extraMargin = false,
-  onClick
+  onClick,
+  hasTooltip = false,
+  tooltipTitle = '',
+  disabled = false
 }) => {
   const styles = useStyles();
 
+  const ConditionalTooltip: FC = ({ children }) =>
+    hasTooltip ? (
+      <Tooltip title={tooltipTitle} placement="top">
+        <span>{children}</span>
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
+
   return (
     <div className={extraMargin ? styles.sidebarButtonGroupExtraMargin : styles.sidebarButtonGroup}>
-      <Button
-        className={styles.sidebarButton}
-        variant="contained"
-        color="primary"
-        startIcon={<FontAwesomeIcon icon={buttonIcon} />}
-        onClick={onClick}
-      >
-        {buttonName}
-      </Button>
-
+      <ConditionalTooltip>
+        <Button
+          className={styles.sidebarButton}
+          variant="contained"
+          color="primary"
+          startIcon={<FontAwesomeIcon icon={buttonIcon} />}
+          onClick={onClick}
+          disabled={disabled}
+        >
+          {buttonName}
+        </Button>
+      </ConditionalTooltip>
       <div className={styles.sidebarButtonText}>{buttonText}</div>
     </div>
   );

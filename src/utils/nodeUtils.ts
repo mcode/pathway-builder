@@ -70,3 +70,47 @@ export function redirect(
     history.push(url);
   }
 }
+
+const getAncestorNodes = (
+  pathway: Pathway,
+  rootNodeKey: string,
+  currNodeKey: string
+): Array<PathwayNode> => {
+  let ancestors: Array<PathwayNode> = [];
+  let previousNodes: Array<PathwayNode> = [];
+  const currNode = pathway.nodes[currNodeKey];
+
+  currNode.transitions.forEach(transition => {
+    if (transition.transition === rootNodeKey) ancestors.push(currNode);
+    else {
+      previousNodes = getAncestorNodes(pathway, rootNodeKey, transition.transition);
+      if (previousNodes?.length) {
+        if (!ancestors.some(node => node.key === currNode.key)) ancestors.push(currNode);
+        ancestors = ancestors.concat(previousNodes);
+      }
+    }
+  });
+
+  return ancestors;
+};
+
+export const getConnectableNodes = (
+  pathway: Pathway,
+  rootNode: PathwayNode
+): Array<{ label: string; value: string }> => {
+  const connectableNodes: Array<{ label: string; value: string }> = [];
+  const ancestorNodes = getAncestorNodes(pathway, rootNode.key ?? '', 'Start');
+  ancestorNodes.push(rootNode);
+
+  Object.keys(pathway.nodes).forEach(nodeKey => {
+    const node = pathway.nodes[nodeKey];
+    const rootNodeConnectsToNode = rootNode.transitions.some(
+      transition => transition.transition === nodeKey
+    );
+    const nodeIsAncestor = ancestorNodes.some(node => node.key === nodeKey);
+    if (!rootNodeConnectsToNode && !nodeIsAncestor && node.key)
+      connectableNodes.push({ label: node.label, value: node.key });
+  });
+
+  return connectableNodes;
+};

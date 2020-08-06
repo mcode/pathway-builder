@@ -1,5 +1,5 @@
 import samplepathway from './fixtures/sample_pathway.json';
-import { willOrphanChild, canDeleteNode, findParents } from 'utils/nodeUtils';
+import { willOrphanChild, canDeleteNode, findParents, getConnectableNodes } from 'utils/nodeUtils';
 
 describe('node util methods', () => {
   describe('delete transition orphan check', () => {
@@ -37,5 +37,25 @@ describe('node util methods', () => {
   it('find parents', () => {
     const parents = findParents(samplepathway, 'ChemoMedication');
     expect(parents).toEqual(['N-test', 'Surgery']);
+  });
+
+  describe('get connectable nodes', () => {
+    it('returns true when every node has potentially connectable nodes', () => {
+      let value = true;
+      for (const nodeKey of Object.keys(samplepathway.nodes)) {
+        const connectableNodes = getConnectableNodes(samplepathway, samplepathway.nodes[nodeKey]);
+        if (value && !connectableNodes?.length) value = false;
+      }
+      expect(value).toBeTruthy();
+    });
+
+    it('returns true when the N-test node has the expected number of potentially connectable nodes', () => {
+      const expectedConnectableNodes = [
+        { label: 'Surgery', value: 'Surgery' },
+        { label: 'Chemotherapy', value: 'Chemo' }
+      ];
+      const connectableNodes = getConnectableNodes(samplepathway, samplepathway.nodes['N-test']);
+      expect(connectableNodes).toEqual(expectedConnectableNodes);
+    });
   });
 });
