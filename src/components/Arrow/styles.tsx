@@ -11,7 +11,7 @@ export default makeStyles(
         fontSize: '18px'
       }
     },
-    currentBranchArrow: {
+    currentArrow: {
       '& path': {
         stroke: theme.palette.secondary.main
       }
@@ -21,7 +21,7 @@ export default makeStyles(
         fill: theme.palette.primary.main
       }
     },
-    currentBranchArrowhead: {
+    currentArrowhead: {
       '& polygon': {
         fill: theme.palette.secondary.main
       }
