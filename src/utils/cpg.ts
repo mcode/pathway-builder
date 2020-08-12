@@ -9,21 +9,14 @@ import {
 } from 'fhir-objects';
 import shortid from 'shortid';
 import { isActionNode, findParents, isBranchNode } from './nodeUtils';
-import {
-  PlanDefinitionStatusKind,
-  ActivityDefinitionStatusKind,
-  BundleTypeKind,
-  PlanDefinition_ConditionKindKind,
-  ExpressionLanguageKind,
-  LibraryStatusKind
-} from '@ahryman40k/ts-fhir-types/lib/R4';
+import { R4 } from '@ahryman40k/ts-fhir-types';
 
-const LIBRARY_DRAFT = LibraryStatusKind._draft;
-const PLANDEFINITION_DRAFT = PlanDefinitionStatusKind._draft;
-const ACTIVITYDEFINITION_DRAFT = ActivityDefinitionStatusKind._draft;
-const BUNDLE_COLLECTION = BundleTypeKind._collection;
-const CONDITION_APPLICABILITY = PlanDefinition_ConditionKindKind._applicability;
-const EXPRESSION_CQL = ExpressionLanguageKind._textCql;
+const LIBRARY_DRAFT = R4.LibraryStatusKind._draft;
+const PLANDEFINITION_DRAFT = R4.PlanDefinitionStatusKind._draft;
+const ACTIVITYDEFINITION_DRAFT = R4.ActivityDefinitionStatusKind._draft;
+const BUNDLE_COLLECTION = R4.BundleTypeKind._collection;
+const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicability; // eslint-disable-line
+const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
 function createActivityDefinition(action: Action): ActivityDefinition {
   const activityId = shortid.generate();
@@ -66,9 +59,9 @@ function createAction(
   id: string,
   description: string,
   definitionUri: string,
-  hasConditions: boolean = false
+  hasConditions = false
 ): PlanDefinitionAction {
-  let cpgAction: PlanDefinitionAction = {
+  const cpgAction: PlanDefinitionAction = {
     id: id,
     title: `Action: ${id}`,
     description: description,
@@ -249,7 +242,7 @@ export function toCPG(pathway: Pathway): Bundle {
           cpgStrategyAction.condition?.push(condition);
         }
       });
-      (node as ActionNode).action.forEach(action => {
+      node.action.forEach(action => {
         const cpgActivityDefinition = createActivityDefinition(action);
         const cpgRecommendationAction = createAction(
           action.id ?? shortid.generate(),
