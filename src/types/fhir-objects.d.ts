@@ -15,7 +15,16 @@ declare module 'fhir-objects' {
   export type Practitioner = fhir.Practitioner | R4.IPractitioner;
   export type Procedure = fhir.Procedure | R4.IProcedure;
   export type Resource = fhir.Resource | ResourceR4;
-  export type Bundle = fhir.Bundle | R4.IBundle;
   export type ServiceRequest = fhir.ProcedureRequest | R4.IServiceRequest;
   export type MedicationRequest = fhir.MedicationRequest | R4.IMedicationRequest;
+  export type Bundle = R4.IBundle & { entry: BundleEntry[] };
+  export type BundleEntry = R4.IBundle_Entry;
+  export type PlanDefinitionAction = R4.IPlanDefinition_Action;
+  export type PlanDefinition = R4.IPlanDefinition & {
+    id: string;
+    url: string;
+    action: R4.IPlanDefinition_Action[];
+  };
+  export type ActivityDefinition = R4.IActivityDefinition & { id: string; url: string };
+  export type Library = R4.ILibrary & { id: string; content: R4.IAttachment[] };
 }
