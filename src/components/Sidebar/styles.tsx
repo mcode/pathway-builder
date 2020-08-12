@@ -10,8 +10,7 @@ export default makeStyles(
       backgroundColor: theme.palette.common.gray,
       width: '33%',
       minWidth: '550px',
-      overflowY: 'scroll',
-      float: 'left'
+      overflowY: 'scroll'
     },
     formControl: {
       margin: theme.spacing(1, 0),
