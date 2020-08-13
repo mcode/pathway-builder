@@ -1,11 +1,9 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import { toCPG, createActivityDefinition, createPlanDefinition } from 'utils/cpg';
-import { writeFileSync } from 'fs';
 
 describe('convert pathway into cpg', () => {
   it('correctly converts sample pathway into cpg', () => {
     const cpgPathway = toCPG(samplepathway);
-    writeFileSync('cpg-pathway.json', JSON.stringify(cpgPathway, undefined, 2));
     expect(cpgPathway.type).toBe('transaction');
     expect(cpgPathway.entry.length).toBe(12);
     cpgPathway.entry.forEach(entry => {
