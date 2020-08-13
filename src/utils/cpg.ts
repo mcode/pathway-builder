@@ -1,4 +1,4 @@
-import { Action, ActionNode, Pathway } from 'pathways-model';
+import { Action, Pathway } from 'pathways-model';
 import {
   ActivityDefinition,
   PlanDefinition,
@@ -19,7 +19,7 @@ const BUNDLE_POST = R4.Bundle_RequestMethodKind._post;
 const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicability; // eslint-disable-line
 const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
-function createActivityDefinition(action: Action): ActivityDefinition {
+export function createActivityDefinition(action: Action): ActivityDefinition {
   const activityId = shortid.generate();
   const kind =
     action.resource.resourceType === 'Procedure' ? 'ServiceRequest' : action.resource.resourceType;
@@ -72,54 +72,18 @@ function createAction(
   return cpgAction;
 }
 
-function createStrategyDefinition(pathway: Pathway, libraryId: string): PlanDefinition {
-  const planId = shortid.generate();
-
-  const strategyDefinition: PlanDefinition = {
-    id: planId,
+export function createPlanDefinition(
+  id: string,
+  title: string,
+  description: string,
+  type: 'strategy' | 'recommendation',
+  libraryId?: string
+): PlanDefinition {
+  const planDefinition: PlanDefinition = {
+    id: id,
     resourceType: 'PlanDefinition',
     meta: {
-      profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-strategydefinition']
-    },
-    extension: [
-      {
-        url:
-          'http://build.fhir.org/ig/HL7/cqf-recommendations/StructureDefinition/cpg-knowledgeCapability.html',
-        valueCode: 'executable'
-      }
-    ],
-    url: `urn:uuid:PlanDefinition/${planId}`,
-    version: '1.0',
-    name: pathway.id,
-    title: pathway.name,
-    type: {
-      coding: [
-        {
-          system: 'http://terminology.hl7.org/CodeSystem/plan-definition-type',
-          code: 'workflow-definition',
-          display: 'workflow-definition'
-        }
-      ]
-    },
-    status: PLANDEFINITION_DRAFT,
-    experimental: true,
-    publisher: 'Logged in user',
-    description: pathway.description ?? `Pathway: ${pathway.name}`,
-    library: [`urn:uuid:Library/${libraryId}`],
-    action: []
-  };
-
-  return strategyDefinition;
-}
-
-function createRecommendationDefinition(node: ActionNode): PlanDefinition {
-  const planId = shortid.generate();
-
-  const recommendationDefinition: PlanDefinition = {
-    id: planId,
-    resourceType: 'PlanDefinition',
-    meta: {
-      profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recommendationdefinition']
+      profile: [`http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-${type}definition`]
     },
     extension: [
       {
@@ -127,10 +91,10 @@ function createRecommendationDefinition(node: ActionNode): PlanDefinition {
         valueCode: 'executable'
       }
     ],
-    url: `urn:uuid:PlanDefinition/${planId}`,
+    url: `urn:uuid:PlanDefinition/${id}`,
     version: '1.0',
-    name: planId,
-    title: node.label,
+    name: id,
+    title: title,
     type: {
       coding: [
         {
@@ -143,11 +107,15 @@ function createRecommendationDefinition(node: ActionNode): PlanDefinition {
     status: PLANDEFINITION_DRAFT,
     experimental: true,
     publisher: 'Logged in user',
-    description: `Represents an action for ${node.label}`,
+    description: description,
     action: []
   };
 
-  return recommendationDefinition;
+  if (type === 'strategy') {
+    planDefinition.library = [`urn:uuid:Library/${libraryId}`];
+  }
+
+  return planDefinition;
 }
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
@@ -224,12 +192,24 @@ export function toCPG(pathway: Pathway): Bundle {
     entry: []
   };
   const library = createLibrary(pathway);
-  const cpgStrategy = createStrategyDefinition(pathway, library.id);
+  const cpgStrategy = createPlanDefinition(
+    shortid.generate(),
+    pathway.name,
+    pathway.description ?? `Pathway For: ${pathway.name}`,
+    'strategy',
+    library.id
+  );
 
   Object.keys(pathway.nodes).forEach(key => {
     const node = pathway.nodes[key];
     if (isActionNode(node) && node.key) {
-      const cpgRecommendation = createRecommendationDefinition(node);
+      const description = `Represents an action for ${node.label}`;
+      const cpgRecommendation = createPlanDefinition(
+        shortid.generate(),
+        node.label,
+        description,
+        'recommendation'
+      );
       const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.url, true);
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
