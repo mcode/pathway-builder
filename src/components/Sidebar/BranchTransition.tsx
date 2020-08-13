@@ -145,7 +145,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           onClick={handleUseCriteria}
           disabled={!criteriaAvailable}
           hasTooltip={!criteriaAvailable}
-          tooltipTitle="There are no criteria options available."
+          tooltipTitle="No criteria to select. Add criteria to use."
         />
       )}
 
