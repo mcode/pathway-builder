@@ -14,7 +14,8 @@ import { R4 } from '@ahryman40k/ts-fhir-types';
 const LIBRARY_DRAFT = R4.LibraryStatusKind._draft;
 const PLANDEFINITION_DRAFT = R4.PlanDefinitionStatusKind._draft;
 const ACTIVITYDEFINITION_DRAFT = R4.ActivityDefinitionStatusKind._draft;
-const BUNDLE_COLLECTION = R4.BundleTypeKind._collection;
+const BUNDLE_TRANSACTION = R4.BundleTypeKind._transaction;
+const BUNDLE_POST = R4.Bundle_RequestMethodKind._post;
 const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicability; // eslint-disable-line
 const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
@@ -42,7 +43,7 @@ function createActivityDefinition(action: Action): ActivityDefinition {
     title: `ActivityDefinition: ${activityId}`,
     status: ACTIVITYDEFINITION_DRAFT,
     experimental: true,
-    date: Date.now().toString(),
+    date: new Date().toISOString(),
     publisher: 'Logged in user',
     description: action.description,
     kind: kind,
@@ -152,7 +153,11 @@ function createRecommendationDefinition(node: ActionNode): PlanDefinition {
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
     fullUrl: `urn:uuid:${resource.resourceType}/${resource.id}`,
-    resource: resource
+    resource: resource,
+    request: {
+      method: BUNDLE_POST,
+      url: `/${resource.resourceType}`
+    }
   };
 }
 
@@ -215,7 +220,7 @@ export function toCPG(pathway: Pathway): Bundle {
   const bundle: Bundle = {
     id: pathway.id,
     resourceType: 'Bundle',
-    type: BUNDLE_COLLECTION,
+    type: BUNDLE_TRANSACTION,
     entry: []
   };
   const library = createLibrary(pathway);
