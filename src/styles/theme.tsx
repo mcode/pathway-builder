@@ -77,6 +77,7 @@ const materialUiOverridesBase = {
   MuiButton: {
     root: {
       borderRadius: 0,
+      height: '38px',
       '&$disabled': {
         backgroundColor: colors.grayMedium,
         color: colors.white
@@ -147,10 +148,10 @@ const materialUiOverridesBase = {
   MuiTooltip: {
     tooltip: {
       fontSize: 14,
-      backgroundColor: colors.grayVeryDark
+      backgroundColor: colors.black
     },
     arrow: {
-      color: colors.grayVeryDark
+      color: colors.black
     }
   },
   MuiOutlinedInput: {

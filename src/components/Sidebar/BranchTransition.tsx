@@ -39,6 +39,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
   ]);
+  const criteriaAvailable = criteriaOptions.length > 0;
   const styles = useStyles();
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const criteriaDescription = transition.condition?.description;
@@ -48,7 +49,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const buttonText = hasCriteria ? 'DELETE' : 'CANCEL';
   const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
   const displayCriteria =
-    useCriteriaSelected || transition.condition?.cql || transition.condition?.description;
+    criteriaAvailable &&
+    (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
   const transitionRef = useRef(transition);
@@ -141,6 +143,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           buttonIcon={faThList}
           buttonText="Add previously built or imported criteria logic to branch node."
           onClick={handleUseCriteria}
+          disabled={!criteriaAvailable}
+          hasTooltip={!criteriaAvailable}
+          tooltipTitle="No criteria to select. Add criteria to use."
         />
       )}
 
