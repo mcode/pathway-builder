@@ -130,7 +130,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleBuildCriteriaCancel = useCallback((): void => {
     if (buildCriteriaNodeId === transition.id) updateBuildCriteriaNodeId('');
     setBuildCriteriaSelected(false);
-    updateBuildCriteriaCql('');
+    updateBuildCriteriaCql(null);
     setCriteriaName('');
   }, [
     updateBuildCriteriaNodeId,
@@ -141,7 +141,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   ]);
 
   const handleBuildCriteriaSave = useCallback((): void => {
-    if (!currentNodeRef.current?.key || !transitionRef.current.id || !pathwayRef.current) return;
+    if (
+      !currentNodeRef.current?.key ||
+      !transitionRef.current.id ||
+      !pathwayRef.current ||
+      !buildCriteriaCql?.cql
+    )
+      return;
 
     const newPathway = setTransitionCondition(
       pathwayRef.current,
@@ -149,7 +155,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       transitionRef.current.id,
       criteriaName,
       null,
-      buildCriteriaCql
+      buildCriteriaCql.cql
     );
 
     updatePathway(newPathway);
@@ -237,6 +243,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             onChange={handleCriteriaName}
             fullWidth
           />
+          {buildCriteriaCql?.text && (
+            <span className={styles.buildCriteriaText}>{buildCriteriaCql.text}</span>
+          )}
           <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
               label={<Box fontStyle="italic">Add to reusable criteria</Box>}
@@ -256,7 +265,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || buildCriteriaCql === ''}
+              disabled={criteriaName === '' || buildCriteriaCql === null}
               onClick={handleBuildCriteriaSave}
             >
               Save

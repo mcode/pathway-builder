@@ -67,26 +67,27 @@ const CriteriaBuilder: FC = () => {
     setMaximumAge(0);
   }, []);
 
+  const genderString = `The patient's gender is ${gender}`;
+  const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
+
   useEffect(() => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
     if (minimumAge >= 0 && maximumAge > 0) {
-      updateBuildCriteriaCql(cql);
+      updateBuildCriteriaCql({ cql, text: ageRangeString });
     } else if (minimumAge === 0 && maximumAge === 0) {
-      updateBuildCriteriaCql('');
+      updateBuildCriteriaCql(null);
     }
-  }, [minimumAge, maximumAge, updateBuildCriteriaCql]);
+  }, [minimumAge, maximumAge, ageRangeString, updateBuildCriteriaCql]);
 
   useEffect(() => {
     const cql = `Patient.gender.value = '${gender}'`;
     if (gender !== '') {
-      updateBuildCriteriaCql(cql);
+      updateBuildCriteriaCql({ cql, text: genderString });
     } else if (gender === '') {
-      updateBuildCriteriaCql('');
+      updateBuildCriteriaCql(null);
     }
-  }, [gender, updateBuildCriteriaCql]);
+  }, [gender, genderString, updateBuildCriteriaCql]);
 
-  const genderString = `The patient's gender is ${gender}`;
-  const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
   return (
     <>
       <div className={styles.headerText}>

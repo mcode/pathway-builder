@@ -8,11 +8,16 @@ import React, {
   useContext
 } from 'react';
 
+interface BuildCriteriaCql {
+  cql: string;
+  text?: string;
+}
+
 interface BuildCriteriaContextInterface {
   buildCriteriaNodeId: string;
-  buildCriteriaCql: string;
+  buildCriteriaCql: BuildCriteriaCql | null;
   updateBuildCriteriaNodeId: (id: string) => void;
-  updateBuildCriteriaCql: (cql: string) => void;
+  updateBuildCriteriaCql: (buildCriteriaCql: BuildCriteriaCql | null) => void;
 }
 
 export const BuildCriteriaContext = createContext<BuildCriteriaContextInterface>(
@@ -25,7 +30,7 @@ interface BuildCriteriaProviderProps {
 
 export const BuildCriteriaProvider: FC<BuildCriteriaProviderProps> = memo(({ children }) => {
   const [buildCriteriaNodeId, setBuildCriteriaNodeId] = useState<string>('');
-  const [buildCriteriaCql, setBuildCriteriaCql] = useState<string>('');
+  const [buildCriteriaCql, setBuildCriteriaCql] = useState<BuildCriteriaCql | null>(null);
 
   const updateBuildCriteriaNodeId = useCallback(
     (id: string) => {
@@ -35,8 +40,8 @@ export const BuildCriteriaProvider: FC<BuildCriteriaProviderProps> = memo(({ chi
   );
 
   const updateBuildCriteriaCql = useCallback(
-    (cql: string) => {
-      setBuildCriteriaCql(cql);
+    (buildCriteriaCql: BuildCriteriaCql | null) => {
+      setBuildCriteriaCql(buildCriteriaCql);
     },
     [setBuildCriteriaCql]
   );
