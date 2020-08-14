@@ -389,22 +389,21 @@ export function setTransitionCondition(
   startNodeKey: string,
   transitionId: string,
   description: string,
-  elm: ElmLibrary,
-  criteriaLabel?: string
+  elm: ElmLibrary | null,
+  cql: string
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const foundTransition = draftPathway.nodes[startNodeKey]?.transitions?.find(
       (transition: Transition) => transition.id === transitionId
     );
 
-    const cql = criteriaLabel ? criteriaLabel : getElmStatement(elm).name;
-
-    if (foundTransition)
+    if (foundTransition) {
       foundTransition.condition = {
         description: description,
-        cql: cql,
-        elm: elm
+        cql
       };
+      if (elm) foundTransition.condition.elm = elm;
+    }
   });
 }
 

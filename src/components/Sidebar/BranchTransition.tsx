@@ -140,6 +140,30 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     transition
   ]);
 
+  const handleBuildCriteriaSave = useCallback((): void => {
+    if (!currentNodeRef.current?.key || !transitionRef.current.id || !pathwayRef.current) return;
+
+    const newPathway = setTransitionCondition(
+      pathwayRef.current,
+      currentNodeRef.current.key,
+      transitionRef.current.id,
+      criteriaName,
+      null,
+      buildCriteriaCql
+    );
+
+    updatePathway(newPathway);
+    handleBuildCriteriaCancel();
+  }, [
+    currentNodeRef,
+    updatePathway,
+    pathwayRef,
+    transitionRef,
+    buildCriteriaCql,
+    criteriaName,
+    handleBuildCriteriaCancel
+  ]);
+
   // Cancel current build criteria if clicked on another BranchTransition
   useEffect(() => {
     if (buildCriteriaNodeId !== '' && buildCriteriaNodeId !== transition.id) {
@@ -161,7 +185,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         />
       )}
 
-      {displayCriteria && (
+      {displayCriteria && !buildCriteriaSelected && (
         <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <>
             <DropDown
@@ -205,10 +229,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       )}
 
       {buildCriteriaSelected && (
-        <OutlinedDiv
-          label="Criteria Builder"
-          error={criteriaName === '' || buildCriteriaCql === ''}
-        >
+        <OutlinedDiv label="Criteria Builder" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <TextField
             error={criteriaName === ''}
             label="Criteria Name"
@@ -236,6 +257,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
               disabled={criteriaName === '' || buildCriteriaCql === ''}
+              onClick={handleBuildCriteriaSave}
             >
               Save
             </Button>
