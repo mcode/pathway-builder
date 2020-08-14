@@ -1,13 +1,15 @@
-import React, { FC, memo, useCallback, useState, useMemo, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback, useEffect, useState, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@material-ui/core';
 
 import DropDown from 'components/elements/DropDown';
+import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import useStyles from './styles';
 
 const CriteriaBuilder: FC = () => {
   const styles = useStyles();
+  const { updateBuildCriteriaCql } = useBuildCriteriaContext();
   const [selectedElement, setSelectedElement] = useState<string>('');
   const [selectedDemoElement, setSelectedDemoElement] = useState<string>('');
   const [gender, setGender] = useState<string>('');
@@ -61,15 +63,27 @@ const CriteriaBuilder: FC = () => {
     setSelectedElement('');
     setSelectedDemoElement('');
     setGender('');
+    setMinimumAge(0);
+    setMaximumAge(0);
   }, []);
 
-  const ageCql: string = useMemo((): string => {
-    return `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
-  }, [minimumAge, maximumAge]);
+  useEffect(() => {
+    const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
+    if (minimumAge >= 0 && maximumAge > 0) {
+      updateBuildCriteriaCql(cql);
+    } else if (minimumAge === 0 && maximumAge === 0) {
+      updateBuildCriteriaCql('');
+    }
+  }, [minimumAge, maximumAge, updateBuildCriteriaCql]);
 
-  const genderCql: string = useMemo((): string => {
-    return `Patient.gender.value = '${gender}'`;
-  }, [gender]);
+  useEffect(() => {
+    const cql = `Patient.gender.value = '${gender}'`;
+    if (gender !== '') {
+      updateBuildCriteriaCql(cql);
+    } else if (gender === '') {
+      updateBuildCriteriaCql('');
+    }
+  }, [gender, updateBuildCriteriaCql]);
 
   return (
     <>

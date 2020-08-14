@@ -115,7 +115,12 @@ export default makeStyles(
       justifyContent: 'space-between'
     },
     saveButton: {
-      marginLeft: '1em'
+      marginLeft: '1em',
+      backgroundColor: theme.palette.error.main,
+      borderColor: theme.palette.error.main,
+      '&:hover': {
+        backgroundColor: theme.palette.error.main
+      }
     },
     transitionContainer: {
       backgroundColor: theme.palette.common.grayVeryDark,

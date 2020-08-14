@@ -33,7 +33,12 @@ interface BranchTransitionProps {
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
   const { criteria } = useCriteriaContext();
-  const { buildCriteriaNodeId, updateBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const {
+    buildCriteriaNodeId,
+    updateBuildCriteriaNodeId,
+    buildCriteriaCql,
+    updateBuildCriteriaCql
+  } = useBuildCriteriaContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -125,8 +130,15 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleBuildCriteriaCancel = useCallback((): void => {
     if (buildCriteriaNodeId === transition.id) updateBuildCriteriaNodeId('');
     setBuildCriteriaSelected(false);
+    updateBuildCriteriaCql('');
     setCriteriaName('');
-  }, [updateBuildCriteriaNodeId, setCriteriaName, buildCriteriaNodeId, transition]);
+  }, [
+    updateBuildCriteriaNodeId,
+    updateBuildCriteriaCql,
+    setCriteriaName,
+    buildCriteriaNodeId,
+    transition
+  ]);
 
   // Cancel current build criteria if clicked on another BranchTransition
   useEffect(() => {
@@ -193,7 +205,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       )}
 
       {buildCriteriaSelected && (
-        <OutlinedDiv label="Criteria Builder" error={true}>
+        <OutlinedDiv
+          label="Criteria Builder"
+          error={criteriaName === '' || buildCriteriaCql === ''}
+        >
           <TextField
             error={criteriaName === ''}
             label="Criteria Name"
@@ -220,7 +235,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled
+              disabled={criteriaName === '' || buildCriteriaCql === ''}
             >
               Save
             </Button>
