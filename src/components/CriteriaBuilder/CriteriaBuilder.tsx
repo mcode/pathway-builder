@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, useEffect, useState, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { IconButton } from '@material-ui/core';
+import { IconButton, TextField } from '@material-ui/core';
 
 import DropDown from 'components/elements/DropDown';
 import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
@@ -15,27 +15,27 @@ const CriteriaBuilder: FC = () => {
   const [gender, setGender] = useState<string>('');
   const [minimumAge, setMinimumAge] = useState<number>(0);
   const [maximumAge, setMaximumAge] = useState<number>(0);
-  const elementOptions = [{ value: 'demographics', label: 'Demographics' }];
+  const elementOptions = [{ value: 'Demographics', label: 'Demographics' }];
   const demoElementOptions = [
-    { value: 'age range', label: 'Age Range' },
-    { value: 'gender', label: 'Gender' }
+    { value: 'Age Range', label: 'Age Range' },
+    { value: 'Gender', label: 'Gender' }
   ];
   const genderOptions = [
     {
       label: 'Male',
-      value: 'male'
+      value: 'Male'
     },
     {
       label: 'Female',
-      value: 'female'
+      value: 'Female'
     },
     {
       label: 'Other',
-      value: 'other'
+      value: 'Other'
     },
     {
       label: 'Unknown',
-      value: 'unknown'
+      value: 'Unknown'
     }
   ];
 
@@ -85,6 +85,8 @@ const CriteriaBuilder: FC = () => {
     }
   }, [gender, updateBuildCriteriaCql]);
 
+  const genderString = `The patient's gender is ${gender}`;
+  const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
   return (
     <>
       <div className={styles.headerText}>
@@ -94,11 +96,13 @@ const CriteriaBuilder: FC = () => {
       </div>
       <div className={styles.elementContainer}>
         {(selectedElement === '' || selectedDemoElement === '') && (
-          <>
-            <FontAwesomeIcon icon={faPlus} /> Add element
+          <div className={styles.elementSelect}>
+            <div className={styles.addElementLabel}>
+              <FontAwesomeIcon icon={faPlus} /> Add element
+            </div>
             <DropDown
-              id="Choose Element"
-              label="Choose Element"
+              id="Choose Element Type"
+              label="Choose Element Type"
               options={elementOptions}
               onChange={onElementSelected}
               value={selectedElement}
@@ -112,7 +116,7 @@ const CriteriaBuilder: FC = () => {
                 value={selectedDemoElement}
               />
             )}
-          </>
+          </div>
         )}
 
         {!(selectedElement === '' || selectedDemoElement === '') && (
@@ -122,24 +126,28 @@ const CriteriaBuilder: FC = () => {
               <FontAwesomeIcon icon={faTimes} />
             </IconButton>
             <hr />
-            {selectedDemoElement === 'gender' && (
-              <DropDown
-                id="Select Gender"
-                label="Gender"
-                options={genderOptions}
-                onChange={onGenderSelected}
-                value={gender}
-              />
-            )}
-            {selectedDemoElement === 'age range' && (
+            {selectedDemoElement === 'Gender' && (
               <>
-                <div>
-                  <span>Minimum Age:</span>
-                  <input type="number" value={minimumAge} onChange={onMinimumAgeChange} />
+                <span>{genderString}</span>
+                <DropDown
+                  id="Select Gender"
+                  label="Gender"
+                  options={genderOptions}
+                  onChange={onGenderSelected}
+                  value={gender}
+                />
+              </>
+            )}
+            {selectedDemoElement === 'Age Range' && (
+              <>
+                <span>{ageRangeString}</span>
+                <div className={styles.elementField}>
+                  <span className={styles.elementFieldLabel}>Minimum Age:</span>
+                  <TextField type="number" value={minimumAge} onChange={onMinimumAgeChange} />
                 </div>
-                <div>
-                  <span>Maximum Age:</span>
-                  <input type="number" value={maximumAge} onChange={onMaximumAgeChange} />
+                <div className={styles.elementField}>
+                  <span className={styles.elementFieldLabel}>Maximum Age:</span>
+                  <TextField type="number" value={maximumAge} onChange={onMaximumAgeChange} />
                 </div>
               </>
             )}
