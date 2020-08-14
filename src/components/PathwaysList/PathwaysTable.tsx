@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback } from 'react';
+import React, { FC, memo, useState, useCallback, MouseEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -13,19 +13,22 @@ import {
 } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/PathwaysProvider';
-import { downloadPathway } from 'utils/builder';
 import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 import { Pathway } from 'pathways-model';
 import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
+import ExportMenu from 'components/elements/ExportMenu';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
 const PathwaysTable: FC = () => {
   const styles = useStyles();
   const { pathways, deletePathway } = usePathwaysContext();
+  const { setPathway } = useCurrentPathwayContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const openEditPathwayModal = useCallback((pathway: Pathway): void => {
     setOpen(true);
@@ -34,6 +37,19 @@ const PathwaysTable: FC = () => {
 
   const closeEditPathwayModal = useCallback((): void => {
     setOpen(false);
+  }, []);
+
+  const openMenu = useCallback(
+    (event: MouseEvent<HTMLButtonElement>): void => {
+      setAnchorEl(event.currentTarget);
+      const pathway = pathways.filter(pathway => pathway.id === event.currentTarget.id);
+      if (pathway.length) setPathway(pathway[0]);
+    },
+    [pathways, setPathway]
+  );
+
+  const closeMenu = useCallback((): void => {
+    setAnchorEl(null);
   }, []);
 
   const deletion = useCallback(
@@ -84,11 +100,12 @@ const PathwaysTable: FC = () => {
                     Edit Info
                   </Button>
                   <Button
+                    id={pathway.id}
                     className={styles.pathwaysListButton}
                     color="primary"
                     size="small"
                     startIcon={<FontAwesomeIcon icon={faFileDownload} />}
-                    onClick={(): void => downloadPathway(pathway)}
+                    onClick={openMenu}
                   >
                     Export
                   </Button>
@@ -104,6 +121,7 @@ const PathwaysTable: FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
       <PathwayModal open={open} onClose={closeEditPathwayModal} editPathway={editablePathway} />
     </div>
   );

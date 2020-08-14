@@ -2,12 +2,12 @@ import React, { FC, useCallback, useState, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 
-import { downloadPathway } from 'utils/builder';
 import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import ExportMenu from 'components/elements/ExportMenu';
 
 const Navigation: FC = () => {
   const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
@@ -41,25 +41,7 @@ const Navigation: FC = () => {
       <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
         <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
       </IconButton>
-      <Menu
-        id="pathway-options-menu"
-        anchorEl={anchorEl}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={closeMenu}
-      >
-        <MenuItem
-          onClick={(): void => {
-            if (pathway) downloadPathway(pathway);
-            else alert('No pathway to download!');
-            closeMenu();
-          }}
-        >
-          Export Pathway
-        </MenuItem>
-      </Menu>
+      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
     </nav>
   );
 };
