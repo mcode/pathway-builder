@@ -9,7 +9,7 @@ import useStyles from './styles';
 
 const CriteriaBuilder: FC = () => {
   const styles = useStyles();
-  const { updateBuildCriteriaCql } = useBuildCriteriaContext();
+  const { setBuildCriteriaCql } = useBuildCriteriaContext();
   const [selectedElement, setSelectedElement] = useState<string>('');
   const [selectedDemoElement, setSelectedDemoElement] = useState<string>('');
   const [gender, setGender] = useState<string>('');
@@ -73,20 +73,20 @@ const CriteriaBuilder: FC = () => {
   useEffect(() => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
     if (minimumAge >= 0 && maximumAge > 0) {
-      updateBuildCriteriaCql({ cql, text: ageRangeString });
+      setBuildCriteriaCql({ cql, text: ageRangeString });
     } else if (minimumAge === 0 && maximumAge === 0) {
-      updateBuildCriteriaCql(null);
+      setBuildCriteriaCql(null);
     }
-  }, [minimumAge, maximumAge, ageRangeString, updateBuildCriteriaCql]);
+  }, [minimumAge, maximumAge, ageRangeString, setBuildCriteriaCql]);
 
   useEffect(() => {
     const cql = `Patient.gender.value = '${gender}'`;
     if (gender !== '') {
-      updateBuildCriteriaCql({ cql, text: genderString });
+      setBuildCriteriaCql({ cql, text: genderString });
     } else if (gender === '') {
-      updateBuildCriteriaCql(null);
+      setBuildCriteriaCql(null);
     }
-  }, [gender, genderString, updateBuildCriteriaCql]);
+  }, [gender, genderString, setBuildCriteriaCql]);
 
   return (
     <>

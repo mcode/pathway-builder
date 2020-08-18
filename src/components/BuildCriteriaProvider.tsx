@@ -1,12 +1,4 @@
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  memo,
-  useState,
-  useCallback,
-  useContext
-} from 'react';
+import React, { createContext, FC, ReactNode, memo, useState, useContext } from 'react';
 
 interface BuildCriteriaCql {
   cql: string;
@@ -14,10 +6,14 @@ interface BuildCriteriaCql {
 }
 
 interface BuildCriteriaContextInterface {
+  buildCriteriaSelected: boolean;
   buildCriteriaNodeId: string;
   buildCriteriaCql: BuildCriteriaCql | null;
-  updateBuildCriteriaNodeId: (id: string) => void;
-  updateBuildCriteriaCql: (buildCriteriaCql: BuildCriteriaCql | null) => void;
+  criteriaName: string;
+  setBuildCriteriaSelected: (buildCriteriaSelect: boolean) => void;
+  setBuildCriteriaNodeId: (id: string) => void;
+  setBuildCriteriaCql: (buildCriteriaCql: BuildCriteriaCql | null) => void;
+  setCriteriaName: (criteriaName: string) => void;
 }
 
 export const BuildCriteriaContext = createContext<BuildCriteriaContextInterface>(
@@ -31,28 +27,20 @@ interface BuildCriteriaProviderProps {
 export const BuildCriteriaProvider: FC<BuildCriteriaProviderProps> = memo(({ children }) => {
   const [buildCriteriaNodeId, setBuildCriteriaNodeId] = useState<string>('');
   const [buildCriteriaCql, setBuildCriteriaCql] = useState<BuildCriteriaCql | null>(null);
-
-  const updateBuildCriteriaNodeId = useCallback(
-    (id: string) => {
-      setBuildCriteriaNodeId(id);
-    },
-    [setBuildCriteriaNodeId]
-  );
-
-  const updateBuildCriteriaCql = useCallback(
-    (buildCriteriaCql: BuildCriteriaCql | null) => {
-      setBuildCriteriaCql(buildCriteriaCql);
-    },
-    [setBuildCriteriaCql]
-  );
+  const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
+  const [criteriaName, setCriteriaName] = useState<string>('');
 
   return (
     <BuildCriteriaContext.Provider
       value={{
+        buildCriteriaSelected,
+        setBuildCriteriaSelected,
         buildCriteriaNodeId,
-        updateBuildCriteriaNodeId,
+        setBuildCriteriaNodeId,
         buildCriteriaCql,
-        updateBuildCriteriaCql
+        setBuildCriteriaCql,
+        criteriaName,
+        setCriteriaName
       }}
     >
       {children}

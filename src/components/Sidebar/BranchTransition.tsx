@@ -34,10 +34,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
   const { criteria } = useCriteriaContext();
   const {
+    buildCriteriaSelected,
+    setBuildCriteriaSelected,
     buildCriteriaNodeId,
-    updateBuildCriteriaNodeId,
+    setBuildCriteriaNodeId,
     buildCriteriaCql,
-    updateBuildCriteriaCql
+    setBuildCriteriaCql,
+    criteriaName,
+    setCriteriaName
   } = useBuildCriteriaContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
@@ -56,8 +60,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const displayCriteria =
     criteriaAvailable &&
     (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
-  const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
-  const [criteriaName, setCriteriaName] = useState<string>('');
   const transitionRef = useRef(transition);
 
   const handleUseCriteria = useCallback((): void => {
@@ -123,18 +125,19 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   );
 
   const handleBuildCriteria = useCallback((): void => {
-    updateBuildCriteriaNodeId(transition.id ?? '');
+    setBuildCriteriaNodeId(transition.id ?? '');
     setBuildCriteriaSelected(!buildCriteriaSelected);
-  }, [buildCriteriaSelected, updateBuildCriteriaNodeId, transition]);
+  }, [buildCriteriaSelected, setBuildCriteriaNodeId, transition, setBuildCriteriaSelected]);
 
   const handleBuildCriteriaCancel = useCallback((): void => {
-    if (buildCriteriaNodeId === transition.id) updateBuildCriteriaNodeId('');
+    if (buildCriteriaNodeId === transition.id) setBuildCriteriaNodeId('');
     setBuildCriteriaSelected(false);
-    updateBuildCriteriaCql(null);
+    setBuildCriteriaCql(null);
     setCriteriaName('');
   }, [
-    updateBuildCriteriaNodeId,
-    updateBuildCriteriaCql,
+    setBuildCriteriaSelected,
+    setBuildCriteriaNodeId,
+    setBuildCriteriaCql,
     setCriteriaName,
     buildCriteriaNodeId,
     transition
@@ -241,6 +244,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             label="Criteria Name"
             variant="outlined"
             onChange={handleCriteriaName}
+            value={criteriaName}
             fullWidth
           />
           {buildCriteriaCql?.text && (

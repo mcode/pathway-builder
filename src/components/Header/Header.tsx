@@ -12,7 +12,7 @@ import logo from 'camino-logo-dark.png';
 import styles from './Header.module.scss';
 
 const Header: FC = () => {
-  const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const { setBuildCriteriaNodeId } = useBuildCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const toggleTheme = useThemeToggle();
 
@@ -31,7 +31,7 @@ const Header: FC = () => {
 
   return (
     <header className={styles.header}>
-      <Link to="/" className={styles.homeLink} onClick={(): void => updateBuildCriteriaNodeId('')}>
+      <Link to="/" className={styles.homeLink} onClick={(): void => setBuildCriteriaNodeId('')}>
         <img src={logo} alt="logo" className={styles.logo} />
       </Link>
 
