@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
+import shortid from 'shortid';
 import {
   removeTransitionCondition,
   setTransitionCondition,
@@ -25,6 +26,7 @@ import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -32,7 +34,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
-  const { criteria } = useCriteriaContext();
+  const { criteria, addElmCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
@@ -143,7 +145,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     transition
   ]);
 
-  const handleBuildCriteriaSave = useCallback((): void => {
+  const handleBuildCriteriaSave = useCallback(async (): Promise<void> => {
     if (
       !currentNodeRef.current?.key ||
       !transitionRef.current.id ||
@@ -152,13 +154,21 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     )
       return;
 
+    // CQl identifier cannot start with a number or contain '-'
+    const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
+    let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\ncontext Patient\n`;
+    cql += `define "${criteriaName}":
+      ${buildCriteriaCql.cql}`;
+    const elm = await convertBasicCQL(cql);
+    const criteriaId = addElmCriteria(elm, criteriaName);
+
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
       transitionRef.current.id,
       criteriaName,
-      null,
-      buildCriteriaCql.cql
+      elm,
+      criteriaId
     );
 
     updatePathway(newPathway);
@@ -170,7 +180,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     transitionRef,
     buildCriteriaCql,
     criteriaName,
-    handleBuildCriteriaCancel
+    handleBuildCriteriaCancel,
+    addElmCriteria
   ]);
 
   // Cancel current build criteria if clicked on another BranchTransition
@@ -254,6 +265,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             <FormControlLabel
               label={<Box fontStyle="italic">Add to reusable criteria</Box>}
               control={<Checkbox color="default" />}
+              checked
             />
             <Button
               color="inherit"

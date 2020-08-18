@@ -9,7 +9,7 @@ import React, {
   useEffect
 } from 'react';
 import shortid from 'shortid';
-import { ElmStatement } from 'elm-model';
+import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
@@ -26,6 +26,7 @@ interface CriteriaContextInterface {
   criteria: Criteria[];
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
+  addElmCriteria: (elm: ElmLibrary, criteriaName: string) => string;
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -98,12 +99,26 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
   }, []);
 
+  const addElmCriteria = useCallback((elm: ElmLibrary, criteriaName: string): string => {
+    const newCriteria: Criteria = {
+      id: shortid.generate(),
+      label: criteriaName,
+      version: elm.library.identifier.version,
+      modified: Date.now(),
+      elm: elm
+    };
+    setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+
+    return newCriteria.id;
+  }, []);
+
   return (
     <CriteriaContext.Provider
       value={{
         criteria,
         addCriteria,
-        deleteCriteria
+        deleteCriteria,
+        addElmCriteria
       }}
     >
       {children}

@@ -369,8 +369,7 @@ describe('builder interface update functions', () => {
       startNodeKey,
       transitionId,
       'test description',
-      elm,
-      'Tumor Size'
+      elm
     );
     const expectedTransition = {
       id: '1',

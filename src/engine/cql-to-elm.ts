@@ -6,6 +6,7 @@ import {
   extractMultipartBoundary,
   extractMultipartFileName
 } from 'utils/regexes';
+import { ElmLibrary } from 'elm-model';
 
 const url = config.get('cqlToElmWebserviceUrl');
 
@@ -60,7 +61,7 @@ export default function convertCQL(cql: CqlObject): Promise<ElmObject> {
   });
 }
 
-export function convertBasicCQL(cql: string): Promise<object> {
+export function convertBasicCQL(cql: string): Promise<ElmLibrary> {
   // Connect to web service
 
   return fetch(url, {
