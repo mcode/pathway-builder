@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useEffect, useState, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback, useEffect, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, TextField } from '@material-ui/core';
@@ -6,15 +6,24 @@ import { IconButton, TextField } from '@material-ui/core';
 import DropDown from 'components/elements/DropDown';
 import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import useStyles from './styles';
+import { useCriteriaBuilderStateContext } from 'components/CriteriaBuilderStateProvider';
 
 const CriteriaBuilder: FC = () => {
+  const {
+    selectedElement,
+    selectedDemoElement,
+    gender,
+    minimumAge,
+    maximumAge,
+    setSelectedElement,
+    setSelectedDemoElement,
+    setGender,
+    setMinimumAge,
+    setMaximumAge,
+    resetCriteriaBuilderState
+  } = useCriteriaBuilderStateContext();
   const styles = useStyles();
   const { setBuildCriteriaCql } = useBuildCriteriaContext();
-  const [selectedElement, setSelectedElement] = useState<string>('');
-  const [selectedDemoElement, setSelectedDemoElement] = useState<string>('');
-  const [gender, setGender] = useState<string>('');
-  const [minimumAge, setMinimumAge] = useState<number>(0);
-  const [maximumAge, setMaximumAge] = useState<number>(0);
   const elementOptions = [{ value: 'Demographics', label: 'Demographics' }];
   const demoElementOptions = [
     { value: 'Age Range', label: 'Age Range' },
@@ -39,54 +48,72 @@ const CriteriaBuilder: FC = () => {
     }
   ];
 
-  const onElementSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
-    setSelectedElement(event?.target.value || '');
-  }, []);
+  const onElementSelected = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setSelectedElement(event?.target.value || '');
+    },
+    [setSelectedElement]
+  );
 
-  const onDemoElementSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
-    setSelectedDemoElement(event?.target.value || '');
-  }, []);
+  const onDemoElementSelected = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setSelectedDemoElement(event?.target.value || '');
+    },
+    [setSelectedDemoElement]
+  );
 
-  const onGenderSelected = useCallback((event: ChangeEvent<{ value: string }>): void => {
-    setGender(event?.target.value || '');
-  }, []);
+  const onGenderSelected = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setGender(event?.target.value || '');
+    },
+    [setGender]
+  );
 
-  const onMinimumAgeChange = useCallback((event: ChangeEvent<{ value: string }>): void => {
-    setMinimumAge(parseInt(event?.target.value) || 0);
-  }, []);
+  const onMinimumAgeChange = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setMinimumAge(parseInt(event?.target.value) || 0);
+    },
+    [setMinimumAge]
+  );
 
-  const onMaximumAgeChange = useCallback((event: ChangeEvent<{ value: string }>): void => {
-    setMaximumAge(parseInt(event?.target.value) || 0);
-  }, []);
+  const onMaximumAgeChange = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      setMaximumAge(parseInt(event?.target.value) || 0);
+    },
+    [setMaximumAge]
+  );
 
-  const resetElements = useCallback(() => {
-    setSelectedElement('');
-    setSelectedDemoElement('');
-    setGender('');
-    setMinimumAge(0);
-    setMaximumAge(0);
-  }, []);
+  const handleClose = useCallback((): void => {
+    resetCriteriaBuilderState();
+    setBuildCriteriaCql(null);
+  }, [resetCriteriaBuilderState, setBuildCriteriaCql]);
 
   const genderString = `The patient's gender is ${gender}`;
   const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
 
   useEffect(() => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
-    if (minimumAge >= 0 && maximumAge > 0) {
-      setBuildCriteriaCql({ cql, text: ageRangeString });
-    } else if (minimumAge === 0 && maximumAge === 0) {
-      setBuildCriteriaCql(null);
+    if (selectedDemoElement === 'Age Range') {
+      if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
+        console.log('setting');
+        console.log(ageRangeString);
+        setBuildCriteriaCql({ cql, text: ageRangeString });
+      } else {
+        setBuildCriteriaCql(null);
+      }
     }
-  }, [minimumAge, maximumAge, ageRangeString, setBuildCriteriaCql]);
+  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setBuildCriteriaCql]);
 
   useEffect(() => {
     const cql = `Patient.gender.value = '${gender}'`;
-    if (gender !== '') {
-      setBuildCriteriaCql({ cql, text: genderString });
-    } else if (gender === '') {
-      setBuildCriteriaCql(null);
+    if (selectedDemoElement === 'Gender') {
+      if (gender !== '') {
+        setBuildCriteriaCql({ cql, text: genderString });
+      } else {
+        setBuildCriteriaCql(null);
+      }
     }
-  }, [gender, genderString, setBuildCriteriaCql]);
+  }, [selectedDemoElement, gender, genderString, setBuildCriteriaCql]);
 
   return (
     <>
@@ -123,7 +150,7 @@ const CriteriaBuilder: FC = () => {
         {!(selectedElement === '' || selectedDemoElement === '') && (
           <>
             <span>{selectedDemoElement}</span>
-            <IconButton onClick={resetElements}>
+            <IconButton onClick={handleClose}>
               <FontAwesomeIcon icon={faTimes} />
             </IconButton>
             <hr />

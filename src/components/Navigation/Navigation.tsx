@@ -10,7 +10,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 
 const Navigation: FC = () => {
-  const { setBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const { resetBuildCriteria } = useBuildCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { pathway } = useCurrentPathwayContext();
   const styles = useStyles();
@@ -25,9 +25,9 @@ const Navigation: FC = () => {
   }, []);
 
   const handleGoBack = useCallback((): void => {
-    setBuildCriteriaNodeId('');
+    resetBuildCriteria();
     history.push('/');
-  }, [history, setBuildCriteriaNodeId]);
+  }, [history, resetBuildCriteria]);
 
   return (
     <nav className={styles.root}>

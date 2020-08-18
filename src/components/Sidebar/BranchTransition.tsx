@@ -18,6 +18,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
 import { convertBasicCQL } from 'engine/cql-to-elm';
+import { useCriteriaBuilderStateContext } from 'components/CriteriaBuilderStateProvider';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -34,8 +35,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     buildCriteriaCql,
     setBuildCriteriaCql,
     criteriaName,
-    setCriteriaName
+    setCriteriaName,
+    resetBuildCriteria
   } = useBuildCriteriaContext();
+  const { resetCriteriaBuilderState } = useCriteriaBuilderStateContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -119,22 +122,24 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const handleBuildCriteria = useCallback((): void => {
     setBuildCriteriaNodeId(transition.id ?? '');
-    if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
-  }, [buildCriteriaSelected, setBuildCriteriaNodeId, transition, setBuildCriteriaSelected]);
-
-  const handleBuildCriteriaCancel = useCallback((): void => {
-    if (buildCriteriaNodeId === transition.id) setBuildCriteriaNodeId('');
-    setBuildCriteriaSelected(false);
     setBuildCriteriaCql(null);
     setCriteriaName('');
+    if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
+    resetCriteriaBuilderState();
   }, [
-    setBuildCriteriaSelected,
+    buildCriteriaSelected,
     setBuildCriteriaNodeId,
+    transition,
+    setBuildCriteriaSelected,
     setBuildCriteriaCql,
-    setCriteriaName,
-    buildCriteriaNodeId,
-    transition
+    resetCriteriaBuilderState,
+    setCriteriaName
   ]);
+
+  const handleBuildCriteriaCancel = useCallback((): void => {
+    resetBuildCriteria();
+    resetCriteriaBuilderState();
+  }, [resetBuildCriteria, resetCriteriaBuilderState]);
 
   const handleBuildCriteriaSave = useCallback(async (): Promise<void> => {
     if (

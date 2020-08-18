@@ -1,4 +1,12 @@
-import React, { createContext, FC, ReactNode, memo, useState, useContext } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  memo,
+  useState,
+  useContext,
+  useCallback
+} from 'react';
 
 interface BuildCriteriaCql {
   cql: string;
@@ -14,6 +22,7 @@ interface BuildCriteriaContextInterface {
   setBuildCriteriaNodeId: (id: string) => void;
   setBuildCriteriaCql: (buildCriteriaCql: BuildCriteriaCql | null) => void;
   setCriteriaName: (criteriaName: string) => void;
+  resetBuildCriteria: () => void;
 }
 
 export const BuildCriteriaContext = createContext<BuildCriteriaContextInterface>(
@@ -30,6 +39,13 @@ export const BuildCriteriaProvider: FC<BuildCriteriaProviderProps> = memo(({ chi
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
 
+  const resetBuildCriteria = useCallback(() => {
+    setBuildCriteriaNodeId('');
+    setBuildCriteriaCql(null);
+    setBuildCriteriaSelected(false);
+    setCriteriaName('');
+  }, [setBuildCriteriaNodeId, setBuildCriteriaCql, setBuildCriteriaSelected, setCriteriaName]);
+
   return (
     <BuildCriteriaContext.Provider
       value={{
@@ -40,7 +56,8 @@ export const BuildCriteriaProvider: FC<BuildCriteriaProviderProps> = memo(({ chi
         buildCriteriaCql,
         setBuildCriteriaCql,
         criteriaName,
-        setCriteriaName
+        setCriteriaName,
+        resetBuildCriteria
       }}
     >
       {children}

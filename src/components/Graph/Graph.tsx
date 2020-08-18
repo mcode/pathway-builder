@@ -175,16 +175,16 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
 }) {
   const { id: pathwayId } = useParams();
   const history = useHistory();
-  const { setBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const { resetBuildCriteria } = useBuildCriteriaContext();
   const onClickHandler = useCallback(
     (nodeKey: string) => {
       if (interactive) {
         redirect(pathwayId, nodeKey, history);
         toggleExpanded(nodeKey);
-        setBuildCriteriaNodeId('');
+        resetBuildCriteria();
       }
     },
-    [toggleExpanded, setBuildCriteriaNodeId, interactive, history, pathwayId]
+    [toggleExpanded, resetBuildCriteria, interactive, history, pathwayId]
   );
 
   return (
