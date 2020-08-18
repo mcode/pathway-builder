@@ -1,13 +1,4 @@
-import React, {
-  FC,
-  memo,
-  useState,
-  useCallback,
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
+import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
@@ -128,7 +119,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const handleBuildCriteria = useCallback((): void => {
     setBuildCriteriaNodeId(transition.id ?? '');
-    setBuildCriteriaSelected(!buildCriteriaSelected);
+    if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
   }, [buildCriteriaSelected, setBuildCriteriaNodeId, transition, setBuildCriteriaSelected]);
 
   const handleBuildCriteriaCancel = useCallback((): void => {
@@ -184,16 +175,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     addElmCriteria
   ]);
 
-  // Cancel current build criteria if clicked on another BranchTransition
-  useEffect(() => {
-    if (buildCriteriaNodeId !== '' && buildCriteriaNodeId !== transition.id) {
-      handleBuildCriteriaCancel();
-    }
-  }, [buildCriteriaNodeId, handleBuildCriteriaCancel, transition]);
-
+  const transitionSelected = buildCriteriaSelected && buildCriteriaNodeId === transition.id;
   return (
     <>
-      {!displayCriteria && !buildCriteriaSelected && (
+      {!displayCriteria && !transitionSelected && (
         <SidebarButton
           buttonName="Select Criteria"
           buttonIcon={faThList}
@@ -205,7 +190,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         />
       )}
 
-      {displayCriteria && !buildCriteriaSelected && (
+      {displayCriteria && !transitionSelected && (
         <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <>
             <DropDown
@@ -238,7 +223,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         </OutlinedDiv>
       )}
 
-      {!displayCriteria && !buildCriteriaSelected && (
+      {!displayCriteria && !transitionSelected && (
         <SidebarButton
           buttonName="Build Criteria"
           buttonIcon={faTools}
@@ -248,7 +233,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         />
       )}
 
-      {buildCriteriaSelected && (
+      {transitionSelected && (
         <OutlinedDiv label="Criteria Builder" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <TextField
             error={criteriaName === ''}
