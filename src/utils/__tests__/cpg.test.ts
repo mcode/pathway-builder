@@ -42,7 +42,7 @@ describe('convert pathway into cpg', () => {
       expect(result.id).toBe('1234');
       expect(result.title).toBe('title');
       expect(result.description).toBe('description');
-      expect(result.library).toEqual(['urn:uuid:Library/0000']);
+      expect(result.library).toEqual(['urn:uuid:0000']);
       expect(result.action.length).toBe(0);
     });
 

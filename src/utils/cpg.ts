@@ -20,7 +20,7 @@ const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicabili
 const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
 export function createActivityDefinition(action: Action): ActivityDefinition {
-  const activityId = uuidv4() as string;
+  const activityId = uuidv4();
   const kind =
     action.resource.resourceType === 'Procedure' ? 'ServiceRequest' : action.resource.resourceType;
 
@@ -36,7 +36,7 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
         valueCode: 'publishable'
       }
     ],
-    url: `urn:uuid:ActivityDefinition/${activityId}`,
+    url: `urn:uuid:${activityId}`,
     version: '1.0',
     name: `AD${activityId.substring(0, 7)}`,
     title: `ActivityDefinition: ${activityId}`,
@@ -101,7 +101,7 @@ export function createPlanDefinition(
         valueCode: 'executable'
       }
     ],
-    url: `urn:uuid:PlanDefinition/${id}`,
+    url: `urn:uuid:${id}`,
     version: '1.0',
     name: `PD${id.substring(0, 7)}`,
     title: title,
@@ -122,7 +122,7 @@ export function createPlanDefinition(
   };
 
   if (type === 'strategy') {
-    planDefinition.library = [`urn:uuid:Library/${libraryId}`];
+    planDefinition.library = [`urn:uuid:${libraryId}`];
   }
 
   return planDefinition;
@@ -130,7 +130,7 @@ export function createPlanDefinition(
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
-    fullUrl: `urn:uuid:${resource.resourceType}/${resource.id}`,
+    fullUrl: `urn:uuid:${resource.id}`,
     resource: resource,
     request: {
       method: BUNDLE_PUT,
@@ -154,7 +154,7 @@ function createLibrary(pathway: Pathway): Library {
         valueCode: 'executable'
       }
     ],
-    url: `urn:uuid:Library/${libraryId}`,
+    url: `urn:uuid:${libraryId}`,
     version: '1.0',
     name: libraryId,
     title: `Library for ${pathway.name}`,
