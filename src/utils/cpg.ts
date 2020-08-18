@@ -7,7 +7,7 @@ import {
   BundleEntry,
   Library
 } from 'fhir-objects';
-import shortid from 'shortid';
+import { v4 as uuidv4 } from 'uuid';
 import { isActionNode, findParents, isBranchNode } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
 
@@ -15,12 +15,12 @@ const LIBRARY_DRAFT = R4.LibraryStatusKind._draft;
 const PLANDEFINITION_DRAFT = R4.PlanDefinitionStatusKind._draft;
 const ACTIVITYDEFINITION_DRAFT = R4.ActivityDefinitionStatusKind._draft;
 const BUNDLE_TRANSACTION = R4.BundleTypeKind._transaction;
-const BUNDLE_POST = R4.Bundle_RequestMethodKind._post;
+const BUNDLE_PUT = R4.Bundle_RequestMethodKind._put;
 const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicability; // eslint-disable-line
 const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
 export function createActivityDefinition(action: Action): ActivityDefinition {
-  const activityId = shortid.generate();
+  const activityId = uuidv4() as string;
   const kind =
     action.resource.resourceType === 'Procedure' ? 'ServiceRequest' : action.resource.resourceType;
 
@@ -32,14 +32,13 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     },
     extension: [
       {
-        url:
-          'http://build.fhir.org/ig/HL7/cqf-recommendations/StructureDefinition/cpg-knowledgeCapability.html',
+        url: 'http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability',
         valueCode: 'publishable'
       }
     ],
     url: `urn:uuid:ActivityDefinition/${activityId}`,
     version: '1.0',
-    name: activityId,
+    name: `AD${activityId.substring(0, 7)}`,
     title: `ActivityDefinition: ${activityId}`,
     status: ACTIVITYDEFINITION_DRAFT,
     experimental: true,
@@ -59,14 +58,25 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
 function createAction(
   id: string,
   description: string,
-  definitionUri: string,
+  definition: string,
   hasConditions = false
 ): PlanDefinitionAction {
   const cpgAction: PlanDefinitionAction = {
     id: id,
     title: `Action: ${id}`,
     description: description,
-    definitionUri: definitionUri
+    code: [
+      {
+        coding: [
+          {
+            system: 'http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process',
+            code: 'guideline-based-care',
+            display: 'Guideline-based Care'
+          }
+        ]
+      }
+    ],
+    definitionCanonical: definition
   };
   if (hasConditions) cpgAction.condition = [];
   return cpgAction;
@@ -93,14 +103,14 @@ export function createPlanDefinition(
     ],
     url: `urn:uuid:PlanDefinition/${id}`,
     version: '1.0',
-    name: id,
+    name: `PD${id.substring(0, 7)}`,
     title: title,
     type: {
       coding: [
         {
           system: 'http://terminology.hl7.org/CodeSystem/plan-definition-type',
           code: 'workflow-definition',
-          display: 'workflow-definition'
+          display: 'Workflow Definition'
         }
       ]
     },
@@ -123,14 +133,14 @@ function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Libra
     fullUrl: `urn:uuid:${resource.resourceType}/${resource.id}`,
     resource: resource,
     request: {
-      method: BUNDLE_POST,
-      url: `/${resource.resourceType}`
+      method: BUNDLE_PUT,
+      url: `/${resource.resourceType}/${resource.id}`
     }
   };
 }
 
 function createLibrary(pathway: Pathway): Library {
-  const libraryId = shortid.generate();
+  const libraryId = uuidv4();
 
   const library: Library = {
     id: libraryId,
@@ -153,9 +163,9 @@ function createLibrary(pathway: Pathway): Library {
     type: {
       coding: [
         {
-          system: '',
-          code: '',
-          display: ''
+          system: 'http://terminology.hl7.org/CodeSystem/library-type',
+          code: 'logic-library',
+          display: 'Logic Library'
         }
       ]
     },
@@ -168,13 +178,13 @@ function createLibrary(pathway: Pathway): Library {
     library.content.push(
       {
         id: 'navigational',
-        contentType: '',
+        contentType: 'application/elm+json',
         data: btoa(JSON.stringify(pathway.elm.navigational)),
         title: 'ELM for navigating the pathway'
       },
       {
         id: 'precondition',
-        contentType: '',
+        contentType: 'application/elm+json',
         data: btoa(JSON.stringify(pathway.elm.preconditions)),
         title: 'ELM for pathway preconditions'
       }
@@ -193,7 +203,7 @@ export function toCPG(pathway: Pathway): Bundle {
   };
   const library = createLibrary(pathway);
   const cpgStrategy = createPlanDefinition(
-    shortid.generate(),
+    uuidv4(),
     pathway.name,
     pathway.description ?? `Pathway For: ${pathway.name}`,
     'strategy',
@@ -205,7 +215,7 @@ export function toCPG(pathway: Pathway): Bundle {
     if (isActionNode(node) && node.key) {
       const description = `Represents an action for ${node.label}`;
       const cpgRecommendation = createPlanDefinition(
-        shortid.generate(),
+        uuidv4(),
         node.label,
         description,
         'recommendation'
@@ -230,7 +240,7 @@ export function toCPG(pathway: Pathway): Bundle {
       node.action.forEach(action => {
         const cpgActivityDefinition = createActivityDefinition(action);
         const cpgRecommendationAction = createAction(
-          action.id ?? shortid.generate(),
+          action.id ?? uuidv4(),
           action.description,
           cpgActivityDefinition.url
         );
