@@ -4802,14 +4802,6 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
-fhir-validator@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/fhir-validator/-/fhir-validator-0.5.1.tgz#a14928072c9d32272289dc77df1cb10eb7eff472"
-  integrity sha1-oUkoByydMiciidx33xyxDrfv9HI=
-  dependencies:
-    ajv "^5.2.0"
-    lodash "^4.13.1"
-
 figgy-pudding@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"

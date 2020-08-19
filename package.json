@@ -28,7 +28,6 @@
     "dagre": "^0.8.5",
     "deepmerge": "^4.2.2",
     "eslint-plugin-only-error": "^1.0.2",
-    "fhir-validator": "^0.5.1",
     "immer": "^7.0.5",
     "moment": "^2.25.3",
     "node-sass": "^4.12.0",

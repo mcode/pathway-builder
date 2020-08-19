@@ -55,12 +55,7 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
   return activityDefinition;
 }
 
-function createAction(
-  id: string,
-  description: string,
-  definition: string,
-  hasConditions = false
-): PlanDefinitionAction {
+function createAction(id: string, description: string, definition: string): PlanDefinitionAction {
   const cpgAction: PlanDefinitionAction = {
     id: id,
     title: `Action: ${id}`,
@@ -78,7 +73,6 @@ function createAction(
     ],
     definitionCanonical: definition
   };
-  if (hasConditions) cpgAction.condition = [];
   return cpgAction;
 }
 
@@ -220,7 +214,7 @@ export function toCPG(pathway: Pathway): Bundle {
         description,
         'recommendation'
       );
-      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.url, true);
+      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.url);
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
         const transition = parent.transitions.find(
@@ -234,6 +228,7 @@ export function toCPG(pathway: Pathway): Bundle {
               expression: transition.condition.cql
             }
           };
+          cpgStrategyAction.condition = cpgStrategyAction.condition || [];
           cpgStrategyAction.condition?.push(condition);
         }
       });
