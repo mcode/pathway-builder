@@ -141,7 +141,9 @@ export function exportPathway(pathway: Pathway, cpg: boolean): string {
         return {
           ...transition,
           id: undefined,
-          condition: transition.condition ? { ...transition.condition, elm: undefined } : undefined
+          condition: transition.condition
+            ? { ...transition.condition, elm: undefined, criteriaSource: undefined }
+            : undefined
         };
       }),
       // Strip id from each node.action
@@ -337,16 +339,6 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
   }
 }
 
-export function setNodeCriteriaSource(
-  pathway: Pathway,
-  key: string,
-  criteriaSource: string
-): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    (draftPathway.nodes[key] as BranchNode).criteriaSource = criteriaSource;
-  });
-}
-
 export function setNodeAction(pathway: Pathway, key: string, action: Action[]): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     (draftPathway.nodes[key] as ActionNode).action = action;
@@ -390,20 +382,20 @@ export function setTransitionCondition(
   transitionId: string,
   description: string,
   elm: ElmLibrary,
-  criteriaLabel?: string
+  criteriaSource?: string,
+  cql?: string
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const foundTransition = draftPathway.nodes[startNodeKey]?.transitions?.find(
       (transition: Transition) => transition.id === transitionId
     );
 
-    const cql = criteriaLabel ?? getElmStatement(elm).name;
-
     if (foundTransition) {
       foundTransition.condition = {
         description,
-        cql,
-        elm
+        elm,
+        criteriaSource: criteriaSource ?? getElmStatement(elm).name,
+        cql: cql ?? ''
       };
     }
   });

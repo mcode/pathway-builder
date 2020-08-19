@@ -164,7 +164,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       transitionRef.current.id,
       criteriaName,
       elm,
-      criteriaId
+      criteriaId,
+      buildCriteriaCql.cql
     );
 
     updatePathway(newPathway);
@@ -203,7 +204,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               label="Criteria"
               options={criteriaOptions}
               onChange={selectCriteriaSource}
-              value={transition.condition?.cql || undefined}
+              value={transition.condition?.criteriaSource || undefined}
             />
 
             <TextField
