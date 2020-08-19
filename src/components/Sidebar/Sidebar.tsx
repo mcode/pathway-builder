@@ -28,6 +28,7 @@ import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
+import { StartPreconditions } from 'components/Sidebar';
 
 interface SidebarProps {
   headerElement: RefObject<HTMLDivElement>;
@@ -93,9 +94,17 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
         {isExpanded && (
           <div className={styles.root} ref={sidebarContainerElement}>
             <SidebarHeader node={currentNode} isTransition={false} />
+
             <h5 className={styles.dividerHeader}>
-              <></>{' '}
+              <span>Details</span>
             </h5>
+
+            <StartPreconditions />
+
+            <h5 className={styles.dividerHeader}>
+              <span>Transitions</span>
+            </h5>
+
             <SidebarButton
               buttonName="Add Node"
               buttonIcon={faPlus}

@@ -6,3 +6,4 @@ export { default as BranchTransition } from './BranchTransition';
 export { default as OutlinedDiv } from './OutlinedDiv';
 export { default as DeleteModal } from './DeleteModal';
 export { default as TransitionEditor } from './TransitionEditor';
+export { default as StartPreconditions } from './StartPreconditions';
