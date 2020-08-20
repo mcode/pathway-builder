@@ -4,13 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@material-ui/core';
 
-import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 
 const Navigation: FC = () => {
-  const { resetBuildCriteria } = useBuildCriteriaContext();
+  const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { pathway } = useCurrentPathwayContext();
   const styles = useStyles();
@@ -25,9 +25,9 @@ const Navigation: FC = () => {
   }, []);
 
   const handleGoBack = useCallback((): void => {
-    resetBuildCriteria();
+    resetCurrentCriteria();
     history.push('/');
-  }, [history, resetBuildCriteria]);
+  }, [history, resetCurrentCriteria]);
 
   return (
     <nav className={styles.root}>

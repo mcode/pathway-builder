@@ -16,9 +16,9 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { convertBasicCQL } from 'engine/cql-to-elm';
-import { useCriteriaBuilderStateContext } from 'components/CriteriaBuilderStateProvider';
+import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -30,15 +30,15 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
-    buildCriteriaNodeId,
-    setBuildCriteriaNodeId,
-    buildCriteriaCql,
-    setBuildCriteriaCql,
+    currentCriteriaNodeId,
+    setCurrentCriteriaNodeId,
+    currentCriteriaCql,
+    setCurrentCriteriaCql,
     criteriaName,
     setCriteriaName,
-    resetBuildCriteria
-  } = useBuildCriteriaContext();
-  const { resetCriteriaBuilderState } = useCriteriaBuilderStateContext();
+    resetCurrentCriteria
+  } = useCurrentCriteriaContext();
+  const { resetCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -121,32 +121,32 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   );
 
   const handleBuildCriteria = useCallback((): void => {
-    setBuildCriteriaNodeId(transition.id ?? '');
-    setBuildCriteriaCql(null);
+    setCurrentCriteriaNodeId(transition.id ?? '');
+    setCurrentCriteriaCql(null);
     setCriteriaName('');
     if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
-    resetCriteriaBuilderState();
+    resetCriteriaBuilder();
   }, [
     buildCriteriaSelected,
-    setBuildCriteriaNodeId,
+    setCurrentCriteriaNodeId,
     transition,
     setBuildCriteriaSelected,
-    setBuildCriteriaCql,
-    resetCriteriaBuilderState,
+    setCurrentCriteriaCql,
+    resetCriteriaBuilder,
     setCriteriaName
   ]);
 
   const handleBuildCriteriaCancel = useCallback((): void => {
-    resetBuildCriteria();
-    resetCriteriaBuilderState();
-  }, [resetBuildCriteria, resetCriteriaBuilderState]);
+    resetCurrentCriteria();
+    resetCriteriaBuilder();
+  }, [resetCurrentCriteria, resetCriteriaBuilder]);
 
   const handleBuildCriteriaSave = useCallback(async (): Promise<void> => {
     if (
       !currentNodeRef.current?.key ||
       !transitionRef.current.id ||
       !pathwayRef.current ||
-      !buildCriteriaCql?.cql
+      !currentCriteriaCql?.cql
     )
       return;
 
@@ -154,7 +154,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
     let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\ncontext Patient\n`;
     cql += `define "${criteriaName}":
-      ${buildCriteriaCql.cql}`;
+      ${currentCriteriaCql.cql}`;
     const elm = await convertBasicCQL(cql);
     const criteriaId = addElmCriteria(elm, criteriaName);
 
@@ -165,7 +165,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       criteriaName,
       elm,
       criteriaId,
-      buildCriteriaCql.cql
+      currentCriteriaCql.cql
     );
 
     updatePathway(newPathway);
@@ -175,13 +175,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     updatePathway,
     pathwayRef,
     transitionRef,
-    buildCriteriaCql,
+    currentCriteriaCql,
     criteriaName,
     handleBuildCriteriaCancel,
     addElmCriteria
   ]);
 
-  const transitionSelected = buildCriteriaSelected && buildCriteriaNodeId === transition.id;
+  const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
   return (
     <>
       {!displayCriteria && !transitionSelected && (
@@ -249,8 +249,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             value={criteriaName}
             fullWidth
           />
-          {buildCriteriaCql?.text && (
-            <span className={styles.buildCriteriaText}>{buildCriteriaCql.text}</span>
+          {currentCriteriaCql?.text && (
+            <span className={styles.buildCriteriaText}>{currentCriteriaCql.text}</span>
           )}
           <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
@@ -272,7 +272,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || buildCriteriaCql === null}
+              disabled={criteriaName === '' || currentCriteriaCql === null}
               onClick={handleBuildCriteriaSave}
             >
               Save

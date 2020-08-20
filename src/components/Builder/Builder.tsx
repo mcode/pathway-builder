@@ -1,6 +1,6 @@
 import React, { FC, useRef, useEffect, memo, useState, useCallback } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
-import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 
 import Header from 'components/Header';
 import Navigation from 'components/Navigation';
@@ -18,7 +18,7 @@ import ResizeSensor from 'css-element-queries/src/ResizeSensor';
 const Builder: FC = () => {
   const styles = useStyles();
   const { pathway } = useCurrentPathwayContext();
-  const { buildCriteriaNodeId } = useBuildCriteriaContext();
+  const { currentCriteriaNodeId } = useCurrentCriteriaContext();
   const headerElement = useRef<HTMLDivElement>(null);
   const theme = useTheme('dark');
   const [showCriteriaBuilder, setShowCriteriaBuilder] = useState<boolean>(true);
@@ -59,8 +59,8 @@ const Builder: FC = () => {
 
   // Reset criteriaBuilderToggle to true if not currently building criteria
   useEffect(() => {
-    if (!showCriteriaBuilder && buildCriteriaNodeId === '') setShowCriteriaBuilder(true);
-  }, [buildCriteriaNodeId, showCriteriaBuilder]);
+    if (!showCriteriaBuilder && currentCriteriaNodeId === '') setShowCriteriaBuilder(true);
+  }, [currentCriteriaNodeId, showCriteriaBuilder]);
 
   return (
     <>
@@ -76,7 +76,7 @@ const Builder: FC = () => {
           </MuiThemeProvider>
 
           <div ref={handleGraphContainerElement} className={styles.graph}>
-            {buildCriteriaNodeId !== '' && (
+            {currentCriteriaNodeId !== '' && (
               <div className={styles.graphHeader}>
                 <div className={styles.graphHeaderText}>
                   <span>Criteria Builder</span>
@@ -89,7 +89,7 @@ const Builder: FC = () => {
                 </IconButton>
               </div>
             )}
-            {buildCriteriaNodeId !== '' && showCriteriaBuilder ? (
+            {currentCriteriaNodeId !== '' && showCriteriaBuilder ? (
               <CriteriaBuilder />
             ) : (
               <Graph graphContainerWidth={graphContainerWidth} />

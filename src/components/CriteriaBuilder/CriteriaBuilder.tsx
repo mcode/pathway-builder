@@ -4,9 +4,9 @@ import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, TextField } from '@material-ui/core';
 
 import DropDown from 'components/elements/DropDown';
-import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
-import { useCriteriaBuilderStateContext } from 'components/CriteriaBuilderStateProvider';
+import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 
 const CriteriaBuilder: FC = () => {
   const {
@@ -20,10 +20,10 @@ const CriteriaBuilder: FC = () => {
     setGender,
     setMinimumAge,
     setMaximumAge,
-    resetCriteriaBuilderState
-  } = useCriteriaBuilderStateContext();
+    resetCriteriaBuilder
+  } = useCriteriaBuilderContext();
   const styles = useStyles();
-  const { setBuildCriteriaCql } = useBuildCriteriaContext();
+  const { setCurrentCriteriaCql } = useCurrentCriteriaContext();
   const elementOptions = [{ value: 'Demographics', label: 'Demographics' }];
   const demoElementOptions = [
     { value: 'Age Range', label: 'Age Range' },
@@ -84,9 +84,9 @@ const CriteriaBuilder: FC = () => {
   );
 
   const handleClose = useCallback((): void => {
-    resetCriteriaBuilderState();
-    setBuildCriteriaCql(null);
-  }, [resetCriteriaBuilderState, setBuildCriteriaCql]);
+    resetCriteriaBuilder();
+    setCurrentCriteriaCql(null);
+  }, [resetCriteriaBuilder, setCurrentCriteriaCql]);
 
   const genderString = `The patient's gender is ${gender}`;
   const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
@@ -95,25 +95,23 @@ const CriteriaBuilder: FC = () => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
     if (selectedDemoElement === 'Age Range') {
       if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
-        console.log('setting');
-        console.log(ageRangeString);
-        setBuildCriteriaCql({ cql, text: ageRangeString });
+        setCurrentCriteriaCql({ cql, text: ageRangeString });
       } else {
-        setBuildCriteriaCql(null);
+        setCurrentCriteriaCql(null);
       }
     }
-  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setBuildCriteriaCql]);
+  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setCurrentCriteriaCql]);
 
   useEffect(() => {
     const cql = `Patient.gender.value = '${gender}'`;
     if (selectedDemoElement === 'Gender') {
       if (gender !== '') {
-        setBuildCriteriaCql({ cql, text: genderString });
+        setCurrentCriteriaCql({ cql, text: genderString });
       } else {
-        setBuildCriteriaCql(null);
+        setCurrentCriteriaCql(null);
       }
     }
-  }, [selectedDemoElement, gender, genderString, setBuildCriteriaCql]);
+  }, [selectedDemoElement, gender, genderString, setCurrentCriteriaCql]);
 
   return (
     <>

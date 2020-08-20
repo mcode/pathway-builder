@@ -13,9 +13,9 @@ import PathwaysList from './PathwaysList';
 import CriteriaList from './CriteriaList';
 import { CurrentPathwayProvider } from './CurrentPathwayProvider';
 import { CurrentNodeProvider } from './CurrentNodeProvider';
-import { BuildCriteriaProvider } from './BuildCriteriaProvider';
+import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
-import { CriteriaBuilderStateProvider } from './CriteriaBuilderStateProvider';
+import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
 
 const App: FC = () => {
   return (
@@ -26,8 +26,8 @@ const App: FC = () => {
             <CurrentNodeProvider>
               <CriteriaProvider>
                 <SnackbarProvider>
-                  <BuildCriteriaProvider>
-                    <CriteriaBuilderStateProvider>
+                  <CurrentCriteriaProvider>
+                    <CriteriaBuilderProvider>
                       <Router>
                         <Switch>
                           <Route path="/builder/:id/node/:nodeId">
@@ -47,8 +47,8 @@ const App: FC = () => {
                           </Route>
                         </Switch>
                       </Router>
-                    </CriteriaBuilderStateProvider>
-                  </BuildCriteriaProvider>
+                    </CriteriaBuilderProvider>
+                  </CurrentCriteriaProvider>
                 </SnackbarProvider>
               </CriteriaProvider>
             </CurrentNodeProvider>
