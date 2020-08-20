@@ -11,6 +11,7 @@ import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 import produce from 'immer';
+import { toCPG } from './cpg';
 
 export function createNewPathway(name: string, description?: string, pathwayId?: string): Pathway {
   return {
@@ -29,8 +30,8 @@ export function createNewPathway(name: string, description?: string, pathwayId?:
   };
 }
 
-export function downloadPathway(pathway: Pathway): void {
-  const pathwayString = exportPathway(pathway);
+export function downloadPathway(pathway: Pathway, cpg = false): void {
+  const pathwayString = exportPathway(pathway, cpg);
   // Create blob from pathwayString to save to file system
   const pathwayBlob = new Blob([pathwayString], {
     type: 'application/json'
@@ -45,7 +46,9 @@ export function downloadPathway(pathway: Pathway): void {
   window.URL.revokeObjectURL(url);
 }
 
-export function exportPathway(pathway: Pathway): string {
+export function exportPathway(pathway: Pathway, cpg: boolean): string {
+  if (cpg) return JSON.stringify(toCPG(pathway), undefined, 2);
+
   const elm: ElmLibrary = {
     library: {
       identifier: {
