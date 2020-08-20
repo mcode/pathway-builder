@@ -25,7 +25,7 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     action.resource.resourceType === 'Procedure' ? 'ServiceRequest' : action.resource.resourceType;
 
   const activityDefinition: ActivityDefinition = {
-    id: `urn:uuid:${activityId}`,
+    id: activityId,
     resourceType: 'ActivityDefinition',
     meta: {
       profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishableactivity']
@@ -71,7 +71,7 @@ function createAction(id: string, description: string, definition: string): Plan
         ]
       }
     ],
-    definitionCanonical: definition
+    definitionCanonical: `http://pathway.com/${definition}`
   };
   return cpgAction;
 }
@@ -84,7 +84,7 @@ export function createPlanDefinition(
   libraryId?: string
 ): PlanDefinition {
   const planDefinition: PlanDefinition = {
-    id: `urn:uuid:${id}`,
+    id: id,
     resourceType: 'PlanDefinition',
     meta: {
       profile: [`http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-${type}definition`]
@@ -115,8 +115,8 @@ export function createPlanDefinition(
     action: []
   };
 
-  if (type === 'strategy') {
-    planDefinition.library = [`urn:uuid:${libraryId}`];
+  if (type === 'strategy' && libraryId) {
+    planDefinition.library = [libraryId];
   }
 
   return planDefinition;
@@ -124,7 +124,7 @@ export function createPlanDefinition(
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
-    fullUrl: `urn:uuid:${resource.id}`,
+    fullUrl: `http://pathway.com/${resource.id}`,
     resource: resource,
     request: {
       method: BUNDLE_PUT,
@@ -137,7 +137,7 @@ function createLibrary(pathway: Pathway): Library {
   const libraryId = uuidv4();
 
   const library: Library = {
-    id: `urn:uuid:${libraryId}`,
+    id: libraryId,
     resourceType: 'Library',
     meta: {
       profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablelibrary']
@@ -214,7 +214,7 @@ export function toCPG(pathway: Pathway): Bundle {
         description,
         'recommendation'
       );
-      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.url);
+      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.id);
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
         const transition = parent.transitions.find(
@@ -237,7 +237,7 @@ export function toCPG(pathway: Pathway): Bundle {
         const cpgRecommendationAction = createAction(
           action.id ?? uuidv4(),
           action.description,
-          cpgActivityDefinition.url
+          cpgActivityDefinition.id
         );
         cpgRecommendation.action.push(cpgRecommendationAction);
         bundle.entry.push(createBundleEntry(cpgActivityDefinition));
