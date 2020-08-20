@@ -114,8 +114,17 @@ export default makeStyles(
       display: 'flex',
       justifyContent: 'space-between'
     },
+    buildCriteriaText: {
+      marginTop: '0.5em',
+      marginBottom: '1em'
+    },
     saveButton: {
-      marginLeft: '1em'
+      marginLeft: '1em',
+      backgroundColor: theme.palette.error.main,
+      borderColor: theme.palette.error.main,
+      '&:hover': {
+        backgroundColor: theme.palette.error.main
+      }
     },
     transitionContainer: {
       backgroundColor: theme.palette.common.grayVeryDark,

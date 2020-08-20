@@ -4,7 +4,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import graphLayout from 'visualization/layout';
 import Node from 'components/Node';
 import Arrow from 'components/Arrow';
-import { useBuildCriteriaContext } from 'components/BuildCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { Pathway, PathwayNode } from 'pathways-model';
 import { Layout, NodeDimensions, NodeCoordinates, Edges } from 'graph-model';
 import styles from './Graph.module.scss';
@@ -175,16 +175,16 @@ const GraphMemo: FC<GraphMemoProps> = memo(function GraphMemo({
 }) {
   const { id: pathwayId } = useParams();
   const history = useHistory();
-  const { updateBuildCriteriaNodeId } = useBuildCriteriaContext();
+  const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const onClickHandler = useCallback(
     (nodeKey: string) => {
       if (interactive) {
         redirect(pathwayId, nodeKey, history);
         toggleExpanded(nodeKey);
-        updateBuildCriteriaNodeId('');
+        resetCurrentCriteria();
       }
     },
-    [toggleExpanded, updateBuildCriteriaNodeId, interactive, history, pathwayId]
+    [toggleExpanded, resetCurrentCriteria, interactive, history, pathwayId]
   );
 
   return (

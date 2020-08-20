@@ -10,7 +10,6 @@ import {
 } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
 import { ActionNode, Action } from 'pathways-model';
-import { ElmLibrary } from 'elm-model';
 import useStyles from './styles';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
@@ -54,7 +53,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
       convertBasicCQL(cql).then(elm => {
         // Disable lint for no-null assertion since it is already checked above
         // eslint-disable-next-line
-        updatePathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm as ElmLibrary));
+        updatePathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
       });
     },
     [pathwayRef, updatePathway]

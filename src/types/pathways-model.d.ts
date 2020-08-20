@@ -45,7 +45,6 @@ declare module 'pathways-model' {
   // and TypeScript does not allow "empty" interfaces so we can't add it yet.
   // Add it here if/when we ever need it.
   export interface BranchNode extends PathwayNode {
-    criteriaSource?: string;
     mcodeCriteria?: string;
     otherCriteria?: string;
   }
@@ -64,6 +63,7 @@ declare module 'pathways-model' {
       description: string;
       cql: string;
       elm?: ElmLibrary;
+      criteriaSource?: string;
     };
   }
 }
