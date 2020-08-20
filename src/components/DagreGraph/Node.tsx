@@ -49,6 +49,7 @@ const useStyles = makeStyles(
       position: 'absolute',
       width: 'auto',
       minWidth: ({ isExpanded }: StyleProps): string => (isExpanded ? '400px' : '100px'),
+      maxWidth: '600px',
       minHeight: '50px',
       display: 'flex',
       alignItems: 'stretch',
@@ -56,7 +57,8 @@ const useStyles = makeStyles(
       border: ({ isActionable }: StyleProps): string =>
         `1px solid ${theme.palette.common[isActionable ? 'red' : 'blue']}`,
       backgroundColor: theme.palette.common.white,
-      zIndex: 2
+      zIndex: 2,
+      overflow: 'hidden'
     },
     nodeTitle: {
       padding: theme.spacing(2),
