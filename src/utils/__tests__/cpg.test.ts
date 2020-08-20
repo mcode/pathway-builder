@@ -39,7 +39,7 @@ describe('convert pathway into cpg', () => {
       expect(profile).toEqual([
         'http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-strategydefinition'
       ]);
-      expect(result.id).toBe('1234');
+      expect(result.id).toBe('urn:uuid:1234');
       expect(result.title).toBe('title');
       expect(result.description).toBe('description');
       expect(result.library).toEqual(['urn:uuid:0000']);
@@ -53,7 +53,7 @@ describe('convert pathway into cpg', () => {
       expect(profile).toEqual([
         'http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recommendationdefinition'
       ]);
-      expect(result.id).toBe('1234');
+      expect(result.id).toBe('urn:uuid:1234');
       expect(result.title).toBe('title');
       expect(result.description).toBe('description');
       expect(result.library).not.toBeDefined();

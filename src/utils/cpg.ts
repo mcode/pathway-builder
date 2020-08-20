@@ -25,7 +25,7 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     action.resource.resourceType === 'Procedure' ? 'ServiceRequest' : action.resource.resourceType;
 
   const activityDefinition: ActivityDefinition = {
-    id: activityId,
+    id: `urn:uuid:${activityId}`,
     resourceType: 'ActivityDefinition',
     meta: {
       profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishableactivity']
@@ -84,7 +84,7 @@ export function createPlanDefinition(
   libraryId?: string
 ): PlanDefinition {
   const planDefinition: PlanDefinition = {
-    id: id,
+    id: `urn:uuid:${id}`,
     resourceType: 'PlanDefinition',
     meta: {
       profile: [`http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-${type}definition`]
@@ -137,7 +137,7 @@ function createLibrary(pathway: Pathway): Library {
   const libraryId = uuidv4();
 
   const library: Library = {
-    id: libraryId,
+    id: `urn:uuid:${libraryId}`,
     resourceType: 'Library',
     meta: {
       profile: ['http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablelibrary']
