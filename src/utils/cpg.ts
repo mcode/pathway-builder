@@ -103,8 +103,8 @@ export function createPlanDefinition(
       coding: [
         {
           system: 'http://terminology.hl7.org/CodeSystem/plan-definition-type',
-          code: 'workflow-definition',
-          display: 'Workflow Definition'
+          code: type === 'strategy' ? 'workflow-definition' : 'eca-rule',
+          display: type === 'strategy' ? 'Workflow Definition' : 'ECA Rule'
         }
       ]
     },
@@ -150,7 +150,7 @@ function createLibrary(pathway: Pathway): Library {
     ],
     url: `urn:uuid:${libraryId}`,
     version: '1.0',
-    name: libraryId,
+    name: `LIB${libraryId.substring(0, 7)}`,
     title: `Library for ${pathway.name}`,
     status: LIBRARY_DRAFT,
     experimental: true,
