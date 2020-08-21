@@ -26,7 +26,7 @@ export default makeStyles(
       }
     },
     edge: {
-      stroke: (props?: StyleProps) => theme.palette.common[props?.isActive ? 'red' : 'blue']
+      stroke: (props?: StyleProps): string => theme.palette.common[props?.isActive ? 'red' : 'blue']
     }
   }),
   { name: 'DagreGraph-GraphEdges' }
