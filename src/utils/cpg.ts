@@ -1,4 +1,4 @@
-import { Action, Pathway } from 'pathways-model';
+import { Action, Pathway, PathwayNode } from 'pathways-model';
 import {
   ActivityDefinition,
   PlanDefinition,
@@ -188,6 +188,20 @@ function createLibrary(pathway: Pathway): Library {
   return library;
 }
 
+export function getExpressions(pathway: Pathway, node: PathwayNode): string[] {
+  const expressions: string[] = [];
+  const parents = findParents(pathway, node.key as string).map(key => pathway.nodes[key]);
+  const branchNodeParents = parents.filter(parent => isBranchNode(parent));
+
+  branchNodeParents.forEach(parent => {
+    const transition = parent.transitions.find(transition => transition.transition === node.key);
+    if (transition?.condition) expressions.push(transition.condition.cql);
+    expressions.push(...getExpressions(pathway, parent));
+  });
+
+  return expressions;
+}
+
 export function toCPG(pathway: Pathway): Bundle {
   const bundle: Bundle = {
     id: pathway.id,
@@ -217,19 +231,18 @@ export function toCPG(pathway: Pathway): Bundle {
       const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.id);
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
-        const transition = parent.transitions.find(
-          transition => transition.transition === node.key
-        );
-        if (isBranchNode(parent) && transition?.condition) {
-          const condition = {
-            kind: CONDITION_APPLICABILITY,
-            expression: {
-              language: EXPRESSION_CQL,
-              expression: transition.condition.cql
-            }
-          };
+        if (isBranchNode(parent)) {
+          const conditions = getExpressions(pathway, node).map(expression => {
+            return {
+              kind: CONDITION_APPLICABILITY,
+              expression: {
+                language: EXPRESSION_CQL,
+                expression: expression
+              }
+            };
+          });
           cpgStrategyAction.condition = cpgStrategyAction.condition || [];
-          cpgStrategyAction.condition?.push(condition);
+          cpgStrategyAction.condition?.push(...conditions);
         }
       });
       node.action.forEach(action => {

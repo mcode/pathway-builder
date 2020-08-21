@@ -1,5 +1,6 @@
 import samplepathway from './fixtures/sample_pathway.json';
-import { toCPG, createActivityDefinition, createPlanDefinition } from 'utils/cpg';
+import { toCPG, createActivityDefinition, createPlanDefinition, getExpressions } from 'utils/cpg';
+import { PlanDefinition } from 'fhir-objects';
 
 describe('convert pathway into cpg', () => {
   it('correctly converts sample pathway into cpg', () => {
@@ -11,6 +12,14 @@ describe('convert pathway into cpg', () => {
       expect(entry.resource).toBeDefined();
       expect(entry.request).toBeDefined();
     });
+    const strategydefinition = cpgPathway.entry[11].resource as PlanDefinition;
+    const otherRadiationAction = strategydefinition.action[2];
+    expect(otherRadiationAction.condition?.length).toBe(2);
+  });
+
+  it('gets all expressions from parent branch nodes', () => {
+    const expressions = getExpressions(samplepathway, samplepathway.nodes['OtherRadiation']);
+    expect(expressions.length).toBe(2);
   });
 
   describe('convert action into activity definition', () => {
