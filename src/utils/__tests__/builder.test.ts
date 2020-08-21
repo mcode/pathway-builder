@@ -1,6 +1,8 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import * as Builder from 'utils/builder';
 import { Pathway, Precondition, Transition, Action, ActionNode } from 'pathways-model';
+import { ElmLibrary } from 'elm-model';
+import { Criteria } from 'criteria-model';
 
 describe('builder interface add functions', () => {
   // Create a deep copy of the pathway
@@ -324,6 +326,14 @@ describe('builder interface update functions', () => {
       valueSets: { def: [] }
     }
   };
+  const criteria: Criteria = {
+    id: '1',
+    label: 'label',
+    version: '1.0',
+    modified: Date.now(),
+    elm: elm as ElmLibrary,
+    statement: 'Tumor Size'
+  };
 
   it('set pathway name', () => {
     const newPathway = Builder.setPathwayName(pathway, 'test name');
@@ -369,7 +379,7 @@ describe('builder interface update functions', () => {
       startNodeKey,
       transitionId,
       'test description',
-      elm
+      criteria
     );
     const expectedTransition = {
       id: '1',
@@ -401,7 +411,12 @@ describe('builder interface update functions', () => {
   it('set transition condition elm', () => {
     const startNodeKey = 'T-test';
     const transitionId = '1';
-    const newPathway = Builder.setTransitionConditionElm(pathway, startNodeKey, transitionId, elm);
+    const newPathway = Builder.setTransitionConditionElm(
+      pathway,
+      startNodeKey,
+      transitionId,
+      criteria
+    );
     expect(newPathway.nodes[startNodeKey].transitions[0].condition.cql).toBe('Tumor Size');
   });
 

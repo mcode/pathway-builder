@@ -74,23 +74,18 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeRef.current?.key || !transitionRef.current.id || !pathwayRef.current) return;
 
-      const criteriaSource = event?.target.value || '';
-      let elm = undefined;
-      criteria.forEach(c => {
-        if (c.id === criteriaSource) {
-          elm = c.elm;
-        }
-      });
-      if (!elm) return;
+      const criteriaId = event?.target.value || '';
+      const selectedCriteria = criteria.find(c => c.id === criteriaId);
+      if (!selectedCriteria) return;
       const newPathway = setTransitionCondition(
         pathwayRef.current,
         currentNodeRef.current.key,
         transitionRef.current.id,
         transitionRef.current.condition?.description || '',
-        elm,
-        criteriaSource
+        selectedCriteria
       );
 
+      setCriteriaName(criteriaId);
       updatePathway(newPathway);
     },
     [currentNodeRef, updatePathway, pathwayRef, transitionRef, criteria]
@@ -204,7 +199,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               label="Criteria"
               options={criteriaOptions}
               onChange={selectCriteriaSource}
-              value={transition.condition?.criteriaSource || undefined}
+              value={criteriaName || undefined}
             />
 
             <TextField

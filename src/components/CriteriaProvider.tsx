@@ -13,14 +13,7 @@ import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
-
-interface Criteria {
-  id: string;
-  label: string;
-  version: string;
-  modified: number;
-  elm: object;
-}
+import { Criteria } from 'criteria-model';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -37,7 +30,7 @@ interface CriteriaProviderProps {
   children: ReactNode;
 }
 
-function jsonToCriteria(rawElm: string): Criteria | undefined {
+function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   const elm = JSON.parse(rawElm);
   if (!elm.library?.identifier) {
     alert('Please upload ELM file');
@@ -51,20 +44,22 @@ function jsonToCriteria(rawElm: string): Criteria | undefined {
     'Rationale',
     'Errors'
   ];
-  const elmStatements: ElmStatement[] = elm.library.statements.def;
-  const elmStatement = elmStatements.find(def => !defaultStatementNames.includes(def.name));
-  if (!elmStatement) {
+  const allElmStatements: ElmStatement[] = elm.library.statements.def;
+  const elmStatements = allElmStatements.filter(def => !defaultStatementNames.includes(def.name));
+  if (!elmStatements) {
     alert('No elm statement found in that file');
     return;
   }
-  const newCriteria: Criteria = {
-    id: shortid.generate(),
-    label: elm.library.identifier.id,
-    version: elm.library.identifier.version,
-    modified: Date.now(),
-    elm: elm
-  };
-  return newCriteria;
+  return elmStatements.map(statement => {
+    return {
+      id: shortid.generate(),
+      label: `${elm.library.identifier.id}: ${statement.name}`,
+      version: elm.library.identifier.version,
+      modified: Date.now(),
+      elm: elm,
+      statement: statement.name
+    };
+  });
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -77,7 +72,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       const newCriteria: Criteria[] = [];
       payload.forEach(jsonCriterion => {
         const criterion = jsonToCriteria(JSON.stringify(jsonCriterion));
-        if (criterion) newCriteria.push(criterion);
+        if (criterion) newCriteria.push(...criterion);
       });
       setCriteria(newCriteria);
     }
@@ -89,7 +84,8 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       if (event.target?.result) {
         const rawElm = event.target.result as string;
         const newCriteria = jsonToCriteria(rawElm);
-        if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+        console.log(newCriteria);
+        if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
       } else alert('Unable to read that file');
     };
     reader.readAsText(file);
