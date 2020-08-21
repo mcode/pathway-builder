@@ -1,6 +1,7 @@
 import React, { FC, memo, useCallback } from 'react';
 import { useUpdateEffect } from 'react-use';
 
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useGraphCoordinates, useGraphProvider } from './GraphProvider';
@@ -19,12 +20,14 @@ const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
   const { nodes: nodeCoordinates } = useGraphCoordinates();
   const { currentNode } = useCurrentNodeContext();
   const redirectToNode = useRedirectToNode();
+  const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const onClick = useCallback(
     (nodeName: string) => {
       redirectToNode(nodeName);
       toggleExpanded(nodeName);
+      resetCurrentCriteria();
     },
-    [redirectToNode, toggleExpanded]
+    [redirectToNode, toggleExpanded, resetCurrentCriteria]
   );
 
   const nodes = Object.entries(pathway?.nodes ?? {});
