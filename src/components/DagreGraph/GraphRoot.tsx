@@ -1,23 +1,12 @@
 import React, { FC, ReactNode, useEffect, useMemo, useRef } from 'react';
 import ResizeSensor from 'css-element-queries/src/ResizeSensor';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { useSetGraphWidth, useGraphCoordinates } from './GraphProvider';
+import useStyles from './GraphRoot.styles';
 
 interface GraphRootProps {
   children: ReactNode | ReactNode[];
 }
-
-const useStyles = makeStyles(
-  {
-    root: {
-      position: 'relative',
-      minWidth: '100%',
-      minHeight: '100%'
-    }
-  },
-  { name: 'DagreGraph-GraphRoot' }
-);
 
 const GraphRoot: FC<GraphRootProps> = ({ children }) => {
   const styles = useStyles();

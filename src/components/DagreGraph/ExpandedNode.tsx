@@ -2,10 +2,10 @@ import React, { FC, ReactNode, memo } from 'react';
 import { ActionNode, BranchNode, PathwayNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 import { resourceNameConversion } from 'utils/nodeUtils';
+import useStyles from './ExpandedNode.styles';
 
 interface ExpandedNodeProps {
   pathwayNode: ActionNode | BranchNode | PathwayNode;
@@ -20,35 +20,6 @@ interface ExpandedNodeFieldProps {
 interface ActionNodeFieldsProps {
   actionNode: ActionNode;
 }
-
-const useStyles = makeStyles(
-  (theme: AugmentedTheme) => ({
-    table: {
-      '& tr': {
-        verticalAlign: 'top'
-      }
-    },
-    title: {
-      fontWeight: 'bold',
-      textAlign: 'right',
-      minWidth: '80px'
-    },
-    description: {
-      paddingLeft: theme.spacing(2),
-      fontStyle: 'italic',
-      overflowWrap: 'break-word'
-    },
-    externalLink: {
-      color: theme.palette.common.blue,
-      marginLeft: theme.spacing(1),
-
-      '&:hover, &:focus': {
-        color: theme.palette.common.grayDark
-      }
-    }
-  }),
-  { name: 'ExpandedNode' }
-);
 
 const isMedicationRequest = (
   request: MedicationRequest | ServiceRequest

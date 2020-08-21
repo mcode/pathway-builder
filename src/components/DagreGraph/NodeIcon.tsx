@@ -8,23 +8,14 @@ import {
   faSyringe,
   faBookMedical
 } from '@fortawesome/free-solid-svg-icons';
-import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
+
+import useStyles from './NodeIcon.styles';
 
 interface NodeIconProps {
   isStartNode: boolean;
   nodeType: string;
   resourceType?: string;
 }
-
-const useStyles = makeStyles(
-  (theme: AugmentedTheme) => ({
-    icon: {
-      marginRight: theme.spacing(1),
-      fontSize: '0.9rem'
-    }
-  }),
-  { name: 'DagreGraph-NodeIcon' }
-);
 
 const NodeIcon: FC<NodeIconProps> = ({ isStartNode, nodeType, resourceType }) => {
   const styles = useStyles();

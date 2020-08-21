@@ -1,10 +1,10 @@
 import React, { FC, ReactElement, memo, useMemo } from 'react';
 import { Tooltip } from '@material-ui/core';
-import { makeStyles, Theme as AugmentedTheme, useTheme } from '@material-ui/core/styles';
 
 import { Label, Coordinate } from 'graph-model';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useGraphCoordinates } from './GraphProvider';
+import useStyles from './GraphEdges.styles';
 
 interface EdgeProps {
   label: Label | null;
@@ -16,25 +16,6 @@ interface LabelTooltipProps {
   label: Label;
   children: ReactElement;
 }
-
-const useStyles = makeStyles(
-  (theme: AugmentedTheme) => ({
-    edges: {
-      display: 'block',
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      overflow: 'visible',
-      width: '100%',
-      height: '100%',
-      zIndex: 1,
-      '& text': {
-        fontSize: '18px'
-      }
-    }
-  }),
-  { name: 'DagreGraph-GraphEdges' }
-);
 
 /**
  * The points to use in the Cubic command is determined by the length of points array
@@ -63,7 +44,7 @@ const LabelTooltip: FC<LabelTooltipProps> = ({ label, children }) => {
 };
 
 const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
-  const theme = useTheme();
+  const styles = useStyles({ isActive });
   const path = useMemo(() => generatePathString(points), [points]);
   const truncateTooltip = label && label.text?.length > 12;
 
@@ -72,7 +53,7 @@ const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
       <path
         d={path}
         fill="transparent"
-        stroke={theme.palette.common[isActive ? 'red' : 'blue']}
+        className={styles.edge}
         strokeWidth="2"
         markerEnd={`url(#arrowhead-${isActive ? 'active' : 'inactive'})`}
       />
@@ -89,7 +70,6 @@ const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
 
 const GraphEdges: FC = () => {
   const styles = useStyles();
-  const theme = useTheme();
   const { edges: edgeCoordinates } = useGraphCoordinates();
   const { currentNode } = useCurrentNodeContext();
 
@@ -104,7 +84,7 @@ const GraphEdges: FC = () => {
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill={theme.palette.common.blue} />
+          <polygon points="0 0, 10 3.5, 0 7" />
         </marker>
 
         <marker
@@ -115,7 +95,7 @@ const GraphEdges: FC = () => {
           refY="3.5"
           orient="auto"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill={theme.palette.common.red} />
+          <polygon points="0 0, 10 3.5, 0 7" />
         </marker>
       </defs>
 

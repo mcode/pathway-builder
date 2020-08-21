@@ -1,13 +1,13 @@
 import React, { FC, memo, useCallback, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import { useLifecycles, useUpdateEffect } from 'react-use';
-import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
 
 import { ActionNode, BranchNode, PathwayNode, Transition } from 'pathways-model';
 import { getNodeType } from 'utils/builder';
 import ExpandedNode from './ExpandedNode';
 import { useGraphProvider } from './GraphProvider';
 import NodeIcon from './NodeIcon';
+import useStyles from './Node.styles';
 
 interface NodeProps {
   nodeKey: string;
@@ -17,11 +17,6 @@ interface NodeProps {
   onClick?: (nodeName: string) => void;
   xCoordinate: number;
   yCoordinate: number;
-}
-
-interface StyleProps {
-  isActionable: boolean;
-  isExpanded: boolean;
 }
 
 interface BoundingClientRectResponse {
@@ -42,43 +37,6 @@ const getBoundingClientRect = (element: HTMLDivElement | null): BoundingClientRe
   const dimensions = element?.getBoundingClientRect() ?? { width: 0, height: 0 };
   return { width: Math.ceil(dimensions.width), height: Math.ceil(dimensions.height) };
 };
-
-const useStyles = makeStyles(
-  (theme: AugmentedTheme) => ({
-    node: {
-      position: 'absolute',
-      width: 'auto',
-      minWidth: ({ isExpanded }: StyleProps): string => (isExpanded ? '400px' : '100px'),
-      maxWidth: '600px',
-      minHeight: '50px',
-      display: 'flex',
-      alignItems: 'stretch',
-      flexDirection: 'column',
-      border: ({ isActionable }: StyleProps): string =>
-        `1px solid ${theme.palette.common[isActionable ? 'red' : 'blue']}`,
-      backgroundColor: theme.palette.common.white,
-      zIndex: 2,
-      overflow: 'hidden'
-    },
-    nodeTitle: {
-      padding: theme.spacing(2),
-      flex: '1',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: theme.palette.common.white,
-      backgroundColor: ({ isActionable }: StyleProps): string =>
-        theme.palette.common[isActionable ? 'red' : 'blue']
-    },
-    nodeContent: {
-      padding: theme.spacing(2)
-    },
-    clickable: {
-      cursor: 'pointer'
-    }
-  }),
-  { name: 'DagreGraph-Node' }
-);
 
 const Node: FC<NodeProps> = ({
   nodeKey,
@@ -107,7 +65,6 @@ const Node: FC<NodeProps> = ({
     (): void => {
       const { width, height } = getBoundingClientRect(nodeRef.current);
       graph.setNode(nodeKey, {
-        label,
         width,
         height
       });
