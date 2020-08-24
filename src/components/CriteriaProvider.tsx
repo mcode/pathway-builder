@@ -92,7 +92,6 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       if (event.target?.result) {
         const rawElm = event.target.result as string;
         const newCriteria = jsonToCriteria(rawElm);
-        console.log(newCriteria);
         if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
       } else alert('Unable to read that file');
     };
