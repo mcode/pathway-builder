@@ -85,7 +85,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         selectedCriteria
       );
 
-      setCriteriaName(criteriaId);
       updatePathway(newPathway);
     },
     [currentNodeRef, updatePathway, pathwayRef, transitionRef, criteria]
@@ -151,16 +150,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     cql += `define "${criteriaName}":
       ${currentCriteriaCql.cql}`;
     const elm = await convertBasicCQL(cql);
-    const criteriaId = addElmCriteria(elm, criteriaName);
+    const criteria = addElmCriteria(elm);
 
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
       transitionRef.current.id,
       criteriaName,
-      elm,
-      criteriaId,
-      currentCriteriaCql.cql
+      criteria[0]
     );
 
     updatePathway(newPathway);
@@ -199,7 +196,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               label="Criteria"
               options={criteriaOptions}
               onChange={selectCriteriaSource}
-              value={criteriaName || undefined}
+              value={transition.condition?.criteriaSource || undefined}
             />
 
             <TextField

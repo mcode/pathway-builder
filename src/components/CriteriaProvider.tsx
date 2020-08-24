@@ -19,7 +19,7 @@ interface CriteriaContextInterface {
   criteria: Criteria[];
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
-  addElmCriteria: (elm: ElmLibrary, criteriaName: string) => string;
+  addElmCriteria: (elm: ElmLibrary) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -30,36 +30,44 @@ interface CriteriaProviderProps {
   children: ReactNode;
 }
 
-function jsonToCriteria(rawElm: string): Criteria[] | undefined {
-  const elm = JSON.parse(rawElm);
-  if (!elm.library?.identifier) {
-    alert('Please upload ELM file');
-    return;
-  }
-  const defaultStatementNames = [
-    'Patient',
-    'MeetsInclusionCriteria',
-    'InPopulation',
-    'Recommendation',
-    'Rationale',
-    'Errors'
-  ];
+const DEFAULT_ELM_STATEMENTS = [
+  'Patient',
+  'MeetsInclusionCriteria',
+  'InPopulation',
+  'Recommendation',
+  'Rationale',
+  'Errors'
+];
+
+function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
-  const elmStatements = allElmStatements.filter(def => !defaultStatementNames.includes(def.name));
+  const elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   if (!elmStatements) {
     alert('No elm statement found in that file');
-    return;
+    return [];
   }
+  const labelTitle = custom
+    ? `Criteria Builder (${elm.library.identifier.id.substring(0, 5)})`
+    : elm.library.identifier.id;
   return elmStatements.map(statement => {
     return {
       id: shortid.generate(),
-      label: `${elm.library.identifier.id}: ${statement.name}`,
+      label: `${labelTitle}: ${statement.name}`,
       version: elm.library.identifier.version,
       modified: Date.now(),
       elm: elm,
       statement: statement.name
     };
   });
+}
+
+function jsonToCriteria(rawElm: string): Criteria[] | undefined {
+  const elm = JSON.parse(rawElm);
+  if (!elm.library?.identifier) {
+    alert('Please upload ELM file');
+    return;
+  }
+  return elmLibraryToCriteria(elm);
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -95,17 +103,11 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
   }, []);
 
-  const addElmCriteria = useCallback((elm: ElmLibrary, criteriaName: string): string => {
-    const newCriteria: Criteria = {
-      id: shortid.generate(),
-      label: criteriaName,
-      version: elm.library.identifier.version,
-      modified: Date.now(),
-      elm: elm
-    };
-    setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+  const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
+    const newCriteria = elmLibraryToCriteria(elm, true);
+    setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
 
-    return newCriteria.id;
+    return newCriteria;
   }, []);
 
   return (

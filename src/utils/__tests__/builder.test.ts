@@ -386,9 +386,9 @@ describe('builder interface update functions', () => {
       transition: 'Radiation',
       condition: {
         description: 'test description',
-        cql: '',
+        cql: 'Tumor Size',
         elm: elm,
-        criteriaSource: 'Tumor Size'
+        criteriaSource: '1'
       }
     };
     expect(newPathway.nodes[startNodeKey].transitions[0]).toEqual(expectedTransition);

@@ -393,7 +393,8 @@ export function setTransitionCondition(
       foundTransition.condition = {
         description: description,
         cql: criteria.statement,
-        elm: criteria.elm
+        elm: criteria.elm,
+        criteriaSource: criteria.id
       };
   });
 }
