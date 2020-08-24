@@ -74,21 +74,15 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     (event: ChangeEvent<{ value: string }>): void => {
       if (!currentNodeRef.current?.key || !transitionRef.current.id || !pathwayRef.current) return;
 
-      const criteriaSource = event?.target.value || '';
-      let elm = undefined;
-      criteria.forEach(c => {
-        if (c.id === criteriaSource) {
-          elm = c.elm;
-        }
-      });
-      if (!elm) return;
+      const criteriaId = event?.target.value || '';
+      const selectedCriteria = criteria.find(c => c.id === criteriaId);
+      if (!selectedCriteria) return;
       const newPathway = setTransitionCondition(
         pathwayRef.current,
         currentNodeRef.current.key,
         transitionRef.current.id,
         transitionRef.current.condition?.description || '',
-        elm,
-        criteriaSource
+        selectedCriteria
       );
 
       updatePathway(newPathway);
@@ -156,16 +150,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     cql += `define "${criteriaName}":
       ${currentCriteriaCql.cql}`;
     const elm = await convertBasicCQL(cql);
-    const criteriaId = addElmCriteria(elm, criteriaName);
+    const criteria = addElmCriteria(elm);
 
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
       transitionRef.current.id,
       criteriaName,
-      elm,
-      criteriaId,
-      currentCriteriaCql.cql
+      criteria[0]
     );
 
     updatePathway(newPathway);

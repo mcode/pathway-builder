@@ -12,6 +12,7 @@ import shortid from 'shortid';
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 import produce from 'immer';
 import { toCPG } from './cpg';
+import { Criteria } from 'criteria-model';
 
 export function createNewPathway(name: string, description?: string, pathwayId?: string): Pathway {
   return {
@@ -381,23 +382,20 @@ export function setTransitionCondition(
   startNodeKey: string,
   transitionId: string,
   description: string,
-  elm: ElmLibrary,
-  criteriaSource?: string,
-  cql?: string
+  criteria: Criteria
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const foundTransition = draftPathway.nodes[startNodeKey]?.transitions?.find(
       (transition: Transition) => transition.id === transitionId
     );
 
-    if (foundTransition) {
+    if (foundTransition)
       foundTransition.condition = {
-        description,
-        elm,
-        criteriaSource: criteriaSource ?? getElmStatement(elm).name,
-        cql: cql ?? ''
+        description: description,
+        cql: criteria.statement,
+        elm: criteria.elm,
+        criteriaSource: criteria.id
       };
-    }
   });
 }
 
@@ -507,7 +505,7 @@ export function setTransitionConditionElm(
   pathway: Pathway,
   startNodeKey: string,
   transitionId: string,
-  elm: ElmLibrary
+  criteria: Criteria
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const foundTransition = draftPathway.nodes[startNodeKey]?.transitions?.find(
@@ -515,8 +513,8 @@ export function setTransitionConditionElm(
     );
 
     if (foundTransition?.condition) {
-      foundTransition.condition.elm = elm;
-      foundTransition.condition.cql = getElmStatement(elm).name;
+      foundTransition.condition.elm = criteria.elm;
+      foundTransition.condition.cql = criteria.statement;
     }
   });
 }
