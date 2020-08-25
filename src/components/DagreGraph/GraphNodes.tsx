@@ -39,7 +39,7 @@ const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
   return (
     <>
       {nodes.map(([nodeName, pathwayNode]) => {
-        const coordinates = nodeCoordinates[nodeName];
+        const coordinates = nodeCoordinates[nodeName] ?? { x: -999, y: -999 };
 
         return (
           <Node
@@ -49,8 +49,8 @@ const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
             isActionable={pathwayNode.key === currentNode?.key}
             isExpanded={Boolean(expandedNodes[nodeName])}
             onClick={interactive ? onClick : undefined}
-            xCoordinate={coordinates?.x ?? 0}
-            yCoordinate={coordinates?.y ?? 0}
+            xCoordinate={coordinates.x}
+            yCoordinate={coordinates.y}
           />
         );
       })}
