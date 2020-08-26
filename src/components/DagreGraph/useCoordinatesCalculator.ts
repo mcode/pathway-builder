@@ -11,12 +11,6 @@ export interface NodeCoordinates {
   [nodeName: string]: Node;
 }
 
-interface ExtractCoordinatesInterface {
-  graph: graphlib.Graph;
-  xOffset: number;
-  yOffset: number;
-}
-
 export interface UpdateCoordinatesInterface {
   graph: graphlib.Graph;
   graphWidth: number;
