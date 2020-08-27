@@ -15,7 +15,7 @@ interface GraphNodesProps {
 
 const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
   const { pathway } = useCurrentPathwayContext();
-  const { expanded: expandedNodes, toggleExpanded } = useExpandedState();
+  const { expanded: expandedNodes, toggleExpanded, openNode } = useExpandedState();
   const { reflow } = useGraphProvider();
   const { nodes: nodeCoordinates } = useGraphCoordinates();
   const { currentNode } = useCurrentNodeContext();
@@ -51,6 +51,7 @@ const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
             onClick={interactive ? onClick : undefined}
             xCoordinate={coordinates.x}
             yCoordinate={coordinates.y}
+            openNode={openNode}
           />
         );
       })}

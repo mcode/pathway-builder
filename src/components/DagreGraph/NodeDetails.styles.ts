@@ -26,5 +26,5 @@ export default makeStyles(
       }
     }
   }),
-  { name: 'ExpandedNode' }
+  { name: 'NodeDetails' }
 );

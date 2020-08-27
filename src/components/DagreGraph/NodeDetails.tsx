@@ -4,15 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
+import { getNodeType } from 'utils/builder';
 import { resourceNameConversion } from 'utils/nodeUtils';
-import useStyles from './ExpandedNode.styles';
+import useStyles from './NodeDetails.styles';
 
-interface ExpandedNodeProps {
+interface NodeDetailsProps {
   pathwayNode: ActionNode | BranchNode | PathwayNode;
-  nodeType: string;
 }
 
-interface ExpandedNodeFieldProps {
+interface FieldProps {
   title: string;
   description: string | ReactNode;
 }
@@ -26,7 +26,7 @@ const isMedicationRequest = (
 ): request is MedicationRequest =>
   (request as MedicationRequest).medicationCodeableConcept !== undefined;
 
-const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) => {
+const Field: FC<FieldProps> = ({ title, description }) => {
   const styles = useStyles();
 
   if (!description) return null;
@@ -39,7 +39,7 @@ const ExpandedNodeField: FC<ExpandedNodeFieldProps> = ({ title, description }) =
   );
 };
 
-const BranchNodeContents: FC = () => <ExpandedNodeField title="Type" description="Observation" />;
+const BranchNodeContents: FC = () => <Field title="Type" description="Observation" />;
 
 const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
   const styles = useStyles();
@@ -56,9 +56,9 @@ const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
 
   return (
     <>
-      <ExpandedNodeField title="Description" description={actionNode.action[0].description} />
-      <ExpandedNodeField key="Type" title="Type" description={resourceType} />
-      <ExpandedNodeField
+      <Field title="Description" description={actionNode.action[0].description} />
+      <Field key="Type" title="Type" description={resourceType} />
+      <Field
         key="System"
         title="System"
         description={
@@ -72,15 +72,18 @@ const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
           )
         }
       />
-      <ExpandedNodeField key="Code" title="Code" description={coding?.[0]?.code} />
-      <ExpandedNodeField key="Display" title="Display" description={coding?.[0]?.display} />
-      <ExpandedNodeField key="Title" title="Title" description={resource.title} />
+      <Field key="Code" title="Code" description={coding?.[0]?.code} />
+      <Field key="Display" title="Display" description={coding?.[0]?.display} />
+      <Field key="Title" title="Title" description={resource.title} />
     </>
   );
 };
 
-const ExpandedNode: FC<ExpandedNodeProps> = ({ pathwayNode, nodeType }) => {
+const NodeDetails: FC<NodeDetailsProps> = ({ pathwayNode }) => {
   const styles = useStyles();
+  const nodeType = getNodeType(pathwayNode);
+
+  if (nodeType == null) return null;
 
   return (
     <table className={styles.table}>
@@ -92,4 +95,4 @@ const ExpandedNode: FC<ExpandedNodeProps> = ({ pathwayNode, nodeType }) => {
   );
 };
 
-export default memo(ExpandedNode);
+export default memo(NodeDetails);

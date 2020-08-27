@@ -1,7 +1,6 @@
 import React, {
   createContext,
   FC,
-  memo,
   ReactNode,
   useCallback,
   useContext,
@@ -41,7 +40,7 @@ const createGraph = (): graphlib.Graph => {
   return g;
 };
 
-const GraphProvider: FC<GraphProviderProps> = memo(({ children }) => {
+const GraphProvider: FC<GraphProviderProps> = ({ children }) => {
   const graph = useMemo(createGraph, []);
   const { coordinates, updateCoordinates } = useCoordinatesCalculator();
   const [width, setWidth] = useRafState<number>(0);
@@ -71,7 +70,7 @@ const GraphProvider: FC<GraphProviderProps> = memo(({ children }) => {
       </SetGraphWidthContext.Provider>
     </GraphContext.Provider>
   );
-});
+};
 
 export default GraphProvider;
 export const useGraphProvider = (): GraphContextInterface => useContext(GraphContext);

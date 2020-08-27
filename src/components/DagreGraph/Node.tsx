@@ -1,10 +1,10 @@
-import React, { FC, memo, useCallback, useMemo, useRef } from 'react';
+import React, { FC, memo, useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useLifecycles, useUpdateEffect } from 'react-use';
 
 import { ActionNode, BranchNode, PathwayNode, Transition } from 'pathways-model';
 import { getNodeType } from 'utils/builder';
-import ExpandedNode from './ExpandedNode';
+import NodeDetails from './NodeDetails';
 import { useGraphProvider } from './GraphProvider';
 import NodeIcon from './NodeIcon';
 import useStyles from './Node.styles';
@@ -17,6 +17,7 @@ interface NodeProps {
   onClick?: (nodeName: string) => void;
   xCoordinate: number;
   yCoordinate: number;
+  openNode: (nodeName: string) => void;
 }
 
 interface BoundingClientRectResponse {
@@ -45,7 +46,8 @@ const Node: FC<NodeProps> = ({
   isExpanded,
   onClick,
   xCoordinate,
-  yCoordinate
+  yCoordinate,
+  openNode
 }) => {
   const styles = useStyles({ isExpanded, isActionable });
   const onClickHandler = useCallback(() => {
@@ -57,7 +59,9 @@ const Node: FC<NodeProps> = ({
     xCoordinate,
     yCoordinate
   ]);
-  const nodeType = useMemo(() => getNodeType(pathwayNode), [pathwayNode]);
+  const nodeType = getNodeType(pathwayNode);
+  const actionSize = (pathwayNode as ActionNode).action?.length ?? 0;
+  const [hasMetadata, setHasMetadata] = useState<boolean>(actionSize > 0);
 
   const { label, transitions } = pathwayNode;
 
@@ -108,6 +112,12 @@ const Node: FC<NodeProps> = ({
     reflow();
   }, [nodeKey, transitions]);
 
+  useUpdateEffect(() => {
+    if (hasMetadata || actionSize === 0) return;
+    setHasMetadata(true);
+    openNode(nodeKey);
+  }, [hasMetadata, actionSize, nodeKey]);
+
   return (
     <div className={styles.node} style={nodeStyle} ref={nodeRef}>
       <div className={clsx(styles.nodeTitle, onClick && styles.clickable)} onClick={onClickHandler}>
@@ -121,7 +131,7 @@ const Node: FC<NodeProps> = ({
 
       {isExpanded && (
         <div className={styles.nodeContent}>
-          <ExpandedNode pathwayNode={pathwayNode} nodeType={nodeType} />
+          <NodeDetails pathwayNode={pathwayNode} />
         </div>
       )}
     </div>

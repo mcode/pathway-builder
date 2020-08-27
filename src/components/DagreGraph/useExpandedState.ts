@@ -7,6 +7,8 @@ export interface ExpandedState {
 interface ExpandedStateToggle {
   expanded: ExpandedState;
   toggleExpanded: (nodeName: string) => void;
+  openNode: (nodeName: string) => void;
+  closeNode: (nodeName: string) => void;
 }
 
 const useExpandedState = (): ExpandedStateToggle => {
@@ -32,7 +34,30 @@ const useExpandedState = (): ExpandedStateToggle => {
     }
   }, []);
 
-  return { expanded, toggleExpanded };
+  const openNode = useCallback((nodeName: string) => {
+    setExpanded(prevState => {
+      if (prevState[nodeName] && prevState.lastSelectedNode === nodeName) return prevState;
+
+      return {
+        ...prevState,
+        [nodeName]: true,
+        lastSelectedNode: nodeName
+      };
+    });
+  }, []);
+
+  const closeNode = useCallback((nodeName: string) => {
+    setExpanded(prevState => {
+      if (!prevState[nodeName]) return prevState;
+
+      return {
+        ...prevState,
+        [nodeName]: false
+      };
+    });
+  }, []);
+
+  return { expanded, toggleExpanded, openNode, closeNode };
 };
 
 export default useExpandedState;
