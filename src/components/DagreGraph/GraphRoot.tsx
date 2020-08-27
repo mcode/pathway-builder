@@ -8,6 +8,9 @@ interface GraphRootProps {
   children: ReactNode | ReactNode[];
 }
 
+// padding, in pixels, to add to the width and height of the graph
+const GRAPH_PADDING = 150;
+
 const GraphRoot: FC<GraphRootProps> = ({ children }) => {
   const styles = useStyles();
   const graphRef = useRef<HTMLDivElement>(null);
@@ -15,7 +18,7 @@ const GraphRoot: FC<GraphRootProps> = ({ children }) => {
   const { nodes: nodeCoordinates } = useGraphCoordinates();
   const graphWidth = useMemo(() => {
     return Math.ceil(
-      150 +
+      GRAPH_PADDING +
         (nodeCoordinates !== undefined
           ? Object.values(nodeCoordinates)
               .map(({ x, width }) => x + width)
@@ -25,7 +28,7 @@ const GraphRoot: FC<GraphRootProps> = ({ children }) => {
   }, [nodeCoordinates]);
   const graphHeight = useMemo(() => {
     return Math.ceil(
-      150 +
+      GRAPH_PADDING +
         (nodeCoordinates !== undefined
           ? Object.values(nodeCoordinates)
               .map(({ y, height }) => y + height)
