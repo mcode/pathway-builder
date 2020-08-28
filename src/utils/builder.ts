@@ -389,13 +389,15 @@ export function setTransitionCondition(
       (transition: Transition) => transition.id === transitionId
     );
 
-    if (foundTransition)
+    if (foundTransition) {
+      const cql = criteria.statement || criteria.builder?.cql || '';
       foundTransition.condition = {
         description: description,
-        cql: criteria.statement,
+        cql: cql,
         elm: criteria.elm,
         criteriaSource: criteria.id
       };
+    }
   });
 }
 
@@ -510,7 +512,7 @@ export function setTransitionConditionElm(
 
     if (foundTransition?.condition) {
       foundTransition.condition.elm = criteria.elm;
-      foundTransition.condition.cql = criteria.statement;
+      foundTransition.condition.cql = criteria.statement || criteria.builder?.cql || '';
     }
   });
 }

@@ -8,6 +8,8 @@ import React, {
   useCallback
 } from 'react';
 
+import { BuilderModel } from 'criteria-model';
+
 interface CurrentCriteriaCql {
   cql: string;
   text?: string;
@@ -16,11 +18,11 @@ interface CurrentCriteriaCql {
 interface CurrentCriteriaContextInterface {
   buildCriteriaSelected: boolean;
   currentCriteriaNodeId: string;
-  currentCriteriaCql: CurrentCriteriaCql | null;
+  currentCriteriaCql: BuilderModel | null;
   criteriaName: string;
   setBuildCriteriaSelected: (buildCriteriaSelect: boolean) => void;
   setCurrentCriteriaNodeId: (id: string) => void;
-  setCurrentCriteriaCql: (currentCriteriaCql: CurrentCriteriaCql | null) => void;
+  setCurrentCriteriaCql: (currentCriteriaCql: BuilderModel | null) => void;
   setCriteriaName: (criteriaName: string) => void;
   resetCurrentCriteria: () => void;
 }
@@ -35,7 +37,7 @@ interface CurrentCriteriaProviderProps {
 
 export const CurrentCriteriaProvider: FC<CurrentCriteriaProviderProps> = memo(({ children }) => {
   const [currentCriteriaNodeId, setCurrentCriteriaNodeId] = useState<string>('');
-  const [currentCriteriaCql, setCurrentCriteriaCql] = useState<CurrentCriteriaCql | null>(null);
+  const [currentCriteriaCql, setCurrentCriteriaCql] = useState<BuilderModel | null>(null);
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
 

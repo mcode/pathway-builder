@@ -150,6 +150,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     cql += `define "${criteriaName}":
       ${currentCriteriaCql.cql}`;
     const elm = await convertBasicCQL(cql);
+    // builder model assumes CQL is a required element, might not be the case with CDSAT
     const criteria = addElmCriteria(elm);
 
     const newPathway = setTransitionCondition(

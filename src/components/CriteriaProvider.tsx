@@ -13,7 +13,7 @@ import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
-import { Criteria } from 'criteria-model';
+import { Criteria, BuilderModel } from 'criteria-model';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -39,6 +39,14 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
+function builderModelToCriteria(criteria: BuilderModel): Criteria {
+  return {
+    id: shortid.generate(),
+    label: `${criteria.type}${Date.now()}`,
+    modified: Date.now(),
+    builder: criteria
+  };
+}
 function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   const elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
@@ -61,13 +69,15 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   });
 }
 
-function jsonToCriteria(rawElm: string): Criteria[] | undefined {
-  const elm = JSON.parse(rawElm);
-  if (!elm.library?.identifier) {
+function jsonToCriteria(rawCriteria: string): Criteria[] | undefined {
+  const criteria = JSON.parse(rawCriteria);
+  if (criteria.type) {
+    builderModelToCriteria(criteria);
+  } else if (!criteria.library?.identifier) {
     alert('Please upload ELM file');
     return;
   }
-  return elmLibraryToCriteria(elm);
+  return elmLibraryToCriteria(criteria);
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -87,6 +97,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, [payload]);
 
   const addCriteria = useCallback((file: File) => {
+    // figure out incoming file type
     const reader = new FileReader();
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {

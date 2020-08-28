@@ -95,7 +95,13 @@ const CriteriaBuilder: FC = () => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
     if (selectedDemoElement === 'Age Range') {
       if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
-        setCurrentCriteriaCql({ cql, text: ageRangeString });
+        setCurrentCriteriaCql({
+          cql,
+          text: ageRangeString,
+          type: 'age',
+          min: minimumAge,
+          max: maximumAge
+        });
       } else {
         setCurrentCriteriaCql(null);
       }
@@ -106,7 +112,7 @@ const CriteriaBuilder: FC = () => {
     const cql = `Patient.gender.value = '${gender}'`;
     if (selectedDemoElement === 'Gender') {
       if (gender !== '') {
-        setCurrentCriteriaCql({ cql, text: genderString });
+        setCurrentCriteriaCql({ cql, text: genderString, type: 'gender', gender });
       } else {
         setCurrentCriteriaCql(null);
       }
