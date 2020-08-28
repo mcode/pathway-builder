@@ -18,11 +18,11 @@ interface CurrentCriteriaCql {
 interface CurrentCriteriaContextInterface {
   buildCriteriaSelected: boolean;
   currentCriteriaNodeId: string;
-  currentCriteriaCql: BuilderModel | null;
+  currentCriteria: BuilderModel | null;
   criteriaName: string;
   setBuildCriteriaSelected: (buildCriteriaSelect: boolean) => void;
   setCurrentCriteriaNodeId: (id: string) => void;
-  setCurrentCriteriaCql: (currentCriteriaCql: BuilderModel | null) => void;
+  setCurrentCriteria: (currentCriteria: BuilderModel | null) => void;
   setCriteriaName: (criteriaName: string) => void;
   resetCurrentCriteria: () => void;
 }
@@ -37,16 +37,16 @@ interface CurrentCriteriaProviderProps {
 
 export const CurrentCriteriaProvider: FC<CurrentCriteriaProviderProps> = memo(({ children }) => {
   const [currentCriteriaNodeId, setCurrentCriteriaNodeId] = useState<string>('');
-  const [currentCriteriaCql, setCurrentCriteriaCql] = useState<BuilderModel | null>(null);
+  const [currentCriteriaCql, setCurrentCriteria] = useState<BuilderModel | null>(null);
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
 
   const resetCurrentCriteria = useCallback(() => {
     setCurrentCriteriaNodeId('');
-    setCurrentCriteriaCql(null);
+    setCurrentCriteria(null);
     setBuildCriteriaSelected(false);
     setCriteriaName('');
-  }, [setCurrentCriteriaNodeId, setCurrentCriteriaCql, setBuildCriteriaSelected, setCriteriaName]);
+  }, [setCurrentCriteriaNodeId, setCurrentCriteria, setBuildCriteriaSelected, setCriteriaName]);
 
   return (
     <CurrentCriteriaContext.Provider
@@ -55,8 +55,8 @@ export const CurrentCriteriaProvider: FC<CurrentCriteriaProviderProps> = memo(({
         setBuildCriteriaSelected,
         currentCriteriaNodeId,
         setCurrentCriteriaNodeId,
-        currentCriteriaCql,
-        setCurrentCriteriaCql,
+        currentCriteria: currentCriteriaCql,
+        setCurrentCriteria: setCurrentCriteria,
         criteriaName,
         setCriteriaName,
         resetCurrentCriteria

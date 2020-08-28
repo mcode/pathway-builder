@@ -32,8 +32,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setBuildCriteriaSelected,
     currentCriteriaNodeId,
     setCurrentCriteriaNodeId,
-    currentCriteriaCql,
-    setCurrentCriteriaCql,
+    currentCriteria: currentCriteriaCql,
+    setCurrentCriteria,
     criteriaName,
     setCriteriaName,
     resetCurrentCriteria
@@ -116,7 +116,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const handleBuildCriteria = useCallback((): void => {
     setCurrentCriteriaNodeId(transition.id ?? '');
-    setCurrentCriteriaCql(null);
+    setCurrentCriteria(null);
     setCriteriaName('');
     if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
     resetCriteriaBuilder();
@@ -125,7 +125,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCurrentCriteriaNodeId,
     transition,
     setBuildCriteriaSelected,
-    setCurrentCriteriaCql,
+    setCurrentCriteria,
     resetCriteriaBuilder,
     setCriteriaName
   ]);
