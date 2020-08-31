@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import ExpandedNode from 'components/ExpandedNode';
 import { ActionNode, BasicActionResource, BasicMedicationRequestResource } from 'pathways-model';
 import { resourceNameConversion } from 'utils/nodeUtils';
+import NodeDetails from '../NodeDetails';
 
 const testActionNode: ActionNode = {
   label: 'Chemotherapy',
@@ -54,10 +54,10 @@ const testMedicationRequestNode: ActionNode = {
   transitions: []
 };
 
-describe('<ExpandedNode />', () => {
-  it('renders a ExpandedNode for action node', () => {
+describe('<NodeDetails />', () => {
+  it('renders an action node', () => {
     const { getByText, queryByRole, queryByText } = render(
-      <ExpandedNode actionNode={testActionNode} />
+      <NodeDetails pathwayNode={testActionNode} />
     );
 
     const resource = testActionNode.action[0].resource as BasicActionResource;
@@ -71,15 +71,15 @@ describe('<ExpandedNode />', () => {
     expect(getByText(resource.code.coding[0].code)).toBeVisible();
     expect(getByText(resource.code.coding[0].display)).toBeVisible();
 
-    // Form and buttons should not be displayed in an inactive ExpandedNode
+    // Form and buttons should not be displayed in an inactive NodeDetails
     expect(queryByRole('form')).toBeNull();
     expect(queryByText('Accept')).toBeNull();
     expect(queryByText('Decline')).toBeNull();
     expect(queryByText('Use Default Text')).toBeNull();
   });
 
-  it('renders a ExpandedNode for a medication request node', () => {
-    const { getByText } = render(<ExpandedNode actionNode={testMedicationRequestNode} />);
+  it('renders a medication request node', () => {
+    const { getByText } = render(<NodeDetails pathwayNode={testMedicationRequestNode} />);
 
     const resource = testMedicationRequestNode.action[0].resource as BasicMedicationRequestResource;
 

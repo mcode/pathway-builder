@@ -56,7 +56,7 @@ declare module 'pathways-model' {
     resource: MedicationRequest | ServiceRequest | CarePlan;
   }
 
-  interface Transition {
+  export interface Transition {
     id?: string;
     transition: string;
     condition?: {

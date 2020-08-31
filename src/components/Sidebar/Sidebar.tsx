@@ -1,13 +1,4 @@
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  RefObject,
-  ChangeEvent
-} from 'react';
+import React, { FC, memo, useCallback, useState, useRef, ChangeEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -29,11 +20,7 @@ import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 
-interface SidebarProps {
-  headerElement: RefObject<HTMLDivElement>;
-}
-
-const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
+const Sidebar: FC = () => {
   const { updatePathway } = usePathwaysContext();
   const { pathway, pathwayRef } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
@@ -72,18 +59,6 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
       redirect(pathwayRef.current.id, newNode.key, history);
   }, [pathwayRef, updatePathway, currentNodeRef, history]);
 
-  // Set the height of the sidebar container
-  useEffect(() => {
-    const resize = (): void => {
-      if (sidebarContainerElement?.current && headerElement?.current)
-        sidebarContainerElement.current.style.height =
-          window.innerHeight - headerElement.current.clientHeight + 'px';
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    return (): void => window.removeEventListener('resize', resize);
-  }, [isExpanded, headerElement]);
-
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;
 
@@ -105,11 +80,14 @@ const Sidebar: FC<SidebarProps> = ({ headerElement }) => {
           </div>
         )}
 
+        <div className={styles.toggleSidebar} onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={isExpanded ? faChevronLeft : faChevronRight} />
+        </div>
         <DeleteSnackbar />
       </>
     );
   } else {
-    const nodeType = getNodeType(pathway, currentNode.key);
+    const nodeType = getNodeType(currentNode);
     const displayTransitions =
       currentNode.key !== undefined &&
       (currentNode.key !== 'Start' || currentNode.transitions.length === 0);

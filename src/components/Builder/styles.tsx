@@ -9,13 +9,20 @@ const toggleButtonCss = {
 
 export default makeStyles(
   (theme: AugmentedTheme) => ({
-    display: {
-      display: 'flex'
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh'
+    },
+    main: {
+      flex: '1',
+      display: 'flex',
+      alignItems: 'stretch',
+      overflowY: 'auto'
     },
     graph: {
-      width: '100%',
-      height: '100%',
-      'overflow-y': 'scroll'
+      'overflow-y': 'auto',
+      flex: '1'
     },
     graphHeader: {
       display: 'flex',

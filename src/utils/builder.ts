@@ -430,14 +430,10 @@ export function addAction(
   return id;
 }
 
-export function getNodeType(pathway: Pathway, key: string | undefined): string {
-  if (!key) {
-    return 'null';
-  }
-  const node = pathway.nodes[key];
+export function getNodeType(node?: ActionNode | BranchNode | PathwayNode | null): string {
   if (!node || node.nodeTypeIsUndefined) {
     return 'null';
-  } else if (!(node as ActionNode).action && key !== 'Start') {
+  } else if (!(node as ActionNode).action && node.key !== 'Start') {
     return 'branch';
   } else {
     return 'action';
