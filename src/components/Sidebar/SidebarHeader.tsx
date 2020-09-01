@@ -40,7 +40,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
 
   const goToParentNode = useCallback(() => {
     if (!pathwayRef.current) return;
-    const parents = findParents(pathwayRef.current, node.key);
+    const parents = findParents(pathwayRef.current.nodes, node.key);
     redirect(pathwayRef.current.id, parents[0], history);
   }, [history, pathwayRef, node.key]);
 
@@ -61,7 +61,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
 
   const deleteNode = useCallback(() => {
     if (pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
-      const parents = findParents(pathwayRef.current, node.key);
+      const parents = findParents(pathwayRef.current.nodes, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
       setOpenDelete(false);

@@ -1,0 +1,2019 @@
+{
+    "id": "eNPAgghToBD",
+    "name": "Breast Cancer: Neoadjuvant Chemotherapy with Surgery CLEAN",
+    "description": "Pathway for the Early Stage HER2+ Breast Cancer Pathway for neoadjuvant chemotherapy with surgery.",
+    "library": "mCODE_Library.cql",
+    "preconditions": [
+      {
+        "id": "1",
+        "elementName": "Condition",
+        "expected": "Breast Cancer",
+        "cql": "\"Primary Cancer Condition\" PrimaryCancer return Tuple{ value: PrimaryCancer.code.text.value, match: PrimaryCancer.code.text.value ~ 'Malignant neoplasm of breast (disorder)' } "
+      },
+      {
+        "id": "2",
+        "elementName": "HER2 Status",
+        "expected": "+",
+        "cql": "[Observation: \"HER2 [Presence] in Breast cancer specimen by Immune stain\"] Her2 return Tuple{ value: Her2.value.text.value, match: Her2.value.text.value ~ 'Positive' } "
+      }
+    ],
+    "nodes": {
+      "Start": {
+        "key": "Start",
+        "label": "Start",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "TumorSize"
+          }
+        ]
+      },
+      "TumorSize": {
+        "key": "TumorSize",
+        "label": "Tumor Size",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "ChemotherapyTCHP",
+            "condition": {
+              "description": "T > 2",
+              "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ \"T3 category (finding)\" or TLageConcept ~ \"T4 category (finding)\" return Tuple{ resourceType: 'Observation', id: TLarge.id.value , status: TLarge.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "ChemotherapyACTHP",
+            "condition": {
+              "description": "T > 2",
+              "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ \"T3 category (finding)\" or TLageConcept ~ \"T4 category (finding)\" return Tuple{ resourceType: 'Observation', id: TLarge.id.value , status: TLarge.status.value} "
+            }
+          },
+          {
+            "id": "3",
+            "transition": "ChemotherapyddACTHP",
+            "condition": {
+              "description": "T > 2",
+              "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ \"T3 category (finding)\" or TLageConcept ~ \"T4 category (finding)\" return Tuple{ resourceType: 'Observation', id: TLarge.id.value , status: TLarge.status.value} "
+            }
+          },
+          {
+            "id": "4",
+            "transition": "NodeStatus",
+            "condition": {
+              "description": "T <= 2",
+              "cql": "[Observation: \"Primary tumor.clinical [Class] Cancer code\"] TSmall where ToConcept(TSmall.value as FHIR.CodeableConcept) ~ \"T0 category (finding)\" or ToConcept(TSmall.value as FHIR.CodeableConcept) ~ \"T1 category (finding)\" or ToConcept(TSmall.value as FHIR.CodeableConcept) ~ \"T2 category (finding)\" return Tuple{ resourceType: 'Observation', id: TSmall.id.value , status: TSmall.status.value} "
+            }
+          }
+        ]
+      },
+      "NodeStatus": {
+        "key": "NodeStatus",
+        "label": "Node Status",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "xar7NqaI1",
+            "condition": {
+              "description": "N+",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "U_oAtPF4ST",
+            "condition": {
+              "description": "N+",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          },
+          {
+            "id": "3",
+            "transition": "LwdfWXbqe8",
+            "condition": {
+              "description": "N+",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          },
+          {
+            "id": "4",
+            "transition": "Surgery1",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          }
+        ]
+      },
+      "Surgery1": {
+        "key": "Surgery1",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "PaclitaxelTrastuzumab"
+          }
+        ]
+      },
+      "PaclitaxelTrastuzumab": {
+        "key": "PaclitaxelTrastuzumab",
+        "label": "Paclitaxel and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Paclitaxel request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "583214",
+                  "display": "PACLitaxel"
+                }
+              ],
+              "text": "PACLitaxel"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"paclitaxel code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "ChemotherapyTCHP": {
+        "key": "ChemotherapyTCHP",
+        "label": "Chemotherapy TCHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Doxorubicin Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1790099",
+                  "display": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+                }
+              ],
+              "text": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value, status: MR.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "Surgery2"
+          }
+        ]
+      },
+      "ChemotherapyACTHP": {
+        "key": "ChemotherapyACTHP",
+        "label": "Chemotherapy ACTHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cyclophosphamide Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1734919",
+                  "display": "Cyclophosphamide 1000 MG Injection"
+                }
+              ],
+              "text": "Cyclophosphamide 1000 MG Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"Cyclophosphamide 1000 MG Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"Cyclophosphamide 1000 MG Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "B1kDJrYeUlu"
+          }
+        ]
+      },
+      "ChemotherapyddACTHP": {
+        "key": "ChemotherapyddACTHP",
+        "label": "Chemotherapy ddACTHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "14 ML pertuzumab 30 MG/ML Injection"
+                }
+              ],
+              "text": "14 ML pertuzumab 30 MG/ML Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"14 ML pertuzumab 30 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"14 ML pertuzumab 30 MG/ML Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "saB-Istg9Oe"
+          }
+        ]
+      },
+      "Surgery2": {
+        "key": "Surgery2",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "PathologicalResponse"
+          }
+        ]
+      },
+      "PathologicalResponse": {
+        "key": "PathologicalResponse",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "NodeStatus2",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "AdotrastuzumabEmtansine",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "AdotrastuzumabEmtansine": {
+        "key": "AdotrastuzumabEmtansine",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "NodeStatus2": {
+        "key": "NodeStatus2",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "Trastuzumab",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "PertuzumabTrastuzumab",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "Trastuzumab": {
+        "key": "Trastuzumab",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "PertuzumabTrastuzumab": {
+        "key": "PertuzumabTrastuzumab",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "xar7NqaI1": {
+        "key": "xar7NqaI1",
+        "label": "Chemotherapy TCHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Doxorubicin Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1790099",
+                  "display": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+                }
+              ],
+              "text": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value, status: MR.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "Wx-OEkl_Kn"
+          }
+        ]
+      },
+      "Wx-OEkl_Kn": {
+        "key": "Wx-OEkl_Kn",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "acXvhIFvJi"
+          }
+        ]
+      },
+      "acXvhIFvJi": {
+        "key": "acXvhIFvJi",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "9rxdMnVn9W",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "TJLAs8eoDi",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "9rxdMnVn9W": {
+        "key": "9rxdMnVn9W",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "otyBhnmQEu",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "5auYLBDWKN",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "TJLAs8eoDi": {
+        "key": "TJLAs8eoDi",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "otyBhnmQEu": {
+        "key": "otyBhnmQEu",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "5auYLBDWKN": {
+        "key": "5auYLBDWKN",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "U_oAtPF4ST": {
+        "key": "U_oAtPF4ST",
+        "label": "Chemotherapy ACTHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cyclophosphamide Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1734919",
+                  "display": "Cyclophosphamide 1000 MG Injection"
+                }
+              ],
+              "text": "Cyclophosphamide 1000 MG Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"Cyclophosphamide 1000 MG Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"Cyclophosphamide 1000 MG Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "tJSx1c47xO"
+          }
+        ]
+      },
+      "tJSx1c47xO": {
+        "key": "tJSx1c47xO",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "rJIFRZvxrM"
+          }
+        ]
+      },
+      "rJIFRZvxrM": {
+        "key": "rJIFRZvxrM",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "eVRn7bHVIL",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "l9jxYUlhcH",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "eVRn7bHVIL": {
+        "key": "eVRn7bHVIL",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "_415idcNwf",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "8R_A67Wn2O",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "l9jxYUlhcH": {
+        "key": "l9jxYUlhcH",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "_415idcNwf": {
+        "key": "_415idcNwf",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "8R_A67Wn2O": {
+        "key": "8R_A67Wn2O",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "LwdfWXbqe8": {
+        "key": "LwdfWXbqe8",
+        "label": "Chemotherapy ddACTHP",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab Medication request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "14 ML pertuzumab 30 MG/ML Injection"
+                }
+              ],
+              "text": "14 ML pertuzumab 30 MG/ML Injection"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"14 ML pertuzumab 30 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"14 ML pertuzumab 30 MG/ML Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "r5hqIAgOLX"
+          }
+        ]
+      },
+      "r5hqIAgOLX": {
+        "key": "r5hqIAgOLX",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "SdQ-lBUX37d"
+          }
+        ]
+      },
+      "SdQ-lBUX37d": {
+        "key": "SdQ-lBUX37d",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "LiCH0Una1G_",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "bJpA8hkvayz",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "LiCH0Una1G_": {
+        "key": "LiCH0Una1G_",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "7WOUxwOm_F8",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "F_dL_-l_KBm",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "bJpA8hkvayz": {
+        "key": "bJpA8hkvayz",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "7WOUxwOm_F8": {
+        "key": "7WOUxwOm_F8",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "F_dL_-l_KBm": {
+        "key": "F_dL_-l_KBm",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "B1kDJrYeUlu": {
+        "key": "B1kDJrYeUlu",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "ioYZUwnxFBI"
+          }
+        ]
+      },
+      "ioYZUwnxFBI": {
+        "key": "ioYZUwnxFBI",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "nr0LQWdS-LK",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "lm4ZEVdCRvA",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "nr0LQWdS-LK": {
+        "key": "nr0LQWdS-LK",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "19fyqZoKmjL",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "gX0WxsEt3wT",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "lm4ZEVdCRvA": {
+        "key": "lm4ZEVdCRvA",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "19fyqZoKmjL": {
+        "key": "19fyqZoKmjL",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "gX0WxsEt3wT": {
+        "key": "gX0WxsEt3wT",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "saB-Istg9Oe": {
+        "key": "saB-Istg9Oe",
+        "label": "Surgery",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Cancer Related Surgery Procedure",
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "392021009",
+                  "display": "Lumpectomy of breast (procedure)"
+                }
+              ],
+              "text": "Lumpectomy of breast (procedure)"
+            }
+          }
+        },
+        "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "kBhfS9nV_o7"
+          }
+        ]
+      },
+      "kBhfS9nV_o7": {
+        "key": "kBhfS9nV_o7",
+        "label": "Pathological Response",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "D9WBI7XrB4V",
+            "condition": {
+              "description": "Complete",
+              "cql": "[Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "bhPPSS6dVkn",
+            "condition": {
+              "description": "Partial/Stable/Progressive",
+              "cql": "[Observation \"Pathologic response code\"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ \"Partial\" or ResponseConcept ~ \"Stable\" or ResponseConcept ~ \"Progressive\" return Tuple{ resourceType: 'Observation', id: Response.id.value, status: Response.status.value} "
+            }
+          }
+        ]
+      },
+      "D9WBI7XrB4V": {
+        "key": "D9WBI7XrB4V",
+        "label": "Node Status Prior to Surgery",
+        "transitions": [
+          {
+            "id": "1",
+            "transition": "tVnyFWGemOR",
+            "condition": {
+              "description": "N0",
+              "cql": "[Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ \"N0 category (finding)\" return Tuple{ resourceType: 'Observation', id: N0.id.value , status: N0.status.value} "
+            }
+          },
+          {
+            "id": "2",
+            "transition": "CRl81hJwaGa",
+            "condition": {
+              "description": "N+",
+              "cql": " [Observation: \"Regional lymph nodes.clinical [Class] Cancer code\"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ \"N1 category (finding)\" or NLargeConcept ~ \"N2 category (finding)\" or NLargeConcept ~ \"N3 category (finding)\" return Tuple{ resourceType: 'Observation', id: NLarge.id.value , status: NLarge.status.value} "
+            }
+          }
+        ]
+      },
+      "bhPPSS6dVkn": {
+        "key": "bhPPSS6dVkn",
+        "label": "Ado-trastuzumab Emtansine",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Ado-trastuzumab Emtansine Request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1658084",
+                  "display": "ado-trastuzumab emtansine"
+                }
+              ],
+              "text": "ado-trastuzumab emtansine"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "tVnyFWGemOR": {
+        "key": "tVnyFWGemOR",
+        "label": "Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Trastuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1922509",
+                  "display": "trastuzumab"
+                }
+              ],
+              "text": "trastuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      },
+      "CRl81hJwaGa": {
+        "key": "CRl81hJwaGa",
+        "label": "Pertuzumab and Trastuzumab",
+        "action": {
+          "id": "1",
+          "type": "create",
+          "description": "Pertuzumab request",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1298948",
+                  "display": "pertuzumab"
+                }
+              ],
+              "text": "pertuzumab"
+            }
+          }
+        },
+        "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
+        "transitions": []
+      }
+    },
+    "elm": {
+      "navigational": {
+        "library": {
+          "identifier": {
+            "id": "eNPAgToBD",
+            "version": "1.0.0"
+          },
+          "schemaIdentifier": {
+            "id": "urn:hl7-org:elm",
+            "version": "r1"
+          },
+          "usings": {
+            "def": [
+              {
+                "localIdentifier": "System",
+                "uri": "urn:hl7-org:elm-types:r1"
+              },
+              {
+                "localId": "1",
+                "locator": "3:1-3:26",
+                "localIdentifier": "FHIR",
+                "uri": "http://hl7.org/fhir",
+                "version": "4.0.0"
+              }
+            ]
+          },
+          "statements": {
+            "def": [
+              {
+                "locator": "13:1-13:15",
+                "name": "Patient",
+                "context": "Patient",
+                "expression": {
+                  "type": "SingletonFrom",
+                  "operand": {
+                    "locator": "13:1-13:15",
+                    "dataType": "{http://hl7.org/fhir}Patient",
+                    "type": "Retrieve"
+                  }
+                }
+              }
+            ]
+          },
+          "includes": {
+            "def": []
+          },
+          "valueSets": {
+            "def": []
+          },
+          "codes": {
+            "def": []
+          },
+          "codeSystems": {
+            "def": []
+          }
+        }
+      },
+      "preconditions": {
+        "library": {
+          "identifier": {
+            "id": "mCODEResources",
+            "version": "1"
+          },
+          "schemaIdentifier": {
+            "id": "urn:hl7-org:elm",
+            "version": "r1"
+          },
+          "usings": {
+            "def": [
+              {
+                "localIdentifier": "System",
+                "uri": "urn:hl7-org:elm-types:r1"
+              },
+              {
+                "localIdentifier": "FHIR",
+                "uri": "http://hl7.org/fhir",
+                "version": "4.0.0"
+              }
+            ]
+          },
+          "codeSystems": {
+            "def": [
+              {
+                "name": "SNOMEDCT",
+                "id": "http://snomed.info/sct",
+                "accessLevel": "Public"
+              },
+              {
+                "name": "LOINC",
+                "id": "http://loinc.org",
+                "accessLevel": "Public"
+              },
+              {
+                "name": "RXNORM",
+                "id": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "accessLevel": "Public"
+              }
+            ]
+          },
+          "codes": {
+            "def": [
+              {
+                "name": "Primary tumor.clinical [Class] Cancer code",
+                "id": "21905-5",
+                "display": "Primary tumor.clinical [Class] Cancer",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "LOINC"
+                }
+              },
+              {
+                "name": "Regional lymph nodes.clinical [Class] Cancer code",
+                "id": "21906-3",
+                "display": "Regional lymph nodes.clinical [Class] Cancer",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "LOINC"
+                }
+              },
+              {
+                "name": "HER2 [Presence] in Breast cancer specimen by Immune stain code",
+                "id": "85319-2",
+                "display": "HER2 [Presence] in Breast cancer specimen by Immune stain",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "LOINC"
+                }
+              },
+              {
+                "name": "T0 category (finding) code",
+                "id": "58790005",
+                "display": "T0 category (finding)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "T1 category (finding) code",
+                "id": "23351008",
+                "display": "T1 category (finding)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "N0 category (finding) code",
+                "id": "62455006",
+                "display": "N0 category (finding)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "N1 category (finding) code",
+                "id": "53623008",
+                "display": "N1 category (finding)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Lumpectomy of breast (procedure) code",
+                "id": "392021009",
+                "display": "Lumpectomy of breast (procedure)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Teleradiotherapy procedure (procedure) code",
+                "id": "33195004",
+                "display": "Teleradiotherapy procedure (procedure)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Chemotherapy (procedure) code",
+                "id": "367336001",
+                "display": "Chemotherapy (procedure)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "14 ML pertuzumab 30 MG/ML Injection code",
+                "id": "1298948",
+                "display": "14 ML pertuzumab 30 MG/ML Injection",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "RXNORM"
+                }
+              },
+              {
+                "name": "Cyclophosphamide 1000 MG Injection code",
+                "id": "1734919",
+                "display": "Cyclophosphamide 1000 MG Injection",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "RXNORM"
+                }
+              },
+              {
+                "name": "trastuzumab 150 MG Injection code",
+                "id": "1922509",
+                "display": "trastuzumab 150 MG Injection",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "RXNORM"
+                }
+              },
+              {
+                "name": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code",
+                "id": "1790099",
+                "display": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "RXNORM"
+                }
+              },
+              {
+                "name": "11p partial monosomy syndrome 4135001 code",
+                "id": "4135001",
+                "display": "11p partial monosomy syndrome",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Orbital lymphoma 13048006 code",
+                "id": "13048006",
+                "display": "Orbital lymphoma",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Delta heavy chain disease 20224008 code",
+                "id": "20224008",
+                "display": "Delta heavy chain disease",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Malignant neoplasm of breast 254837009 code",
+                "id": "254837009",
+                "display": "Malignant neoplasm of breast",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Primary malignant neoplasm of colon 93761005 code",
+                "id": "93761005",
+                "display": "Primary malignant neoplasm of colon",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Secondary malignant neoplasm of colon 94260004 code",
+                "id": "94260004",
+                "display": "Secondary malignant neoplasm of colon",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Carcinoma in situ of prostate (disorder) 92691004 code",
+                "id": "92691004",
+                "display": "Carcinoma in situ of prostate (disorder)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Small cell carcinoma of lung (disorder) 254632001 code",
+                "id": "254632001",
+                "display": "Small cell carcinoma of lung (disorder)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "name": "Non-small cell lung cancer (disorder) 254637007 code",
+                "id": "254637007",
+                "display": "Non-small cell lung cancer (disorder)",
+                "accessLevel": "Public",
+                "codeSystem": {
+                  "name": "SNOMEDCT"
+                }
+              }
+            ]
+          },
+          "concepts": {
+            "def": [
+              {
+                "name": "T0 category (finding)",
+                "display": "T0 category (finding)",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "T0 category (finding) code"
+                  }
+                ]
+              },
+              {
+                "name": "T1 category (finding)",
+                "display": "T1 category (finding)",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "T1 category (finding) code"
+                  }
+                ]
+              },
+              {
+                "name": "N0 category (finding)",
+                "display": "N0 category (finding)",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "N0 category (finding) code"
+                  }
+                ]
+              },
+              {
+                "name": "N1 category (finding)",
+                "display": "N1 category (finding)",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "N1 category (finding) code"
+                  }
+                ]
+              },
+              {
+                "name": "14 ML pertuzumab 30 MG/ML Injection",
+                "display": "14 ML pertuzumab 30 MG/ML Injection",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "14 ML pertuzumab 30 MG/ML Injection code"
+                  }
+                ]
+              },
+              {
+                "name": "Cyclophosphamide 1000 MG Injection",
+                "display": "Cyclophosphamide 1000 MG Injection",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "Cyclophosphamide 1000 MG Injection code"
+                  }
+                ]
+              },
+              {
+                "name": "trastuzumab 150 MG Injection",
+                "display": "trastuzumab 150 MG Injection",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "trastuzumab 150 MG Injection code"
+                  }
+                ]
+              },
+              {
+                "name": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection",
+                "display": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code"
+                  }
+                ]
+              },
+              {
+                "name": "HER2 [Presence] in Breast cancer specimen by Immune stain",
+                "display": "HER2 [Presence] in Breast cancer specimen by Immune stain",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "HER2 [Presence] in Breast cancer specimen by Immune stain code"
+                  }
+                ]
+              },
+              {
+                "name": "Primary cancers",
+                "accessLevel": "Public",
+                "code": [
+                  {
+                    "name": "11p partial monosomy syndrome 4135001 code"
+                  },
+                  {
+                    "name": "Orbital lymphoma 13048006 code"
+                  },
+                  {
+                    "name": "Delta heavy chain disease 20224008 code"
+                  },
+                  {
+                    "name": "Malignant neoplasm of breast 254837009 code"
+                  },
+                  {
+                    "name": "Primary malignant neoplasm of colon 93761005 code"
+                  },
+                  {
+                    "name": "Secondary malignant neoplasm of colon 94260004 code"
+                  },
+                  {
+                    "name": "Carcinoma in situ of prostate (disorder) 92691004 code"
+                  },
+                  {
+                    "name": "Small cell carcinoma of lung (disorder) 254632001 code"
+                  },
+                  {
+                    "name": "Non-small cell lung cancer (disorder) 254637007 code"
+                  }
+                ]
+              }
+            ]
+          },
+          "statements": {
+            "def": [
+              {
+                "name": "Patient",
+                "context": "Patient",
+                "expression": {
+                  "type": "SingletonFrom",
+                  "operand": {
+                    "dataType": "{http://hl7.org/fhir}Patient",
+                    "type": "Retrieve"
+                  }
+                }
+              },
+              {
+                "name": "Primary Cancer Condition",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "expression": {
+                  "type": "Query",
+                  "source": [
+                    {
+                      "alias": "Cancer",
+                      "expression": {
+                        "dataType": "{http://hl7.org/fhir}Condition",
+                        "codeProperty": "code",
+                        "type": "Retrieve",
+                        "codes": {
+                          "type": "ToList",
+                          "operand": {
+                            "name": "Primary cancers",
+                            "type": "ConceptRef"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "relationship": []
+                }
+              },
+              {
+                "name": "ToCode",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "type": "FunctionDef",
+                "expression": {
+                  "type": "If",
+                  "condition": {
+                    "asType": "{urn:hl7-org:elm-types:r1}Boolean",
+                    "type": "As",
+                    "operand": {
+                      "type": "IsNull",
+                      "operand": {
+                        "name": "coding",
+                        "type": "OperandRef"
+                      }
+                    }
+                  },
+                  "then": {
+                    "asType": "{urn:hl7-org:elm-types:r1}Code",
+                    "type": "As",
+                    "operand": {
+                      "type": "Null"
+                    }
+                  },
+                  "else": {
+                    "classType": "{urn:hl7-org:elm-types:r1}Code",
+                    "type": "Instance",
+                    "element": [
+                      {
+                        "name": "code",
+                        "value": {
+                          "path": "value",
+                          "type": "Property",
+                          "source": {
+                            "path": "code",
+                            "type": "Property",
+                            "source": {
+                              "name": "coding",
+                              "type": "OperandRef"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "system",
+                        "value": {
+                          "path": "value",
+                          "type": "Property",
+                          "source": {
+                            "path": "system",
+                            "type": "Property",
+                            "source": {
+                              "name": "coding",
+                              "type": "OperandRef"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "version",
+                        "value": {
+                          "path": "value",
+                          "type": "Property",
+                          "source": {
+                            "path": "version",
+                            "type": "Property",
+                            "source": {
+                              "name": "coding",
+                              "type": "OperandRef"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "display",
+                        "value": {
+                          "path": "value",
+                          "type": "Property",
+                          "source": {
+                            "path": "display",
+                            "type": "Property",
+                            "source": {
+                              "name": "coding",
+                              "type": "OperandRef"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "operand": [
+                  {
+                    "name": "coding",
+                    "operandTypeSpecifier": {
+                      "name": "{http://hl7.org/fhir}Coding",
+                      "type": "NamedTypeSpecifier"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "ToConcept",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "type": "FunctionDef",
+                "expression": {
+                  "type": "If",
+                  "condition": {
+                    "asType": "{urn:hl7-org:elm-types:r1}Boolean",
+                    "type": "As",
+                    "operand": {
+                      "type": "IsNull",
+                      "operand": {
+                        "name": "concept",
+                        "type": "OperandRef"
+                      }
+                    }
+                  },
+                  "then": {
+                    "asType": "{urn:hl7-org:elm-types:r1}Concept",
+                    "type": "As",
+                    "operand": {
+                      "type": "Null"
+                    }
+                  },
+                  "else": {
+                    "classType": "{urn:hl7-org:elm-types:r1}Concept",
+                    "type": "Instance",
+                    "element": [
+                      {
+                        "name": "codes",
+                        "value": {
+                          "type": "Query",
+                          "source": [
+                            {
+                              "alias": "C",
+                              "expression": {
+                                "path": "coding",
+                                "type": "Property",
+                                "source": {
+                                  "name": "concept",
+                                  "type": "OperandRef"
+                                }
+                              }
+                            }
+                          ],
+                          "relationship": [],
+                          "return": {
+                            "expression": {
+                              "name": "ToCode",
+                              "type": "FunctionRef",
+                              "operand": [
+                                {
+                                  "name": "C",
+                                  "type": "AliasRef"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "display",
+                        "value": {
+                          "path": "value",
+                          "type": "Property",
+                          "source": {
+                            "path": "text",
+                            "type": "Property",
+                            "source": {
+                              "name": "concept",
+                              "type": "OperandRef"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "operand": [
+                  {
+                    "name": "concept",
+                    "operandTypeSpecifier": {
+                      "name": "{http://hl7.org/fhir}CodeableConcept",
+                      "type": "NamedTypeSpecifier"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Condition",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "expression": {
+                  "type": "Query",
+                  "source": [
+                    {
+                      "alias": "PrimaryCancer",
+                      "expression": {
+                        "name": "Primary Cancer Condition",
+                        "type": "ExpressionRef"
+                      }
+                    }
+                  ],
+                  "relationship": [],
+                  "return": {
+                    "expression": {
+                      "type": "Tuple",
+                      "element": [
+                        {
+                          "name": "value",
+                          "value": {
+                            "path": "value",
+                            "type": "Property",
+                            "source": {
+                              "path": "text",
+                              "type": "Property",
+                              "source": {
+                                "path": "code",
+                                "scope": "PrimaryCancer",
+                                "type": "Property"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "match",
+                          "value": {
+                            "type": "Equivalent",
+                            "operand": [
+                              {
+                                "path": "value",
+                                "type": "Property",
+                                "source": {
+                                  "path": "text",
+                                  "type": "Property",
+                                  "source": {
+                                    "path": "code",
+                                    "scope": "PrimaryCancer",
+                                    "type": "Property"
+                                  }
+                                }
+                              },
+                              {
+                                "valueType": "{urn:hl7-org:elm-types:r1}String",
+                                "value": "Malignant neoplasm of breast (disorder)",
+                                "type": "Literal"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "name": "HER2 Status",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "expression": {
+                  "type": "Query",
+                  "source": [
+                    {
+                      "alias": "Her2",
+                      "expression": {
+                        "dataType": "{http://hl7.org/fhir}Observation",
+                        "codeProperty": "code",
+                        "type": "Retrieve",
+                        "codes": {
+                          "type": "ToList",
+                          "operand": {
+                            "name": "HER2 [Presence] in Breast cancer specimen by Immune stain",
+                            "type": "ConceptRef"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "relationship": [],
+                  "return": {
+                    "expression": {
+                      "type": "Tuple",
+                      "element": [
+                        {
+                          "name": "value",
+                          "value": {
+                            "path": "value",
+                            "type": "Property",
+                            "source": {
+                              "path": "text",
+                              "type": "Property",
+                              "source": {
+                                "path": "value",
+                                "scope": "Her2",
+                                "type": "Property"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "match",
+                          "value": {
+                            "type": "Equivalent",
+                            "operand": [
+                              {
+                                "path": "value",
+                                "type": "Property",
+                                "source": {
+                                  "path": "text",
+                                  "type": "Property",
+                                  "source": {
+                                    "path": "value",
+                                    "scope": "Her2",
+                                    "type": "Property"
+                                  }
+                                }
+                              },
+                              {
+                                "valueType": "{urn:hl7-org:elm-types:r1}String",
+                                "value": "Positive",
+                                "type": "Literal"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }

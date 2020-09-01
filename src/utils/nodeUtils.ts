@@ -1,5 +1,6 @@
-import { PathwayNode, ActionNode, Pathway, Transition } from 'pathways-model';
+import { PathwayNode, ActionNode, Pathway, Transition, NodeObj } from 'pathways-model';
 import { History } from 'history';
+import shortid from 'shortid';
 
 export function isActionNode(node: PathwayNode): node is ActionNode {
   const { action } = node as ActionNode;
@@ -27,10 +28,16 @@ export const nodeTypeOptions = [
   { label: 'Observation', value: 'Observation' }
 ];
 
-export function findParents(pathway: Pathway, childNodeKey: string): string[] {
+export function findParent(nodes: NodeObj, childNodeKey: string): string | null {
+  const parents = findParents(nodes, childNodeKey);
+  if (parents.length === 1) return parents[0];
+  else return null;
+}
+
+export function findParents(nodes: NodeObj, childNodeKey: string): string[] {
   const parents: string[] = [];
-  Object.keys(pathway.nodes).forEach(parentNodeKey => {
-    for (const transition of pathway.nodes[parentNodeKey].transitions) {
+  Object.keys(nodes).forEach(parentNodeKey => {
+    for (const transition of nodes[parentNodeKey].transitions) {
       if (transition.transition === childNodeKey) {
         parents.push(parentNodeKey);
         break;
@@ -38,6 +45,68 @@ export function findParents(pathway: Pathway, childNodeKey: string): string[] {
     }
   });
   return parents;
+}
+
+export function findAllTransistions(nodes: NodeObj, key: string): Transition[] {
+  const transitions: Transition[] = [];
+  const parents = findParents(nodes, key);
+  parents.forEach(parentKey => {
+    const parent = nodes[parentKey];
+    parent.transitions.forEach(transition => {
+      if (transition.transition === key) transitions.push(transition);
+    });
+  });
+  return transitions;
+}
+
+export function deepCopyPathway(pathway: Pathway): Pathway {
+  return JSON.parse(JSON.stringify(pathway)) as Pathway;
+}
+
+export function deepCopyPathwayNode(node: PathwayNode): PathwayNode {
+  return JSON.parse(JSON.stringify(node)) as PathwayNode;
+}
+
+function copyNode(node: PathwayNode, newKey: string): PathwayNode {
+  const newNode = deepCopyPathwayNode(node);
+  newNode.key = newKey;
+  return newNode;
+}
+
+export function findSubPathway(nodes: NodeObj, rootKey: string): NodeObj {
+  const subPathway: NodeObj = {};
+  const oldKeyToNewKey: { [key: string]: string } = {};
+
+  const transitions = (node: PathwayNode): string[] => node.transitions.map(t => t.transition);
+
+  // Copy the nodes over to the new sub pathway
+  let currentKey = rootKey;
+  let currentNewKey = shortid.generate();
+  oldKeyToNewKey[currentKey] = currentNewKey;
+  subPathway[currentNewKey] = copyNode(nodes[currentKey], currentNewKey);
+  const queue = transitions(nodes[currentKey]);
+  const visited = [currentKey];
+  while (queue.length) {
+    // currentKey is always defined because queue.length > 0
+    currentKey = queue.shift()!; // eslint-disable-line
+    if (!visited.includes(currentKey)) {
+      currentNewKey = shortid.generate();
+      oldKeyToNewKey[currentKey] = currentNewKey;
+      subPathway[currentNewKey] = copyNode(nodes[currentKey], currentNewKey);
+      queue.push(...transitions(nodes[currentKey]));
+      visited.push(currentKey);
+    }
+  }
+
+  // Update the transitions to use the new keys
+  Object.keys(subPathway).forEach(key => {
+    const node = subPathway[key];
+    node.transitions.forEach(
+      transition => (transition.transition = oldKeyToNewKey[transition.transition])
+    );
+  });
+
+  return subPathway;
 }
 
 export function willOrphanChild(pathway: Pathway, childNodeKey: string): boolean {
@@ -113,4 +182,8 @@ export const getConnectableNodes = (
   });
 
   return connectableNodes;
+};
+
+export const getTransition = (parent: PathwayNode, childKey: string): Transition | undefined => {
+  return parent.transitions.find(transition => transition.transition === childKey);
 };

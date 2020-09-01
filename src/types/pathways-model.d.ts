@@ -2,15 +2,15 @@ declare module 'pathways-model' {
   import { ElmLibrary } from 'elm-model';
   import { DomainResource, MedicationRequest, ServiceRequest, CarePlan } from 'fhir-objects';
 
+  export type NodeObj = { [key: string]: ActionNode | BranchNode | PathwayNode };
+
   export interface Pathway {
     id: string;
     name: string;
     description: string;
     library: string;
     preconditions: Precondition[];
-    nodes: {
-      [key: string]: ActionNode | BranchNode | PathwayNode;
-    };
+    nodes: NodeObj;
     elm?: PathwayELM;
     // TODO: this should not be optional once we have the pathway builder
   }
