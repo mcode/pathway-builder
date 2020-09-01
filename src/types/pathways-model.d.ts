@@ -57,7 +57,7 @@ declare module 'pathways-model' {
   }
 
   export interface Transition {
-    id?: string;
+    id: string;
     transition: string;
     condition?: {
       description: string;

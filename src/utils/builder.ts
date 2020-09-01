@@ -99,6 +99,7 @@ export function exportPathway(pathway: Pathway, cpg: boolean): string {
     }
   };
 
+  /*
   const pathwayToExport: Pathway = {
     ...pathway,
     // Strip id from each precondition
@@ -157,8 +158,9 @@ export function exportPathway(pathway: Pathway, cpg: boolean): string {
             }))
     };
   });
+  */
 
-  return JSON.stringify(setNavigationalElm(pathwayToExport, elm), undefined, 2);
+  return JSON.stringify(setNavigationalElm(pathway, elm), undefined, 2);
 }
 
 function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
@@ -215,20 +217,20 @@ function getElmStatement(elm: ElmLibrary): ElmStatement {
 // TODO: possibly add more precondition methods
 export function addPrecondition(
   pathway: Pathway,
+  id: string,
   elementName: string,
   expected: string,
   cql: string
-): string {
-  const id = shortid.generate();
+): Pathway {
   const precondition: Precondition = {
     id: id,
     elementName: elementName,
     expected: expected,
     cql: cql
   };
-  pathway.preconditions.push(precondition);
-
-  return id;
+  return produce(pathway, (draftPathway: Pathway) => {
+    draftPathway.preconditions.push(precondition);
+  });
 }
 
 export function setNavigationalElm(pathway: Pathway, elm: object): Pathway {
@@ -405,30 +407,6 @@ export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibr
     (draftPathway.nodes[nodeKey] as ActionNode).elm = elm;
     (draftPathway.nodes[nodeKey] as ActionNode).cql = getElmStatement(elm).name;
   });
-}
-
-// TODO: possibly add more action methods
-export function addAction(
-  pathway: Pathway,
-  key: string,
-  type: string,
-  description: string,
-  resource: MedicationRequest | ServiceRequest
-): string {
-  const id = shortid.generate();
-  const action = {
-    id: id,
-    type: type,
-    description: description,
-    resource: resource
-  };
-
-  const node = produce(pathway.nodes[key] as ActionNode, (draftState: ActionNode) => {
-    draftState.action.push(action);
-  });
-  pathway.nodes[key] = node;
-
-  return id;
 }
 
 export function getNodeType(node?: ActionNode | BranchNode | PathwayNode | null): string {
