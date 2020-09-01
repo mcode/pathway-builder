@@ -5,7 +5,7 @@ declare module 'pathways-model' {
   export interface Pathway {
     id: string;
     name: string;
-    description?: string;
+    description: string;
     library: string;
     preconditions: Precondition[];
     nodes: {
@@ -21,14 +21,14 @@ declare module 'pathways-model' {
   }
 
   export interface Precondition {
-    id?: string;
+    id: string;
     elementName: string; // name of the mCODE element
     expected: string; // human readable value
     cql: string; // cql to fetch the value from a patient
   }
 
   export interface PathwayNode {
-    key?: string;
+    key: string;
     label: string;
     transitions: Transition[];
     nodeTypeIsUndefined?: boolean;
@@ -37,7 +37,7 @@ declare module 'pathways-model' {
   export interface ActionNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
-    action: Action[];
+    action: Action | null;
   }
 
   // NOTE: the model also includes a BranchNode (which extends PathwayNode),
@@ -50,7 +50,7 @@ declare module 'pathways-model' {
   }
 
   interface Action {
-    id?: string;
+    id: string;
     type: string;
     description: string;
     resource: MedicationRequest | ServiceRequest | CarePlan;

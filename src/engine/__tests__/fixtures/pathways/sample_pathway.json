@@ -76,8 +76,7 @@
     "Surgery": {
       "key": "Surgery",
       "label": "Surgery",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Issue Lumpectomy of breast procedure",
@@ -94,8 +93,7 @@
               "text": "Lumpectomy of breast (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -107,8 +105,7 @@
     "Radiation": {
       "key": "Radiation",
       "label": "Radiation",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
@@ -125,16 +122,14 @@
               "text": "Teleradiotherapy procedure (procedure)"
             }
           }
-        }
-      ],
+        },
       "cql": "[Procedure: \"Teleradiotherapy procedure (procedure) code\"] Radiation return Tuple{ resourceType: 'Procedure', id: Radiation.id.value, status: Radiation.status.value }",
       "transitions": []
     },
     "OtherRadiation": {
       "key": "OtherRadiation",
       "label": "Other Radiation",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
@@ -151,16 +146,14 @@
               "text": "Teleradiotherapy procedure (procedure)"
             }
           }
-        }
-      ],
+        },
       "cql": "[Procedure: \"Teleradiotherapy procedure (procedure) code\"] Radiation return Tuple{ resourceType: 'Procedure', id: Radiation.id.value, status: Radiation.status.value }",
       "transitions": []
     },
     "Chemo": {
       "key": "Chemo",
       "label": "Chemotherapy",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Begin Chemotherapy procedure",
@@ -177,16 +170,14 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "cql": "[Procedure: \"Chemotherapy (procedure) code\"] Chemo return Tuple{ resourceType: 'Procedure', id: Chemo.id.value, status: Chemo.status.value }",
       "transitions": []
     },
     "ChemoMedication": {
       "key": "ChemoMedication",
       "label": "ChemoMedication Request",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Request 10ML Doxorubicin Hydrochloride 2MG/ML Injection",
@@ -203,8 +194,7 @@
               "text": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
             }
           }
-        }
-      ],
+        },
       "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] ChemoMedication where ToConcept(ChemoMedication.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: ChemoMedication.id.value, status: ChemoMedication.status.value }",
       "transitions": [{ "id": "1", "transition": "Chemo" }]
     }

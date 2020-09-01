@@ -9,16 +9,15 @@ import {
 } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
-import { MedicationRequest, ServiceRequest } from 'fhir-objects';
 import produce from 'immer';
 import { toCPG } from './cpg';
 import { Criteria } from 'criteria-model';
 
-export function createNewPathway(name: string, description?: string, pathwayId?: string): Pathway {
+export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
     id: pathwayId ?? shortid.generate(),
     name: name,
-    description: description ?? '',
+    description: description,
     library: '',
     preconditions: [],
     nodes: {
@@ -48,8 +47,13 @@ export function downloadPathway(pathway: Pathway, cpg = false): void {
 }
 
 export function exportPathway(pathway: Pathway, cpg: boolean): string {
-  if (cpg) return JSON.stringify(toCPG(pathway), undefined, 2);
+  const elm = generateNavigationalElm(pathway);
+  const pathwayWithElm = setNavigationalElm(pathway, elm);
+  const pathwayToExport = cpg ? toCPG(pathwayWithElm) : pathwayWithElm;
+  return JSON.stringify(pathwayToExport, undefined, 2);
+}
 
+function generateNavigationalElm(pathway: Pathway): ElmLibrary {
   const elm: ElmLibrary = {
     library: {
       identifier: {
@@ -99,68 +103,32 @@ export function exportPathway(pathway: Pathway, cpg: boolean): string {
     }
   };
 
-  /*
-  const pathwayToExport: Pathway = {
-    ...pathway,
-    // Strip id from each precondition
-    preconditions: pathway.preconditions.map((precondition: Precondition) => ({
-      ...precondition,
-      id: undefined
-    })),
-    nodes: { ...pathway.nodes }
-  };
-
-  Object.keys(pathwayToExport.nodes).forEach((nodeKey: string) => {
+  Object.keys(pathway.nodes).forEach((nodeKey: string) => {
     const node = pathway.nodes[nodeKey];
-    if ('elm' in node && node.elm && node.key) {
+    if ('elm' in node && node.elm) {
       mergeElm(elm, node.elm);
       const elmStatement = produce(getElmStatement(node.elm), (draftElmStatement: ElmStatement) => {
-        // state.key is defined due to if statement above
-        // eslint-disable-next-line
-        draftElmStatement.name = node.key!;
+        draftElmStatement.name = node.key;
       });
       elm.library.statements.def.push(elmStatement);
     }
 
-    pathwayToExport.nodes[nodeKey] = {
-      ...pathwayToExport.nodes[nodeKey],
-      // Strip key from each node
-      key: undefined,
-      elm: undefined,
-      // Strip id from each node.transition
-      transitions: node.transitions.map((transition: Transition) => {
-        if (transition.condition?.elm) {
-          // Add tranistion.condition.elm to elm
-          mergeElm(elm, transition.condition.elm);
-          const elmStatement = produce(
-            getElmStatement(transition.condition.elm),
-            (draftElmStatement: ElmStatement) => {
-              draftElmStatement.name = transition.condition?.description ?? 'Unknown';
-            }
-          );
-          elm.library.statements.def.push(elmStatement);
-        }
-        return {
-          ...transition,
-          id: undefined,
-          condition: transition.condition
-            ? { ...transition.condition, elm: undefined, criteriaSource: undefined }
-            : undefined
-        };
-      }),
-      // Strip id from each node.action
-      action:
-        (node as ActionNode).action == null
-          ? undefined
-          : (node as ActionNode).action.map((action: Action) => ({
-              ...action,
-              id: undefined
-            }))
-    };
+    node.transitions.forEach((transition: Transition) => {
+      if (transition.condition?.elm) {
+        // Add tranistion.condition.elm to elm
+        mergeElm(elm, transition.condition.elm);
+        const elmStatement = produce(
+          getElmStatement(transition.condition.elm),
+          (draftElmStatement: ElmStatement) => {
+            draftElmStatement.name = transition.condition?.description ?? 'Unknown';
+          }
+        );
+        elm.library.statements.def.push(elmStatement);
+      }
+    });
   });
-  */
 
-  return JSON.stringify(setNavigationalElm(pathway, elm), undefined, 2);
+  return elm;
 }
 
 function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
@@ -261,7 +229,7 @@ export function createNode(key?: string): PathwayNode {
 
 export function addNode(pathway: Pathway, node: PathwayNode): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    draftPathway.nodes[node.key as string] = node;
+    draftPathway.nodes[node.key] = node;
   });
 }
 
@@ -269,7 +237,7 @@ export function addActionNode(pathway: Pathway): Pathway {
   const node = createNode();
   const newPathway = addNode(pathway, node);
 
-  return makeNodeAction(newPathway, node.key as string);
+  return makeNodeAction(newPathway, node.key);
 }
 
 export function setNodeLabel(pathway: Pathway, key: string, label: string): Pathway {
@@ -301,7 +269,7 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
           }
         }
       };
-      return setNodeAction(newPathway, nodeKey, [action]);
+      return setNodeAction(newPathway, nodeKey, action);
     case 'ServiceRequest':
       newPathway = makeNodeAction(pathway, nodeKey);
       action = {
@@ -321,7 +289,7 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
           }
         }
       };
-      return setNodeAction(newPathway, nodeKey, [action]);
+      return setNodeAction(newPathway, nodeKey, action);
     case 'CarePlan':
       newPathway = makeNodeAction(pathway, nodeKey);
       action = {
@@ -333,7 +301,7 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
           title: ''
         }
       };
-      return setNodeAction(newPathway, nodeKey, [action]);
+      return setNodeAction(newPathway, nodeKey, action);
     case 'Observation':
       return makeNodeBranch(pathway, nodeKey);
     default:
@@ -342,7 +310,7 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
   }
 }
 
-export function setNodeAction(pathway: Pathway, key: string, action: Action[]): Pathway {
+export function setNodeAction(pathway: Pathway, key: string, action: Action): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     (draftPathway.nodes[key] as ActionNode).action = action;
   });
@@ -494,53 +462,35 @@ export function setTransitionConditionElm(
   });
 }
 
-export function setActionType(
-  pathway: Pathway,
-  nodeKey: string,
-  actionId: string,
-  type: string
-): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    if ((draftPathway.nodes[nodeKey] as ActionNode).action) {
-      const action = (draftPathway.nodes[nodeKey] as ActionNode).action.find(
-        (action: Action) => action.id === actionId
-      );
-      if (action) action.type = type;
+export function setActionCode(action: Action, code: string): Action {
+  return produce(action, (draftAction: Action) => {
+    if (draftAction.resource.medicationCodeableConcept) {
+      draftAction.resource.medicationCodeableConcept.coding[0].code = code;
+    } else {
+      draftAction.resource.code.coding[0].code = code;
     }
   });
 }
 
-export function setActionDescription(
-  pathway: Pathway,
-  nodeKey: string,
-  actionId: string,
-  description: string
-): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    const node = (draftPathway.nodes[nodeKey] as ActionNode).action;
-
-    if (node) {
-      const action = node.find((action: Action) => action.id === actionId);
-      if (action) {
-        action.description = description;
-      }
+export function setActionCodeSystem(action: Action, codeSystem: string): Action {
+  return produce(action, (draftAction: Action) => {
+    if (draftAction.resource.medicationCodeableConcept) {
+      draftAction.resource.medicationCodeableConcept.coding[0].system = codeSystem;
+    } else {
+      draftAction.resource.code.coding[0].system = codeSystem;
     }
   });
 }
 
-export function setActionResource(
-  pathway: Pathway,
-  nodeKey: string,
-  actionId: string,
-  resource: MedicationRequest | ServiceRequest
-): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    if ((draftPathway.nodes[nodeKey] as ActionNode).action) {
-      const action = (draftPathway.nodes[nodeKey] as ActionNode).action.find(
-        (action: Action) => action.id === actionId
-      );
-      if (action) action.resource = resource;
-    }
+export function setActionDescription(action: Action, description: string): Action {
+  return produce(action, (draftaction: Action) => {
+    draftaction.description = description;
+  });
+}
+
+export function setActionTitle(action: Action, title: string): Action {
+  return produce(action, (draftaction: Action) => {
+    draftaction.resource.title = title;
   });
 }
 
@@ -562,7 +512,6 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
 
     if (node.cql === undefined && node.action === undefined) {
       node.cql = '';
-      node.action = [];
       node.nodeTypeIsUndefined = undefined;
     }
 
@@ -579,7 +528,7 @@ export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
     if (
       node.cql !== undefined ||
       node.elm !== undefined ||
-      node.action !== undefined ||
+      node.action !== null ||
       node.nodeTypeIsUndefined !== undefined
     ) {
       delete node.cql;
@@ -646,12 +595,6 @@ export function createCQL(action: Action, nodeKey: string): string {
 /*
 Remove Element Function
 */
-export function removePathwayDescription(pathway: Pathway): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    delete draftPathway.description;
-  });
-}
-
 export function removePrecondition(pathway: Pathway, id: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const preconditions = draftPathway.preconditions.filter(
@@ -712,16 +655,5 @@ export function removeTransition(
       (transition: Transition) => transition.transition !== childNodeKey
     );
     draftPathway.nodes[parentNodeKey].transitions = transitions;
-  });
-}
-
-export function removeAction(pathway: Pathway, nodeKey: string, actionId: string): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    if ((draftPathway.nodes[nodeKey] as ActionNode).action) {
-      const actions = (draftPathway.nodes[nodeKey] as ActionNode).action.filter(
-        (action: Action) => action.id !== actionId
-      );
-      (draftPathway.nodes[nodeKey] as ActionNode).action = actions;
-    }
   });
 }

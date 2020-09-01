@@ -6,7 +6,11 @@ import {
   setNodeAction,
   createCQL,
   setActionNodeElm,
-  setActionResourceDisplay
+  setActionResourceDisplay,
+  setActionCode,
+  setActionDescription,
+  setActionTitle,
+  setActionCodeSystem
 } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
 import { ActionNode, Action } from 'pathways-model';
@@ -61,100 +65,66 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      const currentNode = currentNodeRef.current as ActionNode;
+      if (!currentNode.action || !pathwayRef.current) return;
 
       const code = event?.target.value || '';
-      const action = produce(
-        (currentNodeRef.current as ActionNode).action[0],
-        (draftAction: Action) => {
-          if (draftAction.resource.medicationCodeableConcept) {
-            draftAction.resource.medicationCodeableConcept.coding[0].code = code;
-          } else {
-            draftAction.resource.code.coding[0].code = code;
-          }
-        }
-      );
-      updatePathway(
-        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
-      );
+      const action = setActionCode(currentNode.action, code);
+      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
     [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const changeDescription = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      const currentNode = currentNodeRef.current as ActionNode;
+      if (!currentNode.action || !pathwayRef.current) return;
 
       const description = event?.target.value || '';
-      const action = produce(
-        (currentNodeRef.current as ActionNode).action[0],
-        (draftAction: Action) => {
-          draftAction.description = description;
-        }
-      );
-      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
+      const action = setActionDescription(currentNode.action, description);
+      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, action));
     },
     [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const changeTitle = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      const currentNode = currentNodeRef.current as ActionNode;
+      if (!currentNode.action || !pathwayRef.current) return;
 
       const title = event?.target.value || '';
-      const action = produce(
-        (currentNodeRef.current as ActionNode).action[0],
-        (draftAction: Action) => {
-          draftAction.resource.title = title;
-        }
-      );
-      updatePathway(
-        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
-      );
+      const action = setActionTitle(currentNode.action, title);
+      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
 
-      addActionCQL(action, currentNodeRef.current.key);
+      addActionCQL(action, currentNode.key);
     },
     [currentNodeRef, pathwayRef, updatePathway, addActionCQL]
   );
 
   const selectCodeSystem = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      const currentNode = currentNodeRef.current as ActionNode;
+      if (!currentNode.action || !pathwayRef.current) return;
 
       const codeSystem = event?.target.value || '';
-      const action = produce(
-        (currentNodeRef.current as ActionNode).action[0],
-        (draftAction: Action) => {
-          if (draftAction.resource.medicationCodeableConcept) {
-            draftAction.resource.medicationCodeableConcept.coding[0].system = codeSystem;
-          } else {
-            draftAction.resource.code.coding[0].system = codeSystem;
-          }
-        }
-      );
-      updatePathway(
-        setNodeAction(pathwayRef.current, currentNodeRef.current.key, [resetDisplay(action)])
-      );
+      const action = setActionCodeSystem(currentNode.action, codeSystem);
+      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
     [currentNodeRef, pathwayRef, updatePathway]
   );
 
   const validateFunction = useCallback((): void => {
-    if (
-      currentNodeRef.current?.key &&
-      (currentNodeRef.current as ActionNode).action.length &&
-      pathwayRef.current
-    ) {
-      const action = setActionResourceDisplay(
-        (currentNodeRef.current as ActionNode).action[0],
-        'Example Text'
-      );
-      updatePathway(setNodeAction(pathwayRef.current, currentNodeRef.current.key, [action]));
-
-      addActionCQL(action, currentNodeRef.current.key);
-    } else {
+    const currentNode = currentNodeRef.current as ActionNode;
+    if (!currentNode.action || !pathwayRef.current) {
       console.error('No Actions -- Cannot Validate');
+      return;
     }
+
+    const action = setActionResourceDisplay(currentNode.action, 'Example Text');
+    updatePathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+
+    // TODO: move addActionCQL to builder.ts
+    addActionCQL(action, currentNode.key);
   }, [currentNodeRef, pathwayRef, updatePathway, addActionCQL]);
 
   const resetDisplay = (action: Action): Action => {
@@ -176,9 +146,11 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
   };
 
   // The node has a key and is not the start node
-  const changeNodeTypeEnabled = currentNode?.key !== undefined && currentNode.key !== 'Start';
   const action = (currentNode as ActionNode).action;
-  const resource = action?.length > 0 && action[0].resource;
+  if (!action) return <></>;
+
+  const changeNodeTypeEnabled = currentNode?.key !== 'Start';
+  const resource = action.resource;
   let system = '';
   let code = '';
   let display = '';
@@ -247,10 +219,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
                   <TextField
                     id="description-input"
                     label="Description"
-                    value={action[0].description || ''}
+                    value={action.description || ''}
                     onChange={changeDescription}
                     variant="outlined"
-                    error={action[0].description === ''}
+                    error={action.description === ''}
                   />
                 </>
               )}
@@ -272,10 +244,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
                 <TextField
                   id="description-input"
                   label="Description"
-                  value={action[0].description || ''}
+                  value={action.description || ''}
                   onChange={changeDescription}
                   variant="outlined"
-                  error={action[0].description === ''}
+                  error={action.description === ''}
                 />
               )}
             </>

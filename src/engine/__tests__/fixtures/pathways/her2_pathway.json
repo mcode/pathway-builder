@@ -74,8 +74,7 @@
     "ChemotherapyTHWeekly": {
       "key": "ChemotherapyTHWeekly",
       "label": "Chemotherapy TH Weekly",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Chemotherapy TH Weekly",
@@ -92,8 +91,7 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -105,8 +103,7 @@
     "ChemotherapyTCHAC+TH": {
       "key": "ChemotherapyTCHAC+TH",
       "label": "Chemotherapy TCH AC + TH",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Chemotherapy TCH AC + TH",
@@ -123,8 +120,7 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -136,8 +132,7 @@
     "PostchemotherapyTrastuzumabRequest": {
       "key": "PostchemotherapyTrastuzumabRequest",
       "label": "Post-Chemotherapy Trastuzumab Request",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Post Chemotherapy Trastuzumab (1 year total duration recommended)",
@@ -154,8 +149,7 @@
               "text": "trastuzumab"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -167,8 +161,7 @@
     "PostchemotherapyTrastuzumabAdministration": {
       "key": "PostchemotherapyTrastuzumabAdministration",
       "label": "Post-Chemotherapy Trastuzumab Administration",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Post Chemotherapy Trastuzumab (1 year total duration recommended)",
@@ -185,8 +178,7 @@
               "text": "trastuzumab"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -220,13 +212,13 @@
     "NoEndocrineTherapy": {
       "key": "NoEndocrineTherapy",
       "label": "No Endocrine Therapy",
-      "action": [],
+      "action": {},
       "transitions": []
     },
     "EndocrineTherapy": {
       "key": "EndocrineTherapy",
       "label": "Endocrine Therapy",
-      "action": [],
+      "action": {},
       "transitions": []
     }
   },

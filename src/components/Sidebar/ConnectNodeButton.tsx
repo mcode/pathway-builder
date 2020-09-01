@@ -26,7 +26,7 @@ const ConnectNodeButton: FC = () => {
   const connectToNode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       const nodeKey = event?.target.value;
-      if (pathwayRef.current && currentNodeRef.current?.key)
+      if (pathwayRef.current && currentNodeRef.current)
         updatePathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
       setOpen(false);
     },

@@ -39,20 +39,19 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const history = useHistory();
 
   const goToParentNode = useCallback(() => {
-    if (!pathwayRef.current || !node.key) return;
+    if (!pathwayRef.current) return;
     const parents = findParents(pathwayRef.current, node.key);
     redirect(pathwayRef.current.id, parents[0], history);
   }, [history, pathwayRef, node.key]);
 
   const redirectToNode = useCallback(() => {
-    if (!pathwayRef.current || !node.key) return;
+    if (!pathwayRef.current) return;
     redirect(pathwayRef.current.id, node.key, history);
   }, [history, pathwayRef, node.key]);
 
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
-    if (node.key && pathwayRef.current)
-      updatePathway(setNodeLabel(pathwayRef.current, node.key, label));
+    if (pathwayRef.current) updatePathway(setNodeLabel(pathwayRef.current, node.key, label));
     setShowInput(false);
   }, [pathwayRef, updatePathway, node.key]);
 
@@ -61,7 +60,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   }, []);
 
   const deleteNode = useCallback(() => {
-    if (node.key && pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
+    if (pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
       const parents = findParents(pathwayRef.current, node.key);
       updatePathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
@@ -82,8 +81,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
 
   const deleteTransition = useCallback(() => {
     if (
-      node.key &&
-      currentNodeRef.current?.key &&
+      currentNodeRef.current &&
       pathwayRef.current &&
       !willOrphanChild(pathwayRef.current, node.key)
     ) {
@@ -120,7 +118,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   );
 
   const deleteNodeDisabled = pathway ? !canDeleteNode(pathway, node.transitions) : true;
-  const deleteTransitionDisabled = pathway && node.key ? willOrphanChild(pathway, node.key) : true;
+  const deleteTransitionDisabled = pathway ? willOrphanChild(pathway, node.key) : true;
   const deleteDisabled = isTransition ? deleteTransitionDisabled : deleteNodeDisabled;
   const titleText = isTransition
     ? 'Deleting this transition would result in an orphaned node. To delete, first add the child node as a transition to another node, or delete it directly.'

@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, memo, useCallback, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import { useLifecycles, useUpdateEffect } from 'react-use';
 
@@ -60,8 +60,7 @@ const Node: FC<NodeProps> = ({
     yCoordinate
   ]);
   const nodeType = getNodeType(pathwayNode);
-  const actionSize = (pathwayNode as ActionNode).action?.length ?? 0;
-  const [hasMetadata, setHasMetadata] = useState<boolean>(actionSize > 0);
+  const action = (pathwayNode as ActionNode).action;
 
   const { label, transitions } = pathwayNode;
 
@@ -113,16 +112,15 @@ const Node: FC<NodeProps> = ({
   }, [nodeKey, transitions]);
 
   useUpdateEffect(() => {
-    if (hasMetadata || actionSize === 0) return;
-    setHasMetadata(true);
+    if (!action) return;
     openNode(nodeKey);
-  }, [hasMetadata, actionSize, nodeKey]);
+  }, [action, nodeKey]);
 
   return (
     <div className={styles.node} style={nodeStyle} ref={nodeRef}>
       <div className={clsx(styles.nodeTitle, onClick && styles.clickable)} onClick={onClickHandler}>
         <NodeIcon
-          resourceType={(pathwayNode as ActionNode).action?.[0]?.resource?.resourceType}
+          resourceType={action ? action.resource?.resourceType : undefined}
           nodeType={nodeType}
           isStartNode={pathwayNode.label === 'Start'}
         />

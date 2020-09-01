@@ -1,6 +1,6 @@
 import samplepathway from './fixtures/sample_pathway.json';
 import * as Builder from 'utils/builder';
-import { Pathway, Transition, ActionNode } from 'pathways-model';
+import { Pathway, Transition } from 'pathways-model';
 import { ElmLibrary } from 'elm-model';
 import { Criteria } from 'criteria-model';
 
@@ -237,7 +237,6 @@ describe('builder interface add functions', () => {
       expect.objectContaining({
         label: 'New Node',
         transitions: [],
-        action: [],
         cql: ''
       })
     );
@@ -436,47 +435,63 @@ describe('builder interface update functions', () => {
     });
   });
 
-  it('set action type', () => {
-    const nodeKey = 'Chemo';
-    const actionId = '1';
-    const newPathway = Builder.setActionType(pathway, nodeKey, actionId, 'delete');
-    expect(newPathway.nodes[nodeKey].action[0].type).toBe('delete');
-  });
-
-  it('set action descrtiption', () => {
-    const nodeKey = 'Chemo';
-    const actionId = '1';
-    const newPathway = Builder.setActionDescription(pathway, nodeKey, actionId, 'test description');
-    expect(newPathway.nodes[nodeKey].action[0].description).toBe('test description');
-  });
-
-  it('set action resource', () => {
-    const nodeKey = 'Chemo';
-    const actionId = '1';
-    const resource = {
-      resourceType: 'ServiceRequest',
-      code: {
-        coding: [
-          {
-            system: 'http://example.com',
-            code: '1234',
-            display: 'Test procedure'
-          }
-        ],
-        text: 'Test procedure'
+  describe('set action properties', () => {
+    const carePlanAction = {
+      id: '1',
+      type: 'create',
+      description: '',
+      resource: {
+        resourceType: 'CarePlan',
+        title: ''
       }
     };
-    const newPathway = Builder.setActionResource(pathway, nodeKey, actionId, resource);
-    expect(newPathway.nodes[nodeKey].action[0].resource).toEqual(resource);
-  });
+    const medicationAction = {
+      id: '1',
+      type: 'create',
+      description: '',
+      resource: {
+        resourceType: 'MedicationRequest',
+        medicationCodeableConcept: {
+          coding: [
+            {
+              system: '',
+              code: '',
+              display: ''
+            }
+          ]
+        }
+      }
+    };
 
-  it('set action resource display', () => {
-    const nodeKey = 'Chemo';
-    const newAction = Builder.setActionResourceDisplay(
-      (pathway.nodes[nodeKey] as ActionNode).action[0],
-      'test'
-    );
-    expect(newAction.resource.code.coding[0].display).toBe('test');
+    it('set code', () => {
+      const code = '123';
+      const newAction = Builder.setActionCode(medicationAction, code);
+      expect(newAction.resource.medicationCodeableConcept.coding[0].code).toBe(code);
+    });
+
+    it('set code system', () => {
+      const codeSystem = 'http://example.com';
+      const newAction = Builder.setActionCodeSystem(medicationAction, codeSystem);
+      expect(newAction.resource.medicationCodeableConcept.coding[0].system).toBe(codeSystem);
+    });
+
+    it('set display', () => {
+      const display = 'display';
+      const newAction = Builder.setActionResourceDisplay(medicationAction, display);
+      expect(newAction.resource.medicationCodeableConcept.coding[0].display).toBe(display);
+    });
+
+    it('set description', () => {
+      const description = 'description';
+      const newAction = Builder.setActionDescription(carePlanAction, description);
+      expect(newAction.description).toBe(description);
+    });
+
+    it('set title', () => {
+      const title = 'title';
+      const newAction = Builder.setActionTitle(carePlanAction, title);
+      expect(newAction.resource.title).toBe(title);
+    });
   });
 
   describe('makeNodeAction', () => {
@@ -484,7 +499,6 @@ describe('builder interface update functions', () => {
       const key = 'N-test';
       const newPathway = Builder.makeNodeAction(pathway, key);
       expect(newPathway.nodes[key].cql).toEqual('');
-      expect(newPathway.nodes[key].action).toEqual([]);
       expect(newPathway.nodes[key].nodeTypeIsUndefined).not.toBeDefined();
       newPathway.nodes[key].transitions.forEach(transition => {
         expect(transition.condition).not.toBeDefined();
@@ -522,11 +536,6 @@ describe('builder interface update functions', () => {
 describe('builder interface remove functions', () => {
   // Create a deep copy of the pathway
   const pathway = JSON.parse(JSON.stringify(samplepathway)) as Pathway;
-
-  it('remove pathway description', () => {
-    const newPathway = Builder.removePathwayDescription(pathway);
-    expect('description' in newPathway).toBeFalsy();
-  });
 
   it('remove preconditions', () => {
     const id = '1';
@@ -573,13 +582,6 @@ describe('builder interface remove functions', () => {
     const newPathway = Builder.removeTransition(pathway, parentNodeKey, childNodeKey);
     expect(newPathway.nodes[parentNodeKey].transitions.length).toBe(1);
     expect(newPathway.nodes[parentNodeKey].transitions[0].transition).not.toBe(childNodeKey);
-  });
-
-  it('remove action', () => {
-    const nodeKey = 'Surgery';
-    const actionId = '1';
-    const newPathway = Builder.removeAction(pathway, nodeKey, actionId);
-    expect(newPathway.nodes[nodeKey].action.length).toBe(0);
   });
 });
 

@@ -57,7 +57,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const transitionRef = useRef(transition);
 
   const handleUseCriteria = useCallback((): void => {
-    if (hasCriteria && currentNodeRef.current?.key && pathwayRef.current) {
+    if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
       // delete the transition criteria
       updatePathway(
         removeTransitionCondition(pathwayRef.current, currentNodeRef.current.key, transition.id)
@@ -70,7 +70,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      if (!currentNodeRef.current || !pathwayRef.current) return;
 
       const criteriaId = event?.target.value || '';
       const selectedCriteria = criteria.find(c => c.id === criteriaId);
@@ -90,7 +90,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const setCriteriaDisplay = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+      if (!currentNodeRef.current || !pathwayRef.current) return;
 
       const criteriaDisplay = event?.target.value || '';
       updatePathway(

@@ -199,14 +199,14 @@ export function toCPG(pathway: Pathway): Bundle {
   const cpgStrategy = createPlanDefinition(
     uuidv4(),
     pathway.name,
-    pathway.description ?? `Pathway For: ${pathway.name}`,
+    pathway.description,
     'strategy',
     library.id
   );
 
   Object.keys(pathway.nodes).forEach(key => {
     const node = pathway.nodes[key];
-    if (isActionNode(node) && node.key) {
+    if (isActionNode(node) && node.key && node.action) {
       const description = `Represents an action for ${node.label}`;
       const cpgRecommendation = createPlanDefinition(
         uuidv4(),
@@ -232,16 +232,15 @@ export function toCPG(pathway: Pathway): Bundle {
           cpgStrategyAction.condition?.push(condition);
         }
       });
-      node.action.forEach(action => {
-        const cpgActivityDefinition = createActivityDefinition(action);
-        const cpgRecommendationAction = createAction(
-          action.id ?? uuidv4(),
-          action.description,
-          cpgActivityDefinition.id
-        );
-        cpgRecommendation.action.push(cpgRecommendationAction);
-        bundle.entry.push(createBundleEntry(cpgActivityDefinition));
-      });
+      const action = node.action;
+      const cpgActivityDefinition = createActivityDefinition(action);
+      const cpgRecommendationAction = createAction(
+        action.id,
+        action.description,
+        cpgActivityDefinition.id
+      );
+      cpgRecommendation.action.push(cpgRecommendationAction);
+      bundle.entry.push(createBundleEntry(cpgActivityDefinition));
       cpgStrategy.action.push(cpgStrategyAction);
       bundle.entry.push(createBundleEntry(cpgRecommendation));
     }
