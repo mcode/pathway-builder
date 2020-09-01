@@ -390,7 +390,7 @@ export function setTransitionCondition(
     );
 
     if (foundTransition) {
-      const cql = criteria.statement || criteria.builder?.cql || '';
+      const cql = criteria.statement;
       foundTransition.condition = {
         description: description,
         cql: cql,

@@ -44,7 +44,8 @@ function builderModelToCriteria(criteria: BuilderModel): Criteria {
     id: shortid.generate(),
     label: `${criteria.type}${Date.now()}`,
     modified: Date.now(),
-    builder: criteria
+    builder: criteria,
+    statement: criteria.cql
   };
 }
 function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
@@ -72,7 +73,7 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
 function jsonToCriteria(rawCriteria: string): Criteria[] | undefined {
   const criteria = JSON.parse(rawCriteria);
   if (criteria.type) {
-    builderModelToCriteria(criteria);
+    return [builderModelToCriteria(criteria)];
   } else if (!criteria.library?.identifier) {
     alert('Please upload ELM file');
     return;
