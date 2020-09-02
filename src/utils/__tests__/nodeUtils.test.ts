@@ -1,7 +1,39 @@
 import samplepathway from './fixtures/sample_pathway.json';
-import { willOrphanChild, canDeleteNode, findParents, getConnectableNodes } from 'utils/nodeUtils';
+import {
+  willOrphanChild,
+  canDeleteNode,
+  findParents,
+  getConnectableNodes,
+  isActionNode,
+  isBranchNode
+} from 'utils/nodeUtils';
 
 describe('node util methods', () => {
+  describe('can determine branch vs action node', () => {
+    const branchNode = samplepathway.nodes['T-test'];
+    const actionNode = samplepathway.nodes['Surgery'];
+
+    it('isBranchNode on branch node is true', () => {
+      const res = isBranchNode(branchNode);
+      expect(res).toBeTruthy();
+    });
+
+    it('isBranchNode on action node is false', () => {
+      const res = isBranchNode(actionNode);
+      expect(res).toBeFalsy();
+    });
+
+    it('isActionNode on action node is true', () => {
+      const res = isActionNode(actionNode);
+      expect(res).toBeTruthy();
+    });
+
+    it('isActionNode on branch node is false', () => {
+      const res = isActionNode(branchNode);
+      expect(res).toBeFalsy();
+    });
+  });
+
   describe('delete transition orphan check', () => {
     it('returns true for single parent', () => {
       const value = willOrphanChild(

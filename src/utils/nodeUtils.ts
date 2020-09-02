@@ -3,7 +3,7 @@ import { History } from 'history';
 
 export function isActionNode(node: PathwayNode): node is ActionNode {
   const { action } = node as ActionNode;
-  return action !== null;
+  return action !== undefined;
 }
 
 export function isBranchNode(node: PathwayNode): boolean {
