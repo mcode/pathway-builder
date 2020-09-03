@@ -72,9 +72,7 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
 
 function jsonToCriteria(rawCriteria: string): Criteria[] | undefined {
   const criteria = JSON.parse(rawCriteria);
-  if (criteria.type) {
-    return [builderModelToCriteria(criteria)];
-  } else if (!criteria.library?.identifier) {
+  if (!criteria.library?.identifier) {
     alert('Please upload ELM file');
     return;
   }
