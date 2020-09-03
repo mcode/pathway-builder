@@ -181,16 +181,27 @@
         }
       ]
     },
-    "NoEndocrineTherapy": {
-      "key": "NoEndocrineTherapy",
-      "label": "No Endocrine Therapy",
-      "action": {},
-      "transitions": []
-    },
     "EndocrineTherapy": {
       "key": "EndocrineTherapy",
       "label": "Endocrine Therapy",
-      "action": {},
+      "action": {
+         "id": "1",
+         "type": "create",
+         "description": "Hormone Therapy",
+         "resource": {
+           "resourceType": "ServiceRequest",
+           "code": {
+             "coding": [
+               {
+                 "system": "http://snomed.info/sct",
+                 "code": "169413002",
+                 "display": "Hormone therapy (procedure)"
+               }
+             ],
+             "text": "Hormone therapy (procedure)"
+           }
+         }
+      },
       "transitions": []
     }
   },

@@ -37,7 +37,7 @@ declare module 'pathways-model' {
   export interface ActionNode extends PathwayNode {
     cql: string;
     elm?: ElmLibrary;
-    action: Action | null;
+    action: Action;
   }
 
   // NOTE: the model also includes a BranchNode (which extends PathwayNode),

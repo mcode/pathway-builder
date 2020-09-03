@@ -233,13 +233,6 @@ export function addNode(pathway: Pathway, node: PathwayNode): Pathway {
   });
 }
 
-export function addActionNode(pathway: Pathway): Pathway {
-  const node = createNode();
-  const newPathway = addNode(pathway, node);
-
-  return makeNodeAction(newPathway, node.key);
-}
-
 export function setNodeLabel(pathway: Pathway, key: string, label: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     draftPathway.nodes[key].label = label;
@@ -528,7 +521,7 @@ export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
     if (
       node.cql !== undefined ||
       node.elm !== undefined ||
-      node.action !== null ||
+      node.action !== undefined ||
       node.nodeTypeIsUndefined !== undefined
     ) {
       delete node.cql;
