@@ -20,6 +20,7 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
+  addBuilderCriteria: (criteria: BuilderModel) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -119,13 +120,21 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     return newCriteria;
   }, []);
 
+  const addBuilderCriteria = useCallback((criteria: BuilderModel): Criteria[] => {
+    const newCriteria = builderModelToCriteria(criteria);
+    setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+
+    return [newCriteria];
+  }, []);
+
   return (
     <CriteriaContext.Provider
       value={{
         criteria,
         addCriteria,
         deleteCriteria,
-        addElmCriteria
+        addElmCriteria,
+        addBuilderCriteria
       }}
     >
       {children}

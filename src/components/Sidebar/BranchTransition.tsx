@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
-import shortid from 'shortid';
 import {
   removeTransitionCondition,
   setTransitionCondition,
@@ -17,7 +16,6 @@ import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
-import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 
 interface BranchTransitionProps {
@@ -26,7 +24,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
-  const { criteria, addElmCriteria } = useCriteriaContext();
+  const { criteria, addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
@@ -135,7 +133,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     resetCriteriaBuilder();
   }, [resetCurrentCriteria, resetCriteriaBuilder]);
 
-  const handleBuildCriteriaSave = useCallback(async (): Promise<void> => {
+  const handleBuildCriteriaSave = useCallback(() => {
     if (
       !currentNodeRef.current?.key ||
       !transitionRef.current.id ||
@@ -144,15 +142,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     )
       return;
 
-    // CQl identifier cannot start with a number or contain '-'
-    const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
-    let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\ncontext Patient\n`;
-    cql += `define "${criteriaName}":
-      ${currentCriteria.cql}`;
-    const elm = await convertBasicCQL(cql);
-    // builder model assumes CQL is a required element, might not be the case with CDSAT
-    const criteria = addElmCriteria(elm);
-
+    const criteria = addBuilderCriteria(currentCriteria);
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
@@ -171,7 +161,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     currentCriteria,
     criteriaName,
     handleBuildCriteriaCancel,
-    addElmCriteria
+    addBuilderCriteria
   ]);
 
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
