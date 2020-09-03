@@ -14,6 +14,7 @@ import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -87,6 +88,19 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
+function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
+  return convertBasicCQL(rawCql)
+    .then(elm => {
+      if (!elm.library?.identifier) {
+        // we're async right now so don't show an error here
+        // just return empty
+        return [];
+      }
+      return elmLibraryToCriteria(elm)
+    });
+  ;
+}
+
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
   const service = useGetService<Criteria>(config.get('demoCriteria'));
@@ -108,9 +122,22 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     const reader = new FileReader();
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {
-        const rawElm = event.target.result as string;
-        const newCriteria = jsonToCriteria(rawElm);
-        if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+        const rawContent = event.target.result as string;
+        // TODO: more robust file type identification?
+        if (file.name.endsWith('.json')) {
+          const newCriteria = jsonToCriteria(rawContent);
+          if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+        } else if (file.name.endsWith('.cql')) {
+          cqlToCriteria(rawContent)
+            .then(newCriteria => {
+              if (newCriteria.length > 0) {
+                setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+              } else {
+                // TODO error-y stuff
+              }
+            });
+        }
+        
       } else alert('Unable to read that file');
     };
     reader.readAsText(file);
