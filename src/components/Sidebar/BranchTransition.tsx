@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
-import shortid from 'shortid';
 import {
   removeTransitionCondition,
   setTransitionCondition,
@@ -17,7 +16,6 @@ import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
-import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 
 interface BranchTransitionProps {
@@ -26,14 +24,14 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { updatePathway } = usePathwaysContext();
-  const { criteria, addElmCriteria } = useCriteriaContext();
+  const { criteria, addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
     currentCriteriaNodeId,
     setCurrentCriteriaNodeId,
-    currentCriteriaCql,
-    setCurrentCriteriaCql,
+    currentCriteria,
+    setCurrentCriteria,
     criteriaName,
     setCriteriaName,
     resetCurrentCriteria
@@ -116,7 +114,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const handleBuildCriteria = useCallback((): void => {
     setCurrentCriteriaNodeId(transition.id ?? '');
-    setCurrentCriteriaCql(null);
+    setCurrentCriteria(null);
     setCriteriaName('');
     if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
     resetCriteriaBuilder();
@@ -125,7 +123,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCurrentCriteriaNodeId,
     transition,
     setBuildCriteriaSelected,
-    setCurrentCriteriaCql,
+    setCurrentCriteria,
     resetCriteriaBuilder,
     setCriteriaName
   ]);
@@ -135,23 +133,16 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     resetCriteriaBuilder();
   }, [resetCurrentCriteria, resetCriteriaBuilder]);
 
-  const handleBuildCriteriaSave = useCallback(async (): Promise<void> => {
+  const handleBuildCriteriaSave = useCallback(() => {
     if (
       !currentNodeRef.current?.key ||
       !transitionRef.current.id ||
       !pathwayRef.current ||
-      !currentCriteriaCql?.cql
+      !currentCriteria?.cql
     )
       return;
 
-    // CQl identifier cannot start with a number or contain '-'
-    const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
-    let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\ncontext Patient\n`;
-    cql += `define "${criteriaName}":
-      ${currentCriteriaCql.cql}`;
-    const elm = await convertBasicCQL(cql);
-    const criteria = addElmCriteria(elm);
-
+    const criteria = addBuilderCriteria(currentCriteria);
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
@@ -167,10 +158,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     updatePathway,
     pathwayRef,
     transitionRef,
-    currentCriteriaCql,
+    currentCriteria,
     criteriaName,
     handleBuildCriteriaCancel,
-    addElmCriteria
+    addBuilderCriteria
   ]);
 
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
@@ -241,8 +232,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             value={criteriaName}
             fullWidth
           />
-          {currentCriteriaCql?.text && (
-            <span className={styles.buildCriteriaText}>{currentCriteriaCql.text}</span>
+          {currentCriteria?.text && (
+            <span className={styles.buildCriteriaText}>{currentCriteria.text}</span>
           )}
           <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
@@ -264,7 +255,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || currentCriteriaCql === null}
+              disabled={criteriaName === '' || currentCriteria === null}
               onClick={handleBuildCriteriaSave}
             >
               Save

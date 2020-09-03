@@ -23,7 +23,7 @@ const CriteriaBuilder: FC = () => {
     resetCriteriaBuilder
   } = useCriteriaBuilderContext();
   const styles = useStyles();
-  const { setCurrentCriteriaCql } = useCurrentCriteriaContext();
+  const { setCurrentCriteria } = useCurrentCriteriaContext();
   const elementOptions = [{ value: 'Demographics', label: 'Demographics' }];
   const demoElementOptions = [
     { value: 'Age Range', label: 'Age Range' },
@@ -85,8 +85,8 @@ const CriteriaBuilder: FC = () => {
 
   const handleClose = useCallback((): void => {
     resetCriteriaBuilder();
-    setCurrentCriteriaCql(null);
-  }, [resetCriteriaBuilder, setCurrentCriteriaCql]);
+    setCurrentCriteria(null);
+  }, [resetCriteriaBuilder, setCurrentCriteria]);
 
   const genderString = `The patient's gender is ${gender}`;
   const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
@@ -95,23 +95,29 @@ const CriteriaBuilder: FC = () => {
     const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
     if (selectedDemoElement === 'Age Range') {
       if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
-        setCurrentCriteriaCql({ cql, text: ageRangeString });
+        setCurrentCriteria({
+          cql,
+          text: ageRangeString,
+          type: 'age',
+          min: minimumAge,
+          max: maximumAge
+        });
       } else {
-        setCurrentCriteriaCql(null);
+        setCurrentCriteria(null);
       }
     }
-  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setCurrentCriteriaCql]);
+  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setCurrentCriteria]);
 
   useEffect(() => {
     const cql = `Patient.gender.value = '${gender}'`;
     if (selectedDemoElement === 'Gender') {
       if (gender !== '') {
-        setCurrentCriteriaCql({ cql, text: genderString });
+        setCurrentCriteria({ cql, text: genderString, type: 'gender', gender });
       } else {
-        setCurrentCriteriaCql(null);
+        setCurrentCriteria(null);
       }
     }
-  }, [selectedDemoElement, gender, genderString, setCurrentCriteriaCql]);
+  }, [selectedDemoElement, gender, genderString, setCurrentCriteria]);
 
   return (
     <>

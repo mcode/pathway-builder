@@ -389,13 +389,14 @@ export function setTransitionCondition(
       (transition: Transition) => transition.id === transitionId
     );
 
-    if (foundTransition)
+    if (foundTransition) {
       foundTransition.condition = {
         description: description,
         cql: criteria.statement,
         elm: criteria.elm,
         criteriaSource: criteria.id
       };
+    }
   });
 }
 

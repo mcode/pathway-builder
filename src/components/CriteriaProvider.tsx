@@ -13,13 +13,14 @@ import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
-import { Criteria } from 'criteria-model';
+import { Criteria, BuilderModel } from 'criteria-model';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
+  addBuilderCriteria: (criteria: BuilderModel) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -39,6 +40,15 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
+function builderModelToCriteria(criteria: BuilderModel): Criteria {
+  return {
+    id: shortid.generate(),
+    label: `${criteria.type}${Date.now()}`,
+    modified: Date.now(),
+    builder: criteria,
+    statement: criteria.cql
+  };
+}
 function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   const elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
@@ -87,6 +97,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, [payload]);
 
   const addCriteria = useCallback((file: File) => {
+    // figure out incoming file type
     const reader = new FileReader();
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {
@@ -109,13 +120,21 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     return newCriteria;
   }, []);
 
+  const addBuilderCriteria = useCallback((criteria: BuilderModel): Criteria[] => {
+    const newCriteria = builderModelToCriteria(criteria);
+    setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+
+    return [newCriteria];
+  }, []);
+
   return (
     <CriteriaContext.Provider
       value={{
         criteria,
         addCriteria,
         deleteCriteria,
-        addElmCriteria
+        addElmCriteria,
+        addBuilderCriteria
       }}
     >
       {children}
