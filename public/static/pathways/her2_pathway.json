@@ -165,14 +165,6 @@
       "transitions": [
         {
           "id": "1",
-          "transition": "NoEndocrineTherapy",
-          "condition": {
-            "description": "ERNegative",
-            "cql": "[Observation: \"Estrogen receptor Ag [Presence] in Breast cancer specimen by Immune stain code\"] Neg where ToConcept(Neg.value as FHIR.CodeableConcept) ~ \"Negative (qualifier value)\" return Tuple{ resourceType: 'Observation', id: Neg.id.value , status: Neg.status.value} "
-          }
-        },
-        {
-          "id": "2",
           "transition": "EndocrineTherapy",
           "condition": {
             "description": "ERPositive",
