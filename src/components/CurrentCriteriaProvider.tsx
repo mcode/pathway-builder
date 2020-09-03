@@ -10,11 +10,6 @@ import React, {
 
 import { BuilderModel } from 'criteria-model';
 
-interface CurrentCriteriaCql {
-  cql: string;
-  text?: string;
-}
-
 interface CurrentCriteriaContextInterface {
   buildCriteriaSelected: boolean;
   currentCriteriaNodeId: string;
@@ -37,7 +32,7 @@ interface CurrentCriteriaProviderProps {
 
 export const CurrentCriteriaProvider: FC<CurrentCriteriaProviderProps> = memo(({ children }) => {
   const [currentCriteriaNodeId, setCurrentCriteriaNodeId] = useState<string>('');
-  const [currentCriteriaCql, setCurrentCriteria] = useState<BuilderModel | null>(null);
+  const [currentCriteria, setCurrentCriteria] = useState<BuilderModel | null>(null);
   const [buildCriteriaSelected, setBuildCriteriaSelected] = useState<boolean>(false);
   const [criteriaName, setCriteriaName] = useState<string>('');
 
@@ -55,7 +50,7 @@ export const CurrentCriteriaProvider: FC<CurrentCriteriaProviderProps> = memo(({
         setBuildCriteriaSelected,
         currentCriteriaNodeId,
         setCurrentCriteriaNodeId,
-        currentCriteria: currentCriteriaCql,
+        currentCriteria: currentCriteria,
         setCurrentCriteria: setCurrentCriteria,
         criteriaName,
         setCriteriaName,

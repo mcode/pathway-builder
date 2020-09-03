@@ -32,7 +32,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setBuildCriteriaSelected,
     currentCriteriaNodeId,
     setCurrentCriteriaNodeId,
-    currentCriteria: currentCriteriaCql,
+    currentCriteria,
     setCurrentCriteria,
     criteriaName,
     setCriteriaName,
@@ -140,7 +140,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       !currentNodeRef.current?.key ||
       !transitionRef.current.id ||
       !pathwayRef.current ||
-      !currentCriteriaCql?.cql
+      !currentCriteria?.cql
     )
       return;
 
@@ -148,7 +148,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
     let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\ncontext Patient\n`;
     cql += `define "${criteriaName}":
-      ${currentCriteriaCql.cql}`;
+      ${currentCriteria.cql}`;
     const elm = await convertBasicCQL(cql);
     // builder model assumes CQL is a required element, might not be the case with CDSAT
     const criteria = addElmCriteria(elm);
@@ -168,7 +168,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     updatePathway,
     pathwayRef,
     transitionRef,
-    currentCriteriaCql,
+    currentCriteria,
     criteriaName,
     handleBuildCriteriaCancel,
     addElmCriteria
@@ -242,8 +242,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
             value={criteriaName}
             fullWidth
           />
-          {currentCriteriaCql?.text && (
-            <span className={styles.buildCriteriaText}>{currentCriteriaCql.text}</span>
+          {currentCriteria?.text && (
+            <span className={styles.buildCriteriaText}>{currentCriteria.text}</span>
           )}
           <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
@@ -265,7 +265,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || currentCriteriaCql === null}
+              disabled={criteriaName === '' || currentCriteria === null}
               onClick={handleBuildCriteriaSave}
             >
               Save
