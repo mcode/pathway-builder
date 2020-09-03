@@ -511,7 +511,7 @@ export function setTransitionConditionElm(
 
     if (foundTransition?.condition) {
       foundTransition.condition.elm = criteria.elm;
-      foundTransition.condition.cql = criteria.statement || criteria.builder?.cql || '';
+      foundTransition.condition.cql = criteria.statement;
     }
   });
 }

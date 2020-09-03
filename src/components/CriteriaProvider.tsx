@@ -71,13 +71,13 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   });
 }
 
-function jsonToCriteria(rawCriteria: string): Criteria[] | undefined {
-  const criteria = JSON.parse(rawCriteria);
-  if (!criteria.library?.identifier) {
+function jsonToCriteria(rawElm: string): Criteria[] | undefined {
+  const elm = JSON.parse(rawElm);
+  if (!elm.library?.identifier) {
     alert('Please upload ELM file');
     return;
   }
-  return elmLibraryToCriteria(criteria);
+  return elmLibraryToCriteria(elm);
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
