@@ -49,11 +49,22 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     publisher: 'Logged in user',
     description: action.description,
     kind: kind,
-    productCodeableConcept:
-      action.resource.resourceType === 'MedicationRequest'
-        ? action.resource.medicationCodeableConcept
-        : action.resource.code
+    productCodeableConcept: { coding: [] } // intentionally empty object, see below
   };
+
+  switch (kind) {
+    case 'MedicationRequest':
+      activityDefinition.productCodeableConcept = action.resource.medicationCodeableConcept;
+      break;
+    case 'ServiceRequest':
+    case 'CarePlan':
+      delete activityDefinition.productCodeableConcept; // not allowed on these in cqf-ruler
+      activityDefinition.code = action.resource.code;
+      break;
+    default:
+      // do nothing
+      break;
+  }
 
   return activityDefinition;
 }
