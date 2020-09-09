@@ -136,11 +136,19 @@ function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Libra
   };
 }
 
-function createLibrary(pathway: Pathway, criteria: Criteria[]): Library[] {
+// interface purely for intermediate working objects
+interface IncludedCqlLibraries {
+  [id: string]: {
+    cql: string;
+    version: string;
+  };
+}
+
+function createLibraries(pathway: Pathway, criteria: Criteria[]): Library[] {
   const libraryId = uuidv4();
   const libraryName = `LIB${libraryId.substring(0, 7)}`;
 
-  const library: Library = {
+  const mainLibrary: Library = {
     id: libraryId,
     resourceType: 'Library',
     meta: {
@@ -172,21 +180,29 @@ function createLibrary(pathway: Pathway, criteria: Criteria[]): Library[] {
     content: []
   };
 
-  const includedCqlLibraries: { [k: string]: string } = {}; // TODO: need version
-  const referencedDefines: { [k: string]: string } = {};
+  const includedCqlLibraries: IncludedCqlLibraries = {};
+  const referencedDefines: Record<string, string> = {};
 
-  const builderDefines: { [k: string]: string } = {};
+  const builderDefines: Record<string, string> = {};
 
+  // iterate through the nodes and find all criteria that are actually used.
+  // for each one, add the criteria CQL to our appropriate map
+  //  - if it's an included library, keep track of the library name and version
+  //    as well as the specific definition we're referencing
+  //  - if it was constructed in the builder, track the name and raw CQL
   for (const nodeId in pathway.nodes) {
     const node = pathway.nodes[nodeId];
     for (const transition of node.transitions) {
       if (transition.condition?.criteriaSource) {
         const criteriaSource = criteria.find(c => c.id === transition.condition?.criteriaSource);
         if (criteriaSource && criteriaSource.elm && criteriaSource.cql) {
-          const libraryId = criteriaSource.elm.library.identifier.id;
-          includedCqlLibraries[libraryId] = criteriaSource.cql;
+          const libraryIdentifier = criteriaSource.elm.library.identifier;
+          includedCqlLibraries[libraryIdentifier.id] = {
+            cql: criteriaSource.cql,
+            version: libraryIdentifier.version
+          };
 
-          referencedDefines[transition.condition.cql] = libraryId;
+          referencedDefines[transition.condition.cql] = libraryIdentifier.id;
         } else if (criteriaSource && criteriaSource.builder) {
           builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
         }
@@ -194,63 +210,49 @@ function createLibrary(pathway: Pathway, criteria: Criteria[]): Library[] {
     }
   }
 
-  const additionalLibraries: Library[] = Object.entries(includedCqlLibraries).map(([k, v]) => {
-    const newId = uuidv4();
-    return {
-      id: newId,
-      resourceType: 'Library',
-      url: `urn:uuid:${newId}`,
-      version: '1.0', // TODO
-      name: k,
-      title: k,
-      status: LIBRARY_DRAFT,
-      experimental: true,
-      type: {
-        coding: [
+  const additionalLibraries: Library[] = Object.entries(includedCqlLibraries).map(
+    ([name, details]) => {
+      const newId = uuidv4();
+      return {
+        id: newId,
+        resourceType: 'Library',
+        url: `urn:uuid:${newId}`,
+        version: details.version,
+        name: name,
+        title: name,
+        status: LIBRARY_DRAFT,
+        experimental: true,
+        type: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/library-type',
+              code: 'logic-library',
+              display: 'Logic Library'
+            }
+          ]
+        },
+        publisher: 'Logged in user',
+        description: `CQL/ELM library for pathway: ${pathway.name} / sublibrary ${name}`,
+        content: [
           {
-            system: 'http://terminology.hl7.org/CodeSystem/library-type',
-            code: 'logic-library',
-            display: 'Logic Library'
+            id: name,
+            contentType: 'text/cql',
+            data: btoa(details.cql),
+            title: `CQL for library ${name}`
           }
         ]
-      },
-      publisher: 'Logged in user',
-      description: `CQL/ELM library for pathway: ${pathway.name} / sublibrary ${k}`,
-      content: [
-        {
-          id: k,
-          contentType: 'text/cql',
-          data: btoa(v),
-          title: `CQL for library ${k}`
-        }
-      ]
-    };
-  });
-
-  const includes = Object.entries(includedCqlLibraries)
-    .map(([k, v]) => `include "${k}" version '1.0' called ${k}\n\n`)
-    .join('');
-  const definesList = Object.entries(referencedDefines).map(
-    ([k, v]) => `define "${k}": ${v}.${k}\n\n`
+      };
+    }
   );
 
-  Object.entries(builderDefines).forEach(([k, v]) => definesList.push(`define "${k}": ${v}\n\n`));
+  const libraryCql = constructCqlLibrary(
+    libraryName,
+    includedCqlLibraries,
+    referencedDefines,
+    builderDefines
+  );
 
-  const defines = definesList.join('');
-
-  const libraryCql = `
-library ${libraryName} version '1.0'
-
-using FHIR version '4.0.0'
-
-${includes}
-
-context Patient
-
-${defines}
-`;
-
-  library.content.push({
+  mainLibrary.content.push({
     id: 'navigational-cql',
     contentType: 'text/cql',
     data: btoa(libraryCql),
@@ -258,7 +260,7 @@ ${defines}
   });
 
   if (pathway.elm) {
-    library.content.push(
+    mainLibrary.content.push(
       {
         id: 'navigational-elm',
         contentType: 'application/elm+json',
@@ -274,7 +276,41 @@ ${defines}
     );
   }
 
-  return [library, ...additionalLibraries];
+  return [mainLibrary, ...additionalLibraries];
+}
+
+function constructCqlLibrary(
+  libraryName: string,
+  includedCqlLibraries: IncludedCqlLibraries,
+  referencedDefines: Record<string, string>,
+  builderDefines: Record<string, string>
+): string {
+  const includes = Object.entries(includedCqlLibraries)
+    .map(([name, details]) => `include "${name}" version '${details.version}' called ${name}\n\n`)
+    .join('');
+  const definesList = Object.entries(referencedDefines).map(
+    ([name, srcLibrary]) => `define "${name}": ${srcLibrary}.${name}\n\n`
+  );
+
+  Object.entries(builderDefines).forEach(([statement, cql]) =>
+    definesList.push(`define "${statement}": ${cql}\n\n`)
+  );
+
+  const defines = definesList.join('');
+
+  const libraryCql = `
+library ${libraryName} version '1.0'
+
+using FHIR version '4.0.0'
+
+${includes}
+
+context Patient
+
+${defines}
+`;
+
+  return libraryCql;
 }
 
 export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
@@ -284,7 +320,7 @@ export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
     type: BUNDLE_TRANSACTION,
     entry: []
   };
-  const libraries = createLibrary(pathway, criteria);
+  const libraries = createLibraries(pathway, criteria);
   const library = libraries[0];
   const cpgStrategy = createPlanDefinition(
     uuidv4(),
