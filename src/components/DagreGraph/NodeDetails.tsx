@@ -44,9 +44,9 @@ const BranchNodeContents: FC = () => <Field title="Type" description="Observatio
 const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
   const styles = useStyles();
 
-  if (actionNode.action?.[0] == null) return null;
+  if (actionNode.action === null) return null;
 
-  const resource = actionNode.action[0].resource;
+  const resource = actionNode.action.resource;
   const coding = isMedicationRequest(resource)
     ? resource?.medicationCodeableConcept?.coding
     : resource?.code?.coding;
@@ -56,7 +56,7 @@ const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
 
   return (
     <>
-      <Field title="Description" description={actionNode.action[0].description} />
+      <Field title="Description" description={actionNode.action.description} />
       <Field key="Type" title="Type" description={resourceType} />
       <Field
         key="System"

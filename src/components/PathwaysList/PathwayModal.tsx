@@ -62,8 +62,9 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
           pathwayDescRef.current?.value !== editPathway.description)
       ) {
         const newEditPathway = produce(editPathway, (draftEditPathway: Pathway) => {
-          if (pathwayNameRef.current?.value) draftEditPathway.name = pathwayNameRef.current?.value;
-          draftEditPathway.description = pathwayDescRef.current?.value;
+          if (pathwayNameRef.current?.value) draftEditPathway.name = pathwayNameRef.current.value;
+          if (pathwayDescRef.current?.value)
+            draftEditPathway.description = pathwayDescRef.current.value;
         });
         updatePathway(newEditPathway);
       }

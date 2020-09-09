@@ -75,8 +75,7 @@
     "ChemotherapyTHWeekly": {
       "key": "ChemotherapyTHWeekly",
       "label": "Chemotherapy TH Weekly",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Chemotherapy TH Weekly",
@@ -93,8 +92,7 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -106,8 +104,7 @@
     "ChemotherapyTCHAC+TH": {
       "key": "ChemotherapyTCHAC+TH",
       "label": "Chemotherapy TCH AC + TH",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Chemotherapy TCH AC + TH",
@@ -124,8 +121,7 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -137,8 +133,7 @@
     "PostchemotherapyTrastuzumabRequest": {
       "key": "PostchemotherapyTrastuzumabRequest",
       "label": "Post-Chemotherapy Trastuzumab Request",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Post Chemotherapy Trastuzumab (1 year total duration recommended)",
@@ -155,8 +150,7 @@
               "text": "trastuzumab"
             }
           }
-        }
-      ],
+        },
       "transitions": [
         {
           "id": "1",
@@ -171,14 +165,6 @@
       "transitions": [
         {
           "id": "1",
-          "transition": "NoEndocrineTherapy",
-          "condition": {
-            "description": "ERNegative",
-            "cql": "[Observation: \"Estrogen receptor Ag [Presence] in Breast cancer specimen by Immune stain code\"] Neg where ToConcept(Neg.value as FHIR.CodeableConcept) ~ \"Negative (qualifier value)\" return Tuple{ resourceType: 'Observation', id: Neg.id.value , status: Neg.status.value} "
-          }
-        },
-        {
-          "id": "2",
           "transition": "EndocrineTherapy",
           "condition": {
             "description": "ERPositive",
@@ -187,16 +173,27 @@
         }
       ]
     },
-    "NoEndocrineTherapy": {
-      "key": "NoEndocrineTherapy",
-      "label": "No Endocrine Therapy",
-      "action": [],
-      "transitions": []
-    },
     "EndocrineTherapy": {
       "key": "EndocrineTherapy",
       "label": "Endocrine Therapy",
-      "action": [],
+      "action": {
+         "id": "1",
+         "type": "create",
+         "description": "Hormone Therapy",
+         "resource": {
+           "resourceType": "ServiceRequest",
+           "code": {
+             "coding": [
+               {
+                 "system": "http://snomed.info/sct",
+                 "code": "169413002",
+                 "display": "Hormone therapy (procedure)"
+               }
+             ],
+             "text": "Hormone therapy (procedure)"
+           }
+         }
+      },
       "transitions": []
     }
   },

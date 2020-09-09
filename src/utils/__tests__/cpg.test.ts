@@ -15,7 +15,7 @@ describe('convert pathway into cpg', () => {
 
   describe('convert action into activity definition', () => {
     it('converts service request correctly', () => {
-      const action = samplepathway.nodes['Surgery'].action[0];
+      const action = samplepathway.nodes['Surgery'].action;
       const result = createActivityDefinition(action);
       expect(result.description).toBe(action.description);
       expect(result.kind).toBe('ServiceRequest');
@@ -23,7 +23,7 @@ describe('convert pathway into cpg', () => {
     });
 
     it('converts medication request correctly', () => {
-      const action = samplepathway.nodes['ChemoMedication'].action[0];
+      const action = samplepathway.nodes['ChemoMedication'].action;
       const result = createActivityDefinition(action);
       expect(result.description).toBe(action.description);
       expect(result.kind).toBe('MedicationRequest');

@@ -67,8 +67,7 @@
     "Surgery": {
       "key": "Surgery",
       "label": "Surgery",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Issue Lumpectomy of breast procedure",
@@ -85,16 +84,14 @@
               "text": "Lumpectomy of breast (procedure)"
             }
           }
-        }
-      ],
+        },
       "transitions": [],
       "cql": "Surgery"
     },
     "Radiation": {
       "key": "Radiation",
       "label": "Radiation",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
@@ -111,16 +108,14 @@
               "text": "Teleradiotherapy procedure (procedure)"
             }
           }
-        }
-      ],
+        },
       "cql": "Teleradiotherapy",
       "transitions": []
     },
     "Chemo": {
       "key": "Chemo",
       "label": "Chemotherapy",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Begin Chemotherapy procedure",
@@ -137,16 +132,14 @@
               "text": "Chemotherapy (procedure)"
             }
           }
-        }
-      ],
+        },
       "cql": "Chemotherapy",
       "transitions": []
     },
     "ChemoMedication": {
       "key": "ChemoMedication",
       "label": "ChemoMedication Request",
-      "action": [
-        {
+      "action": {
           "id": "1",
           "type": "create",
           "description": "Request 10ML Doxorubicin Hydrochloride 2MG/ML Injection",
@@ -163,8 +156,7 @@
               "text": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
             }
           }
-        }
-      ],
+        },
       "cql": "Chemomedication",
       "transitions": [{ "id": "1", "transition": "Chemo" }]
     }

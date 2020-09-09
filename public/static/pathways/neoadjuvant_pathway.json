@@ -107,8 +107,7 @@
       "Surgery1": {
         "key": "Surgery1",
         "label": "Surgery",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Cancer Related Surgery Procedure",
@@ -125,8 +124,7 @@
                 "text": "Lumpectomy of breast (procedure)"
               }
             }
-          }
-        ],
+          },
         "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
         "transitions": [
           {
@@ -138,8 +136,7 @@
       "PaclitaxelTrastuzumab": {
         "key": "PaclitaxelTrastuzumab",
         "label": "Paclitaxel and Trastuzumab",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Paclitaxel request",
@@ -157,33 +154,13 @@
               }
             }
           },
-          {
-            "id": "2",
-            "type": "create",
-            "description": "Trastuzumab request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1922509",
-                    "display": "trastuzumab"
-                  }
-                ],
-                "text": "trastuzumab"
-              }
-            }
-          }
-        ],
         "cql": "[MedicationRequest: \"paclitaxel code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": []
       },
       "ChemotherapyTCHP": {
         "key": "ChemotherapyTCHP",
         "label": "Chemotherapy TCHP",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Doxorubicin Medication request",
@@ -201,61 +178,6 @@
               }
             }
           },
-          {
-            "id": "2",
-            "type": "create",
-            "description": "Docetaxel Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1860480",
-                    "display": "docetaxel"
-                  }
-                ],
-                "text": "docetaxel"
-              }
-            }
-          },
-          {
-            "id": "3",
-            "type": "create",
-            "description": "Carbolplatin Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "597195",
-                    "display": "Carboplatin"
-                  }
-                ],
-                "text": "Carboplatin"
-              }
-            }
-          },
-          {
-            "id": "4",
-            "type": "create",
-            "description": "Pertuzumab Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1298948",
-                    "display": "pertuzumab"
-                  }
-                ],
-                "text": "pertuzumab"
-              }
-            }
-          }
-        ],
         "cql": "[MedicationRequest: \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"10 ML Doxorubicin Hydrochloride 2 MG/ML Injection\"return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value, status: MR.status.value }",
         "transitions": [
           {
@@ -267,8 +189,7 @@
       "ChemotherapyACTHP": {
         "key": "ChemotherapyACTHP",
         "label": "Chemotherapy ACTHP",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Cyclophosphamide Medication request",
@@ -286,79 +207,6 @@
               }
             }
           },
-          {
-            "id": "2",
-            "type": "create",
-            "description": "Doxorubicin Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1790100",
-                    "display": "Doxorubicin"
-                  }
-                ],
-                "text": "Doxorubicin"
-              }
-            }
-          },
-          {
-            "id": "3",
-            "type": "create",
-            "description": "Pertuzumab Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1298948",
-                    "display": "pertuzumab"
-                  }
-                ],
-                "text": "pertuzumab"
-              }
-            }
-          },
-          {
-            "id": "4",
-            "type": "create",
-            "description": "Trastuzumab Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1922509",
-                    "display": "trastuzumab"
-                  }
-                ],
-                "text": "trastuzumab"
-              }
-            }
-          },
-          {
-            "id": "5",
-            "type": "create",
-            "description": "Paclitaxel Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "583214",
-                    "display": "PACLitaxel"
-                  }
-                ],
-                "text": "PACLitaxel"
-              }
-            }
-          }
-        ],
         "cql": "[MedicationRequest: \"Cyclophosphamide 1000 MG Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"Cyclophosphamide 1000 MG Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": [
           {
@@ -370,8 +218,7 @@
       "ChemotherapyddACTHP": {
         "key": "ChemotherapyddACTHP",
         "label": "Chemotherapy ddACTHP",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Pertuzumab Medication request",
@@ -389,79 +236,6 @@
               }
             }
           },
-          {
-            "id": "2",
-            "type": "create",
-            "description": "Doxorubicin Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1790100",
-                    "display": "Doxorubicin"
-                  }
-                ],
-                "text": "Doxorubicin"
-              }
-            }
-          },
-          {
-            "id": "3",
-            "type": "create",
-            "description": "Cyclophosphamide Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1734919",
-                    "display": "Cyclophosphamide"
-                  }
-                ],
-                "text": "Cyclophosphamide"
-              }
-            }
-          },
-          {
-            "id": "4",
-            "type": "create",
-            "description": "Trastuzumab Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1922509",
-                    "display": "trastuzumab"
-                  }
-                ],
-                "text": "trastuzumab"
-              }
-            }
-          },
-          {
-            "id": "5",
-            "type": "create",
-            "description": "Paclitaxel Medication request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "583214",
-                    "display": "PACLitaxel"
-                  }
-                ],
-                "text": "PACLitaxel"
-              }
-            }
-          }
-        ],
         "cql": "[MedicationRequest: \"14 ML pertuzumab 30 MG/ML Injection code\"] MR where ToConcept(MR.medication as FHIR.CodeableConcept) ~ \"14 ML pertuzumab 30 MG/ML Injection\" return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": [
           {
@@ -473,8 +247,7 @@
       "Surgery2": {
         "key": "Surgery2",
         "label": "Surgery",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Cancer Related Surgery Procedure",
@@ -491,8 +264,7 @@
                 "text": "Lumpectomy of breast (procedure)"
               }
             }
-          }
-        ],
+          },
         "cql": "if exists [Procedure: \"Lumpectomy of breast (procedure) code\"] then [Procedure: \"Lumpectomy of breast (procedure) code\"] Lumpectomy return Tuple{ resourceType: 'Procedure', id: Lumpectomy.id.value, status: Lumpectomy.status.value } else [ServiceRequest: \"Lumpectomy of breast (procedure) code\"] Request return Tuple{ resourceType: 'ServiceRequest', id: Request.id.value, status: Request.status.value }",
         "transitions": [
           {
@@ -526,8 +298,7 @@
       "AdotrastuzumabEmtansine": {
         "key": "AdotrastuzumabEmtansine",
         "label": "Ado-trastuzumab Emtansine",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Ado-trastuzumab Emtansine Request",
@@ -544,8 +315,7 @@
                 "text": "ado-trastuzumab emtansine"
               }
             }
-          }
-        ],
+          },
         "cql": "[MedicationRequest: \"adotrastuzumab emtansine code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": []
       },
@@ -574,8 +344,7 @@
       "Trastuzumab": {
         "key": "Trastuzumab",
         "label": "Trastuzumab",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Trastuzumab request",
@@ -592,16 +361,14 @@
                 "text": "trastuzumab"
               }
             }
-          }
-        ],
+          },
         "cql": "[MedicationRequest: \"trastuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": []
       },
       "PertuzumabTrastuzumab": {
         "key": "PertuzumabTrastuzumab",
         "label": "Pertuzumab and Trastuzumab",
-        "action": [
-          {
+        "action": {
             "id": "1",
             "type": "create",
             "description": "Pertuzumab request",
@@ -619,25 +386,6 @@
               }
             }
           },
-          {
-            "id": "2",
-            "type": "create",
-            "description": "Trastuzumab request",
-            "resource": {
-              "resourceType": "MedicationRequest",
-              "medicationCodeableConcept": {
-                "coding": [
-                  {
-                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                    "code": "1922509",
-                    "display": "trastuzumab"
-                  }
-                ],
-                "text": "trastuzumab"
-              }
-            }
-          }
-        ],
         "cql": "[MedicationRequest: \"pertuzumab code\"] MR return Tuple{ resourceType: 'MedicationRequest', id: MR.id.value , status: MR.status.value} ",
         "transitions": []
       }

@@ -35,7 +35,7 @@ const Sidebar: FC = () => {
 
   const changeNodeType = useCallback(
     (nodeType: string): void => {
-      if (currentNodeRef.current?.key && pathwayRef.current)
+      if (currentNodeRef.current && pathwayRef.current)
         updatePathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
     [pathwayRef, updatePathway, currentNodeRef]
@@ -49,13 +49,13 @@ const Sidebar: FC = () => {
   );
 
   const addPathwayNode = useCallback((): void => {
-    if (!currentNodeRef.current?.key || !pathwayRef.current) return;
+    if (!currentNodeRef.current || !pathwayRef.current) return;
 
     const newNode = createNode();
     let newPathway = addNode(pathwayRef.current, newNode);
-    newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key as string);
+    newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
     updatePathway(newPathway);
-    if (!isBranchNode(currentNodeRef.current) && newNode.key)
+    if (!isBranchNode(currentNodeRef.current))
       redirect(pathwayRef.current.id, newNode.key, history);
   }, [pathwayRef, updatePathway, currentNodeRef, history]);
 
@@ -88,9 +88,7 @@ const Sidebar: FC = () => {
     );
   } else {
     const nodeType = getNodeType(currentNode);
-    const displayTransitions =
-      currentNode.key !== undefined &&
-      (currentNode.key !== 'Start' || currentNode.transitions.length === 0);
+    const displayTransitions = currentNode.key !== 'Start' || currentNode.transitions.length === 0;
 
     return (
       <>
