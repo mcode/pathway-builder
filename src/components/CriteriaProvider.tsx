@@ -21,7 +21,7 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
-  addBuilderCriteria: (criteria: BuilderModel) => Criteria[];
+  addBuilderCriteria: (criteria: BuilderModel, label: string) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -41,16 +41,20 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-function builderModelToCriteria(criteria: BuilderModel): Criteria {
+function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria {
   return {
     id: shortid.generate(),
-    label: `${criteria.type}${Date.now()}`,
+    label,
     modified: Date.now(),
     builder: criteria,
-    statement: criteria.cql
+    statement: label
   };
 }
-function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
+function elmLibraryToCriteria(
+  elm: ElmLibrary,
+  cql: string | undefined = undefined,
+  custom = false
+): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
@@ -74,6 +78,7 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
       version: elm.library.identifier.version,
       modified: Date.now(),
       elm: elm,
+      cql: cql,
       statement: statement.name
     };
   });
@@ -89,16 +94,14 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
 }
 
 function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
-  return convertBasicCQL(rawCql)
-    .then(elm => {
-      if (!elm.library?.identifier) {
-        // we're async right now so don't show an error here
-        // just return empty
-        return [];
-      }
-      return elmLibraryToCriteria(elm)
-    });
-  ;
+  return convertBasicCQL(rawCql).then(elm => {
+    if (!elm.library?.identifier) {
+      // we're async right now so don't show an error here
+      // just return empty
+      return [];
+    }
+    return elmLibraryToCriteria(elm, rawCql);
+  });
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -128,16 +131,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
           const newCriteria = jsonToCriteria(rawContent);
           if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
         } else if (file.name.endsWith('.cql')) {
-          cqlToCriteria(rawContent)
-            .then(newCriteria => {
-              if (newCriteria.length > 0) {
-                setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-              } else {
-                // TODO error-y stuff
-              }
-            });
+          cqlToCriteria(rawContent).then(newCriteria => {
+            if (newCriteria.length > 0) {
+              setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+            } else {
+              // TODO error-y stuff
+            }
+          });
         }
-        
       } else alert('Unable to read that file');
     };
     reader.readAsText(file);
@@ -148,14 +149,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, []);
 
   const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, true);
+    const newCriteria = elmLibraryToCriteria(elm, undefined, true);
     setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
 
     return newCriteria;
   }, []);
 
-  const addBuilderCriteria = useCallback((criteria: BuilderModel): Criteria[] => {
-    const newCriteria = builderModelToCriteria(criteria);
+  const addBuilderCriteria = useCallback((criteria: BuilderModel, label: string): Criteria[] => {
+    const newCriteria = builderModelToCriteria(criteria, label);
     setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
 
     return [newCriteria];

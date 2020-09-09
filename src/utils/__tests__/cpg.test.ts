@@ -3,7 +3,7 @@ import { toCPG, createActivityDefinition, createPlanDefinition } from 'utils/cpg
 
 describe('convert pathway into cpg', () => {
   it('correctly converts sample pathway into cpg', () => {
-    const cpgPathway = toCPG(samplepathway);
+    const cpgPathway = toCPG(samplepathway, []);
     expect(cpgPathway.type).toBe('transaction');
     expect(cpgPathway.entry.length).toBe(12);
     cpgPathway.entry.forEach(entry => {
