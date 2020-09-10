@@ -18,7 +18,8 @@ import {
   findSubPathway,
   findParent,
   findAllTransistions,
-  deepCopyPathway
+  deepCopyPathway,
+  findAllChildActionNodes
 } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
 import { PlanDefinition_RelatedActionRelationshipKind } from '@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_PlanDefinition_RelatedAction'; // eslint-disable-line
@@ -367,7 +368,6 @@ export class CPGExporter {
     const parent = this.pathway.nodes[parentKey];
 
     if (isActionNode(node)) {
-      // TODO: figure out how to make this only once
       const activityDefinition = this.createActivityDefinition(node.action);
       const description = `Action for ${node.label}`;
       const activityDefinitionId = activityDefinition
@@ -387,16 +387,11 @@ export class CPGExporter {
       if (parentAction.key !== 'Start')
         addRelatedAction(cpgAction, parentAction.key, PARENT_RELATIONSHIP);
 
-      // Traverse down to find the closest action and add as a related action
-      // TODO: support multiple child transitions from action nodes
-      let childActionKey = node.transitions.map(t => t.transition);
-      while (childActionKey.length && isBranchNode(this.pathway.nodes[childActionKey[0]])) {
-        const childAction = this.pathway.nodes[childActionKey[0]];
-        const tempChildKey = childAction.transitions.map(t => t.transition);
-        if (tempChildKey.length) childActionKey = tempChildKey;
-        else break;
-      }
-      if (childActionKey.length) addRelatedAction(cpgAction, childActionKey[0], CHILD_RELATIONSHIP);
+      // Add a related action for each action child
+      const childActionNodeKeys = findAllChildActionNodes(this.pathway.nodes, key);
+      childActionNodeKeys.forEach(childKey =>
+        addRelatedAction(cpgAction, childKey, CHILD_RELATIONSHIP)
+      );
 
       this.addActionToPlanDefinition(cpgAction, cpgRecommendation, parent.key);
 

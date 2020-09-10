@@ -59,6 +59,19 @@ export function findAllTransistions(nodes: NodeObj, key: string): Transition[] {
   return transitions;
 }
 
+export function findAllChildActionNodes(nodes: NodeObj, key: string): string[] {
+  const childActionNodes: string[] = [];
+
+  const childKeys = nodes[key].transitions.map(t => t.transition);
+  childKeys.forEach(childKey => {
+    const child = nodes[childKey];
+    if (isActionNode(child)) childActionNodes.push(childKey);
+    else childActionNodes.push(...findAllChildActionNodes(nodes, childKey));
+  });
+
+  return childActionNodes;
+}
+
 export function deepCopyPathway(pathway: Pathway): Pathway {
   return JSON.parse(JSON.stringify(pathway)) as Pathway;
 }
