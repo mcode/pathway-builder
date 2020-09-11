@@ -51,7 +51,14 @@ function builderModelToCriteria(criteria: BuilderModel): Criteria {
 }
 function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
-  const elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
+  let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
+  const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
+  if (includesTypes) {
+    // if we have types, filter down to just booleans
+    elmStatements = elmStatements.filter(
+      s => s.resultTypeName === '{urn:hl7-org:elm-types:r1}Boolean'
+    );
+  }
   if (!elmStatements) {
     alert('No elm statement found in that file');
     return [];
