@@ -18,8 +18,6 @@ const ACTIVITYDEFINITION_DRAFT = R4.ActivityDefinitionStatusKind._draft;
 const BUNDLE_TRANSACTION = R4.BundleTypeKind._transaction;
 const BUNDLE_PUT = R4.Bundle_RequestMethodKind._put;
 const CONDITION_APPLICABILITY = R4.PlanDefinition_ConditionKindKind._applicability; // eslint-disable-line
-
-// TODO: this one needs to be `text/cql.name` to make cqf-ruler work
 const EXPRESSION_CQL = R4.ExpressionLanguageKind._textCql;
 
 export function createActivityDefinition(action: Action): ActivityDefinition {
@@ -366,7 +364,8 @@ export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
             expression: {
               // TODO: this would be cleaner if it was "text/cql.name" instead of "text/cql"
               // however the typescript type doesn't allow that.
-              // if we change it to cql.name, change expression below to just be criteriaSource.statement
+              // if we do eventually change it to cql.name,
+              // change expression below to just be criteriaSource.statement
               language: EXPRESSION_CQL,
               expression: `${library.name}.${criteriaSource?.statement}`
             }

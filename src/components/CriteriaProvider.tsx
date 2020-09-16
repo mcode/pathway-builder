@@ -95,7 +95,10 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
 
 function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
   return convertBasicCQL(rawCql).then(elm => {
-    if (!elm.library?.identifier) {
+    // the cql-to-elm webservice always responds with ELM
+    // even if the CQL was complete garbage
+    // TODO: consider showing the error messages from the annotations?
+    if (!elm.library?.identifier?.id) {
       // we're async right now so don't show an error here
       // just return empty
       return [];
@@ -135,7 +138,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             if (newCriteria.length > 0) {
               setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
             } else {
-              // TODO error-y stuff
+              alert('No valid criteria were found in the provided file');
             }
           });
         }
