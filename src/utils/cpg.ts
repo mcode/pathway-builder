@@ -309,10 +309,12 @@ function constructCqlLibrary(
 
   const defines = definesList.join('');
 
+  // NOTE: this library should use the same FHIR version as all referenced libraries
+  // and if we want to run it in cqf-ruler, as of today that needs to be FHIR 4.0.1 (NOT 4.0.0)
   const libraryCql = `
 library ${libraryName} version '1.0'
 
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 
 ${includes}
 
@@ -362,8 +364,11 @@ export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
           const condition = {
             kind: CONDITION_APPLICABILITY,
             expression: {
+              // TODO: this would be cleaner if it was "text/cql.name" instead of "text/cql"
+              // however the typescript type doesn't allow that.
+              // if we change it to cql.name, change expression below to just be criteriaSource.statement
               language: EXPRESSION_CQL,
-              expression: criteriaSource?.statement // should never be null
+              expression: `${library.name}.${criteriaSource?.statement}`
             }
           };
           cpgStrategyAction.condition = cpgStrategyAction.condition || [];
