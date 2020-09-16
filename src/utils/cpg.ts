@@ -204,7 +204,7 @@ function createLibraries(pathway: Pathway, criteria: Criteria[]): Library[] {
     for (const transition of node.transitions) {
       if (transition.condition?.criteriaSource) {
         const criteriaSource = criteria.find(c => c.id === transition.condition?.criteriaSource);
-        if (criteriaSource && criteriaSource.elm && criteriaSource.cql) {
+        if (criteriaSource?.elm && criteriaSource?.cql) {
           const libraryIdentifier = criteriaSource.elm.library.identifier;
           includedCqlLibraries[libraryIdentifier.id] = {
             cql: criteriaSource.cql,
@@ -212,7 +212,7 @@ function createLibraries(pathway: Pathway, criteria: Criteria[]): Library[] {
           };
 
           referencedDefines[transition.condition.cql] = libraryIdentifier.id;
-        } else if (criteriaSource && criteriaSource.builder) {
+        } else if (criteriaSource?.builder) {
           builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
         }
       }
