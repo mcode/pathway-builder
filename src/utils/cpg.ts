@@ -46,8 +46,7 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     date: new Date().toISOString(),
     publisher: 'Logged in user',
     description: action.description,
-    kind: kind,
-    productCodeableConcept: { coding: [] } // intentionally empty object, see below
+    kind: kind
   };
 
   switch (kind) {
@@ -56,7 +55,6 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
       break;
     case 'ServiceRequest':
     case 'CarePlan':
-      delete activityDefinition.productCodeableConcept; // not allowed on these in cqf-ruler
       activityDefinition.code = action.resource.code;
       break;
     default:

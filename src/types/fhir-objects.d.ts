@@ -29,7 +29,6 @@ declare module 'fhir-objects' {
   export type ActivityDefinition = R4.IActivityDefinition & {
     id: string;
     url: string;
-    productCodeableConcept: CodeableConcept;
   };
   export type Library = R4.ILibrary & { id: string; content: R4.IAttachment[] };
 }
