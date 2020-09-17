@@ -1,6 +1,7 @@
-import { PathwayNode, ActionNode, Pathway, Transition, NodeObj } from 'pathways-model';
+import { PathwayNode, ActionNode, Pathway, Transition, NodeObj, Action } from 'pathways-model';
 import { History } from 'history';
 import shortid from 'shortid';
+import { CodeableConcept } from 'fhir-objects';
 
 export function isActionNode(node: PathwayNode): node is ActionNode {
   const { action } = node as ActionNode;
@@ -47,7 +48,7 @@ export function findParents(nodes: NodeObj, childNodeKey: string): string[] {
   return parents;
 }
 
-export function findAllTransistions(nodes: NodeObj, key: string): Transition[] {
+export function findAllTransitions(nodes: NodeObj, key: string): Transition[] {
   const transitions: Transition[] = [];
   const parents = findParents(nodes, key);
   parents.forEach(parentKey => {
@@ -199,4 +200,33 @@ export const getConnectableNodes = (
 
 export const getTransition = (parent: PathwayNode, childKey: string): Transition | undefined => {
   return parent.transitions.find(transition => transition.transition === childKey);
+};
+
+export const getCodeableConceptFromAction = (action: Action): CodeableConcept => {
+  let codeableConcept;
+  switch (action.resource.resourceType) {
+    case 'MedicationRequest':
+      codeableConcept = action.resource.medicationCodeableConcept;
+      break;
+    case 'ServiceRequest':
+      codeableConcept = action.resource.code;
+      break;
+    case 'CarePlan':
+      // For now mock the CarePlan as a codeableconcept
+      codeableConcept = {
+        coding: [
+          {
+            system: 'FakeCarePlanSystem',
+            code: action.resource.title,
+            display: 'Fake CodeableConcept for CarePlan'
+          }
+        ],
+        text: 'Fake CodeableConcept for CarePlan'
+      };
+      break;
+    default:
+      // do nothing
+      break;
+  }
+  return codeableConcept;
 };

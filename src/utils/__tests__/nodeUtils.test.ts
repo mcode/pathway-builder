@@ -8,7 +8,7 @@ import {
   isBranchNode,
   isActionNode,
   findSubPathway,
-  findAllTransistions,
+  findAllTransitions,
   findAllChildActionNodes
 } from 'utils/nodeUtils';
 
@@ -76,7 +76,7 @@ describe('node util methods', () => {
   });
 
   it('finds all transitions to node', () => {
-    const allTransitions = findAllTransistions(samplepathway.nodes, 'ChemoMedication');
+    const allTransitions = findAllTransitions(samplepathway.nodes, 'ChemoMedication');
     expect(allTransitions.length).toBe(2);
   });
 

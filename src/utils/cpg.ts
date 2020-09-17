@@ -17,9 +17,10 @@ import {
   getTransition,
   findSubPathway,
   findParent,
-  findAllTransistions,
+  findAllTransitions,
   deepCopyPathway,
-  findAllChildActionNodes
+  findAllChildActionNodes,
+  getCodeableConceptFromAction
 } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
 import { PlanDefinition_RelatedActionRelationshipKind } from '@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_PlanDefinition_RelatedAction'; // eslint-disable-line
@@ -35,9 +36,9 @@ const CHILD_RELATIONSHIP = PlanDefinition_RelatedActionRelationshipKind._beforeS
 const PARENT_RELATIONSHIP = PlanDefinition_RelatedActionRelationshipKind._afterEnd; // eslint-disable-line
 
 interface ActivityDefinitionMap {
-  // Code System
+  // Code System or FakeCarePlanSystem
   [key: string]: {
-    // Code
+    // Code or CarePlan title
     [key: string]: string; // Resource ID
   };
 }
@@ -135,14 +136,9 @@ export class CPGExporter {
 
   createActivityDefinition(action: Action): ActivityDefinition | null {
     const activityId = uuidv4();
-    const kind =
-      action.resource.resourceType === 'Procedure'
-        ? 'ServiceRequest'
-        : action.resource.resourceType;
-    const codeableConcept =
-      action.resource.resourceType === 'MedicationRequest'
-        ? action.resource.medicationCodeableConcept
-        : action.resource.code;
+    const kind = action.resource.resourceType;
+
+    const codeableConcept = getCodeableConceptFromAction(action);
     const coding = codeableConcept.coding[0];
 
     // Do not create a new resource if it already exists
@@ -173,9 +169,21 @@ export class CPGExporter {
       date: new Date().toISOString(),
       publisher: 'Logged in user',
       description: action.description,
-      kind: kind,
-      productCodeableConcept: codeableConcept
+      kind: kind
     };
+
+    switch (kind) {
+      case 'MedicationRequest':
+        activityDefinition.productCodeableConcept = codeableConcept;
+        break;
+      case 'ServiceRequest':
+      case 'CarePlan':
+        activityDefinition.code = codeableConcept;
+        break;
+      default:
+        // do nothing
+        break;
+    }
 
     this.setActivityDefinitionId(coding, activityId);
 
@@ -407,10 +415,10 @@ export class CPGExporter {
         this.addActionToPlanDefinition(cpgAction, cpgRecommendation, parent.key);
       }
     } else if (node.key !== 'Start') {
-      alert('Encountered node which is neither action nor branch');
-      console.error(
-        `Node ${node.label} is neither action nor start:\n${JSON.stringify(node, undefined, 2)}`
-      );
+      const msg = `Error Exporting at Node ${node.label}\n${node.label} Node does not have a node type. Please edit the node to have a node type and add applicable details and try again.`; // eslint-disable-line
+      alert(msg);
+      console.error(`${msg}\n${JSON.stringify(node, undefined, 2)}`);
+      throw msg; // Prevent the export from continuing
     }
   }
 
@@ -436,11 +444,8 @@ export class CPGExporter {
   }
 
   private getActivityDefinitionId(action: Action): string {
-    const coding =
-      action.resource.resourceType === 'MedicationRequest'
-        ? action.resource.medicationCodeableConcept.coding[0]
-        : action.resource.code.coding[0];
-
+    const codeableConcept = getCodeableConceptFromAction(action);
+    const coding = codeableConcept.coding[0];
     return this.activityDefinitions[coding.system][coding.code];
   }
 
@@ -464,7 +469,7 @@ export class CPGExporter {
 }
 
 function formatUrl(id: string): string {
-  return `http://pathway.com/${id}`;
+  return `http://example.com/${id}`;
 }
 
 function addRelatedAction(
@@ -562,7 +567,7 @@ function createAction(id: string, description: string, definition?: string): Pla
 export function cleanPathway(nodes: NodeObj): NodeObj {
   const newNodes = nodes;
   Object.keys(nodes).forEach(key => {
-    const allTransitions = findAllTransistions(nodes, key);
+    const allTransitions = findAllTransitions(nodes, key);
 
     // Remove multiple transitions to node by copying subpathway
     if (allTransitions.length > 1) {
