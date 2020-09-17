@@ -109,17 +109,15 @@ function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const service = useGetService<Criteria>(config.get('demoCriteria'));
-  const payload = (service as ServiceLoaded<Criteria[]>).payload;
+  const service = useGetService<string>(config.get('demoCriteria'), true);
+  const payload = (service as ServiceLoaded<string[]>).payload;
 
   useEffect(() => {
     if (payload) {
-      const newCriteria: Criteria[] = [];
-      payload.forEach(jsonCriterion => {
-        const criterion = jsonToCriteria(JSON.stringify(jsonCriterion));
-        if (criterion) newCriteria.push(...criterion);
-      });
-      setCriteria(newCriteria);
+      const listOfPromises = payload.map(rawCql => cqlToCriteria(rawCql));
+      Promise.all(listOfPromises)
+        .then(listOfLists => listOfLists.flat())
+        .then(newCriteria => setCriteria(newCriteria));
     }
   }, [payload]);
 

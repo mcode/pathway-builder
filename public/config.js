@@ -4,5 +4,5 @@ CONFIG = {
   pathwaysService: 'http://pathways.mitre.org:3002/pathways/',
   demoPathwaysService: './static/pathways/',
   demoPatients: './static/demoData/',
-  demoCriteria: './static/criteria/'
+  demoCriteria: './static/cql/'
 };
