@@ -7,6 +7,7 @@ import {
   BundleEntry,
   Library
 } from 'fhir-objects';
+import { Criteria } from 'criteria-model';
 import { v4 as uuidv4 } from 'uuid';
 import { isActionNode, findParents, isBranchNode } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
@@ -45,17 +46,31 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
     date: new Date().toISOString(),
     publisher: 'Logged in user',
     description: action.description,
-    kind: kind,
-    productCodeableConcept:
-      action.resource.resourceType === 'MedicationRequest'
-        ? action.resource.medicationCodeableConcept
-        : action.resource.code
+    kind: kind
   };
+
+  switch (kind) {
+    case 'MedicationRequest':
+      activityDefinition.productCodeableConcept = action.resource.medicationCodeableConcept;
+      break;
+    case 'ServiceRequest':
+    case 'CarePlan':
+      activityDefinition.code = action.resource.code;
+      break;
+    default:
+      // do nothing
+      break;
+  }
 
   return activityDefinition;
 }
 
-function createAction(id: string, description: string, definition: string): PlanDefinitionAction {
+function createAction(
+  id: string,
+  description: string,
+  definition: string,
+  resourceType: string
+): PlanDefinitionAction {
   const cpgAction: PlanDefinitionAction = {
     id: id,
     title: `Action: ${id}`,
@@ -71,7 +86,7 @@ function createAction(id: string, description: string, definition: string): Plan
         ]
       }
     ],
-    definitionCanonical: `http://pathway.com/${definition}`
+    definitionCanonical: `http://example.com/${resourceType}/${definition}`
   };
   return cpgAction;
 }
@@ -124,7 +139,7 @@ export function createPlanDefinition(
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
-    fullUrl: `http://pathway.com/${resource.id}`,
+    fullUrl: `http://example.com/${resource.resourceType}/${resource.id}`,
     resource: resource,
     request: {
       method: BUNDLE_PUT,
@@ -133,10 +148,19 @@ function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Libra
   };
 }
 
-function createLibrary(pathway: Pathway): Library {
-  const libraryId = uuidv4();
+// interface purely for intermediate working objects
+interface IncludedCqlLibraries {
+  [id: string]: {
+    cql: string;
+    version: string;
+  };
+}
 
-  const library: Library = {
+function createLibraries(pathway: Pathway, criteria: Criteria[]): Library[] {
+  const libraryId = uuidv4();
+  const libraryName = `LIB${libraryId.substring(0, 7)}`;
+
+  const mainLibrary: Library = {
     id: libraryId,
     resourceType: 'Library',
     meta: {
@@ -150,7 +174,7 @@ function createLibrary(pathway: Pathway): Library {
     ],
     url: `urn:uuid:${libraryId}`,
     version: '1.0',
-    name: `LIB${libraryId.substring(0, 7)}`,
+    name: libraryName,
     title: `Library for ${pathway.name}`,
     status: LIBRARY_DRAFT,
     experimental: true,
@@ -164,14 +188,93 @@ function createLibrary(pathway: Pathway): Library {
       ]
     },
     publisher: 'Logged in user',
-    description: `ELM library for pathway: ${pathway.name}`,
+    description: `CQL/ELM library for pathway: ${pathway.name}`,
     content: []
   };
 
+  const includedCqlLibraries: IncludedCqlLibraries = {};
+  const referencedDefines: Record<string, string> = {};
+
+  const builderDefines: Record<string, string> = {};
+
+  // iterate through the nodes and find all criteria that are actually used.
+  // for each one, add the criteria CQL to our appropriate map
+  //  - if it's an included library, keep track of the library name and version
+  //    as well as the specific definition we're referencing
+  //  - if it was constructed in the builder, track the name and raw CQL
+  for (const nodeId in pathway.nodes) {
+    const node = pathway.nodes[nodeId];
+    for (const transition of node.transitions) {
+      if (transition.condition?.criteriaSource) {
+        const criteriaSource = criteria.find(c => c.id === transition.condition?.criteriaSource);
+        if (criteriaSource?.elm && criteriaSource?.cql) {
+          const libraryIdentifier = criteriaSource.elm.library.identifier;
+          includedCqlLibraries[libraryIdentifier.id] = {
+            cql: criteriaSource.cql,
+            version: libraryIdentifier.version
+          };
+
+          referencedDefines[transition.condition.cql] = libraryIdentifier.id;
+        } else if (criteriaSource?.builder) {
+          builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
+        }
+      }
+    }
+  }
+
+  const additionalLibraries: Library[] = Object.entries(includedCqlLibraries).map(
+    ([name, details]) => {
+      const newId = uuidv4();
+      return {
+        id: newId,
+        resourceType: 'Library',
+        url: `urn:uuid:${newId}`,
+        version: details.version,
+        name: name,
+        title: name,
+        status: LIBRARY_DRAFT,
+        experimental: true,
+        type: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/library-type',
+              code: 'logic-library',
+              display: 'Logic Library'
+            }
+          ]
+        },
+        publisher: 'Logged in user',
+        description: `CQL/ELM library for pathway: ${pathway.name} / sublibrary ${name}`,
+        content: [
+          {
+            id: name,
+            contentType: 'text/cql',
+            data: btoa(details.cql),
+            title: `CQL for library ${name}`
+          }
+        ]
+      };
+    }
+  );
+
+  const libraryCql = constructCqlLibrary(
+    libraryName,
+    includedCqlLibraries,
+    referencedDefines,
+    builderDefines
+  );
+
+  mainLibrary.content.push({
+    id: 'navigational-cql',
+    contentType: 'text/cql',
+    data: btoa(libraryCql),
+    title: 'CQL for navigating the pathway'
+  });
+
   if (pathway.elm) {
-    library.content.push(
+    mainLibrary.content.push(
       {
-        id: 'navigational',
+        id: 'navigational-elm',
         contentType: 'application/elm+json',
         data: btoa(JSON.stringify(pathway.elm.navigational)),
         title: 'ELM for navigating the pathway'
@@ -185,17 +288,54 @@ function createLibrary(pathway: Pathway): Library {
     );
   }
 
-  return library;
+  return [mainLibrary, ...additionalLibraries];
 }
 
-export function toCPG(pathway: Pathway): Bundle {
+function constructCqlLibrary(
+  libraryName: string,
+  includedCqlLibraries: IncludedCqlLibraries,
+  referencedDefines: Record<string, string>,
+  builderDefines: Record<string, string>
+): string {
+  const includes = Object.entries(includedCqlLibraries)
+    .map(([name, details]) => `include "${name}" version '${details.version}' called ${name}\n\n`)
+    .join('');
+  const definesList = Object.entries(referencedDefines).map(
+    ([name, srcLibrary]) => `define "${name}": ${srcLibrary}.${name}\n\n`
+  );
+
+  Object.entries(builderDefines).forEach(([statement, cql]) =>
+    definesList.push(`define "${statement}": ${cql}\n\n`)
+  );
+
+  const defines = definesList.join('');
+
+  // NOTE: this library should use the same FHIR version as all referenced libraries
+  // and if we want to run it in cqf-ruler, as of today that needs to be FHIR 4.0.1 (NOT 4.0.0)
+  const libraryCql = `
+library ${libraryName} version '1.0'
+
+using FHIR version '4.0.1'
+
+${includes}
+
+context Patient
+
+${defines}
+`;
+
+  return libraryCql;
+}
+
+export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
   const bundle: Bundle = {
     id: pathway.id,
     resourceType: 'Bundle',
     type: BUNDLE_TRANSACTION,
     entry: []
   };
-  const library = createLibrary(pathway);
+  const libraries = createLibraries(pathway, criteria);
+  const library = libraries[0];
   const cpgStrategy = createPlanDefinition(
     uuidv4(),
     pathway.name,
@@ -214,18 +354,28 @@ export function toCPG(pathway: Pathway): Bundle {
         description,
         'recommendation'
       );
-      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.id);
+      const cpgStrategyAction = createAction(
+        node.key,
+        node.label,
+        cpgRecommendation.id,
+        'PlanDefinition'
+      );
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
         const transition = parent.transitions.find(
           transition => transition.transition === node.key
         );
         if (isBranchNode(parent) && transition?.condition) {
+          const criteriaSource = criteria.find(c => c.id === transition?.condition?.criteriaSource);
           const condition = {
             kind: CONDITION_APPLICABILITY,
             expression: {
+              // TODO: this would be cleaner if it was "text/cql.name" instead of "text/cql"
+              // however the typescript type doesn't allow that.
+              // if we do eventually change it to cql.name,
+              // change expression below to just be criteriaSource.statement
               language: EXPRESSION_CQL,
-              expression: transition.condition.cql
+              expression: `${library.name}.${criteriaSource?.statement}`
             }
           };
           cpgStrategyAction.condition = cpgStrategyAction.condition || [];
@@ -237,7 +387,8 @@ export function toCPG(pathway: Pathway): Bundle {
       const cpgRecommendationAction = createAction(
         action.id,
         action.description,
-        cpgActivityDefinition.id
+        cpgActivityDefinition.id,
+        'ActivityDefinition'
       );
       cpgRecommendation.action.push(cpgRecommendationAction);
       bundle.entry.push(createBundleEntry(cpgActivityDefinition));
@@ -245,7 +396,7 @@ export function toCPG(pathway: Pathway): Bundle {
       bundle.entry.push(createBundleEntry(cpgRecommendation));
     }
   });
-  bundle.entry.push(createBundleEntry(library));
+  libraries.forEach(l => bundle.entry.push(createBundleEntry(l)));
   bundle.entry.push(createBundleEntry(cpgStrategy));
 
   return bundle;

@@ -9,11 +9,13 @@ function getObject(url: string): Promise<Response> {
   });
 }
 
-function typedFetch<T>(url: string, options?: object): Promise<T> {
-  return fetch(url, options).then(response => response.json() as Promise<T>);
+function typedFetch<T>(url: string, raw: boolean, options?: object): Promise<T> {
+  return fetch(url, options).then(
+    response => (raw ? response.text() : response.json()) as Promise<T>
+  );
 }
 
-function useGetService<T>(url: string): Service<Array<T>> {
+function useGetService<T>(url: string, raw = false): Service<Array<T>> {
   const [result, setResult] = useState<Service<Array<T>>>({
     status: 'loading'
   });
@@ -21,11 +23,11 @@ function useGetService<T>(url: string): Service<Array<T>> {
   useEffect(() => {
     getObject(url)
       .then(response => response.json() as Promise<string[]>)
-      .then(listOfFiles => listOfFiles.map(f => typedFetch<T>(url + '/' + f)))
+      .then(listOfFiles => listOfFiles.map(f => typedFetch<T>(url + '/' + f, raw)))
       .then(listOfPromises => Promise.all(listOfPromises))
       .then(list => setResult({ status: 'loaded', payload: list }))
       .catch(error => setResult({ status: 'error', error }));
-  }, [url]);
+  }, [url, raw]);
 
   return result;
 }

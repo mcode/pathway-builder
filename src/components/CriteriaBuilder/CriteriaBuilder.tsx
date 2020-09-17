@@ -109,7 +109,7 @@ const CriteriaBuilder: FC = () => {
   }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setCurrentCriteria]);
 
   useEffect(() => {
-    const cql = `Patient.gender.value = '${gender}'`;
+    const cql = `Patient.gender.value ~ '${gender}'`;
     if (selectedDemoElement === 'Gender') {
       if (gender !== '') {
         setCurrentCriteria({ cql, text: genderString, type: 'gender', gender });

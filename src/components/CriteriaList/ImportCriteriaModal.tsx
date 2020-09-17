@@ -57,7 +57,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
               className={styles.input}
               inputRef={importFileRef}
               type="file"
-              inputProps={{ accept: '.json' }}
+              inputProps={{ accept: '.cql' }} // TODO: how to allow multiple types?
               onChange={handleChooseFile}
             />
 
@@ -73,7 +73,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
             </label>
 
             <div className={styles.fileName}>
-              {fileName ? <span>{fileName}</span> : <span>Choose ELM file to import.</span>}
+              {fileName ? <span>{fileName}</span> : <span>Choose file to import.</span>}
             </div>
           </div>
         </DialogContent>

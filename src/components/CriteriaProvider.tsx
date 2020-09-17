@@ -14,13 +14,14 @@ import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
-  addBuilderCriteria: (criteria: BuilderModel) => Criteria[];
+  addBuilderCriteria: (criteria: BuilderModel, label: string) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -40,16 +41,20 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-function builderModelToCriteria(criteria: BuilderModel): Criteria {
+function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria {
   return {
     id: shortid.generate(),
-    label: `${criteria.type}${Date.now()}`,
+    label,
     modified: Date.now(),
     builder: criteria,
-    statement: criteria.cql
+    statement: label
   };
 }
-function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
+function elmLibraryToCriteria(
+  elm: ElmLibrary,
+  cql: string | undefined = undefined,
+  custom = false
+): Criteria[] {
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
@@ -73,6 +78,7 @@ function elmLibraryToCriteria(elm: ElmLibrary, custom = false): Criteria[] {
       version: elm.library.identifier.version,
       modified: Date.now(),
       elm: elm,
+      cql: cql,
       statement: statement.name
     };
   });
@@ -87,19 +93,31 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
+function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
+  return convertBasicCQL(rawCql).then(elm => {
+    // the cql-to-elm webservice always responds with ELM
+    // even if the CQL was complete garbage
+    // TODO: consider showing the error messages from the annotations?
+    if (!elm.library?.identifier?.id) {
+      // we're async right now so don't show an error here
+      // just return empty
+      return [];
+    }
+    return elmLibraryToCriteria(elm, rawCql);
+  });
+}
+
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const service = useGetService<Criteria>(config.get('demoCriteria'));
-  const payload = (service as ServiceLoaded<Criteria[]>).payload;
+  const service = useGetService<string>(config.get('demoCriteria'), true);
+  const payload = (service as ServiceLoaded<string[]>).payload;
 
   useEffect(() => {
     if (payload) {
-      const newCriteria: Criteria[] = [];
-      payload.forEach(jsonCriterion => {
-        const criterion = jsonToCriteria(JSON.stringify(jsonCriterion));
-        if (criterion) newCriteria.push(...criterion);
-      });
-      setCriteria(newCriteria);
+      const listOfPromises = payload.map(rawCql => cqlToCriteria(rawCql));
+      Promise.all(listOfPromises)
+        .then(listOfLists => listOfLists.flat())
+        .then(newCriteria => setCriteria(newCriteria));
     }
   }, [payload]);
 
@@ -108,9 +126,20 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     const reader = new FileReader();
     reader.onload = (event: ProgressEvent<FileReader>): void => {
       if (event.target?.result) {
-        const rawElm = event.target.result as string;
-        const newCriteria = jsonToCriteria(rawElm);
-        if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+        const rawContent = event.target.result as string;
+        // TODO: more robust file type identification?
+        if (file.name.endsWith('.json')) {
+          const newCriteria = jsonToCriteria(rawContent);
+          if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+        } else if (file.name.endsWith('.cql')) {
+          cqlToCriteria(rawContent).then(newCriteria => {
+            if (newCriteria.length > 0) {
+              setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+            } else {
+              alert('No valid criteria were found in the provided file');
+            }
+          });
+        }
       } else alert('Unable to read that file');
     };
     reader.readAsText(file);
@@ -121,14 +150,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, []);
 
   const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, true);
+    const newCriteria = elmLibraryToCriteria(elm, undefined, true);
     setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
 
     return newCriteria;
   }, []);
 
-  const addBuilderCriteria = useCallback((criteria: BuilderModel): Criteria[] => {
-    const newCriteria = builderModelToCriteria(criteria);
+  const addBuilderCriteria = useCallback((criteria: BuilderModel, label: string): Criteria[] => {
+    const newCriteria = builderModelToCriteria(criteria, label);
     setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
 
     return [newCriteria];

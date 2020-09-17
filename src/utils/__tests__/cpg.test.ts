@@ -3,7 +3,7 @@ import { toCPG, createActivityDefinition, createPlanDefinition } from 'utils/cpg
 
 describe('convert pathway into cpg', () => {
   it('correctly converts sample pathway into cpg', () => {
-    const cpgPathway = toCPG(samplepathway);
+    const cpgPathway = toCPG(samplepathway, []);
     expect(cpgPathway.type).toBe('transaction');
     expect(cpgPathway.entry.length).toBe(12);
     cpgPathway.entry.forEach(entry => {
@@ -19,7 +19,7 @@ describe('convert pathway into cpg', () => {
       const result = createActivityDefinition(action);
       expect(result.description).toBe(action.description);
       expect(result.kind).toBe('ServiceRequest');
-      expect(result.productCodeableConcept.coding[0].code).toBe('392021009');
+      expect(result.code.coding[0].code).toBe('392021009');
     });
 
     it('converts medication request correctly', () => {

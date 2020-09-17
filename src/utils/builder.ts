@@ -30,8 +30,8 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
-export function downloadPathway(pathway: Pathway, cpg = false): void {
-  const pathwayString = exportPathway(pathway, cpg);
+export function downloadPathway(pathway: Pathway, criteria: Criteria[], cpg = false): void {
+  const pathwayString = exportPathway(pathway, criteria, cpg);
   // Create blob from pathwayString to save to file system
   const pathwayBlob = new Blob([pathwayString], {
     type: 'application/json'
@@ -46,10 +46,10 @@ export function downloadPathway(pathway: Pathway, cpg = false): void {
   window.URL.revokeObjectURL(url);
 }
 
-export function exportPathway(pathway: Pathway, cpg: boolean): string {
+export function exportPathway(pathway: Pathway, criteria: Criteria[], cpg: boolean): string {
   const elm = generateNavigationalElm(pathway);
   const pathwayWithElm = setNavigationalElm(pathway, elm);
-  const pathwayToExport = cpg ? toCPG(pathwayWithElm) : pathwayWithElm;
+  const pathwayToExport = cpg ? toCPG(pathwayWithElm, criteria) : pathwayWithElm;
   return JSON.stringify(pathwayToExport, undefined, 2);
 }
 

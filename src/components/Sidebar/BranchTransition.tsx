@@ -136,7 +136,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleBuildCriteriaSave = useCallback(() => {
     if (!currentNodeRef.current || !pathwayRef.current || !currentCriteria?.cql) return;
 
-    const criteria = addBuilderCriteria(currentCriteria);
+    const criteria = addBuilderCriteria(currentCriteria, criteriaName);
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
