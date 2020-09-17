@@ -1,0 +1,831 @@
+{
+  "library": {
+    "identifier": {
+      "id": "Tumor-Size-2cm-and-Under",
+      "version": "1.0.0"
+    },
+    "schemaIdentifier": {
+      "id": "urn:hl7-org:elm",
+      "version": "r1"
+    },
+    "usings": {
+      "def": [
+        {
+          "localIdentifier": "System",
+          "uri": "urn:hl7-org:elm-types:r1"
+        },
+        {
+          "localId": "1",
+          "locator": "3:1-3:26",
+          "localIdentifier": "FHIR",
+          "uri": "http://hl7.org/fhir",
+          "version": "4.0.0"
+        }
+      ]
+    },
+    "includes": {
+      "def": [
+        {
+          "localId": "2",
+          "locator": "5:1-5:56",
+          "localIdentifier": "FHIRHelpers",
+          "path": "FHIRHelpers",
+          "version": "4.0.0"
+        },
+        {
+          "localId": "3",
+          "locator": "6:1-6:69",
+          "localIdentifier": "C3F",
+          "path": "CDS_Connect_Commons_for_FHIRv400",
+          "version": "1.0.1"
+        },
+        {
+          "localId": "4",
+          "locator": "7:1-7:60",
+          "localIdentifier": "Convert",
+          "path": "CDS_Connect_Conversions",
+          "version": "1"
+        }
+      ]
+    },
+    "valueSets": {
+      "def": [
+        {
+          "localId": "5",
+          "locator": "9:1-9:58",
+          "name": "Tumor Size VS",
+          "id": "2.16.840.1.113762.1.4.1116.554",
+          "accessLevel": "Public",
+          "resultTypeSpecifier": {
+            "type": "ListTypeSpecifier",
+            "elementType": {
+              "name": "{urn:hl7-org:elm-types:r1}Code",
+              "type": "NamedTypeSpecifier"
+            }
+          }
+        }
+      ]
+    },
+    "statements": {
+      "def": [
+        {
+          "locator": "13:1-13:15",
+          "name": "Patient",
+          "context": "Patient",
+          "expression": {
+            "type": "SingletonFrom",
+            "operand": {
+              "locator": "13:1-13:15",
+              "dataType": "{http://hl7.org/fhir}Patient",
+              "type": "Retrieve"
+            }
+          }
+        },
+        {
+          "localId": "13",
+          "locator": "15:1-16:77",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+          "name": "N+",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "13",
+                "s": [
+                  {
+                    "value": ["define ", "\"Tumor Size\"", ":\r\n  "]
+                  },
+                  {
+                    "r": "12",
+                    "s": [
+                      {
+                        "r": "10",
+                        "s": [
+                          {
+                            "r": "6",
+                            "s": [
+                              {
+                                "value": ["C3F"]
+                              }
+                            ]
+                          },
+                          {
+                            "value": ["."]
+                          },
+                          {
+                            "r": "10",
+                            "s": [
+                              {
+                                "value": ["QuantityValue", "("]
+                              },
+                              {
+                                "r": "9",
+                                "s": [
+                                  {
+                                    "r": "7",
+                                    "s": [
+                                      {
+                                        "value": ["C3F"]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "value": ["."]
+                                  },
+                                  {
+                                    "r": "9",
+                                    "s": [
+                                      {
+                                        "value": ["MostRecent", "("]
+                                      },
+                                      {
+                                        "r": "8",
+                                        "s": [
+                                          {
+                                            "value": ["[", "Observation", ": "]
+                                          },
+                                          {
+                                            "s": [
+                                              {
+                                                "value": ["\"Tumor Size VS\""]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "value": ["]"]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "value": [")"]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "value": [")"]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "value": [" ", "<=", " "]
+                      },
+                      {
+                        "r": "11",
+                        "s": [
+                          {
+                            "value": ["2 ", "'cm'"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "12",
+            "locator": "16:3-16:77",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+            "type": "LessOrEqual",
+            "signature": [
+              {
+                "name": "{urn:hl7-org:elm-types:r1}Quantity",
+                "type": "NamedTypeSpecifier"
+              },
+              {
+                "name": "{urn:hl7-org:elm-types:r1}Quantity",
+                "type": "NamedTypeSpecifier"
+              }
+            ],
+            "operand": [
+              {
+                "localId": "10",
+                "locator": "16:3-16:67",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Quantity",
+                "name": "QuantityValue",
+                "libraryName": "C3F",
+                "type": "FunctionRef",
+                "signature": [
+                  {
+                    "name": "{http://hl7.org/fhir}Observation",
+                    "type": "NamedTypeSpecifier"
+                  }
+                ],
+                "operand": [
+                  {
+                    "localId": "9",
+                    "locator": "16:21-16:66",
+                    "resultTypeName": "{http://hl7.org/fhir}Observation",
+                    "name": "MostRecent",
+                    "libraryName": "C3F",
+                    "type": "FunctionRef",
+                    "signature": [
+                      {
+                        "type": "ListTypeSpecifier",
+                        "elementType": {
+                          "name": "{http://hl7.org/fhir}Observation",
+                          "type": "NamedTypeSpecifier"
+                        }
+                      }
+                    ],
+                    "operand": [
+                      {
+                        "localId": "8",
+                        "locator": "16:36-16:65",
+                        "dataType": "{http://hl7.org/fhir}Observation",
+                        "codeProperty": "code",
+                        "type": "Retrieve",
+                        "resultTypeSpecifier": {
+                          "type": "ListTypeSpecifier",
+                          "elementType": {
+                            "name": "{http://hl7.org/fhir}Observation",
+                            "type": "NamedTypeSpecifier"
+                          }
+                        },
+                        "codes": {
+                          "locator": "16:50-16:64",
+                          "name": "Tumor Size VS",
+                          "type": "ValueSetRef",
+                          "resultTypeSpecifier": {
+                            "type": "ListTypeSpecifier",
+                            "elementType": {
+                              "name": "{urn:hl7-org:elm-types:r1}Code",
+                              "type": "NamedTypeSpecifier"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "localId": "11",
+                "locator": "16:72-16:77",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Quantity",
+                "value": 2,
+                "unit": "cm",
+                "type": "Quantity"
+              }
+            ]
+          }
+        },
+        {
+          "localId": "13",
+          "locator": "15:1-16:77",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+          "name": "N0",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "13",
+                "s": [
+                  {
+                    "value": ["define ", "\"Tumor Size\"", ":\r\n  "]
+                  },
+                  {
+                    "r": "12",
+                    "s": [
+                      {
+                        "r": "10",
+                        "s": [
+                          {
+                            "r": "6",
+                            "s": [
+                              {
+                                "value": ["C3F"]
+                              }
+                            ]
+                          },
+                          {
+                            "value": ["."]
+                          },
+                          {
+                            "r": "10",
+                            "s": [
+                              {
+                                "value": ["QuantityValue", "("]
+                              },
+                              {
+                                "r": "9",
+                                "s": [
+                                  {
+                                    "r": "7",
+                                    "s": [
+                                      {
+                                        "value": ["C3F"]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "value": ["."]
+                                  },
+                                  {
+                                    "r": "9",
+                                    "s": [
+                                      {
+                                        "value": ["MostRecent", "("]
+                                      },
+                                      {
+                                        "r": "8",
+                                        "s": [
+                                          {
+                                            "value": ["[", "Observation", ": "]
+                                          },
+                                          {
+                                            "s": [
+                                              {
+                                                "value": ["\"Tumor Size VS\""]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "value": ["]"]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "value": [")"]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "value": [")"]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "value": [" ", "<=", " "]
+                      },
+                      {
+                        "r": "11",
+                        "s": [
+                          {
+                            "value": ["2 ", "'cm'"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "12",
+            "locator": "16:3-16:77",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+            "type": "LessOrEqual",
+            "signature": [
+              {
+                "name": "{urn:hl7-org:elm-types:r1}Quantity",
+                "type": "NamedTypeSpecifier"
+              },
+              {
+                "name": "{urn:hl7-org:elm-types:r1}Quantity",
+                "type": "NamedTypeSpecifier"
+              }
+            ],
+            "operand": [
+              {
+                "localId": "10",
+                "locator": "16:3-16:67",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Quantity",
+                "name": "QuantityValue",
+                "libraryName": "C3F",
+                "type": "FunctionRef",
+                "signature": [
+                  {
+                    "name": "{http://hl7.org/fhir}Observation",
+                    "type": "NamedTypeSpecifier"
+                  }
+                ],
+                "operand": [
+                  {
+                    "localId": "9",
+                    "locator": "16:21-16:66",
+                    "resultTypeName": "{http://hl7.org/fhir}Observation",
+                    "name": "MostRecent",
+                    "libraryName": "C3F",
+                    "type": "FunctionRef",
+                    "signature": [
+                      {
+                        "type": "ListTypeSpecifier",
+                        "elementType": {
+                          "name": "{http://hl7.org/fhir}Observation",
+                          "type": "NamedTypeSpecifier"
+                        }
+                      }
+                    ],
+                    "operand": [
+                      {
+                        "localId": "8",
+                        "locator": "16:36-16:65",
+                        "dataType": "{http://hl7.org/fhir}Observation",
+                        "codeProperty": "code",
+                        "type": "Retrieve",
+                        "resultTypeSpecifier": {
+                          "type": "ListTypeSpecifier",
+                          "elementType": {
+                            "name": "{http://hl7.org/fhir}Observation",
+                            "type": "NamedTypeSpecifier"
+                          }
+                        },
+                        "codes": {
+                          "locator": "16:50-16:64",
+                          "name": "Tumor Size VS",
+                          "type": "ValueSetRef",
+                          "resultTypeSpecifier": {
+                            "type": "ListTypeSpecifier",
+                            "elementType": {
+                              "name": "{urn:hl7-org:elm-types:r1}Code",
+                              "type": "NamedTypeSpecifier"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "localId": "11",
+                "locator": "16:72-16:77",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Quantity",
+                "value": 2,
+                "unit": "cm",
+                "type": "Quantity"
+              }
+            ]
+          }
+        },
+        {
+          "localId": "15",
+          "locator": "19:1-20:14",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+          "name": "MeetsInclusionCriteria",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "15",
+                "s": [
+                  {
+                    "value": [
+                      "define ",
+                      "\"MeetsInclusionCriteria\"",
+                      ":\r\n  "
+                    ]
+                  },
+                  {
+                    "r": "14",
+                    "s": [
+                      {
+                        "value": ["\"Tumor Size\""]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "14",
+            "locator": "20:3-20:14",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+            "name": "Tumor Size",
+            "type": "ExpressionRef"
+          }
+        },
+        {
+          "localId": "17",
+          "locator": "22:1-23:27",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+          "name": "InPopulation",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "17",
+                "s": [
+                  {
+                    "value": ["define ", "\"InPopulation\"", ":\r\n   "]
+                  },
+                  {
+                    "r": "16",
+                    "s": [
+                      {
+                        "value": ["\"MeetsInclusionCriteria\""]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "16",
+            "locator": "23:4-23:27",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+            "name": "MeetsInclusionCriteria",
+            "type": "ExpressionRef"
+          }
+        },
+        {
+          "localId": "22",
+          "locator": "25:1-27:11",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}String",
+          "name": "Recommendation",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "22",
+                "s": [
+                  {
+                    "value": ["define ", "\"Recommendation\"", ":\r\n  "]
+                  },
+                  {
+                    "r": "21",
+                    "s": [
+                      {
+                        "value": ["if "]
+                      },
+                      {
+                        "r": "18",
+                        "s": [
+                          {
+                            "value": ["\"InPopulation\""]
+                          }
+                        ]
+                      },
+                      {
+                        "value": [" then "]
+                      },
+                      {
+                        "r": "19",
+                        "s": [
+                          {
+                            "value": ["''"]
+                          }
+                        ]
+                      },
+                      {
+                        "r": "20",
+                        "value": ["\r\n  else ", "null"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "21",
+            "locator": "26:3-27:11",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}String",
+            "type": "If",
+            "condition": {
+              "asType": "{urn:hl7-org:elm-types:r1}Boolean",
+              "type": "As",
+              "operand": {
+                "localId": "18",
+                "locator": "26:6-26:19",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+                "name": "InPopulation",
+                "type": "ExpressionRef"
+              }
+            },
+            "then": {
+              "localId": "19",
+              "locator": "26:26-26:27",
+              "resultTypeName": "{urn:hl7-org:elm-types:r1}String",
+              "valueType": "{urn:hl7-org:elm-types:r1}String",
+              "value": "",
+              "type": "Literal"
+            },
+            "else": {
+              "asType": "{urn:hl7-org:elm-types:r1}String",
+              "type": "As",
+              "operand": {
+                "localId": "20",
+                "locator": "27:8-27:11",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+                "type": "Null"
+              }
+            }
+          }
+        },
+        {
+          "localId": "27",
+          "locator": "29:1-31:11",
+          "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+          "name": "Rationale",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "27",
+                "s": [
+                  {
+                    "value": ["define ", "\"Rationale\"", ":\r\n  "]
+                  },
+                  {
+                    "r": "26",
+                    "s": [
+                      {
+                        "value": ["if "]
+                      },
+                      {
+                        "r": "23",
+                        "s": [
+                          {
+                            "value": ["\"InPopulation\""]
+                          }
+                        ]
+                      },
+                      {
+                        "r": "24",
+                        "value": [" then ", "null", "\r\n  else ", "null"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "expression": {
+            "localId": "26",
+            "locator": "30:3-31:11",
+            "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+            "type": "If",
+            "condition": {
+              "asType": "{urn:hl7-org:elm-types:r1}Boolean",
+              "type": "As",
+              "operand": {
+                "localId": "23",
+                "locator": "30:6-30:19",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+                "name": "InPopulation",
+                "type": "ExpressionRef"
+              }
+            },
+            "then": {
+              "localId": "24",
+              "locator": "30:26-30:29",
+              "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+              "type": "Null"
+            },
+            "else": {
+              "localId": "25",
+              "locator": "31:8-31:11",
+              "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+              "type": "Null"
+            }
+          }
+        },
+        {
+          "localId": "33",
+          "locator": "32:1-35:11",
+          "name": "Errors",
+          "context": "Patient",
+          "accessLevel": "Public",
+          "annotation": [
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "33",
+                "s": [
+                  {
+                    "value": ["define ", "\"Errors\"", ":\r\n  "]
+                  },
+                  {
+                    "r": "32",
+                    "s": [
+                      {
+                        "r": "28",
+                        "value": ["if ", "null", " then\r\n    "]
+                      },
+                      {
+                        "r": "30",
+                        "s": [
+                          {
+                            "value": ["{"]
+                          },
+                          {
+                            "r": "29",
+                            "s": [
+                              {
+                                "value": ["''"]
+                              }
+                            ]
+                          },
+                          {
+                            "value": ["}"]
+                          }
+                        ]
+                      },
+                      {
+                        "r": "31",
+                        "value": ["\r\n  else ", "null"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "resultTypeSpecifier": {
+            "type": "ListTypeSpecifier",
+            "elementType": {
+              "name": "{urn:hl7-org:elm-types:r1}String",
+              "type": "NamedTypeSpecifier"
+            }
+          },
+          "expression": {
+            "localId": "32",
+            "locator": "33:3-35:11",
+            "type": "If",
+            "resultTypeSpecifier": {
+              "type": "ListTypeSpecifier",
+              "elementType": {
+                "name": "{urn:hl7-org:elm-types:r1}String",
+                "type": "NamedTypeSpecifier"
+              }
+            },
+            "condition": {
+              "asType": "{urn:hl7-org:elm-types:r1}Boolean",
+              "type": "As",
+              "operand": {
+                "localId": "28",
+                "locator": "33:6-33:9",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+                "type": "Null"
+              }
+            },
+            "then": {
+              "localId": "30",
+              "locator": "34:5-34:8",
+              "type": "List",
+              "resultTypeSpecifier": {
+                "type": "ListTypeSpecifier",
+                "elementType": {
+                  "name": "{urn:hl7-org:elm-types:r1}String",
+                  "type": "NamedTypeSpecifier"
+                }
+              },
+              "element": [
+                {
+                  "localId": "29",
+                  "locator": "34:6-34:7",
+                  "resultTypeName": "{urn:hl7-org:elm-types:r1}String",
+                  "valueType": "{urn:hl7-org:elm-types:r1}String",
+                  "value": "",
+                  "type": "Literal"
+                }
+              ]
+            },
+            "else": {
+              "type": "As",
+              "operand": {
+                "localId": "31",
+                "locator": "35:8-35:11",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Any",
+                "type": "Null"
+              },
+              "asTypeSpecifier": {
+                "type": "ListTypeSpecifier",
+                "elementType": {
+                  "name": "{urn:hl7-org:elm-types:r1}String",
+                  "type": "NamedTypeSpecifier"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
