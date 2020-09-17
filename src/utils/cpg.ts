@@ -65,7 +65,12 @@ export function createActivityDefinition(action: Action): ActivityDefinition {
   return activityDefinition;
 }
 
-function createAction(id: string, description: string, definition: string): PlanDefinitionAction {
+function createAction(
+  id: string,
+  description: string,
+  definition: string,
+  resourceType: string
+): PlanDefinitionAction {
   const cpgAction: PlanDefinitionAction = {
     id: id,
     title: `Action: ${id}`,
@@ -81,7 +86,7 @@ function createAction(id: string, description: string, definition: string): Plan
         ]
       }
     ],
-    definitionCanonical: `http://pathway.com/${definition}`
+    definitionCanonical: `http://example.com/${resourceType}/${definition}`
   };
   return cpgAction;
 }
@@ -134,7 +139,7 @@ export function createPlanDefinition(
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
-    fullUrl: `http://pathway.com/${resource.id}`,
+    fullUrl: `http://example.com/${resource.resourceType}/${resource.id}`,
     resource: resource,
     request: {
       method: BUNDLE_PUT,
@@ -349,7 +354,12 @@ export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
         description,
         'recommendation'
       );
-      const cpgStrategyAction = createAction(node.key, node.label, cpgRecommendation.id);
+      const cpgStrategyAction = createAction(
+        node.key,
+        node.label,
+        cpgRecommendation.id,
+        'PlanDefinition'
+      );
       const parents = findParents(pathway, node.key).map(key => pathway.nodes[key]);
       parents.forEach(parent => {
         const transition = parent.transitions.find(
@@ -377,7 +387,8 @@ export function toCPG(pathway: Pathway, criteria: Criteria[]): Bundle {
       const cpgRecommendationAction = createAction(
         action.id,
         action.description,
-        cpgActivityDefinition.id
+        cpgActivityDefinition.id,
+        'ActivityDefinition'
       );
       cpgRecommendation.action.push(cpgRecommendationAction);
       bundle.entry.push(createBundleEntry(cpgActivityDefinition));
