@@ -374,10 +374,11 @@ export class CPGExporter {
   private convertNode(key: string, parentKey: string, cpgRecommendation: PlanDefinition): void {
     const node = this.pathway.nodes[key];
     const parent = this.pathway.nodes[parentKey];
+    const descriptionDetails = `${node.label} (Key: ${key}) - Parent Node Key: ${parentKey}`;
 
     if (isActionNode(node)) {
       const activityDefinition = this.createActivityDefinition(node.action);
-      const description = `Action for ${node.label}`;
+      const description = `Action for ${descriptionDetails}`;
       const activityDefinitionId = activityDefinition
         ? activityDefinition.id
         : this.getActivityDefinitionId(node.action);
@@ -405,7 +406,7 @@ export class CPGExporter {
 
       if (activityDefinition) this.bundle.entry.push(createBundleEntry(activityDefinition));
     } else if (isBranchNode(node)) {
-      const description = `Branch based on ${node.label}`;
+      const description = `Branch based on ${descriptionDetails}`;
 
       // Add an action for the branch node if it nested
       if (isBranchNode(parent)) {
