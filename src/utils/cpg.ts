@@ -468,8 +468,8 @@ export class CPGExporter {
   }
 }
 
-function formatUrl(id: string): string {
-  return `http://example.com/${id}`;
+function formatUrl(resourceType: string, id: string): string {
+  return `http://example.com/${resourceType}/${id}`;
 }
 
 function addRelatedAction(
@@ -498,7 +498,7 @@ function findAction(actions: PlanDefinitionAction[], id: string): PlanDefinition
 
 function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Library): BundleEntry {
   return {
-    fullUrl: formatUrl(resource.id),
+    fullUrl: formatUrl(resource.resourceType, resource.id),
     resource: resource,
     request: {
       method: BUNDLE_PUT,
@@ -560,7 +560,7 @@ function createAction(id: string, description: string, definition?: string): Pla
       }
     ]
   };
-  if (definition) cpgAction.definitionCanonical = formatUrl(definition);
+  if (definition) cpgAction.definitionCanonical = formatUrl('ActivityDefinition', definition);
   return cpgAction;
 }
 
