@@ -2,7 +2,7 @@
    "id": "tB4jsxTDL",
    "name": "Early Stage HER2+ (Draft)",
    "description": "Pathway for the Early Stage HER2+ Initial Medical Consult Breast Cancer Pathway. This is a draft pathway.",
-   "library": "her2_pathway_library.cql",
+   "library": "",
    "preconditions": [
      {
        "id": "1",
@@ -37,7 +37,7 @@
            "transition": "TumorSize",
            "condition": {
              "description": "N0",
-             "cql": "N0"
+             "cql": "TNM.N0"
            }
          },
          {
@@ -45,7 +45,7 @@
            "transition": "ChemotherapyTCHAC+TH",
            "condition": {
              "description": "N+",
-             "cql": "N+"
+             "cql": "TNM.N+"
            }
          }
        ]
@@ -59,7 +59,7 @@
            "transition": "ChemotherapyTCHAC+TH",
            "condition": {
              "description": "T > 2cm",
-             "cql": "T > 2cm"
+             "cql": "TNM.T > 2cm"
            }
          },
          {
@@ -67,7 +67,7 @@
            "transition": "ChemotherapyTHWeekly",
            "condition": {
              "description": "T <= 2cm",
-             "cql": "T <= 2cm"
+             "cql": "TNM.T <= 2cm"
            }
          }
        ]
@@ -168,7 +168,7 @@
            "transition": "EndocrineTherapy",
            "condition": {
              "description": "ERPositive",
-             "cql": "ERPositive"
+             "cql": "Tumor_markers.ER Positive"
            }
          }
        ]

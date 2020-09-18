@@ -2,7 +2,7 @@
    "id": "eNPAgToBD",
    "name": "Breast Cancer: Neoadjuvant Chemotherapy with Surgery ",
    "description": "Pathway for the Early Stage HER2+ Breast Cancer Pathway for neoadjuvant chemotherapy with surgery.",
-   "library": "neoadjuvant_pathway_library.cql",
+   "library": "",
    "preconditions": [
      {
        "id": "1",
@@ -37,7 +37,7 @@
            "transition": "ChemotherapyTCHP",
            "condition": {
              "description": "T > 2",
-             "cql": "T > 2"
+             "cql": "TNM.T > 2"
            }
          },
          {
@@ -45,7 +45,7 @@
            "transition": "ChemotherapyACTHP",
            "condition": {
              "description": "T > 2",
-             "cql": "T > 2"
+             "cql": "TNM.T > 2"
            }
          },
          {
@@ -53,7 +53,7 @@
            "transition": "ChemotherapyddACTHP",
            "condition": {
              "description": "T > 2",
-             "cql": "T > 2"
+             "cql": "TNM.T > 2"
            }
          },
          {
@@ -61,7 +61,7 @@
            "transition": "NodeStatus",
            "condition": {
              "description": "T <= 2",
-             "cql": "T <= 2"
+             "cql": "TNM.T <= 2"
            }
          }
        ]
@@ -75,7 +75,7 @@
            "transition": "ChemotherapyTCHP",
            "condition": {
              "description": "N+",
-             "cql": "N+"
+             "cql": "TNM.N+"
            }
          },
          {
@@ -83,7 +83,7 @@
            "transition": "ChemotherapyACTHP",
            "condition": {
              "description": "N+",
-             "cql": "N+"
+             "cql": "TNM.N+"
            }
          },
          {
@@ -91,7 +91,7 @@
            "transition": "ChemotherapyddACTHP",
            "condition": {
              "description": "N+",
-             "cql": "N+"
+             "cql": "TNM.N+"
            }
          },
          {
@@ -99,7 +99,7 @@
            "transition": "Surgery1",
            "condition": {
              "description": "N0",
-             "cql": "N0"
+             "cql": "TNM.N0"
            }
          }
        ]
@@ -282,7 +282,7 @@
            "transition": "NodeStatus2",
            "condition": {
              "description": "Complete",
-             "cql": "exists([Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Complete\")"
+             "cql": "Pathologic-Response.Complete"
            }
          },
          {
@@ -290,7 +290,7 @@
            "transition": "AdotrastuzumabEmtansine",
            "condition": {
              "description": "Partial/Stable/Progressive",
-             "cql": "exists([Observation \"Pathologic response code\"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Partial\" or ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Stable\" or ToConcept(Response.value as FHIR.CodeableConcept) ~ \"Progressive\")"
+             "cql": "Pathologic-Response.Partial/Stable/Progressive"
            }
          }
        ]
@@ -328,7 +328,7 @@
            "transition": "Trastuzumab",
            "condition": {
              "description": "N0",
-             "cql": "N0"
+             "cql": "TNM.N0"
            }
          },
          {
@@ -336,7 +336,7 @@
            "transition": "PertuzumabTrastuzumab",
            "condition": {
              "description": "N+",
-             "cql": "N+"
+             "cql": "TNM.N+"
            }
          }
        ]
