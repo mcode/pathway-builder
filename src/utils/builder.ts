@@ -10,8 +10,9 @@ import {
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import produce from 'immer';
-import { toCPG } from './cpg';
+import { CPGExporter } from './cpg';
 import { Criteria } from 'criteria-model';
+import { Bundle } from 'fhir-objects';
 
 export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
@@ -49,7 +50,11 @@ export function downloadPathway(pathway: Pathway, criteria: Criteria[], cpg = fa
 export function exportPathway(pathway: Pathway, criteria: Criteria[], cpg: boolean): string {
   const elm = generateNavigationalElm(pathway);
   const pathwayWithElm = setNavigationalElm(pathway, elm);
-  const pathwayToExport = cpg ? toCPG(pathwayWithElm, criteria) : pathwayWithElm;
+  let pathwayToExport: Pathway | Bundle = pathwayWithElm;
+  if (cpg) {
+    const exporter = new CPGExporter(pathwayWithElm, criteria);
+    pathwayToExport = exporter.export();
+  }
   return JSON.stringify(pathwayToExport, undefined, 2);
 }
 
@@ -521,7 +526,7 @@ export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
     if (
       node.cql !== undefined ||
       node.elm !== undefined ||
-      node.action !== undefined ||
+      node.action !== null ||
       node.nodeTypeIsUndefined !== undefined
     ) {
       delete node.cql;

@@ -19,8 +19,10 @@ declare module 'fhir-objects' {
   export type MedicationRequest = fhir.MedicationRequest | R4.IMedicationRequest;
   export type Bundle = R4.IBundle & { entry: BundleEntry[] };
   export type BundleEntry = R4.IBundle_Entry; // eslint-disable-line
-  export type CodeableConcept = R4.ICodeableConcept & { coding: R4.ICoding[] };
+  export type Coding = R4.ICoding & { system: string; code: string };
+  export type CodeableConcept = R4.ICodeableConcept & { coding: Coding[] };
   export type PlanDefinitionAction = R4.IPlanDefinition_Action; // eslint-disable-line
+  export type PlanDefinitionCondition = R4.IPlanDefinition_Condition; // eslint-disable-line
   export type PlanDefinition = R4.IPlanDefinition & {
     id: string;
     url: string;

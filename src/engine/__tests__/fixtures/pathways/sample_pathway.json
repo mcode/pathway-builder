@@ -81,7 +81,7 @@
           "type": "create",
           "description": "Issue Lumpectomy of breast procedure",
           "resource": {
-            "resourceType": "Procedure",
+            "resourceType": "ServiceRequest",
             "code": {
               "coding": [
                 {
@@ -110,7 +110,7 @@
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
           "resource": {
-            "resourceType": "Procedure",
+            "resourceType": "ServiceRequest",
             "code": {
               "coding": [
                 {
@@ -134,7 +134,7 @@
           "type": "create",
           "description": "Issue Teleradiotherapy procedure",
           "resource": {
-            "resourceType": "Procedure",
+            "resourceType": "ServiceRequest",
             "code": {
               "coding": [
                 {
@@ -158,7 +158,7 @@
           "type": "create",
           "description": "Begin Chemotherapy procedure",
           "resource": {
-            "resourceType": "Procedure",
+            "resourceType": "ServiceRequest",
             "code": {
               "coding": [
                 {

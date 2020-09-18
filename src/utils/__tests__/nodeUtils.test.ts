@@ -4,8 +4,12 @@ import {
   canDeleteNode,
   findParents,
   getConnectableNodes,
+  getTransition,
+  isBranchNode,
   isActionNode,
-  isBranchNode
+  findSubPathway,
+  findAllTransitions,
+  findAllChildActionNodes
 } from 'utils/nodeUtils';
 
 describe('node util methods', () => {
@@ -67,8 +71,44 @@ describe('node util methods', () => {
   });
 
   it('find parents', () => {
-    const parents = findParents(samplepathway, 'ChemoMedication');
+    const parents = findParents(samplepathway.nodes, 'ChemoMedication');
     expect(parents).toEqual(['N-test', 'Surgery']);
+  });
+
+  it('finds all transitions to node', () => {
+    const allTransitions = findAllTransitions(samplepathway.nodes, 'ChemoMedication');
+    expect(allTransitions.length).toBe(2);
+  });
+
+  it('finds all child action nodes', () => {
+    const childActionNodes = findAllChildActionNodes(samplepathway.nodes, 'T-test');
+    expect(childActionNodes.length).toBe(4);
+  });
+
+  describe('find subpathway', () => {
+    it('from N-test', () => {
+      const subPathway = findSubPathway(samplepathway.nodes, 'N-test');
+      const keys = Object.keys(subPathway);
+      expect(keys.length).toBe(5);
+      keys.forEach(key => {
+        const node = subPathway[key];
+        node.transitions.forEach(transition => {
+          expect(transition.transition in subPathway);
+        });
+      });
+    });
+
+    it('from Surgery', () => {
+      const subPathway = findSubPathway(samplepathway.nodes, 'Surgery');
+      const keys = Object.keys(subPathway);
+      expect(keys.length).toBe(3);
+      keys.forEach(key => {
+        const node = subPathway[key];
+        node.transitions.forEach(transition => {
+          expect(transition.transition in subPathway);
+        });
+      });
+    });
   });
 
   describe('get connectable nodes', () => {
@@ -89,5 +129,12 @@ describe('node util methods', () => {
       const connectableNodes = getConnectableNodes(samplepathway, samplepathway.nodes['N-test']);
       expect(connectableNodes).toEqual(expectedConnectableNodes);
     });
+  });
+
+  it('gets transition', () => {
+    const parent = samplepathway.nodes['T-test'];
+    const key = 'Surgery';
+    const transitions = getTransition(parent, key);
+    expect(transitions).toEqual(parent.transitions[1]);
   });
 });
