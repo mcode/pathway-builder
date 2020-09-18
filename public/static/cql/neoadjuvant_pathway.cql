@@ -12,6 +12,7 @@ codesystem "RXNORM": 'http://www.nlm.nih.gov/research/umls/rxnorm'
 // LOINC Observation Codes
 code "Primary tumor.clinical [Class] Cancer code": '21905-5' from "LOINC" display 'Primary tumor.clinical [Class] Cancer'
 code "Regional lymph nodes.clinical [Class] Cancer code": '21906-3' from "LOINC" display 'Regional lymph nodes.clinical [Class] Cancer'
+code "Pathologic response code": '88040-1' from "LOINC" display 'Pathologic response code'
 
 // SNOMED Observation Values
 code "T0 category (finding) code": '58790005' from "SNOMEDCT" display 'T0 category (finding)'
@@ -23,6 +24,10 @@ code "N0 category (finding) code": '62455006' from "SNOMEDCT" display 'N0 catego
 code "N1 category (finding) code": '53623008' from "SNOMEDCT" display 'N1 category (finding)'
 code "N2 category (finding) code": '46059003' from "SNOMEDCT" display 'N2 category (finding)'
 code "N3 category (finding) code": '5856006' from "SNOMEDCT" display 'N3 category (finding)'
+code "Complete (qualifier value) code": '255594003' from "SNOMEDCT" display 'Complete (qualifier value)'
+code "Partial (qualifier value) code": '255609007' from "SNOMEDCT" display 'Partial (qualifier value)'
+code "Stable (qualifier value) code": '58158008' from "SNOMEDCT" display 'Stable (qualifier value)'
+code "Progressive (qualifier value) code": '255314001' from "SNOMEDCT" display 'Progressive (qualifier value)'
 
 // SNOMED Procedures
 code "Lumpectomy of breast (procedure) code": '392021009' from "SNOMEDCT" display 'Lumpectomy of breast (procedure)'
@@ -42,6 +47,10 @@ concept "N0 category (finding)": {"N0 category (finding) code"} display 'N0 cate
 concept "N1 category (finding)": {"N1 category (finding) code"} display 'N1 category (finding)'
 concept "N2 category (finding)": {"N2 category (finding) code"} display 'N2 category (finding)'
 concept "N3 category (finding)": {"N3 category (finding) code"} display 'N3 category (finding)'
+concept "Complete (qualifier value)": {"Complete (qualifier value) code"} display 'Complete (qualifier value)'
+concept "Partial": {"Partial (qualifier value) code"} display 'Partial (qualifier value)'
+concept "Stable": {"Stable (qualifier value) code"} display 'Stable (qualifier value)'
+concept "Progressive": {"Progressive (qualifier value) code"} display 'Progressive (qualifier value)'
 
 context Patient
 
@@ -76,13 +85,13 @@ define "N0":
 
 define "Complete":
   exists(
-    [Observation "Pathologic response code"] Response
-      where FHIRHelpers.ToConcept(Response.value as FHIR.CodeableConcept) ~ "Complete"
+    [Observation: "Pathologic response code"] Response
+      where FHIRHelpers.ToConcept(Response.value as FHIR.CodeableConcept) ~ "Complete (qualifier value)"
   )
 
 define "Partial/Stable/Progressive":
   exists(
-    [Observation "Pathologic response code"] Response
+    [Observation: "Pathologic response code"] Response
       where FHIRHelpers.ToConcept(Response.value as FHIR.CodeableConcept) ~ "Partial"
         or FHIRHelpers.ToConcept(Response.value as FHIR.CodeableConcept) ~ "Stable"
         or FHIRHelpers.ToConcept(Response.value as FHIR.CodeableConcept) ~ "Progressive"
