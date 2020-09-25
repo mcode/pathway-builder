@@ -127,6 +127,9 @@ const materialUiOverridesBase = {
       fontStyle: 'italic',
       '&.Mui-error': {
         color: colors.white
+      },
+      '&.Mui-disabled': {
+        color: colors.white
       }
     }
   },
@@ -142,6 +145,10 @@ const materialUiOverridesBase = {
       '&:-webkit-autofill': {
         transitionDelay: '9999s',
         transitionProperty: 'background-color, color'
+      },
+      '&$disabled': {
+        color: colors.white,
+        backgroundColor: colors.grayDark
       }
     }
   },
@@ -237,6 +244,9 @@ const materialUiOverridesDark = {
         borderColor: colors.white
       },
       '&$focused $notchedOutline': {
+        borderColor: colors.white
+      },
+      '&$disabled $notchedOutline': {
         borderColor: colors.white
       }
     },

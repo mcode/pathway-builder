@@ -1,6 +1,6 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTools, faTrashAlt, faThList, faEdit } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
@@ -159,6 +159,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   ]);
 
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
+  // Check if criteria was built by criteria builder
+  let builderCriteria;
+  if (transition.condition) {
+    const crit = criteria.find(c => c.id === transition.condition?.criteriaSource);
+    if (crit?.builder) builderCriteria = crit.builder;
+  }
+  const dislayEditCriteria = !transitionSelected && builderCriteria;
   return (
     <>
       {!displayCriteria && !transitionSelected && (
@@ -174,7 +181,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         />
       )}
 
-      {displayCriteria && !transitionSelected && (
+      {displayCriteria && !transitionSelected && !dislayEditCriteria && (
         <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <>
             <DropDown
@@ -204,6 +211,40 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           >
             {buttonText}
           </Button>
+        </OutlinedDiv>
+      )}
+
+      {dislayEditCriteria && (
+        <OutlinedDiv label="Criteria Builder" error={false}>
+          <TextField
+            label="Criteria Name"
+            variant="outlined"
+            value={transition.condition?.description}
+            fullWidth
+            disabled
+          />
+          <span className={styles.buildCriteriaText}>{builderCriteria?.text}</span>
+          <div className={styles.buildCriteriaContainer}>
+            <Button
+              className={styles.cancelButton}
+              color="inherit"
+              size="small"
+              variant="outlined"
+              startIcon={icon}
+              onClick={handleUseCriteria}
+            >
+              DELETE CRITERIA
+            </Button>
+            <Button
+              className={styles.editButton}
+              color="inherit"
+              size="small"
+              variant="outlined"
+              startIcon={<FontAwesomeIcon icon={faEdit} />}
+            >
+              EDIT CRITERIA
+            </Button>
+          </div>
         </OutlinedDiv>
       )}
 
