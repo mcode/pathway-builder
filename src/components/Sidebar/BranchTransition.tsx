@@ -165,6 +165,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         <SidebarButton
           buttonName="Select Criteria"
           buttonIcon={faThList}
+          buttonColor="secondary"
           buttonText="Add previously built or imported criteria logic to branch node."
           onClick={handleUseCriteria}
           disabled={!criteriaAvailable}
@@ -209,6 +210,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       {!displayCriteria && !transitionSelected && (
         <SidebarButton
           buttonName="Build Criteria"
+          buttonColor="secondary"
           buttonIcon={faTools}
           buttonText="Create new criteria logic to add to branch node."
           extraMargin

@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Button, Tooltip } from '@material-ui/core';
+import { Button, Tooltip, PropTypes } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -14,6 +14,7 @@ interface SidebarButtonProps {
   hasTooltip?: boolean;
   tooltipTitle?: string;
   disabled?: boolean;
+  buttonColor?: PropTypes.Color;
 }
 
 const SidebarButton: FC<SidebarButtonProps> = ({
@@ -24,7 +25,8 @@ const SidebarButton: FC<SidebarButtonProps> = ({
   onClick,
   hasTooltip = false,
   tooltipTitle = '',
-  disabled = false
+  disabled = false,
+  buttonColor = 'primary'
 }) => {
   const styles = useStyles();
 
@@ -43,7 +45,7 @@ const SidebarButton: FC<SidebarButtonProps> = ({
         <Button
           className={styles.sidebarButton}
           variant="contained"
-          color="primary"
+          color={buttonColor}
           startIcon={<FontAwesomeIcon icon={buttonIcon} />}
           onClick={onClick}
           disabled={disabled}
