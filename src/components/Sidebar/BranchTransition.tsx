@@ -17,6 +17,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
+import { BuilderModel } from 'criteria-model';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -36,7 +37,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCriteriaName,
     resetCurrentCriteria
   } = useCurrentCriteriaContext();
-  const { resetCriteriaBuilder } = useCriteriaBuilderContext();
+  const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -55,6 +56,14 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     criteriaAvailable &&
     (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
   const transitionRef = useRef(transition);
+  const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
+  // Check if criteria was built by criteria builder
+  let builderCriteria: BuilderModel | null = null;
+  if (transition.condition) {
+    const crit = criteria.find(c => c.id === transition.condition?.criteriaSource);
+    if (crit?.builder) builderCriteria = crit.builder;
+  }
+  const dislayEditCriteria = !transitionSelected && builderCriteria;
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
@@ -128,6 +137,23 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCriteriaName
   ]);
 
+  const handleEditCriteria = useCallback((): void => {
+    setCurrentCriteriaNodeId(transition.id);
+    setCurrentCriteria(builderCriteria as BuilderModel);
+    if (transition.condition?.description) setCriteriaName(transition.condition.description);
+    if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
+    if (builderCriteria) setCriteriaBuilder(builderCriteria);
+  }, [
+    buildCriteriaSelected,
+    builderCriteria,
+    transition,
+    setCurrentCriteriaNodeId,
+    setCurrentCriteria,
+    setCriteriaName,
+    setBuildCriteriaSelected,
+    setCriteriaBuilder
+  ]);
+
   const handleBuildCriteriaCancel = useCallback((): void => {
     resetCurrentCriteria();
     resetCriteriaBuilder();
@@ -136,7 +162,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleBuildCriteriaSave = useCallback(() => {
     if (!currentNodeRef.current || !pathwayRef.current || !currentCriteria?.cql) return;
 
-    const criteria = addBuilderCriteria(currentCriteria, criteriaName);
+    const criteria = addBuilderCriteria(
+      currentCriteria,
+      criteriaName,
+      transition.condition?.criteriaSource
+    );
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
@@ -154,18 +184,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     transitionRef,
     currentCriteria,
     criteriaName,
+    transition,
     handleBuildCriteriaCancel,
     addBuilderCriteria
   ]);
 
-  const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
-  // Check if criteria was built by criteria builder
-  let builderCriteria;
-  if (transition.condition) {
-    const crit = criteria.find(c => c.id === transition.condition?.criteriaSource);
-    if (crit?.builder) builderCriteria = crit.builder;
-  }
-  const dislayEditCriteria = !transitionSelected && builderCriteria;
   return (
     <>
       {!displayCriteria && !transitionSelected && (
@@ -241,6 +264,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               size="small"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faEdit} />}
+              onClick={handleEditCriteria}
             >
               EDIT CRITERIA
             </Button>
