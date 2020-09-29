@@ -109,9 +109,22 @@ export default makeStyles(
       padding: '5px 15px',
       fontSize: '1em'
     },
+    editButton: {
+      marginLeft: '1em',
+      alignSelf: 'flex-end',
+      marginTop: '5px',
+      padding: '5px 15px',
+      fontSize: '1em',
+      backgroundColor: theme.palette.primary.main,
+      borderColor: theme.palette.primary.main,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        borderColor: theme.palette.primary.main
+      }
+    },
     buildCriteriaContainer: {
       display: 'flex',
-      justifyContent: 'space-between'
+      justifyContent: 'flex-end'
     },
     buildCriteriaText: {
       marginTop: '0.5em',

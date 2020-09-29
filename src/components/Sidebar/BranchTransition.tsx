@@ -1,6 +1,6 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTools, faTrashAlt, faThList } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTools, faTrashAlt, faThList, faEdit } from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
@@ -17,6 +17,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
+import { BuilderModel, Criteria } from 'criteria-model';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -36,7 +37,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCriteriaName,
     resetCurrentCriteria
   } = useCurrentCriteriaContext();
-  const { resetCriteriaBuilder } = useCriteriaBuilderContext();
+  const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -55,6 +56,15 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     criteriaAvailable &&
     (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
   const transitionRef = useRef(transition);
+  const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
+  // Check if criteria was built by criteria builder
+  let builderElements: BuilderModel | null = null;
+  let builderCriteria: Criteria | undefined;
+  if (transition.condition) {
+    builderCriteria = criteria.find(c => c.id === transition.condition?.criteriaSource);
+    if (builderCriteria?.builder) builderElements = builderCriteria.builder;
+  }
+  const dislayEditCriteria = !transitionSelected && builderElements;
 
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
@@ -128,6 +138,24 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCriteriaName
   ]);
 
+  const handleEditCriteria = useCallback((): void => {
+    setCurrentCriteriaNodeId(transition.id);
+    setCurrentCriteria(builderElements as BuilderModel);
+    if (builderCriteria?.label) setCriteriaName(builderCriteria?.label);
+    if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
+    if (builderElements) setCriteriaBuilder(builderElements);
+  }, [
+    buildCriteriaSelected,
+    builderCriteria,
+    builderElements,
+    transition,
+    setCurrentCriteriaNodeId,
+    setCurrentCriteria,
+    setCriteriaName,
+    setBuildCriteriaSelected,
+    setCriteriaBuilder
+  ]);
+
   const handleBuildCriteriaCancel = useCallback((): void => {
     resetCurrentCriteria();
     resetCriteriaBuilder();
@@ -136,7 +164,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleBuildCriteriaSave = useCallback(() => {
     if (!currentNodeRef.current || !pathwayRef.current || !currentCriteria?.cql) return;
 
-    const criteria = addBuilderCriteria(currentCriteria, criteriaName);
+    const criteria = addBuilderCriteria(
+      currentCriteria,
+      criteriaName,
+      transition.condition?.criteriaSource
+    );
     const newPathway = setTransitionCondition(
       pathwayRef.current,
       currentNodeRef.current.key,
@@ -154,11 +186,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     transitionRef,
     currentCriteria,
     criteriaName,
+    transition,
     handleBuildCriteriaCancel,
     addBuilderCriteria
   ]);
 
-  const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
   return (
     <>
       {!displayCriteria && !transitionSelected && (
@@ -174,7 +206,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         />
       )}
 
-      {displayCriteria && !transitionSelected && (
+      {displayCriteria && !transitionSelected && !dislayEditCriteria && (
         <OutlinedDiv label="Criteria Selector" error={!criteriaIsValid || !criteriaDisplayIsValid}>
           <>
             <DropDown
@@ -204,6 +236,41 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
           >
             {buttonText}
           </Button>
+        </OutlinedDiv>
+      )}
+
+      {dislayEditCriteria && (
+        <OutlinedDiv label="Criteria Builder" error={false}>
+          <TextField
+            label="Criteria Name"
+            variant="outlined"
+            value={builderCriteria?.label}
+            fullWidth
+            disabled
+          />
+          <span className={styles.buildCriteriaText}>{builderElements?.text}</span>
+          <div className={styles.buildCriteriaContainer}>
+            <Button
+              className={styles.cancelButton}
+              color="inherit"
+              size="small"
+              variant="outlined"
+              startIcon={icon}
+              onClick={handleUseCriteria}
+            >
+              DELETE CRITERIA
+            </Button>
+            <Button
+              className={styles.editButton}
+              color="inherit"
+              size="small"
+              variant="outlined"
+              startIcon={<FontAwesomeIcon icon={faEdit} />}
+              onClick={handleEditCriteria}
+            >
+              EDIT CRITERIA
+            </Button>
+          </div>
         </OutlinedDiv>
       )}
 

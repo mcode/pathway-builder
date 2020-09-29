@@ -21,7 +21,11 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
-  addBuilderCriteria: (criteria: BuilderModel, label: string) => Criteria[];
+  addBuilderCriteria: (
+    criteria: BuilderModel,
+    label: string,
+    criteriaSource: string | undefined
+  ) => Criteria[];
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -156,12 +160,31 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     return newCriteria;
   }, []);
 
-  const addBuilderCriteria = useCallback((criteria: BuilderModel, label: string): Criteria[] => {
-    const newCriteria = builderModelToCriteria(criteria, label);
-    setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+  const addBuilderCriteria = useCallback(
+    (
+      buildCriteria: BuilderModel,
+      label: string,
+      criteriaSource: string | undefined
+    ): Criteria[] => {
+      const newCriteria = builderModelToCriteria(buildCriteria, label);
+      if (criteriaSource) {
+        // Find criteria that is being edited
+        const matchingCriteria = criteria.find(c => c.id === criteriaSource);
+        if (matchingCriteria) {
+          newCriteria.id = matchingCriteria.id;
+          setCriteria(currentCriteria => [
+            ...currentCriteria.filter(c => c.id !== matchingCriteria.id),
+            newCriteria
+          ]);
+        }
+      } else {
+        setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
+      }
 
-    return [newCriteria];
-  }, []);
+      return [newCriteria];
+    },
+    [criteria]
+  );
 
   return (
     <CriteriaContext.Provider
