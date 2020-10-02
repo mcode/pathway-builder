@@ -31,7 +31,6 @@ const PathwaysList: FC = () => {
   const selectFile = useCallback(
     (files: FileList | undefined | null) => {
       if (files?.length) addPathway(files[0] as unknown as Pathway);
-      setImportPathwayOpen(false);
     },
     []
   );
@@ -60,7 +59,11 @@ const PathwaysList: FC = () => {
         </Button>
       </div>
 
-      <FileImportModal open={importPathwayOpen} onClose={() => setImportPathwayOpen(false)} onSelectFile={selectFile} />
+      <FileImportModal open={importPathwayOpen}
+                       onClose={() => setImportPathwayOpen(false)}
+                       onSelectFile={selectFile}
+                       allowedFileType=".json"
+      />
 
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
 

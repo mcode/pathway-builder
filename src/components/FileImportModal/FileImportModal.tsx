@@ -10,9 +10,10 @@ interface FileImportModalProps {
   open: boolean;
   onClose: () => void;
   onSelectFile: (files: FileList | undefined | null) => void;
+  allowedFileType?: string; // Setting this to undefined will allow any file type to be selected
 }
 
-const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile}) => {
+const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile, allowedFileType}) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
@@ -23,7 +24,7 @@ const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile}
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const files = importFileRef?.current?.files;
-      if (files?.length) addPathway(files[0] as unknown as Pathway);
+      onSelectFile(files)
       onClose();
       setFileName('');
     },
@@ -50,7 +51,7 @@ const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile}
               className={styles.input}
               inputRef={importFileRef}
               type="file"
-              inputProps={{accept: '.json'}} // TODO: how to allow multiple tpyes?
+              inputProps={{accept: allowedFileType}} // TODO: how to allow multiple tpyes?
               onChange={handleChooseFile}
             />
             <label htmlFor="choose-file-input">
