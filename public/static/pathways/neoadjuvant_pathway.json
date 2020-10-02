@@ -26,7 +26,8 @@
            "id": "1",
            "transition": "TumorSize"
          }
-       ]
+       ],
+       "type": "other"
      },
      "TumorSize": {
        "key": "TumorSize",
@@ -64,7 +65,8 @@
              "cql": "TNM.T <= 2"
            }
          }
-       ]
+       ],
+       "type": "branch"
      },
      "NodeStatus": {
        "key": "NodeStatus",
@@ -102,7 +104,8 @@
              "cql": "TNM.N0"
            }
          }
-       ]
+       ],
+       "type": "branch"
      },
      "Surgery1": {
        "key": "Surgery1",
@@ -131,7 +134,8 @@
            "id": "1",
            "transition": "PaclitaxelTrastuzumab"
          }
-       ]
+       ],
+       "type": "action"
      },
      "PaclitaxelTrastuzumab": {
        "key": "PaclitaxelTrastuzumab",
@@ -155,7 +159,8 @@
            }
          },
        "cql": "exists([MedicationRequest: \"paclitaxel code\"])",
-       "transitions": []
+       "transitions": [],
+       "type": "branch"
      },
      "ChemotherapyTCHP": {
        "key": "ChemotherapyTCHP",
@@ -184,7 +189,8 @@
            "id": "1",
            "transition": "Surgery2"
          }
-       ]
+       ],
+       "type": "action"
      },
      "ChemotherapyACTHP": {
        "key": "ChemotherapyACTHP",
@@ -213,7 +219,8 @@
            "id": "1",
            "transition": "Surgery2"
          }
-       ]
+       ],
+       "type": "action"
      },
      "ChemotherapyddACTHP": {
        "key": "ChemotherapyddACTHP",
@@ -242,7 +249,8 @@
            "id": "1",
            "transition": "Surgery2"
          }
-       ]
+       ],
+       "type": "action"
      },
      "Surgery2": {
        "key": "Surgery2",
@@ -271,7 +279,8 @@
            "id": "1",
            "transition": "PathologicalResponse"
          }
-       ]
+       ],
+       "type": "action"
      },
      "PathologicalResponse": {
        "key": "PathologicalResponse",
@@ -293,7 +302,8 @@
              "cql": "Pathologic-Response.Partial/Stable/Progressive"
            }
          }
-       ]
+       ],
+       "type": "branch"
      },
      "AdotrastuzumabEmtansine": {
        "key": "AdotrastuzumabEmtansine",
@@ -317,7 +327,8 @@
            }
          },
        "cql": "exists([MedicationRequest: \"adotrastuzumab emtansine code\"])",
-       "transitions": []
+       "transitions": [],
+       "type": "action"
      },
      "NodeStatus2": {
        "key": "NodeStatus2",
@@ -339,7 +350,8 @@
              "cql": "TNM.N+"
            }
          }
-       ]
+       ],
+       "type": "branch"
      },
      "Trastuzumab": {
        "key": "Trastuzumab",
@@ -363,7 +375,8 @@
            }
          },
        "cql": "exists([MedicationRequest: \"trastuzumab code\"])",
-       "transitions": []
+       "transitions": [],
+       "type": "action"
      },
      "PertuzumabTrastuzumab": {
        "key": "PertuzumabTrastuzumab",
@@ -387,7 +400,8 @@
            }
          },
        "cql": "exists([MedicationRequest: \"pertuzumab code\"])",
-       "transitions": []
+       "transitions": [],
+       "type": "action"
      }
    }
  }

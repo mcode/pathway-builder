@@ -25,6 +25,7 @@
       "T-test": {
         "key": "T-test",
         "label": "T-test",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -161,6 +162,7 @@
       "N-test": {
         "key": "N-test",
         "label": "N-test",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -269,6 +271,7 @@
       "Surgery": {
         "key": "Surgery",
         "label": "Surgery",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",

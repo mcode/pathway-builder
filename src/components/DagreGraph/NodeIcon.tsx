@@ -6,7 +6,8 @@ import {
   faPlay,
   faPrescriptionBottleAlt,
   faSyringe,
-  faBookMedical
+  faBookMedical,
+  faLevelDownAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 import useStyles from './NodeIcon.styles';
@@ -19,7 +20,6 @@ interface NodeIconProps {
 
 const NodeIcon: FC<NodeIconProps> = ({ isStartNode, nodeType, resourceType }) => {
   const styles = useStyles();
-
   let icon: IconDefinition | undefined;
   if (isStartNode) {
     icon = faPlay;
@@ -29,6 +29,8 @@ const NodeIcon: FC<NodeIconProps> = ({ isStartNode, nodeType, resourceType }) =>
     else if (resourceType === 'CarePlan') icon = faBookMedical;
   } else if (nodeType === 'branch') {
     icon = faMicroscope;
+  } else if (nodeType === 'reference') {
+    icon = faLevelDownAlt;
   }
 
   return icon ? <FontAwesomeIcon icon={icon} className={styles.icon} /> : null;

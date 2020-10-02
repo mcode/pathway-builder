@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   isActionNode,
   isBranchNode,
+  isReferenceNode,
   getTransition,
   findSubPathway,
   findParent,
@@ -415,6 +416,8 @@ export class CPGExporter {
         this.nestedBranch.push(key);
         this.addActionToPlanDefinition(cpgAction, cpgRecommendation, parent.key);
       }
+    } else if (isReferenceNode(node)) {
+      // not sure what cpg wants here
     } else if (node.key !== 'Start') {
       const msg = `Error Exporting at Node ${node.label}\n${node.label} Node does not have a node type. Please edit the node to have a node type and add applicable details and try again.`; // eslint-disable-line
       alert(msg);

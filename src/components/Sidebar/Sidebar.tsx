@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, useState, useRef, ChangeEvent } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link as RouterLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -9,7 +9,15 @@ import {
   TransitionEditor,
   BranchTransition
 } from 'components/Sidebar';
-import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
+import {
+  setNodeType,
+  addTransition,
+  createNode,
+  addNode,
+  getNodeType,
+  setNodeReference
+} from 'utils/builder';
+import { Link } from '@material-ui/core';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
@@ -19,20 +27,37 @@ import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
+import { Pathway, ReferenceNode } from 'pathways-model';
 
 const Sidebar: FC = () => {
-  const { updatePathway } = usePathwaysContext();
-  const { pathway, pathwayRef } = useCurrentPathwayContext();
+  const { pathways, updatePathway } = usePathwaysContext();
+  const { pathway, pathwayRef, setPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
   const history = useHistory();
   const sidebarContainerElement = useRef<HTMLDivElement>(null);
+  const pathwayOptions = pathways.map((pathway: Pathway) => {
+    return {
+      label: pathway.name,
+      value: pathway.id
+    };
+  });
 
   const toggleSidebar = useCallback((): void => {
     setIsExpanded(!isExpanded);
   }, [isExpanded]);
 
+  const showReference = useCallback((): void => {
+    console.log('clicky');
+    const pathwayReferenceId = (currentNode as ReferenceNode).referenceId;
+    const referencedPathway = pathways.find(pathway => {
+      return pathway.id === pathwayReferenceId;
+    });
+    if (referencedPathway) {
+      setPathway(referencedPathway);
+    }
+  }, [currentNode, pathways, setPathway]);
   const changeNodeType = useCallback(
     (nodeType: string): void => {
       if (currentNodeRef.current && pathwayRef.current)
@@ -48,6 +73,25 @@ const Sidebar: FC = () => {
     [changeNodeType]
   );
 
+  const selectPathwayReference = useCallback(
+    (event: ChangeEvent<{ value: string }>): void => {
+      const referenceId = event?.target.value || '';
+      const referenceLabel =
+        pathwayOptions.find(option => {
+          return option.value === referenceId;
+        })?.label || '';
+      if (currentNodeRef.current && pathwayRef.current)
+        updatePathway(
+          setNodeReference(
+            pathwayRef.current,
+            currentNodeRef.current.key,
+            referenceId,
+            referenceLabel
+          )
+        );
+    },
+    [currentNodeRef, pathwayOptions, pathwayRef, updatePathway]
+  );
   const addPathwayNode = useCallback((): void => {
     if (!currentNodeRef.current || !pathwayRef.current) return;
 
@@ -109,7 +153,39 @@ const Sidebar: FC = () => {
                 value=""
               />
             )}
-
+            {nodeType === 'reference' && (
+              <div>
+                <DropDown
+                  id="nodeType"
+                  label="Node Type"
+                  options={nodeTypeOptions}
+                  onChange={selectNodeType}
+                  value="Reference"
+                />
+                <div className={styles.referenceDropdown}>
+                  <DropDown
+                    id="reference"
+                    label="Pathway Reference"
+                    options={pathwayOptions}
+                    onChange={selectPathwayReference}
+                    value={(currentNode as ReferenceNode).referenceId}
+                  />
+                  <div className={styles.referenceChevron}>
+                    <Link
+                      component={RouterLink}
+                      to={`/builder/${encodeURIComponent(
+                        (currentNode as ReferenceNode).referenceId
+                      )}`}
+                      color="inherit"
+                      underline="none"
+                      onClick={showReference}
+                    >
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
             {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
 
             {nodeType === 'branch' && (

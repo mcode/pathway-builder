@@ -9,10 +9,14 @@ export function isActionNode(node: PathwayNode): node is ActionNode {
 }
 
 export function isBranchNode(node: PathwayNode): boolean {
-  const { action, label, nodeTypeIsUndefined } = node as ActionNode;
-  return action === undefined && label !== 'Start' && !nodeTypeIsUndefined;
+  const { nodeTypeIsUndefined } = node;
+  return !nodeTypeIsUndefined && node.type === 'branch';
 }
 
+export function isReferenceNode(node: PathwayNode): boolean {
+  const { nodeTypeIsUndefined } = node;
+  return !nodeTypeIsUndefined && node.type === 'reference';
+}
 type ConversionResource = {
   [key: string]: string;
 };
@@ -26,7 +30,8 @@ export const nodeTypeOptions = [
   { label: 'Medication', value: 'MedicationRequest' },
   { label: 'Procedure', value: 'ServiceRequest' },
   { label: 'Regimen', value: 'CarePlan' },
-  { label: 'Observation', value: 'Observation' }
+  { label: 'Observation', value: 'Observation' },
+  { label: 'Pathway Reference', value: 'Reference' }
 ];
 
 export function findParent(nodes: NodeObj, childNodeKey: string): string | null {

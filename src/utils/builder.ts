@@ -5,7 +5,8 @@ import {
   Transition,
   Action,
   ActionNode,
-  BranchNode
+  BranchNode,
+  ReferenceNode
 } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
@@ -25,7 +26,8 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
       Start: {
         key: 'Start',
         label: 'Start',
-        transitions: []
+        transitions: [],
+        type: 'other'
       }
     }
   };
@@ -226,7 +228,8 @@ export function createNode(key?: string): PathwayNode {
     key,
     label: 'New Node',
     transitions: [],
-    nodeTypeIsUndefined: true
+    nodeTypeIsUndefined: true,
+    type: 'other'
   };
 
   return node;
@@ -243,7 +246,17 @@ export function setNodeLabel(pathway: Pathway, key: string, label: string): Path
     draftPathway.nodes[key].label = label;
   });
 }
-
+export function setNodeReference(
+  pathway: Pathway,
+  key: string,
+  referenceId: string,
+  referenceLabel: string
+): Pathway {
+  return produce(pathway, (draftPathway: Pathway) => {
+    (draftPathway.nodes[key] as ReferenceNode).referenceId = referenceId;
+    (draftPathway.nodes[key] as ReferenceNode).referenceLabel = referenceLabel;
+  });
+}
 export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
   let action: Action;
   let newPathway: Pathway;
@@ -302,6 +315,8 @@ export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string)
       return setNodeAction(newPathway, nodeKey, action);
     case 'Observation':
       return makeNodeBranch(pathway, nodeKey);
+    case 'Reference':
+      return makeNodeReference(pathway, nodeKey);
     default:
       console.error('Unknown nodeType: ' + nodeType);
       return pathway;
@@ -375,13 +390,13 @@ export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibr
   });
 }
 
-export function getNodeType(node?: ActionNode | BranchNode | PathwayNode | null): string {
+export function getNodeType(
+  node?: ActionNode | BranchNode | ReferenceNode | PathwayNode | null
+): string {
   if (!node || node.nodeTypeIsUndefined) {
     return 'null';
-  } else if (!(node as ActionNode).action && node.key !== 'Start') {
-    return 'branch';
   } else {
-    return 'action';
+    return node.type;
   }
 }
 
@@ -507,7 +522,7 @@ export function setActionResourceDisplay(action: Action, display: string): Actio
 export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const node = draftPathway.nodes[nodeKey] as ActionNode;
-
+    node.type = 'action';
     if (node.cql === undefined && node.action === undefined) {
       node.cql = '';
       node.nodeTypeIsUndefined = undefined;
@@ -521,22 +536,32 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
 
 export function makeNodeBranch(pathway: Pathway, nodeKey: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    const node = draftPathway.nodes[nodeKey] as ActionNode;
+    const node = draftPathway.nodes[nodeKey];
+    const newNode: PathwayNode = {
+      key: node.key,
+      label: node.label,
+      transitions: node.transitions,
+      type: 'branch'
+    };
 
-    if (
-      node.cql !== undefined ||
-      node.elm !== undefined ||
-      node.action !== null ||
-      node.nodeTypeIsUndefined !== undefined
-    ) {
-      delete node.cql;
-      delete node.elm;
-      delete node.action;
-      delete node.nodeTypeIsUndefined;
-    }
+    draftPathway.nodes[nodeKey] = newNode;
   });
 }
 
+export function makeNodeReference(pathway: Pathway, nodeKey: string): Pathway {
+  return produce(pathway, (draftPathway: Pathway) => {
+    const node = draftPathway.nodes[nodeKey] as ActionNode;
+    const newNode: ReferenceNode = {
+      key: node.key,
+      label: node.label,
+      transitions: node.transitions,
+      referenceId: '',
+      referenceLabel: '',
+      type: 'reference'
+    };
+    draftPathway.nodes[nodeKey] = newNode;
+  });
+}
 export function createCQL(action: Action, nodeKey: string): string {
   const resource = action.resource;
   // CQl identifier cannot start with a number or contain '-'
