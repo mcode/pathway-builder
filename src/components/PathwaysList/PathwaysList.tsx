@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faPlus, faTools } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/PathwaysProvider';
@@ -10,7 +10,7 @@ import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
-import { Pathway } from "pathways-model";
+import { Pathway } from 'pathways-model';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -30,9 +30,9 @@ const PathwaysList: FC = () => {
 
   const selectFile = useCallback(
     (files: FileList | undefined | null) => {
-      if (files?.length) addPathway(files[0] as unknown as Pathway);
+      if (files?.length) addPathway((files[0] as unknown) as Pathway);
     },
-    []
+    [addPathway]
   );
 
   return (
@@ -43,7 +43,7 @@ const PathwaysList: FC = () => {
           variant="contained"
           color="primary"
           startIcon={<FontAwesomeIcon icon={faFileImport} />}
-          onClick={() => setImportPathwayOpen(true)}
+          onClick={(): void => setImportPathwayOpen(true)}
         >
           Import Pathway
         </Button>
@@ -59,10 +59,11 @@ const PathwaysList: FC = () => {
         </Button>
       </div>
 
-      <FileImportModal open={importPathwayOpen}
-                       onClose={() => setImportPathwayOpen(false)}
-                       onSelectFile={selectFile}
-                       allowedFileType=".json"
+      <FileImportModal
+        open={importPathwayOpen}
+        onClose={(): void => setImportPathwayOpen(false)}
+        onSelectFile={selectFile}
+        allowedFileType=".json"
       />
 
       <PathwayModal open={open} onClose={closeNewPathwayModal} />

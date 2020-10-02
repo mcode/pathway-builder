@@ -1,8 +1,14 @@
 import React, { FC, useState, useRef, FormEvent, useCallback, memo } from 'react';
-import { Pathway } from 'pathways-model';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Input } from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Input
+} from '@material-ui/core';
 import useStyles from './styles';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -13,22 +19,25 @@ interface FileImportModalProps {
   allowedFileType?: string; // Setting this to undefined will allow any file type to be selected
 }
 
-const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile, allowedFileType}) => {
+const FileImportModal: FC<FileImportModalProps> = ({
+  open,
+  onClose,
+  onSelectFile,
+  allowedFileType
+}) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
-
-  const { addPathway } = usePathwaysContext();
 
   const selectFile = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const files = importFileRef?.current?.files;
-      onSelectFile(files)
+      onSelectFile(files);
       onClose();
       setFileName('');
     },
-    []
+    [onClose, onSelectFile]
   );
 
   const handleChooseFile = useCallback(() => {
@@ -51,11 +60,16 @@ const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile,
               className={styles.input}
               inputRef={importFileRef}
               type="file"
-              inputProps={{accept: allowedFileType}} // TODO: how to allow multiple tpyes?
+              inputProps={{ accept: allowedFileType }} // TODO: how to allow multiple tpyes?
               onChange={handleChooseFile}
             />
             <label htmlFor="choose-file-input">
-              <Button className={styles.inputButton} variant="contained" color="primary" component="span">
+              <Button
+                className={styles.inputButton}
+                variant="contained"
+                color="primary"
+                component="span"
+              >
                 Choose File
               </Button>
             </label>
@@ -66,13 +80,18 @@ const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile,
           </div>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="primary" startIcon={<FontAwesomeIcon icon={faFileImport}/>} type="submit">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<FontAwesomeIcon icon={faFileImport} />}
+            type="submit"
+          >
             Import
           </Button>
         </DialogActions>
       </form>
     </Dialog>
   );
-}
+};
 
 export default memo(FileImportModal);

@@ -10,7 +10,6 @@ import CriteriaTable from './CriteriaTable';
 import useStyles from './styles';
 import FileImportModal from '../FileImportModal';
 import { useCriteriaContext } from '../CriteriaProvider';
-import { Pathway } from "pathways-model";
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
@@ -31,7 +30,7 @@ const CriteriaList: FC = () => {
     (files: FileList | undefined | null) => {
       if (files?.length) addCriteria(files[0]);
     },
-    []
+    [addCriteria]
   );
 
   return (
@@ -56,7 +55,12 @@ const CriteriaList: FC = () => {
         </Button>
       </div>
 
-      <FileImportModal open={open} onClose={closeImportModal} onSelectFile={selectFile} allowedFileType=".cql"/>
+      <FileImportModal
+        open={open}
+        onClose={closeImportModal}
+        onSelectFile={selectFile}
+        allowedFileType=".cql"
+      />
 
       {status === 'loading' ? <Loading /> : <CriteriaTable />}
     </div>
