@@ -9,13 +9,16 @@ import PathwaysTable from './PathwaysTable';
 import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
-import ImportPathwayModal from './ImportPathwayModal';
+import FileImportModal from 'components/FileImportModal';
+import { Pathway } from "pathways-model";
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const { status } = usePathwaysContext();
   const [importPathwayOpen, setImportPathwayOpen] = useState(false);
+
+  const { addPathway } = usePathwaysContext();
 
   const openNewPathwayModal = useCallback((): void => {
     setOpen(true);
@@ -24,6 +27,14 @@ const PathwaysList: FC = () => {
   const closeNewPathwayModal = useCallback((): void => {
     setOpen(false);
   }, []);
+
+  const selectFile = useCallback(
+    (files: FileList | undefined | null) => {
+      if (files?.length) addPathway(files[0] as unknown as Pathway);
+      setImportPathwayOpen(false);
+    },
+    []
+  );
 
   return (
     <div className={styles.root}>
@@ -49,7 +60,7 @@ const PathwaysList: FC = () => {
         </Button>
       </div>
 
-      <ImportPathwayModal open={importPathwayOpen} onClose={() => setImportPathwayOpen(false)} />
+      <FileImportModal open={importPathwayOpen} onClose={() => setImportPathwayOpen(false)} onSelectFile={selectFile} />
 
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
 

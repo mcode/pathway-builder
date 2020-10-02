@@ -21,20 +21,6 @@ export default makeStyles(
       float: 'right',
       width: '45px'
     },
-    input: {
-      display: 'none'
-    },
-    chooseFileInput: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    inputButton: {
-      whiteSpace: 'nowrap',
-      marginRight: '1em'
-    },
-    fileName: {
-      fontStyle: 'italic'
-    },
     buttonRow: {
       display: 'flex',
       justifyContent: 'flex-end'

@@ -6,12 +6,13 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-interface ImportPathwayModalProps {
+interface FileImportModalProps {
   open: boolean;
   onClose: () => void;
+  onSelectFile: (files: FileList | undefined | null) => void;
 }
 
-const ImportPathwayModal: FC<ImportPathwayModalProps> = ({open, onClose}) => {
+const FileImportModal: FC<FileImportModalProps> = ({open, onClose, onSelectFile}) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
@@ -73,4 +74,4 @@ const ImportPathwayModal: FC<ImportPathwayModalProps> = ({open, onClose}) => {
   );
 }
 
-export default memo(ImportPathwayModal);
+export default memo(FileImportModal);

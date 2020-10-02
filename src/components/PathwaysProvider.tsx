@@ -64,6 +64,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
     [pathwaysRef, setPathways]
   );
 
+  // Load the pathways present at the configured service
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload, setPathways]);
