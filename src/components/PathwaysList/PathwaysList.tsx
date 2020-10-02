@@ -10,7 +10,6 @@ import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
-import { Pathway } from 'pathways-model';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -18,7 +17,7 @@ const PathwaysList: FC = () => {
   const { status } = usePathwaysContext();
   const [importPathwayOpen, setImportPathwayOpen] = useState(false);
 
-  const { addPathway } = usePathwaysContext();
+  const { addPathwayFromFile } = usePathwaysContext();
 
   const openNewPathwayModal = useCallback((): void => {
     setOpen(true);
@@ -30,9 +29,9 @@ const PathwaysList: FC = () => {
 
   const selectFile = useCallback(
     (files: FileList | undefined | null) => {
-      if (files?.length) addPathway((files[0] as unknown) as Pathway);
+      if (files?.length) addPathwayFromFile((files[0] as unknown) as File);
     },
-    [addPathway]
+    [addPathwayFromFile]
   );
 
   return (

@@ -17,6 +17,7 @@ interface PathwaysContextInterface {
   pathways: Pathway[];
   status: string;
   addPathway: (pathway: Pathway) => void;
+  addPathwayFromFile: (file: File) => void;
   deletePathway: (id: string) => void;
   updatePathway: (pathway: Pathway) => void;
 }
@@ -39,6 +40,23 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   const addPathway = useCallback(
     (pathway: Pathway) => {
       setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
+    },
+    [setPathways]
+  );
+
+  const addPathwayFromFile = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>): void => {
+        if (event.target?.result) {
+          if (event.target?.result) {
+            const rawContent = event.target.result as string;
+            const pathway = JSON.parse(rawContent);
+            setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
+          }
+        } else alert('Unable to read that file');
+      };
+      reader.readAsText(file);
     },
     [setPathways]
   );
@@ -79,6 +97,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
           value={{
             pathways,
             addPathway,
+            addPathwayFromFile,
             deletePathway,
             updatePathway,
             status: service.status
