@@ -149,7 +149,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
   const action = (currentNode as ActionNode).action;
   if (!action) return <></>;
 
-  const changeNodeTypeEnabled = currentNode?.key !== 'Start';
+  const changeNodeTypeEnabled = currentNode?.key && currentNode.type !== 'start';
   const resource = action.resource;
   let system = '';
   let code = '';

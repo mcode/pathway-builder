@@ -1,4 +1,13 @@
-import { PathwayNode, ActionNode, Pathway, Transition, NodeObj, Action } from 'pathways-model';
+import {
+  PathwayNode,
+  ActionNode,
+  Pathway,
+  Transition,
+  NodeObj,
+  Action,
+  BranchNode,
+  ReferenceNode
+} from 'pathways-model';
 import { History } from 'history';
 import shortid from 'shortid';
 import { CodeableConcept } from 'fhir-objects';
@@ -8,14 +17,12 @@ export function isActionNode(node: PathwayNode): node is ActionNode {
   return action !== undefined;
 }
 
-export function isBranchNode(node: PathwayNode): boolean {
-  const { nodeTypeIsUndefined } = node;
-  return !nodeTypeIsUndefined && node.type === 'branch';
+export function isBranchNode(node: PathwayNode): node is BranchNode {
+  return node.type === 'branch';
 }
 
-export function isReferenceNode(node: PathwayNode): boolean {
-  const { nodeTypeIsUndefined } = node;
-  return !nodeTypeIsUndefined && node.type === 'reference';
+export function isReferenceNode(node: PathwayNode): node is ReferenceNode {
+  return node.type === 'reference';
 }
 type ConversionResource = {
   [key: string]: string;

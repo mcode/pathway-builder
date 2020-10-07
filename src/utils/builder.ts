@@ -27,14 +27,19 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
         key: 'Start',
         label: 'Start',
         transitions: [],
-        type: 'other'
+        type: 'start'
       }
     }
   };
 }
 
-export function downloadPathway(pathway: Pathway, criteria: Criteria[], cpg = false): void {
-  const pathwayString = exportPathway(pathway, criteria, cpg);
+export function downloadPathway(
+  pathway: Pathway,
+  pathways: Pathway[],
+  criteria: Criteria[],
+  cpg = false
+): void {
+  const pathwayString = exportPathway(pathway, pathways, criteria, cpg);
   // Create blob from pathwayString to save to file system
   const pathwayBlob = new Blob([pathwayString], {
     type: 'application/json'
@@ -49,12 +54,17 @@ export function downloadPathway(pathway: Pathway, criteria: Criteria[], cpg = fa
   window.URL.revokeObjectURL(url);
 }
 
-export function exportPathway(pathway: Pathway, criteria: Criteria[], cpg: boolean): string {
+export function exportPathway(
+  pathway: Pathway,
+  pathways: Pathway[],
+  criteria: Criteria[],
+  cpg: boolean
+): string {
   const elm = generateNavigationalElm(pathway);
   const pathwayWithElm = setNavigationalElm(pathway, elm);
   let pathwayToExport: Pathway | Bundle = pathwayWithElm;
   if (cpg) {
-    const exporter = new CPGExporter(pathwayWithElm, criteria);
+    const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
     pathwayToExport = exporter.export();
   }
   return JSON.stringify(pathwayToExport, undefined, 2);
@@ -228,8 +238,7 @@ export function createNode(key?: string): PathwayNode {
     key,
     label: 'New Node',
     transitions: [],
-    nodeTypeIsUndefined: true,
-    type: 'other'
+    type: 'null'
   };
 
   return node;
@@ -393,7 +402,7 @@ export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibr
 export function getNodeType(
   node?: ActionNode | BranchNode | ReferenceNode | PathwayNode | null
 ): string {
-  if (!node || node.nodeTypeIsUndefined) {
+  if (!node || node.type === 'null') {
     return 'null';
   } else {
     return node.type;
@@ -525,7 +534,6 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
     node.type = 'action';
     if (node.cql === undefined && node.action === undefined) {
       node.cql = '';
-      node.nodeTypeIsUndefined = undefined;
     }
 
     node.transitions.forEach(transition => {

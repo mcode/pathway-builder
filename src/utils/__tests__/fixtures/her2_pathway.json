@@ -21,6 +21,7 @@
     "Start": {
       "key": "Start",
       "label": "Start",
+      "type": "start",
       "transitions": [
         {
           "id": "1",
@@ -31,6 +32,7 @@
     "NodeStatus": {
       "key": "NodeStatus",
       "label": "Node Status",
+      "type": "branch",
       "transitions": [
         {
           "id": "1",
@@ -53,6 +55,7 @@
     "TumorSize": {
       "key": "TumorSize",
       "label": "Tumor Size",
+      "type": "branch",
       "transitions": [
         {
           "id": "1",
@@ -75,6 +78,7 @@
     "ChemotherapyTHWeekly": {
       "key": "ChemotherapyTHWeekly",
       "label": "Chemotherapy TH Weekly",
+      "type": "action",
       "action": {
           "id": "1",
           "type": "create",
@@ -104,6 +108,7 @@
     "ChemotherapyTCHAC+TH": {
       "key": "ChemotherapyTCHAC+TH",
       "label": "Chemotherapy TCH AC + TH",
+      "type": "action",
       "action": {
           "id": "1",
           "type": "create",
@@ -133,6 +138,7 @@
     "PostchemotherapyTrastuzumabRequest": {
       "key": "PostchemotherapyTrastuzumabRequest",
       "label": "Post-Chemotherapy Trastuzumab Request",
+      "type": "action",
       "action": {
           "id": "1",
           "type": "create",
@@ -162,6 +168,7 @@
     "ERStatus": {
       "key": "ERStatus",
       "label": "ER Status",
+      "type": "branch",
       "transitions": [
         {
           "id": "1",
@@ -176,6 +183,7 @@
     "EndocrineTherapy": {
       "key": "EndocrineTherapy",
       "label": "Endocrine Therapy",
+      "type": "action",
       "action": {
          "id": "1",
          "type": "create",

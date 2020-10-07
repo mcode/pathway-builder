@@ -54,6 +54,7 @@ interface IncludedCqlLibraries {
 
 export class CPGExporter {
   pathway: Pathway;
+  pathways: Pathway[];
   bundle: Bundle;
   libraries: Library[];
   criteria: Criteria[];
@@ -61,7 +62,7 @@ export class CPGExporter {
   activityDefinitions: ActivityDefinitionMap;
 
   // TODO: figure out if elm works correctly here
-  constructor(pathway: Pathway, criteria: Criteria[]) {
+  constructor(pathway: Pathway, pathways: Pathway[], criteria: Criteria[]) {
     // Ensure each node only has one parent
     const pathwayCopy = deepCopyPathway(pathway);
     pathwayCopy.nodes = cleanPathway(pathwayCopy.nodes);
@@ -76,14 +77,31 @@ export class CPGExporter {
     this.nestedBranch = [];
     this.activityDefinitions = {};
     this.libraries = this.createLibraries();
+    this.pathways = pathways;
   }
 
   export(): Bundle {
     const library = this.libraries[0];
-    const cpgRecommendation = this.createPlanDefinition(
+    const strategyDefinition = this.createPlanDefinition(
       uuidv4(),
       this.pathway.name,
       this.pathway.description,
+      'strategy',
+      library.id
+    );
+
+    this._export(strategyDefinition, this.pathway);
+    this.libraries.forEach(l => this.bundle.entry.push(createBundleEntry(l)));
+    this.bundle.entry.push(createBundleEntry(strategyDefinition));
+    return this.bundle;
+  }
+
+  _export(parentDefinition: PlanDefinition, pathway: Pathway): PlanDefinition {
+    const library = this.libraries[0];
+    const cpgRecommendation = this.createPlanDefinition(
+      uuidv4(),
+      pathway.name,
+      pathway.description,
       'recommendation',
       library.id
     );
@@ -100,8 +118,8 @@ export class CPGExporter {
     while (queue.length !== 0) {
       // Key is always defined since queue.length > 0
       const key = queue.shift()!; // eslint-disable-line
-      const node = this.pathway.nodes[key];
-      const parentKey = findParent(this.pathway.nodes, key);
+      const node = pathway.nodes[key];
+      const parentKey = findParent(pathway.nodes, key);
 
       /*
         Check parent has been visited - if not:
@@ -118,7 +136,7 @@ export class CPGExporter {
       }
 
       // Visit this node and convert it
-      if (parentKey) this.convertNode(key, parentKey, cpgRecommendation);
+      if (parentKey) this.convertNode(key, parentKey, cpgRecommendation, parentDefinition, pathway);
       visited.push(key);
 
       // Add all unvisited and unqueued node transitions to the queue
@@ -129,10 +147,7 @@ export class CPGExporter {
       });
     }
 
-    this.libraries.forEach(l => this.bundle.entry.push(createBundleEntry(l)));
-    this.bundle.entry.push(createBundleEntry(cpgRecommendation));
-
-    return this.bundle;
+    return cpgRecommendation;
   }
 
   createActivityDefinition(action: Action): ActivityDefinition | null {
@@ -372,9 +387,15 @@ export class CPGExporter {
     return [mainLibrary, ...additionalLibraries];
   }
 
-  private convertNode(key: string, parentKey: string, cpgRecommendation: PlanDefinition): void {
-    const node = this.pathway.nodes[key];
-    const parent = this.pathway.nodes[parentKey];
+  private convertNode(
+    key: string,
+    parentKey: string,
+    cpgRecommendation: PlanDefinition,
+    parentDefinition: PlanDefinition,
+    pathway: Pathway
+  ): void {
+    const node = pathway.nodes[key];
+    const parent = pathway.nodes[parentKey];
     const descriptionDetails = `${node.label} (Key: ${key}) - Parent Node Key: ${parentKey}`;
 
     if (isActionNode(node)) {
@@ -390,15 +411,15 @@ export class CPGExporter {
       // Traverse up to find closest action and add as related action
       let parentAction = parent;
       while (isBranchNode(parentAction)) {
-        const tempParentKey = findParent(this.pathway.nodes, parentAction.key);
-        if (tempParentKey) parentAction = this.pathway.nodes[tempParentKey];
+        const tempParentKey = findParent(pathway.nodes, parentAction.key);
+        if (tempParentKey) parentAction = pathway.nodes[tempParentKey];
         else break;
       }
       if (parentAction.key !== 'Start')
         addRelatedAction(cpgAction, parentAction.key, PARENT_RELATIONSHIP);
 
       // Add a related action for each action child
-      const childActionNodeKeys = findAllChildActionNodes(this.pathway.nodes, key);
+      const childActionNodeKeys = findAllChildActionNodes(pathway.nodes, key);
       childActionNodeKeys.forEach(childKey =>
         addRelatedAction(cpgAction, childKey, CHILD_RELATIONSHIP)
       );
@@ -417,8 +438,16 @@ export class CPGExporter {
         this.addActionToPlanDefinition(cpgAction, cpgRecommendation, parent.key);
       }
     } else if (isReferenceNode(node)) {
-      // not sure what cpg wants here
-    } else if (node.key !== 'Start') {
+      const referencedPathway = this.pathways.find((pathway: Pathway) => {
+        return pathway.id === node.referenceId;
+      });
+      if (referencedPathway) {
+        const pathwayCopy = deepCopyPathway(referencedPathway);
+        pathwayCopy.nodes = cleanPathway(pathwayCopy.nodes);
+        const newRecommendation = this._export(cpgRecommendation, pathwayCopy);
+        parentDefinition.action.push(newRecommendation);
+      }
+    } else if (node.type !== 'start') {
       const msg = `Error Exporting at Node ${node.label}\n${node.label} Node does not have a node type. Please edit the node to have a node type and add applicable details and try again.`; // eslint-disable-line
       alert(msg);
       console.error(`${msg}\n${JSON.stringify(node, undefined, 2)}`);

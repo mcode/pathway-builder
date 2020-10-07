@@ -6,7 +6,7 @@ import { findParents } from 'utils/nodeUtils';
 
 describe('convert pathway into cpg', () => {
   it('correctly converts sample pathway into cpg', () => {
-    const exporter = new CPGExporter(samplepathway, []);
+    const exporter = new CPGExporter(samplepathway, [], []);
     const cpgPathway = exporter.export();
     expect(cpgPathway.type).toBe('transaction');
     expect(cpgPathway.entry.length).toBe(6);
@@ -18,13 +18,13 @@ describe('convert pathway into cpg', () => {
   });
 
   it('correctly converts her2+ pathway into cpg', () => {
-    const exporter = new CPGExporter(her2pathway, []);
+    const exporter = new CPGExporter(her2pathway, [], []);
     const cpgPathway = exporter.export();
     expect(cpgPathway.entry.length).toBe(5);
   });
 
   it('correctly converts neoadjuvant pathway into cpg', () => {
-    const exporter = new CPGExporter(neoadjuvantpathway, []);
+    const exporter = new CPGExporter(neoadjuvantpathway, [], []);
     const cpgPathway = exporter.export();
     expect(cpgPathway.entry.length).toBe(9);
   });
@@ -59,7 +59,7 @@ describe('convert pathway into cpg', () => {
   });
 
   describe('convert action into activity definition', () => {
-    const exporter = new CPGExporter(samplepathway, []);
+    const exporter = new CPGExporter(samplepathway, [], []);
 
     it('converts service request correctly', () => {
       const action = samplepathway.nodes['Surgery'].action;
@@ -79,7 +79,7 @@ describe('convert pathway into cpg', () => {
   });
 
   describe('create plan definitions', () => {
-    const exporter = new CPGExporter(samplepathway, []);
+    const exporter = new CPGExporter(samplepathway, [], []);
 
     it('creates strategy definition', () => {
       const result = exporter.createPlanDefinition(

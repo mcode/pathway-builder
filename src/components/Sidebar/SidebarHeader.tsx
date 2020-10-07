@@ -127,7 +127,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   return (
     <div className={styles.sidebarHeader}>
       <div className={styles.sidebarHeaderGroup}>
-        {node.key !== 'Start' && !isTransition && (
+        {node.type !== 'start' && !isTransition && (
           <IconButton
             className={styles.sidebarHeaderButton}
             onClick={goToParentNode}
@@ -138,7 +138,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
         )}
 
         <div className={styles.headerLabelGroup} onClick={handleShowInput}>
-          {showInput && node.key !== 'Start' ? (
+          {showInput && node.type !== 'start' ? (
             <FormControl className={styles.formControl} fullWidth>
               <Input
                 className={styles.headerLabel}
@@ -156,11 +156,11 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
               className={clsx(
                 styles.headerLabel,
                 styles.headerLabelText,
-                node.key === 'Start' && styles.headerLabelStart
+                node.type === 'start' && styles.headerLabelStart
               )}
             >
               {nodeLabel}
-              {node.key !== 'Start' && (
+              {node.type !== 'start' && (
                 <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
               )}
             </div>
@@ -169,7 +169,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
       </div>
 
       <div className={styles.sidebarHeaderGroup}>
-        {node.key !== 'Start' && (
+        {node.type !== 'start' && (
           <Tooltip
             placement="top"
             open={deleteDisabled ? openTooltip : false}

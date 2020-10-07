@@ -122,7 +122,7 @@ const Node: FC<NodeProps> = ({
         <NodeIcon
           resourceType={action ? action.resource?.resourceType : undefined}
           nodeType={nodeType}
-          isStartNode={pathwayNode.label === 'Start'}
+          isStartNode={pathwayNode.type === 'start'}
         />
         {label}
       </div>

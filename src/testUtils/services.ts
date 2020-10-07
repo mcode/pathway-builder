@@ -26,7 +26,7 @@ export const loadedService: Service<Array<Pathway>> = {
           key: 'Start',
           label: 'Start',
           transitions: [],
-          type: 'other'
+          type: 'start'
         }
       }
     },
@@ -48,7 +48,7 @@ export const loadedService: Service<Array<Pathway>> = {
           key: 'Start',
           label: 'Start',
           transitions: [],
-          type: 'other'
+          type: 'start'
         }
       }
     },
@@ -70,7 +70,7 @@ export const loadedService: Service<Array<Pathway>> = {
           key: 'Start',
           label: 'Start',
           transitions: [],
-          type: 'other'
+          type: 'start'
         }
       }
     }

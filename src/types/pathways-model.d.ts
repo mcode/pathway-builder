@@ -31,8 +31,7 @@ declare module 'pathways-model' {
     key: string;
     label: string;
     transitions: Transition[];
-    nodeTypeIsUndefined?: boolean;
-    type: 'action' | 'branch' | 'reference' | 'other';
+    type: 'action' | 'branch' | 'reference' | 'start' | 'null';
   }
 
   export interface ActionNode extends PathwayNode {
