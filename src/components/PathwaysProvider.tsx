@@ -49,11 +49,9 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
       const reader = new FileReader();
       reader.onload = (event: ProgressEvent<FileReader>): void => {
         if (event.target?.result) {
-          if (event.target?.result) {
-            const rawContent = event.target.result as string;
-            const pathway = JSON.parse(rawContent);
-            setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
-          }
+          const rawContent = event.target.result as string;
+          const pathway = JSON.parse(rawContent);
+          setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
         } else alert('Unable to read that file');
       };
       reader.readAsText(file);
