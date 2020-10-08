@@ -8,8 +8,8 @@ import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 
 import useStyles from './styles';
-import FileImportModal from '../FileImportModal';
-import { useCriteriaContext } from '../CriteriaProvider';
+import FileImportModal from 'components/FileImportModal';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
