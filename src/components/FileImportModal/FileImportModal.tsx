@@ -45,7 +45,7 @@ const FileImportModal: FC<FileImportModalProps> = ({
   }, [importFileRef]);
 
   return (
-    <Dialog open={open} onClose={onClose} aira-labelledby="import-pathway" fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} aria-labelledby="import-pathway" fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
         <IconButton aria-label="close" onClick={onClose} className={styles.dialogCloseButton}>
           <FontAwesomeIcon icon={faTimes} />
@@ -60,7 +60,7 @@ const FileImportModal: FC<FileImportModalProps> = ({
               className={styles.input}
               inputRef={importFileRef}
               type="file"
-              inputProps={{ accept: allowedFileType }} // TODO: how to allow multiple tpyes?
+              inputProps={{ accept: allowedFileType }} // TODO: how to allow multiple types?
               onChange={handleChooseFile}
             />
             <label htmlFor="choose-file-input">
