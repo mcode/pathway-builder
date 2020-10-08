@@ -15,7 +15,7 @@ const PathwaysList: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const { status } = usePathwaysContext();
-  const [importPathwayOpen, setImportPathwayOpen] = useState(false);
+  const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
 
   const { addPathwayFromFile } = usePathwaysContext();
 
@@ -34,6 +34,14 @@ const PathwaysList: FC = () => {
     [addPathwayFromFile]
   );
 
+  const openImportPathwayModal = useCallback(
+    (): void => _setImportPathwayOpen(true), []
+  );
+
+  const closeImportPathwayModal = useCallback(
+    (): void => _setImportPathwayOpen(false), []
+  );
+
   return (
     <div className={styles.root}>
       <div className={styles.buttonRow}>
@@ -42,7 +50,7 @@ const PathwaysList: FC = () => {
           variant="contained"
           color="primary"
           startIcon={<FontAwesomeIcon icon={faFileImport} />}
-          onClick={(): void => setImportPathwayOpen(true)}
+          onClick={openImportPathwayModal}
         >
           Import Pathway
         </Button>
@@ -60,7 +68,7 @@ const PathwaysList: FC = () => {
 
       <FileImportModal
         open={importPathwayOpen}
-        onClose={(): void => setImportPathwayOpen(false)}
+        onClose={closeImportPathwayModal}
         onSelectFile={selectFile}
         allowedFileType=".json"
       />
