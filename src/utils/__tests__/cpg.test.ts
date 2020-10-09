@@ -9,7 +9,7 @@ describe('convert pathway into cpg', () => {
     const exporter = new CPGExporter(samplepathway, [], []);
     const cpgPathway = exporter.export();
     expect(cpgPathway.type).toBe('transaction');
-    expect(cpgPathway.entry.length).toBe(6);
+    expect(cpgPathway.entry.length).toBe(7);
     cpgPathway.entry.forEach(entry => {
       expect(entry.fullUrl).toBeDefined();
       expect(entry.resource).toBeDefined();
@@ -20,13 +20,13 @@ describe('convert pathway into cpg', () => {
   it('correctly converts her2+ pathway into cpg', () => {
     const exporter = new CPGExporter(her2pathway, [], []);
     const cpgPathway = exporter.export();
-    expect(cpgPathway.entry.length).toBe(5);
+    expect(cpgPathway.entry.length).toBe(6);
   });
 
   it('correctly converts neoadjuvant pathway into cpg', () => {
     const exporter = new CPGExporter(neoadjuvantpathway, [], []);
     const cpgPathway = exporter.export();
-    expect(cpgPathway.entry.length).toBe(9);
+    expect(cpgPathway.entry.length).toBe(10);
   });
 
   describe('clean pathway before processing', () => {
