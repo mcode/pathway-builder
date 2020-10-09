@@ -8,7 +8,7 @@ declare module 'pathways-model' {
     id: string;
     name: string;
     description: string;
-    library: string;
+    library: string | string[];
     preconditions: Precondition[];
     nodes: NodeObj;
     elm?: PathwayELM;

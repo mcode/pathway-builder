@@ -63,9 +63,11 @@ export function exportPathway(
   const elm = generateNavigationalElm(pathway);
   const pathwayWithElm = setNavigationalElm(pathway, elm);
   let pathwayToExport: Pathway | Bundle = pathwayWithElm;
+  const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
   if (cpg) {
-    const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
     pathwayToExport = exporter.export();
+  } else {
+    pathwayToExport = exporter.modelExport();
   }
   return JSON.stringify(pathwayToExport, undefined, 2);
 }
@@ -450,6 +452,7 @@ export function setTransitionConditionDescription(
     } else if (foundTransition) {
       foundTransition.condition = {
         description: description,
+        criteriaSource: '',
         cql: ''
       };
     }
@@ -596,8 +599,8 @@ export function createCQL(action: Action, nodeKey: string): string {
       coding.display
     }'\n`;
     cql += `${defineStatement()}
-      if exists ${retrieveStatement('Procedure')} 
-      then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')} 
+      if exists ${retrieveStatement('Procedure')}
+      then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')}
       else ${retrieveStatement('ServiceRequest')} R ${returnStatement('ServiceRequest')}`;
   } else if (resource.resourceType === 'CarePlan') {
     cql += `${defineStatement()}
