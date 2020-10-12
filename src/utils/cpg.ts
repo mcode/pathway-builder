@@ -80,23 +80,6 @@ export class CPGExporter {
     this.pathways = pathways;
   }
 
-  modelExport(): Pathway {
-    this.pathway.library = this.libraries.flatMap(library => {
-      return library.content
-        .filter(x => x.contentType === 'text/cql' && x.data) // Select only cql with data
-        .map(x => atob(<string>x.data)) // Convert Base64'd library back to a string
-    });
-    for (const nodeId in this.pathway.nodes) {
-      const node = this.pathway.nodes[nodeId];
-      for (const transition of node.transitions) {
-        if (transition.condition?.elm) {
-            transition.condition.cql = `${this.libraries[0].name}.${transition.condition.cql}` // Need to prepend the Library
-        }
-      }
-    }
-    return this.pathway;
-  }
-
   export(): Bundle {
     const strategyDefinition = this.createPlanDefinition(
       uuidv4(),

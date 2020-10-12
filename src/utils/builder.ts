@@ -12,6 +12,7 @@ import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import produce from 'immer';
 import { CPGExporter } from './cpg';
+import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 
@@ -63,11 +64,12 @@ export function exportPathway(
   const elm = generateNavigationalElm(pathway);
   const pathwayWithElm = setNavigationalElm(pathway, elm);
   let pathwayToExport: Pathway | Bundle = pathwayWithElm;
-  const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
   if (cpg) {
+    const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
     pathwayToExport = exporter.export();
   } else {
-    pathwayToExport = exporter.modelExport();
+    const exporter = new CaminoExporter(pathwayWithElm, criteria);
+    pathwayToExport = exporter.export();
   }
   return JSON.stringify(pathwayToExport, undefined, 2);
 }
