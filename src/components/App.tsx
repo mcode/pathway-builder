@@ -22,37 +22,37 @@ const App: FC = () => {
     <ThemeProvider theme="light">
       <UserProvider>
         <CurrentPathwayProvider>
-          <PathwaysProvider>
-            <CurrentNodeProvider>
-              <CriteriaProvider>
-                <SnackbarProvider>
-                  <CurrentCriteriaProvider>
-                    <CriteriaBuilderProvider>
-                      <Router>
-                        <Switch>
-                          <Route path="/builder/:id/node/:nodeId">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/builder/:id">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/">
-                            <Header />
-                            <Tabs
-                              tabs={[
-                                { label: 'Pathway', component: <PathwaysList /> },
-                                { label: 'Criteria', component: <CriteriaList /> }
-                              ]}
-                            />
-                          </Route>
-                        </Switch>
-                      </Router>
-                    </CriteriaBuilderProvider>
-                  </CurrentCriteriaProvider>
-                </SnackbarProvider>
-              </CriteriaProvider>
-            </CurrentNodeProvider>
-          </PathwaysProvider>
+          <CriteriaProvider>
+            <PathwaysProvider>
+              <CurrentNodeProvider>
+                  <SnackbarProvider>
+                    <CurrentCriteriaProvider>
+                      <CriteriaBuilderProvider>
+                        <Router>
+                          <Switch>
+                            <Route path="/builder/:id/node/:nodeId">
+                              <BuilderRoute />
+                            </Route>
+                            <Route path="/builder/:id">
+                              <BuilderRoute />
+                            </Route>
+                            <Route path="/">
+                              <Header />
+                              <Tabs
+                                tabs={[
+                                  { label: 'Pathway', component: <PathwaysList /> },
+                                  { label: 'Criteria', component: <CriteriaList /> }
+                                ]}
+                              />
+                            </Route>
+                          </Switch>
+                        </Router>
+                      </CriteriaBuilderProvider>
+                    </CurrentCriteriaProvider>
+                  </SnackbarProvider>
+              </CurrentNodeProvider>
+            </PathwaysProvider>
+          </CriteriaProvider>
         </CurrentPathwayProvider>
       </UserProvider>
     </ThemeProvider>

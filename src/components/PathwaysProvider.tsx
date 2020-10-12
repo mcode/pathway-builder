@@ -12,6 +12,7 @@ import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import useRefState from 'utils/useRefState';
+import { useCriteriaContext } from './CriteriaProvider';
 
 interface PathwaysContextInterface {
   pathways: Pathway[];
@@ -36,12 +37,38 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   const [pathways, pathwaysRef, setPathways] = useRefState<Pathway[]>([]);
   const service = useGetService<Pathway>(config.get('demoPathwaysService'));
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
+  const { addCqlCriteria, criteria } = useCriteriaContext();
 
   const addPathway = useCallback(
     (pathway: Pathway) => {
       setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
     },
     [setPathways]
+  );
+
+  const loadPathwayLibraries = useCallback(
+    (pathway: Pathway): void => {
+      let cqlLibs = pathway.library;
+      if (!Array.isArray(cqlLibs)) cqlLibs = [cqlLibs];
+      cqlLibs.forEach(lib => addCqlCriteria(lib));
+    },
+    [addCqlCriteria]
+  );
+
+  const updateCriteriaSource = useCallback(
+    (pathway: Pathway): void => {
+      Object.values(pathway.nodes).forEach(node => {
+        node.transitions.forEach(transition => {
+          if (transition.condition?.criteriaSource) {
+            const [library, statement] = transition.condition.cql.split('.');
+            transition.condition.criteriaSource = criteria.find(
+              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
+            )?.id
+          }
+        });
+      });
+    },
+    [criteria]
   );
 
   const addPathwayFromFile = useCallback(
@@ -51,12 +78,14 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           const pathway = JSON.parse(rawContent);
+          loadPathwayLibraries(pathway);
+          updateCriteriaSource(pathway);
           setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
         } else alert('Unable to read that file');
       };
       reader.readAsText(file);
     },
-    [setPathways]
+    [loadPathwayLibraries, setPathways, updateCriteriaSource]
   );
 
   const deletePathway = useCallback(

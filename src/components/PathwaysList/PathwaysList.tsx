@@ -34,13 +34,9 @@ const PathwaysList: FC = () => {
     [addPathwayFromFile]
   );
 
-  const openImportPathwayModal = useCallback(
-    (): void => _setImportPathwayOpen(true), []
-  );
+  const openImportPathwayModal = useCallback((): void => _setImportPathwayOpen(true), []);
 
-  const closeImportPathwayModal = useCallback(
-    (): void => _setImportPathwayOpen(false), []
-  );
+  const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
 
   return (
     <div className={styles.root}>
