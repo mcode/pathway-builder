@@ -27,7 +27,7 @@
            "transition": "TumorSize"
          }
        ],
-       "type": "other"
+       "type": "start"
      },
      "TumorSize": {
        "key": "TumorSize",

@@ -15,6 +15,7 @@
       "Start": {
         "key": "Start",
         "label": "Start",
+        "type": "start",
         "transitions": [
           {
             "id": "1",
@@ -332,6 +333,7 @@
       "Radiation": {
         "key": "Radiation",
         "label": "Radiation",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -392,6 +394,7 @@
       "OtherRadiation": {
         "key": "OtherRadiation",
         "label": "Other Radiation",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -452,6 +455,7 @@
       "Chemo": {
         "key": "Chemo",
         "label": "Chemotherapy",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -527,6 +531,7 @@
       "ChemoMedication": {
         "key": "ChemoMedication",
         "label": "ChemoMedication Request",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",

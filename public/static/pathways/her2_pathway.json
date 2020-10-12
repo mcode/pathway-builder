@@ -27,7 +27,7 @@
            "transition": "NodeStatus"
          }
        ],
-       "type": "other"
+       "type": "start"
      },
      "NodeStatus": {
        "key": "NodeStatus",
