@@ -317,7 +317,7 @@ describe('builder interface update functions', () => {
 
   it('set library', () => {
     const newPathway = Builder.setLibrary(pathway, 'library.cql');
-    expect(newPathway.library).toBe('library.cql');
+    expect(newPathway.library[0]).toBe('library.cql');
   });
 
   it('set navigational elm', () => {
