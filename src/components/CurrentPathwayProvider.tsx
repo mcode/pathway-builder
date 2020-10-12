@@ -8,11 +8,15 @@ import React, {
   MutableRefObject
 } from 'react';
 import { Pathway } from 'pathways-model';
-import useRefState from 'utils/useRefState';
+import useRefUndoState from 'utils/useRefUndoState';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
   pathwayRef: MutableRefObject<Pathway | null>;
+  canUndoPathway: boolean;
+  canRedoPathway: boolean;
+  undoPathway: () => void;
+  redoPathway: () => void;
   setPathway: (value: Pathway) => void;
 }
 
@@ -25,7 +29,19 @@ interface CurrentPathwayProviderProps {
 }
 
 export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ children }) => {
-  const [pathway, pathwayRef, _setPathway] = useRefState<Pathway | null>(null);
+  const [pathway, pathwayRef, canUndoPathway, canRedoPathway, _undoPathway, _redoPathway, _setPathway] = useRefUndoState<Pathway | null>(null);
+
+  const undoPathway = useCallback(() => {
+      _undoPathway();
+    },
+    [_undoPathway]
+  );
+
+  const redoPathway = useCallback(() => {
+      _redoPathway();
+    },
+    [_redoPathway]
+  );
 
   const setPathway = useCallback(
     (value: Pathway) => {
@@ -35,7 +51,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   );
 
   return (
-    <CurrentPathwayContext.Provider value={{ pathway, pathwayRef, setPathway }}>
+    <CurrentPathwayContext.Provider value={{ pathway, pathwayRef, canUndoPathway, canRedoPathway, undoPathway, redoPathway, setPathway }}>
       {children}
     </CurrentPathwayContext.Provider>
   );

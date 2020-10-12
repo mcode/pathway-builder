@@ -156,11 +156,11 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
               className={clsx(
                 styles.headerLabel,
                 styles.headerLabelText,
-                node.type === 'start' && styles.headerLabelStart
+                node.key === 'Start' && styles.headerLabelStart
               )}
             >
               {nodeLabel}
-              {node.type !== 'start' && (
+              {node.key !== 'Start' && (
                 <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
               )}
             </div>

@@ -1,0 +1,14 @@
+{
+    "id": "new_pathway",
+    "name": "New Pathway",
+    "description": "A new pathway",
+    "library": "mCODE_Library.cql",
+    "preconditions": [],
+    "nodes": {
+      "Start": {
+        "key": "Start",
+        "label": "Start",
+        "transitions": []
+      }
+    }
+  }
