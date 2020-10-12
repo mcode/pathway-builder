@@ -104,7 +104,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
       Object.values(pathway.nodes).forEach(node => {
         node.transitions.forEach(({ condition }) => {
           // If a matching criteria does not already exist, try and find one
-          if (condition?.criteriaSource && !criteriaIds.includes(condition.criteriaSource)) {
+          if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
             const [library, statement] = condition.cql.split('.');
             condition.criteriaSource = criteria.find(
               crit => crit.elm?.library.identifier.id === library && crit.statement === statement
