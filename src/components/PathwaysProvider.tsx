@@ -99,20 +99,21 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
 
   // Update criteriaSource if criteria change
   useEffect(() => {
-    const criteriaIds = criteria.map(crit => crit.id)
-    pathways.forEach( pathway =>
+    const criteriaIds = criteria.map(crit => crit.id);
+    pathways.forEach(pathway =>
       Object.values(pathway.nodes).forEach(node => {
         node.transitions.forEach(({ condition }) => {
           // If a matching criteria does not already exist, try and find one
-          if (condition?.criteriaSource && !criteriaIds.includes(condition.criteriaSource as string)) {
+          if (condition?.criteriaSource && !criteriaIds.includes(condition.criteriaSource)) {
             const [library, statement] = condition.cql.split('.');
             condition.criteriaSource = criteria.find(
               crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-            )?.id
+            )?.id;
           }
-        })
-      }))
-  },[criteria]);
+        });
+      })
+    );
+  }, [criteria, pathways]);
 
   switch (service.status) {
     case 'error':
