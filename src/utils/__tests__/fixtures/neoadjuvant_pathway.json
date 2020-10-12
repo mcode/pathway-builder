@@ -140,6 +140,7 @@
       "PaclitaxelTrastuzumab": {
         "key": "PaclitaxelTrastuzumab",
         "label": "Paclitaxel and Trastuzumab",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
