@@ -55,22 +55,6 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
     [addCqlCriteria]
   );
 
-  const updateCriteriaSource = useCallback(
-    (pathway: Pathway): void => {
-      Object.values(pathway.nodes).forEach(node => {
-        node.transitions.forEach(transition => {
-          if (transition.condition?.criteriaSource) {
-            const [library, statement] = transition.condition.cql.split('.');
-            transition.condition.criteriaSource = criteria.find(
-              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-            )?.id
-          }
-        });
-      });
-    },
-    [criteria]
-  );
-
   const addPathwayFromFile = useCallback(
     (file: File) => {
       const reader = new FileReader();
@@ -79,13 +63,12 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
           const rawContent = event.target.result as string;
           const pathway = JSON.parse(rawContent);
           loadPathwayLibraries(pathway);
-          updateCriteriaSource(pathway);
           setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
         } else alert('Unable to read that file');
       };
       reader.readAsText(file);
     },
-    [loadPathwayLibraries, setPathways, updateCriteriaSource]
+    [loadPathwayLibraries, setPathways]
   );
 
   const deletePathway = useCallback(
@@ -113,6 +96,23 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload, setPathways]);
+
+  // Update criteriaSource if criteria change
+  useEffect(() => {
+    const criteriaIds = criteria.map(crit => crit.id)
+    pathways.forEach( pathway =>
+      Object.values(pathway.nodes).forEach(node => {
+        node.transitions.forEach(({ condition }) => {
+          // If a matching criteria does not already exist, try and find one
+          if (condition?.criteriaSource && !criteriaIds.includes(condition.criteriaSource as string)) {
+            const [library, statement] = condition.cql.split('.');
+            condition.criteriaSource = criteria.find(
+              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
+            )?.id
+          }
+        })
+      }))
+  },[criteria]);
 
   switch (service.status) {
     case 'error':
