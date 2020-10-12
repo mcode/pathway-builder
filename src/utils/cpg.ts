@@ -99,8 +99,7 @@ export class CPGExporter {
   ): void {
     // the action for the strategy definition
     const pathwayAction = createAction(pathway.name, `Action for ${pathway.name}`);
-
-    if (referencedFrom && referencedFrom.id && pathwayAction.id) {
+    if (referencedFrom?.id && pathwayAction.id) {
       addRelatedAction(pathwayAction, referencedFrom.id, PARENT_RELATIONSHIP);
       addRelatedAction(referencedFrom, pathwayAction.id, CHILD_RELATIONSHIP);
       if (condition) {
@@ -115,8 +114,10 @@ export class CPGExporter {
     if (!isInDefinition) {
       const libraries = this.createLibraries(pathway);
       const library = libraries[0];
+      const id = uuidv4();
+      pathwayAction.definitionCanonical = formatUrl('PlanDefinition', id);
       const cpgRecommendation = this.createPlanDefinition(
-        uuidv4(),
+        id,
         pathway.name,
         pathway.description,
         'recommendation',

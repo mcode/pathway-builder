@@ -399,16 +399,6 @@ export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibr
   });
 }
 
-export function getNodeType(
-  node?: ActionNode | BranchNode | ReferenceNode | PathwayNode | null
-): string {
-  if (!node || node.type === 'null') {
-    return 'null';
-  } else {
-    return node.type;
-  }
-}
-
 /*
 Set Element Functions
 */

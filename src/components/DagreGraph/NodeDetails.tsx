@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
-import { getNodeType } from 'utils/builder';
+import { getNodeType } from 'utils/nodeUtils';
 import { resourceNameConversion } from 'utils/nodeUtils';
 import useStyles from './NodeDetails.styles';
 

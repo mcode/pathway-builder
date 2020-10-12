@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useLifecycles, useUpdateEffect } from 'react-use';
 
 import { ActionNode, BranchNode, PathwayNode, Transition } from 'pathways-model';
-import { getNodeType } from 'utils/builder';
+import { getNodeType } from 'utils/nodeUtils';
 import NodeDetails from './NodeDetails';
 import { useGraphProvider } from './GraphProvider';
 import NodeIcon from './NodeIcon';

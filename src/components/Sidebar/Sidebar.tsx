@@ -10,12 +10,12 @@ import {
   BranchTransition,
   ReferenceNodeEditor
 } from 'components/Sidebar';
-import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
+import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-import { isBranchNode, redirect } from 'utils/nodeUtils';
+import { isBranchNode, redirect, getNodeType } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';

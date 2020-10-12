@@ -12,9 +12,18 @@ import { History } from 'history';
 import shortid from 'shortid';
 import { CodeableConcept } from 'fhir-objects';
 
+export function getNodeType(
+  node?: ActionNode | BranchNode | ReferenceNode | PathwayNode | null
+): string {
+  if (!node || node.type === 'null') {
+    return 'null';
+  } else {
+    return node.type;
+  }
+}
+
 export function isActionNode(node: PathwayNode): node is ActionNode {
-  const { action } = node as ActionNode;
-  return action !== undefined;
+  return node.type === 'action';
 }
 
 export function isBranchNode(node: PathwayNode): node is BranchNode {
