@@ -21,7 +21,7 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
     id: pathwayId ?? shortid.generate(),
     name: name,
     description: description,
-    library: '',
+    library: [''],
     preconditions: [],
     nodes: {
       Start: {
@@ -420,7 +420,7 @@ export function setPathwayDescription(pathway: Pathway, description: string): Pa
 
 export function setLibrary(pathway: Pathway, library: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    draftPathway.library = library;
+    draftPathway.library = [library];
   });
 }
 

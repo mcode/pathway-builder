@@ -14,7 +14,7 @@ describe('builder interface add functions', () => {
       id: '1',
       name: 'name',
       description: 'description',
-      library: '',
+      library: [''],
       preconditions: [],
       nodes: {
         Start: {
@@ -648,7 +648,7 @@ describe('builder interface helper functions', () => {
     cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
     expect(cql).toEqual(
       expect.stringContaining(
-        `[CarePlan] R where R.title.value='ChemotherapyTH' 
+        `[CarePlan] R where R.title.value='ChemotherapyTH'
         return Tuple{ resourceType: 'CarePlan', id: R.id.value , status: R.status.value}`.replace(
           /\s+/g,
           ''
