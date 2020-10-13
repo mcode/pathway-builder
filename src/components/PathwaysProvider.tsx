@@ -48,9 +48,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
 
   const loadPathwayLibraries = useCallback(
     (pathway: Pathway): void => {
-      let cqlLibs = pathway.library;
-      if (!Array.isArray(cqlLibs)) cqlLibs = [cqlLibs];
-      cqlLibs.forEach(lib => addCqlCriteria(lib));
+      pathway.library.forEach(lib => addCqlCriteria(lib));
     },
     [addCqlCriteria]
   );
