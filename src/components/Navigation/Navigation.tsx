@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faEllipsisH, faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@material-ui/core';
 
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
@@ -13,6 +13,7 @@ const Navigation: FC = () => {
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { pathway } = useCurrentPathwayContext();
+  const { canUndoPathway, canRedoPathway, undoPathway, redoPathway } = useCurrentPathwayContext();
   const styles = useStyles();
   const history = useHistory();
 
@@ -38,10 +39,18 @@ const Navigation: FC = () => {
 
         <span className={styles.pathwayName}>{pathway?.name}</span>
       </div>
-      <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
-        <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
-      </IconButton>
-      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      <div>
+        <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
+          <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
+        </IconButton>
+        <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
+          <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
+        </IconButton>
+        <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
+          <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
+        </IconButton>
+        <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      </div>
     </nav>
   );
 };

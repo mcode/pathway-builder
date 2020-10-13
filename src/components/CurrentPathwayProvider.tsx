@@ -5,10 +5,12 @@ import React, {
   FC,
   memo,
   useCallback,
-  MutableRefObject
+  MutableRefObject,
+  useEffect
 } from 'react';
 import { Pathway } from 'pathways-model';
 import useRefUndoState from 'utils/useRefUndoState';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -17,6 +19,7 @@ interface CurrentPathwayContextInterface {
   canRedoPathway: boolean;
   undoPathway: () => void;
   redoPathway: () => void;
+  resetPathway: (value: Pathway) => void;
   setPathway: (value: Pathway) => void;
 }
 
@@ -29,18 +32,31 @@ interface CurrentPathwayProviderProps {
 }
 
 export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ children }) => {
-  const [pathway, pathwayRef, canUndoPathway, canRedoPathway, _undoPathway, _redoPathway, _setPathway] = useRefUndoState<Pathway | null>(null);
+  const [
+    pathway,
+    pathwayRef,
+    canUndoPathway,
+    canRedoPathway,
+    _undoPathway,
+    _redoPathway,
+    _resetPathway,
+    _setPathway
+  ] = useRefUndoState<Pathway | null>(null);
+  const { currentNode, setCurrentNode } = useCurrentNodeContext();
 
   const undoPathway = useCallback(() => {
-      _undoPathway();
-    },
-    [_undoPathway]
-  );
+    _undoPathway();
+  }, [_undoPathway]);
 
   const redoPathway = useCallback(() => {
-      _redoPathway();
+    _redoPathway();
+  }, [_redoPathway]);
+
+  const resetPathway = useCallback(
+    (value: Pathway) => {
+      _resetPathway(value);
     },
-    [_redoPathway]
+    [_resetPathway]
   );
 
   const setPathway = useCallback(
@@ -50,8 +66,30 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     [_setPathway]
   );
 
+  // Update CurrentNode based on undo
+  useEffect(() => {
+    if (pathway && currentNode && Object.keys(pathway.nodes).includes(currentNode.key)) {
+      // Update current node to use the latest value of the node from the pathway
+      setCurrentNode(pathway.nodes[currentNode.key]);
+    } else if (pathway && currentNode && !Object.keys(pathway.nodes).includes(currentNode.key)) {
+      // Current node is set but it has been deleted and default to start
+      setCurrentNode(pathway.nodes['Start']);
+    }
+  }, [pathway, currentNode, setCurrentNode]);
+
   return (
-    <CurrentPathwayContext.Provider value={{ pathway, pathwayRef, canUndoPathway, canRedoPathway, undoPathway, redoPathway, setPathway }}>
+    <CurrentPathwayContext.Provider
+      value={{
+        pathway,
+        pathwayRef,
+        canUndoPathway,
+        canRedoPathway,
+        undoPathway,
+        redoPathway,
+        resetPathway,
+        setPathway
+      }}
+    >
       {children}
     </CurrentPathwayContext.Provider>
   );

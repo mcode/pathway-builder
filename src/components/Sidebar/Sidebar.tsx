@@ -1,7 +1,7 @@
 import React, { FC, memo, useCallback, useState, useRef, ChangeEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faPlus, faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
   SidebarHeader,
   ActionNodeEditor,
@@ -23,7 +23,7 @@ import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 
 const Sidebar: FC = () => {
   const { updatePathway } = usePathwaysContext();
-  const { pathway, pathwayRef, canUndoPathway, canRedoPathway, undoPathway, redoPathway } = useCurrentPathwayContext();
+  const { pathway, pathwayRef } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
@@ -148,21 +148,6 @@ const Sidebar: FC = () => {
                 <ConnectNodeButton />
               </>
             )}
-
-            <SidebarButton
-              buttonName="Undo"
-              buttonIcon={faUndo}
-              buttonText="Undo last change to the pathway"
-              onClick={undoPathway}
-              disabled={!canUndoPathway}
-            />
-            <SidebarButton
-              buttonName="Redo"
-              buttonIcon={faRedo}
-              buttonText="Redo last change to the pathway"
-              onClick={redoPathway}
-              disabled={!canRedoPathway}
-            />
           </div>
         )}
         <div className={styles.toggleSidebar} onClick={toggleSidebar}>
