@@ -2,11 +2,12 @@ import her2pathway from './fixtures/her2_pathway.json';
 import samplepathway from './fixtures/sample_pathway.json';
 import neoadjuvantpathway from './fixtures/neoadjuvant_pathway.json';
 import { CaminoExporter } from '../CaminoExporter';
+import { Pathway } from 'pathways-model';
 
-const testPathways = {
-  'Sample Pathway': samplepathway,
-  'HER 2 Pathway': her2pathway,
-  'Neoadjuvant Pathway': neoadjuvantpathway
+const testPathways: Record<string, Pathway> = {
+  'Sample Pathway': samplepathway as Pathway,
+  'HER 2 Pathway': her2pathway as Pathway,
+  'Neoadjuvant Pathway': neoadjuvantpathway as Pathway
 };
 
 describe('convert pathway', () => {
