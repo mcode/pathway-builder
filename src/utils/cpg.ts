@@ -58,6 +58,7 @@ export class CPGExporter {
   bundle: Bundle;
   criteria: Criteria[];
   nestedBranch: string[];
+  libraries: string[];
   activityDefinitions: ActivityDefinitionMap;
 
   // TODO: figure out if elm works correctly here
@@ -75,6 +76,7 @@ export class CPGExporter {
     this.criteria = criteria;
     this.nestedBranch = [];
     this.activityDefinitions = {};
+    this.libraries = [];
     this.pathways = pathways;
   }
 
@@ -115,7 +117,6 @@ export class CPGExporter {
       const libraries = this.createLibraries(pathway);
       const library = libraries[0];
       const id = uuidv4();
-      pathwayAction.definitionCanonical = formatUrl('PlanDefinition', id);
       const cpgRecommendation = this.createPlanDefinition(
         id,
         pathway.name,
@@ -172,10 +173,21 @@ export class CPGExporter {
           }
         });
       }
-
+      if (cpgRecommendation.action.length) {
+        pathwayAction.definitionCanonical = formatUrl('PlanDefinition', id);
+        this.bundle.entry.push(createBundleEntry(cpgRecommendation));
+      }
       strategyDefinition.action.push(pathwayAction);
-      this.bundle.entry.push(createBundleEntry(cpgRecommendation));
-      libraries.forEach(l => this.bundle.entry.push(createBundleEntry(l)));
+      libraries.forEach(l => {
+        const data = l.content[0].data;
+        const libraryExists = this.libraries.find(entry => {
+          return entry === data;
+        });
+        if (!libraryExists && data) {
+          this.bundle.entry.push(createBundleEntry(l));
+          this.libraries.push(data);
+        }
+      });
     }
   }
 
