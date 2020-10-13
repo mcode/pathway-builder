@@ -25,6 +25,7 @@ import {
 } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
 import { PlanDefinition_RelatedActionRelationshipKind } from '@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_PlanDefinition_RelatedAction'; // eslint-disable-line
+import { constructCqlLibrary, IncludedCqlLibraries } from './export';
 
 const LIBRARY_DRAFT = R4.LibraryStatusKind._draft;
 const PLANDEFINITION_DRAFT = R4.PlanDefinitionStatusKind._draft;
@@ -41,14 +42,6 @@ interface ActivityDefinitionMap {
   [key: string]: {
     // Code or CarePlan title
     [key: string]: string; // Resource ID
-  };
-}
-
-// interface purely for intermediate working objects
-interface IncludedCqlLibraries {
-  [id: string]: {
-    cql: string;
-    version: string;
   };
 }
 
@@ -589,42 +582,6 @@ function createBundleEntry(resource: PlanDefinition | ActivityDefinition | Libra
       url: `/${resource.resourceType}/${resource.id}`
     }
   };
-}
-
-function constructCqlLibrary(
-  libraryName: string,
-  includedCqlLibraries: IncludedCqlLibraries,
-  referencedDefines: Record<string, string>,
-  builderDefines: Record<string, string>
-): string {
-  const includes = Object.entries(includedCqlLibraries)
-    .map(([name, details]) => `include "${name}" version '${details.version}' called ${name}\n\n`)
-    .join('');
-  const definesList = Object.entries(referencedDefines).map(
-    ([name, srcLibrary]) => `define "${name}": ${srcLibrary}.${name}\n\n`
-  );
-
-  Object.entries(builderDefines).forEach(([statement, cql]) =>
-    definesList.push(`define "${statement}": ${cql}\n\n`)
-  );
-
-  const defines = definesList.join('');
-
-  // NOTE: this library should use the same FHIR version as all referenced libraries
-  // and if we want to run it in cqf-ruler, as of today that needs to be FHIR 4.0.1 (NOT 4.0.0)
-  const libraryCql = `
-library ${libraryName} version '1.0'
-
-using FHIR version '4.0.1'
-
-${includes}
-
-context Patient
-
-${defines}
-`;
-
-  return libraryCql;
 }
 
 function createAction(id: string, description: string, definition?: string): PlanDefinitionAction {
