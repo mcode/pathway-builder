@@ -8,7 +8,6 @@ export class CaminoExporter {
   pathway: Pathway;
   criteria: Criteria[];
 
-  // TODO: figure out if elm works correctly here
   constructor(pathway: Pathway, criteria: Criteria[]) {
     this.pathway = deepCopyPathway(pathway);
     this.criteria = criteria;
