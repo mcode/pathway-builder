@@ -21,7 +21,7 @@ import {
   findAllTransitions,
   deepCopyPathway,
   findAllChildActionNodes,
-  getCodeableConceptFromAction,
+  getCodeableConceptFromAction
 } from './nodeUtils';
 import { R4 } from '@ahryman40k/ts-fhir-types';
 import { PlanDefinition_RelatedActionRelationshipKind } from '@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_PlanDefinition_RelatedAction'; // eslint-disable-line
