@@ -23,6 +23,7 @@ export default makeStyles(
       fontSize: '2em',
       marginLeft: '1em',
       lineHeight: '2.5em',
+      cursor: 'pointer',
       '&:hover': {
         color: theme.palette.common.grayLighter
       }
