@@ -1,10 +1,10 @@
 import React, { FC, ReactNode, memo } from 'react';
-import { ActionNode, BranchNode, PathwayNode } from 'pathways-model';
+import { ActionNode, BranchNode, PathwayNode, ReferenceNode } from 'pathways-model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MedicationRequest, ServiceRequest } from 'fhir-objects';
-import { getNodeType } from 'utils/builder';
+import { getNodeType } from 'utils/nodeUtils';
 import { resourceNameConversion } from 'utils/nodeUtils';
 import useStyles from './NodeDetails.styles';
 
@@ -21,6 +21,9 @@ interface ActionNodeFieldsProps {
   actionNode: ActionNode;
 }
 
+interface ReferenceNodeProps {
+  referenceNode: ReferenceNode;
+}
 const isMedicationRequest = (
   request: MedicationRequest | ServiceRequest
 ): request is MedicationRequest =>
@@ -79,6 +82,13 @@ const ActionNodeFields: FC<ActionNodeFieldsProps> = ({ actionNode }) => {
   );
 };
 
+const ReferenceNodeFields: FC<ReferenceNodeProps> = ({ referenceNode }) => (
+  <>
+    <Field title="Type" description="Reference" />
+    <Field title="Pathway" description={referenceNode.referenceLabel} />
+  </>
+);
+
 const NodeDetails: FC<NodeDetailsProps> = ({ pathwayNode }) => {
   const styles = useStyles();
   const nodeType = getNodeType(pathwayNode);
@@ -89,6 +99,9 @@ const NodeDetails: FC<NodeDetailsProps> = ({ pathwayNode }) => {
     <table className={styles.table}>
       <tbody>
         {nodeType === 'branch' && <BranchNodeContents />}
+        {nodeType === 'reference' && (
+          <ReferenceNodeFields referenceNode={pathwayNode as ReferenceNode} />
+        )}
         {nodeType === 'action' && <ActionNodeFields actionNode={pathwayNode as ActionNode} />}
       </tbody>
     </table>

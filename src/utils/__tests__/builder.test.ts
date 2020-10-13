@@ -20,7 +20,8 @@ describe('builder interface add functions', () => {
         Start: {
           key: 'Start',
           label: 'Start',
-          transitions: []
+          transitions: [],
+          type: 'start'
         }
       }
     };

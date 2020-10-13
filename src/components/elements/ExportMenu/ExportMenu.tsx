@@ -3,6 +3,7 @@ import { Menu, MenuItem } from '@material-ui/core';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
+import { usePathwaysContext } from 'components/PathwaysProvider';
 
 interface ExportMenuPropsInterface {
   anchorEl: HTMLElement | null;
@@ -11,6 +12,8 @@ interface ExportMenuPropsInterface {
 
 const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
   const { pathway } = useCurrentPathwayContext();
+  const { pathways } = usePathwaysContext();
+
   const { criteria } = useCriteriaContext();
 
   return (
@@ -25,7 +28,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
     >
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, criteria);
+          if (pathway) downloadPathway(pathway, pathways, criteria);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -34,7 +37,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
       </MenuItem>
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, criteria, true);
+          if (pathway) downloadPathway(pathway, pathways, criteria, true);
           else alert('No pathway to download!');
           closeMenu();
         }}

@@ -21,6 +21,7 @@
       "Start": {
         "key": "Start",
         "label": "Start",
+        "type": "start",
         "transitions": [
           {
             "id": "1",
@@ -31,6 +32,7 @@
       "TumorSize": {
         "key": "TumorSize",
         "label": "Tumor Size",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -69,6 +71,7 @@
       "NodeStatus": {
         "key": "NodeStatus",
         "label": "Node Status",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -107,6 +110,7 @@
       "Surgery1": {
         "key": "Surgery1",
         "label": "Surgery",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -136,6 +140,7 @@
       "PaclitaxelTrastuzumab": {
         "key": "PaclitaxelTrastuzumab",
         "label": "Paclitaxel and Trastuzumab",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -160,6 +165,7 @@
       "ChemotherapyTCHP": {
         "key": "ChemotherapyTCHP",
         "label": "Chemotherapy TCHP",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -189,6 +195,7 @@
       "ChemotherapyACTHP": {
         "key": "ChemotherapyACTHP",
         "label": "Chemotherapy ACTHP",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -218,6 +225,7 @@
       "ChemotherapyddACTHP": {
         "key": "ChemotherapyddACTHP",
         "label": "Chemotherapy ddACTHP",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -247,6 +255,7 @@
       "Surgery2": {
         "key": "Surgery2",
         "label": "Surgery",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -276,6 +285,7 @@
       "PathologicalResponse": {
         "key": "PathologicalResponse",
         "label": "Pathological Response",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -298,6 +308,7 @@
       "AdotrastuzumabEmtansine": {
         "key": "AdotrastuzumabEmtansine",
         "label": "Ado-trastuzumab Emtansine",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -322,6 +333,7 @@
       "NodeStatus2": {
         "key": "NodeStatus2",
         "label": "Node Status Prior to Surgery",
+        "type": "branch",
         "transitions": [
           {
             "id": "1",
@@ -344,6 +356,7 @@
       "Trastuzumab": {
         "key": "Trastuzumab",
         "label": "Trastuzumab",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",
@@ -368,6 +381,7 @@
       "PertuzumabTrastuzumab": {
         "key": "PertuzumabTrastuzumab",
         "label": "Pertuzumab and Trastuzumab",
+        "type": "action",
         "action": {
             "id": "1",
             "type": "create",

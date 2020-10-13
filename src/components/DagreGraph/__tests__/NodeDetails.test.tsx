@@ -6,6 +6,7 @@ import NodeDetails from '../NodeDetails';
 
 const testActionNode: ActionNode = {
   label: 'Chemotherapy',
+  type: 'action',
   action: {
     type: 'create',
     description: 'Begin Chemotherapy procedure',
@@ -29,6 +30,7 @@ const testActionNode: ActionNode = {
 
 const testMedicationRequestNode: ActionNode = {
   label: 'ChemoMedication Request',
+  type: 'action',
   action: {
     type: 'create',
     description: 'Request 10ML Doxorubicin Hydrochloride 2MG/ML Injection',

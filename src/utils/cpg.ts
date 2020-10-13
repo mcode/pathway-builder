@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   isActionNode,
   isBranchNode,
+  isReferenceNode,
   getTransition,
   findSubPathway,
   findParent,
@@ -53,14 +54,15 @@ interface IncludedCqlLibraries {
 
 export class CPGExporter {
   pathway: Pathway;
+  pathways: Pathway[];
   bundle: Bundle;
-  libraries: Library[];
   criteria: Criteria[];
   nestedBranch: string[];
+  libraries: string[];
   activityDefinitions: ActivityDefinitionMap;
 
   // TODO: figure out if elm works correctly here
-  constructor(pathway: Pathway, criteria: Criteria[]) {
+  constructor(pathway: Pathway, pathways: Pathway[], criteria: Criteria[]) {
     // Ensure each node only has one parent
     const pathwayCopy = deepCopyPathway(pathway);
     pathwayCopy.nodes = cleanPathway(pathwayCopy.nodes);
@@ -74,64 +76,119 @@ export class CPGExporter {
     this.criteria = criteria;
     this.nestedBranch = [];
     this.activityDefinitions = {};
-    this.libraries = this.createLibraries();
+    this.libraries = [];
+    this.pathways = pathways;
   }
 
   export(): Bundle {
-    const library = this.libraries[0];
-    const cpgRecommendation = this.createPlanDefinition(
+    const strategyDefinition = this.createPlanDefinition(
       uuidv4(),
-      this.pathway.name,
-      this.pathway.description,
-      'recommendation',
-      library.id
+      `Strategy${this.pathway.name}`,
+      `Strategy for ${this.pathway.name}`,
+      'strategy'
     );
 
-    /*
+    this._export(strategyDefinition, this.pathway);
+    this.bundle.entry.push(createBundleEntry(strategyDefinition));
+    return this.bundle;
+  }
+
+  _export(
+    strategyDefinition: PlanDefinition,
+    pathway: Pathway,
+    referencedFrom?: PlanDefinitionAction,
+    condition?: PlanDefinitionCondition[]
+  ): void {
+    // the action for the strategy definition
+    const pathwayAction = createAction(pathway.name, `Action for ${pathway.name}`);
+    if (referencedFrom?.id && pathwayAction.id) {
+      addRelatedAction(pathwayAction, referencedFrom.id, PARENT_RELATIONSHIP);
+      addRelatedAction(referencedFrom, pathwayAction.id, CHILD_RELATIONSHIP);
+      if (condition) {
+        pathwayAction.condition = condition;
+      }
+    }
+
+    const isInDefinition = strategyDefinition.action.find(action => {
+      return action.id === pathway.name;
+    });
+
+    if (!isInDefinition) {
+      const libraries = this.createLibraries(pathway);
+      const library = libraries[0];
+      const id = uuidv4();
+      const cpgRecommendation = this.createPlanDefinition(
+        id,
+        pathway.name,
+        pathway.description,
+        'recommendation',
+        library.id
+      );
+      /*
       Use (modified) BFS to search the Pathway
 
       Note: BFS is used as the basis here because it could be easily modified to ensure
         the parent node is always visited before its children. This assumption is required
         for the PlanDefinition.action creation algorithm to work correctly.
     */
-    const queue = ['Start'];
-    const visited: string[] = [];
-    while (queue.length !== 0) {
-      // Key is always defined since queue.length > 0
+      const queue = ['Start'];
+      const visited: string[] = [];
+      while (queue.length !== 0) {
+        // Key is always defined since queue.length > 0
       const key = queue.shift()!; // eslint-disable-line
-      const node = this.pathway.nodes[key];
-      const parentKey = findParent(this.pathway.nodes, key);
+        const node = pathway.nodes[key];
+        const parentKey = findParent(pathway.nodes, key);
 
-      /*
+        /*
         Check parent has been visited - if not:
           Remove parent from queue if in it
           Add parent to start of the queue
           Reinsert key to the end of the list
           Break (do not convert current node)
       */
-      if (parentKey && !visited.includes(parentKey)) {
-        queue.filter(n => n !== parentKey);
-        queue.unshift(parentKey);
-        queue.push(key);
-        continue;
+        if (parentKey && !visited.includes(parentKey)) {
+          queue.filter(n => n !== parentKey);
+          queue.unshift(parentKey);
+          queue.push(key);
+          continue;
+        }
+
+        // Visit this node and convert it
+        if (parentKey)
+          this.convertNode(
+            key,
+            parentKey,
+            cpgRecommendation,
+            strategyDefinition,
+            pathway,
+            pathwayAction,
+            libraries
+          );
+        visited.push(key);
+
+        // Add all unvisited and unqueued node transitions to the queue
+        node.transitions.forEach(transition => {
+          if (!visited.includes(transition.transition) && !queue.includes(transition.transition)) {
+            queue.push(transition.transition);
+          }
+        });
       }
-
-      // Visit this node and convert it
-      if (parentKey) this.convertNode(key, parentKey, cpgRecommendation);
-      visited.push(key);
-
-      // Add all unvisited and unqueued node transitions to the queue
-      node.transitions.forEach(transition => {
-        if (!visited.includes(transition.transition) && !queue.includes(transition.transition)) {
-          queue.push(transition.transition);
+      if (cpgRecommendation.action.length) {
+        pathwayAction.definitionCanonical = formatUrl('PlanDefinition', id);
+        this.bundle.entry.push(createBundleEntry(cpgRecommendation));
+      }
+      strategyDefinition.action.push(pathwayAction);
+      libraries.forEach(l => {
+        const data = l.content[0].data;
+        const libraryExists = this.libraries.find(entry => {
+          return entry === data;
+        });
+        if (!libraryExists && data) {
+          this.bundle.entry.push(createBundleEntry(l));
+          this.libraries.push(data);
         }
       });
     }
-
-    this.libraries.forEach(l => this.bundle.entry.push(createBundleEntry(l)));
-    this.bundle.entry.push(createBundleEntry(cpgRecommendation));
-
-    return this.bundle;
   }
 
   createActivityDefinition(action: Action): ActivityDefinition | null {
@@ -234,7 +291,7 @@ export class CPGExporter {
     return planDefinition;
   }
 
-  createLibraries(): Library[] {
+  createLibraries(pathway: Pathway): Library[] {
     const libraryId = uuidv4();
     const libraryName = `LIB${libraryId.substring(0, 7)}`;
 
@@ -253,7 +310,7 @@ export class CPGExporter {
       url: `urn:uuid:${libraryId}`,
       version: '1.0',
       name: libraryName,
-      title: `Library for ${this.pathway.name}`,
+      title: `Library for ${pathway.name}`,
       status: LIBRARY_DRAFT,
       experimental: true,
       type: {
@@ -266,7 +323,7 @@ export class CPGExporter {
         ]
       },
       publisher: 'Logged in user',
-      description: `CQL/ELM library for pathway: ${this.pathway.name}`,
+      description: `CQL/ELM library for pathway: ${pathway.name}`,
       content: []
     };
 
@@ -280,8 +337,8 @@ export class CPGExporter {
     //  - if it's an included library, keep track of the library name and version
     //    as well as the specific definition we're referencing
     //  - if it was constructed in the builder, track the name and raw CQL
-    for (const nodeId in this.pathway.nodes) {
-      const node = this.pathway.nodes[nodeId];
+    for (const nodeId in pathway.nodes) {
+      const node = pathway.nodes[nodeId];
       for (const transition of node.transitions) {
         if (transition.condition?.criteriaSource) {
           const criteriaSource = this.criteria.find(
@@ -324,7 +381,7 @@ export class CPGExporter {
             ]
           },
           publisher: 'Logged in user',
-          description: `CQL/ELM library for pathway: ${this.pathway.name} / sublibrary ${name}`,
+          description: `CQL/ELM library for pathway: ${pathway.name} / sublibrary ${name}`,
           content: [
             {
               id: name,
@@ -351,18 +408,18 @@ export class CPGExporter {
       title: 'CQL for navigating the pathway'
     });
 
-    if (this.pathway.elm) {
+    if (pathway.elm) {
       mainLibrary.content.push(
         {
           id: 'navigational-elm',
           contentType: 'application/elm+json',
-          data: btoa(JSON.stringify(this.pathway.elm.navigational)),
+          data: btoa(JSON.stringify(pathway.elm.navigational)),
           title: 'ELM for navigating the pathway'
         },
         {
           id: 'precondition',
           contentType: 'application/elm+json',
-          data: btoa(JSON.stringify(this.pathway.elm.preconditions)),
+          data: btoa(JSON.stringify(pathway.elm.preconditions)),
           title: 'ELM for pathway preconditions'
         }
       );
@@ -371,9 +428,17 @@ export class CPGExporter {
     return [mainLibrary, ...additionalLibraries];
   }
 
-  private convertNode(key: string, parentKey: string, cpgRecommendation: PlanDefinition): void {
-    const node = this.pathway.nodes[key];
-    const parent = this.pathway.nodes[parentKey];
+  private convertNode(
+    key: string,
+    parentKey: string,
+    cpgRecommendation: PlanDefinition,
+    strategyDefinition: PlanDefinition,
+    pathway: Pathway,
+    pathwayAction: PlanDefinitionAction,
+    libraries: Library[]
+  ): void {
+    const node = pathway.nodes[key];
+    const parent = pathway.nodes[parentKey];
     const descriptionDetails = `${node.label} (Key: ${key}) - Parent Node Key: ${parentKey}`;
 
     if (isActionNode(node)) {
@@ -384,20 +449,20 @@ export class CPGExporter {
         : this.getActivityDefinitionId(node.action);
       const cpgAction = createAction(key, description, activityDefinitionId);
 
-      if (isBranchNode(parent)) cpgAction.condition = this.createCondition(parent, key);
+      if (isBranchNode(parent)) cpgAction.condition = this.createCondition(parent, key, libraries);
 
       // Traverse up to find closest action and add as related action
       let parentAction = parent;
       while (isBranchNode(parentAction)) {
-        const tempParentKey = findParent(this.pathway.nodes, parentAction.key);
-        if (tempParentKey) parentAction = this.pathway.nodes[tempParentKey];
+        const tempParentKey = findParent(pathway.nodes, parentAction.key);
+        if (tempParentKey) parentAction = pathway.nodes[tempParentKey];
         else break;
       }
       if (parentAction.key !== 'Start')
         addRelatedAction(cpgAction, parentAction.key, PARENT_RELATIONSHIP);
 
       // Add a related action for each action child
-      const childActionNodeKeys = findAllChildActionNodes(this.pathway.nodes, key);
+      const childActionNodeKeys = findAllChildActionNodes(pathway.nodes, key);
       childActionNodeKeys.forEach(childKey =>
         addRelatedAction(cpgAction, childKey, CHILD_RELATIONSHIP)
       );
@@ -411,11 +476,25 @@ export class CPGExporter {
       // Add an action for the branch node if it nested
       if (isBranchNode(parent)) {
         const cpgAction = createAction(key, description);
-        cpgAction.condition = this.createCondition(parent, key);
+        cpgAction.condition = this.createCondition(parent, key, libraries);
         this.nestedBranch.push(key);
         this.addActionToPlanDefinition(cpgAction, cpgRecommendation, parent.key);
       }
-    } else if (node.key !== 'Start') {
+    } else if (isReferenceNode(node)) {
+      const referencedPathway = this.pathways.find((pathway: Pathway) => {
+        return pathway.id === node.referenceId;
+      });
+      if (referencedPathway) {
+        const pathwayCopy = deepCopyPathway(referencedPathway);
+        pathwayCopy.nodes = cleanPathway(pathwayCopy.nodes);
+        if (isBranchNode(parent)) {
+          const condition = this.createCondition(parent, key, libraries);
+          this._export(strategyDefinition, pathwayCopy, pathwayAction, condition);
+        } else {
+          this._export(strategyDefinition, pathwayCopy, pathwayAction);
+        }
+      }
+    } else if (node.type !== 'start') {
       const msg = `Error Exporting at Node ${node.label}\n${node.label} Node does not have a node type. Please edit the node to have a node type and add applicable details and try again.`; // eslint-disable-line
       alert(msg);
       console.error(`${msg}\n${JSON.stringify(node, undefined, 2)}`);
@@ -423,8 +502,12 @@ export class CPGExporter {
     }
   }
 
-  private createCondition(parent: PathwayNode, key: string): PlanDefinitionCondition[] {
-    const library = this.libraries[0];
+  private createCondition(
+    parent: PathwayNode,
+    key: string,
+    libraries: Library[]
+  ): PlanDefinitionCondition[] {
+    const library = libraries[0];
     const transition = getTransition(parent, key);
     if (transition) {
       const criteriaSource = this.criteria.find(c => c.id === transition.condition?.criteriaSource);

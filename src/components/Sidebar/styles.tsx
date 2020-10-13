@@ -16,6 +16,18 @@ export default makeStyles(
       margin: theme.spacing(1, 0),
       minWidth: 375
     },
+    referenceDropdown: {
+      display: 'flex'
+    },
+    referenceChevron: {
+      fontSize: '2em',
+      marginLeft: '1em',
+      lineHeight: '2.5em',
+      cursor: 'pointer',
+      '&:hover': {
+        color: theme.palette.common.grayLighter
+      }
+    },
     divider: {
       width: '100%'
     },

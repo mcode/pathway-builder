@@ -1,18 +1,38 @@
-import { PathwayNode, ActionNode, Pathway, Transition, NodeObj, Action } from 'pathways-model';
+import {
+  PathwayNode,
+  ActionNode,
+  Pathway,
+  Transition,
+  NodeObj,
+  Action,
+  BranchNode,
+  ReferenceNode
+} from 'pathways-model';
 import { History } from 'history';
 import shortid from 'shortid';
 import { CodeableConcept } from 'fhir-objects';
 
+export function getNodeType(
+  node?: ActionNode | BranchNode | ReferenceNode | PathwayNode | null
+): string {
+  if (!node || node.type === 'null') {
+    return 'null';
+  } else {
+    return node.type;
+  }
+}
+
 export function isActionNode(node: PathwayNode): node is ActionNode {
-  const { action } = node as ActionNode;
-  return action !== undefined;
+  return node.type === 'action';
 }
 
-export function isBranchNode(node: PathwayNode): boolean {
-  const { action, label, nodeTypeIsUndefined } = node as ActionNode;
-  return action === undefined && label !== 'Start' && !nodeTypeIsUndefined;
+export function isBranchNode(node: PathwayNode): node is BranchNode {
+  return node.type === 'branch';
 }
 
+export function isReferenceNode(node: PathwayNode): node is ReferenceNode {
+  return node.type === 'reference';
+}
 type ConversionResource = {
   [key: string]: string;
 };
@@ -26,7 +46,8 @@ export const nodeTypeOptions = [
   { label: 'Medication', value: 'MedicationRequest' },
   { label: 'Procedure', value: 'ServiceRequest' },
   { label: 'Regimen', value: 'CarePlan' },
-  { label: 'Observation', value: 'Observation' }
+  { label: 'Observation', value: 'Observation' },
+  { label: 'Pathway Reference', value: 'Reference' }
 ];
 
 export function findParent(nodes: NodeObj, childNodeKey: string): string | null {

@@ -7,14 +7,15 @@ import {
   ActionNodeEditor,
   SidebarButton,
   TransitionEditor,
-  BranchTransition
+  BranchTransition,
+  ReferenceNodeEditor
 } from 'components/Sidebar';
-import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
+import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
-import { isBranchNode, redirect } from 'utils/nodeUtils';
+import { isBranchNode, redirect, getNodeType } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
@@ -62,7 +63,7 @@ const Sidebar: FC = () => {
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;
 
-  if (currentNode.key === 'Start') {
+  if (currentNode.type === 'start') {
     return (
       <>
         {isExpanded && (
@@ -88,7 +89,7 @@ const Sidebar: FC = () => {
     );
   } else {
     const nodeType = getNodeType(currentNode);
-    const displayTransitions = currentNode.key !== 'Start' || currentNode.transitions.length === 0;
+    const displayTransitions = nodeType !== 'start' || currentNode.transitions.length === 0;
 
     return (
       <>
@@ -109,7 +110,7 @@ const Sidebar: FC = () => {
                 value=""
               />
             )}
-
+            {nodeType === 'reference' && <ReferenceNodeEditor changeNodeType={changeNodeType} />}
             {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
 
             {nodeType === 'branch' && (

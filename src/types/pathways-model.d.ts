@@ -2,7 +2,7 @@ declare module 'pathways-model' {
   import { ElmLibrary } from 'elm-model';
   import { DomainResource, MedicationRequest, ServiceRequest, CarePlan } from 'fhir-objects';
 
-  export type NodeObj = { [key: string]: ActionNode | BranchNode | PathwayNode };
+  export type NodeObj = { [key: string]: ActionNode | BranchNode | ReferenceNode | PathwayNode };
 
   export interface Pathway {
     id: string;
@@ -31,7 +31,7 @@ declare module 'pathways-model' {
     key: string;
     label: string;
     transitions: Transition[];
-    nodeTypeIsUndefined?: boolean;
+    type: 'action' | 'branch' | 'reference' | 'start' | 'null';
   }
 
   export interface ActionNode extends PathwayNode {
@@ -47,6 +47,11 @@ declare module 'pathways-model' {
   export interface BranchNode extends PathwayNode {
     mcodeCriteria?: string;
     otherCriteria?: string;
+  }
+
+  export interface ReferenceNode extends PathwayNode {
+    referenceId: string;
+    referenceLabel: string;
   }
 
   interface Action {
