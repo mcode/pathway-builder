@@ -13,9 +13,12 @@ interface EdgeProps {
 }
 
 interface LabelTooltipProps {
-  label: Label;
+  labelText?: string | null;
+  isEnabled: boolean;
   children: ReactElement;
 }
+
+const TRUNCATION_SIZE = 20;
 
 /**
  * The points to use in the Cubic command is determined by the length of points array
@@ -35,9 +38,9 @@ const generatePathString = (points: Coordinate[]): string =>
     `M ${points[0].x} ${points[0].y} `
   );
 
-const LabelTooltip: FC<LabelTooltipProps> = ({ label, children }) => {
-  if (label.text.length > 12) {
-    return <Tooltip title={label.text} children={children} />;
+const LabelTooltip: FC<LabelTooltipProps> = ({ labelText, isEnabled, children }) => {
+  if (isEnabled && labelText) {
+    return <Tooltip title={labelText} children={children} />;
   } else {
     return <>{children}</>;
   }
@@ -46,7 +49,27 @@ const LabelTooltip: FC<LabelTooltipProps> = ({ label, children }) => {
 const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
   const styles = useStyles({ isActive });
   const path = useMemo(() => generatePathString(points), [points]);
-  const truncateTooltip = label && label.text?.length > 12;
+
+  const labelText = label?.text;
+  const { lines, isTruncated } = useMemo(() => {
+    if (labelText == null) return { lines: [], isTruncated: false };
+
+    let truncated = false;
+    const allLines = labelText.split(',');
+    const condensedLines =
+      allLines.length > 3 ? [allLines[0], allLines[1], allLines.slice(2).join(',')] : allLines;
+
+    const labelTextLines = condensedLines.map(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine.length > TRUNCATION_SIZE) {
+        truncated = true;
+        return `${trimmedLine.substring(0, TRUNCATION_SIZE - 1)}...`;
+      }
+      return line;
+    });
+
+    return { lines: labelTextLines, isTruncated: truncated };
+  }, [labelText]);
 
   return (
     <>
@@ -58,9 +81,15 @@ const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
         markerEnd={`url(#arrowhead-${isActive ? 'active' : 'inactive'})`}
       />
       {label && (
-        <LabelTooltip label={label}>
-          <text x={label.x} y={label.y}>
-            {truncateTooltip ? `${label.text.substring(0, 11)}...` : label.text}
+        <LabelTooltip labelText={labelText} isEnabled={isTruncated}>
+          <text x={label.x} y={label.y} dy="0">
+            {lines.map((line, index) => {
+              return (
+                <tspan x={label.x} dy={index === 0 ? 0 : '1.2em'} key={line}>
+                  {line}
+                </tspan>
+              );
+            })}
           </text>
         </LabelTooltip>
       )}

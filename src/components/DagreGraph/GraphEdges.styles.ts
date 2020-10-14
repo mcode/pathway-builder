@@ -16,7 +16,7 @@ export default makeStyles(
       height: '100%',
       zIndex: 1,
       '& text': {
-        fontSize: '18px'
+        fontSize: '14px'
       },
       '& #arrowhead-inactive polygon': {
         fill: theme.palette.common.blue
