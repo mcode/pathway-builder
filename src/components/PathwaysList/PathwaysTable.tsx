@@ -25,7 +25,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 const PathwaysTable: FC = () => {
   const styles = useStyles();
   const { pathways, deletePathway } = usePathwaysContext();
-  const { setPathway } = useCurrentPathwayContext();
+  const { setCurrentPathway } = useCurrentPathwayContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -43,9 +43,9 @@ const PathwaysTable: FC = () => {
     (event: MouseEvent<HTMLButtonElement>): void => {
       setAnchorEl(event.currentTarget);
       const pathway = pathways.filter(pathway => pathway.id === event.currentTarget.id);
-      if (pathway.length) setPathway(pathway[0]);
+      if (pathway.length) setCurrentPathway(pathway[0]);
     },
-    [pathways, setPathway]
+    [pathways, setCurrentPathway]
   );
 
   const closeMenu = useCallback((): void => {

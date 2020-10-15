@@ -36,7 +36,7 @@ interface ActionNodeEditorProps {
 }
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
-  const { pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();
 
@@ -55,10 +55,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
       convertBasicCQL(cql).then(elm => {
         // Disable lint for no-null assertion since it is already checked above
         // eslint-disable-next-line
-        setPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
+        setCurrentPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
       });
     },
-    [pathwayRef, setPathway]
+    [pathwayRef, setCurrentPathway]
   );
 
   const changeCode = useCallback(
@@ -68,9 +68,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const code = event?.target.value || '';
       const action = setActionCode(currentNode.action, code);
-      setPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
-    [currentNodeRef, pathwayRef, setPathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const changeDescription = useCallback(
@@ -80,9 +80,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const description = event?.target.value || '';
       const action = setActionDescription(currentNode.action, description);
-      setPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
     },
-    [currentNodeRef, pathwayRef, setPathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const changeTitle = useCallback(
@@ -92,11 +92,11 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const title = event?.target.value || '';
       const action = setActionTitle(currentNode.action, title);
-      setPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
 
       addActionCQL(action, currentNode.key);
     },
-    [currentNodeRef, pathwayRef, setPathway, addActionCQL]
+    [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]
   );
 
   const selectCodeSystem = useCallback(
@@ -106,9 +106,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const codeSystem = event?.target.value || '';
       const action = setActionCodeSystem(currentNode.action, codeSystem);
-      setPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
-    [currentNodeRef, pathwayRef, setPathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const validateFunction = useCallback((): void => {
@@ -119,11 +119,11 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
     }
 
     const action = setActionResourceDisplay(currentNode.action, 'Example Text');
-    setPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+    setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
 
     // TODO: move addActionCQL to builder.ts
     addActionCQL(action, currentNode.key);
-  }, [currentNodeRef, pathwayRef, setPathway, addActionCQL]);
+  }, [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]);
 
   const resetDisplay = (action: Action): Action => {
     return produce(action, (draftAction: Action) => {

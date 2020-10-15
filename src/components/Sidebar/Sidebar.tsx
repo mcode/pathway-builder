@@ -21,7 +21,7 @@ import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 
 const Sidebar: FC = () => {
-  const { pathway, pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
@@ -35,9 +35,9 @@ const Sidebar: FC = () => {
   const changeNodeType = useCallback(
     (nodeType: string): void => {
       if (currentNodeRef.current && pathwayRef.current)
-        setPathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
+        setCurrentPathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
-    [pathwayRef, setPathway, currentNodeRef]
+    [pathwayRef, setCurrentPathway, currentNodeRef]
   );
 
   const selectNodeType = useCallback(
@@ -53,10 +53,10 @@ const Sidebar: FC = () => {
     const newNode = createNode();
     let newPathway = addNode(pathwayRef.current, newNode);
     newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
-    setPathway(newPathway);
+    setCurrentPathway(newPathway);
     if (!isBranchNode(currentNodeRef.current))
       redirect(pathwayRef.current.id, newNode.key, history);
-  }, [pathwayRef, setPathway, currentNodeRef, history]);
+  }, [pathwayRef, setCurrentPathway, currentNodeRef, history]);
 
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;

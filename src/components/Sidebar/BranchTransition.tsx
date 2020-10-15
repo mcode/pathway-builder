@@ -36,7 +36,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     resetCurrentCriteria
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
-  const { pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
@@ -67,14 +67,21 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
       // delete the transition criteria
-      setPathway(
+      setCurrentPathway(
         removeTransitionCondition(pathwayRef.current, currentNodeRef.current.key, transition.id)
       );
       setUseCriteriaSelected(false);
     } else {
       setUseCriteriaSelected(!useCriteriaSelected);
     }
-  }, [useCriteriaSelected, currentNodeRef, pathwayRef, hasCriteria, transition.id, setPathway]);
+  }, [
+    useCriteriaSelected,
+    currentNodeRef,
+    pathwayRef,
+    hasCriteria,
+    transition.id,
+    setCurrentPathway
+  ]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -91,9 +98,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         selectedCriteria
       );
 
-      setPathway(newPathway);
+      setCurrentPathway(newPathway);
     },
-    [currentNodeRef, setPathway, pathwayRef, transitionRef, criteria]
+    [currentNodeRef, setCurrentPathway, pathwayRef, transitionRef, criteria]
   );
 
   const setCriteriaDisplay = useCallback(
@@ -101,7 +108,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       if (!currentNodeRef.current || !pathwayRef.current) return;
 
       const criteriaDisplay = event?.target.value || '';
-      setPathway(
+      setCurrentPathway(
         setTransitionConditionDescription(
           pathwayRef.current,
           currentNodeRef.current.key,
@@ -110,7 +117,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         )
       );
     },
-    [currentNodeRef, transition.id, setPathway, pathwayRef]
+    [currentNodeRef, transition.id, setCurrentPathway, pathwayRef]
   );
 
   const handleCriteriaName = useCallback(
@@ -175,11 +182,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       criteria[0]
     );
 
-    setPathway(newPathway);
+    setCurrentPathway(newPathway);
     handleBuildCriteriaCancel();
   }, [
     currentNodeRef,
-    setPathway,
+    setCurrentPathway,
     pathwayRef,
     transitionRef,
     currentCriteria,

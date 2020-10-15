@@ -30,7 +30,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const { currentNodeRef } = useCurrentNodeContext();
   const { setSnackbarText, setOpenSnackbar } = useSnackbarContext();
-  const { pathway, pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
   const styles = useStyles();
@@ -49,9 +49,9 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
 
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
-    if (pathwayRef.current) setPathway(setNodeLabel(pathwayRef.current, node.key, label));
+    if (pathwayRef.current) setCurrentPathway(setNodeLabel(pathwayRef.current, node.key, label));
     setShowInput(false);
-  }, [pathwayRef, setPathway, node.key]);
+  }, [pathwayRef, setCurrentPathway, node.key]);
 
   const handleShowInput = useCallback(() => {
     setShowInput(true);
@@ -60,7 +60,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const deleteNode = useCallback(() => {
     if (pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
       const parents = findParents(pathwayRef.current.nodes, node.key);
-      setPathway(removeNode(pathwayRef.current, node.key));
+      setCurrentPathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
       setOpenDelete(false);
       setSnackbarText(`${node.label} node deleted successfully`);
@@ -68,7 +68,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
     }
   }, [
     pathwayRef,
-    setPathway,
+    setCurrentPathway,
     setSnackbarText,
     setOpenSnackbar,
     node.key,
@@ -83,14 +83,14 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
       pathwayRef.current &&
       !willOrphanChild(pathwayRef.current, node.key)
     ) {
-      setPathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
+      setCurrentPathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
       setOpenDelete(false);
       setSnackbarText(
         `Transition from ${currentNodeRef.current.label} to ${node.label} deleted successfully`
       );
       setOpenSnackbar(true);
     }
-  }, [pathwayRef, currentNodeRef, setPathway, setSnackbarText, setOpenSnackbar, node]);
+  }, [pathwayRef, currentNodeRef, setCurrentPathway, setSnackbarText, setOpenSnackbar, node]);
 
   const openDeleteModal = useCallback((): void => {
     setOpenDelete(true);
@@ -154,7 +154,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
               className={clsx(
                 styles.headerLabel,
                 styles.headerLabelText,
-                node.key === 'Start' && styles.headerLabelStart
+                node.type === 'start' && styles.headerLabelStart
               )}
             >
               {nodeLabel}

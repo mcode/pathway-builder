@@ -11,7 +11,7 @@ import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
 const ConnectNodeButton: FC = () => {
-  const { pathway, pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
 
   const styles = useStyles();
@@ -25,10 +25,10 @@ const ConnectNodeButton: FC = () => {
     (event: ChangeEvent<{ value: string }>): void => {
       const nodeKey = event?.target.value;
       if (pathwayRef.current && currentNodeRef.current)
-        setPathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
+        setCurrentPathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
       setOpen(false);
     },
-    [setPathway, currentNodeRef, pathwayRef]
+    [setCurrentPathway, currentNodeRef, pathwayRef]
   );
 
   const showDropdown = useCallback(() => {

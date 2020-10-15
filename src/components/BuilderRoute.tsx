@@ -9,7 +9,7 @@ import { useCurrentNodeContext } from './CurrentNodeProvider';
 const BuilderRoute: FC = () => {
   const { id, nodeId } = useParams();
   const { pathways } = usePathwaysContext();
-  const { pathwayRef, setPathway, resetPathway } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway, resetCurrentPathway } = useCurrentPathwayContext();
   const { setCurrentNode } = useCurrentNodeContext();
   const pathwayId = decodeURIComponent(id);
   const pathwayIndex = useMemo(() => pathways.findIndex(pathway => pathway.id === pathwayId), [
@@ -20,9 +20,9 @@ const BuilderRoute: FC = () => {
   const currentNodeId = decodeURIComponent(nodeId);
 
   useEffect(() => {
-    if (pathway && pathwayRef?.current?.id === pathway.id) setPathway(pathway);
-    else if (pathway) resetPathway(pathway);
-  }, [pathway, pathwayRef, setCurrentNode, setPathway, resetPathway]); // eslint-disable-line
+    if (pathway && pathwayRef?.current?.id === pathway.id) setCurrentPathway(pathway);
+    else if (pathway) resetCurrentPathway(pathway);
+  }, [pathway, pathwayRef, setCurrentNode, setCurrentPathway, resetCurrentPathway]);
 
   useEffect(() => {
     if (pathwayRef.current?.nodes[currentNodeId])

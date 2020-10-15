@@ -20,8 +20,8 @@ interface CurrentPathwayContextInterface {
   canRedoPathway: boolean;
   undoPathway: () => void;
   redoPathway: () => void;
-  resetPathway: (value: Pathway) => void;
-  setPathway: (value: Pathway) => void;
+  resetCurrentPathway: (value: Pathway) => void;
+  setCurrentPathway: (value: Pathway) => void;
 }
 
 export const CurrentPathwayContext = createContext<CurrentPathwayContextInterface>(
@@ -53,14 +53,14 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _redoPathway();
   }, [_redoPathway]);
 
-  const resetPathway = useCallback(
+  const resetCurrentPathway = useCallback(
     (value: Pathway) => {
       _resetPathway(value);
     },
     [_resetPathway]
   );
 
-  const setPathway = useCallback(
+  const setCurrentPathway = useCallback(
     (value: Pathway) => {
       _setPathway(value);
     },
@@ -80,12 +80,12 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
         canRedoPathway,
         undoPathway,
         redoPathway,
-        resetPathway,
-        setPathway
+        resetCurrentPathway,
+        setCurrentPathway
       }}
     >
-      <HotKeys keyName="control+z" onKeyDown={undoPathway}>
-        <HotKeys keyName="control+y" onKeyDown={redoPathway}>
+      <HotKeys keyName="control+z,command+z" onKeyDown={undoPathway}>
+        <HotKeys keyName="control+y,command+y" onKeyDown={redoPathway}>
           {children}
         </HotKeys>
       </HotKeys>
