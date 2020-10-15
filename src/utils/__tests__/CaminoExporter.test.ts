@@ -11,9 +11,10 @@ const testPathways: Record<string, Pathway> = {
   'Neoadjuvant Pathway': neoadjuvantpathway as Pathway
 };
 
-const simpleCql: string = 'library LIBFoo version \'1.0\'\n' +
+const simpleCql: string =
+  "library LIBFoo version '1.0'\n" +
   '\n' +
-  'using FHIR version \'4.0.1\'\n' +
+  "using FHIR version '4.0.1'\n" +
   '\n' +
   'context Patient\n' +
   '\n' +
@@ -31,15 +32,16 @@ const simpleCriteria: Criteria = {
         version: '1'
       },
       schemaIdentifier: {
-        id: 'qux', version: 'qux'
+        id: 'qux',
+        version: 'qux'
       },
       statements: {
-        def: [{name: 'quux', context: 'quux', expression: {}}]
+        def: [{ name: 'quux', context: 'quux', expression: {} }]
       }
     }
   },
   cql: simpleCql
-}
+};
 
 const simplePathway: Pathway = {
   id: 'foo',
@@ -49,12 +51,12 @@ const simplePathway: Pathway = {
   preconditions: [],
   nodes: {
     Start: {
-      key: "Start",
-      label: "Start",
+      key: 'Start',
+      label: 'Start',
       transitions: [
         {
-          id: "bar",
-          transition: "Barr",
+          id: 'bar',
+          transition: 'Barr',
           condition: {
             description: 'baz',
             cql: 'isMale',
@@ -65,13 +67,13 @@ const simplePathway: Pathway = {
       type: 'start'
     },
     Barr: {
-      key: "Barr",
-      label: "Barr",
+      key: 'Barr',
+      label: 'Barr',
       transitions: [],
       type: 'null'
     }
   }
-}
+};
 
 describe('convert pathway', () => {
   Object.keys(testPathways).forEach(name => {
@@ -87,5 +89,5 @@ describe('convert pathway', () => {
     const secondExport = new CaminoExporter(firstExport, [simpleCriteria]).export();
     expect(firstExport.nodes['Start'].transitions[0].condition?.cql).toBe('LIBFoo.isMale');
     expect(secondExport.nodes['Start'].transitions[0].condition?.cql).toBe('LIBFoo.isMale');
-  })
+  });
 });
