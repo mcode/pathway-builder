@@ -2,7 +2,7 @@
    "id": "tB4jsxTDL",
    "name": "Early Stage HER2+ (Draft)",
    "description": "Pathway for the Early Stage HER2+ Initial Medical Consult Breast Cancer Pathway. This is a draft pathway.",
-   "library": "",
+   "library": [""],
    "preconditions": [
      {
        "id": "1",
@@ -207,4 +207,3 @@
      }
    }
  }
- 
