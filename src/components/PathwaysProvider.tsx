@@ -60,8 +60,15 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           const pathway = JSON.parse(rawContent);
-          loadPathwayLibraries(pathway);
-          setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
+            setPathways((currentPathways: Pathway[]) => {
+              if (!currentPathways.map(path => path.id).includes(pathway.id)) {
+                loadPathwayLibraries(pathway);
+                return [...currentPathways, pathway]
+              } else {
+                alert('Pathway with that id already exists!')
+                return currentPathways
+              }
+            });
         } else alert('Unable to read that file');
       };
       reader.readAsText(file);
