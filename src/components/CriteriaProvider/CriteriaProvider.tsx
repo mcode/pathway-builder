@@ -9,6 +9,7 @@ import React, {
   useEffect
 } from 'react';
 import shortid from 'shortid';
+import JSZip from 'jszip';
 import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from 'components/Services';
@@ -154,6 +155,14 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
           } else if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
+          } else if (file.name.endsWith('.zip')) {
+            JSZip.loadAsync(file).then(zip => {
+              Object.values(zip.files).forEach(file => {
+                file.async('string').then(fileContents => {
+                  addCqlCriteria(fileContents);
+                });
+              });
+            });
           }
         } else alert('Unable to read that file');
       };
