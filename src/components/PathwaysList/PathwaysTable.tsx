@@ -85,9 +85,6 @@ const PathwaysTable: FC = () => {
   );
   const handleSelectClick = useCallback((id: string) => {
     return (event: ChangeEvent<HTMLInputElement>): void => {
-      console.log('clicked!');
-      console.log(id);
-      console.log(event.target.checked);
       event.target.checked
         ? setSelected(currentSelected => {
             currentSelected.add(id);
