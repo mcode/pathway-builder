@@ -129,10 +129,11 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   const addCqlCriteria = useCallback((cql: string) => {
     cqlToCriteria(cql).then(newCriteria => {
       if (newCriteria.length > 0) {
-        setCriteria((currentCriteria) => {
+        setCriteria(currentCriteria => {
           // Do not add CQL Criteria that already exists
           return currentCriteria.find(crit => crit.cql === cql)
-            ? currentCriteria : [...currentCriteria, ...newCriteria]
+            ? currentCriteria
+            : [...currentCriteria, ...newCriteria];
         });
       } else {
         alert('No valid criteria were found in the provided file');
