@@ -43,14 +43,14 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _resetPathway,
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
-  const { currentNode, setCurrentNode } = useCurrentNodeContext();
+  const { currentNodeRef, setCurrentNode } = useCurrentNodeContext();
   const { updatePathway } = usePathwaysContext();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
     // Update Pathways Context
-    if (pathway) updatePathway(pathway);
-  }, [_undoPathway]);
+    if (pathwayRef.current) updatePathway(pathwayRef.current);
+  }, [pathwayRef, _undoPathway]);
 
   const redoPathway = useCallback(() => {
     _redoPathway();
@@ -73,19 +73,21 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   // Update CurrentNode based on undo
   useEffect(() => {
     let newCurrentNodeKey;
-    if (pathway && currentNode && Object.keys(pathway.nodes).includes(currentNode.key)) {
-      // Update current node to use the latest value of the node from the pathway
-      newCurrentNodeKey = currentNode.key;
-    } else if (pathway && currentNode && !Object.keys(pathway.nodes).includes(currentNode.key)) {
-      // Current node is set but it has been deleted and default to start
-      newCurrentNodeKey = 'Start';
+    if (pathwayRef.current && currentNodeRef.current) {
+      if (Object.keys(pathwayRef.current.nodes).includes(currentNodeRef.current.key)) {
+        // Update current node to use the latest value of the node from the pathway
+        newCurrentNodeKey = currentNodeRef.current.key;
+      } else if (!Object.keys(pathwayRef.current.nodes).includes(currentNodeRef.current.key)) {
+        // Current node is set but it has been deleted and default to start
+        newCurrentNodeKey = 'Start';
+      }
     }
 
-    if (pathway && newCurrentNodeKey) {
-      setCurrentNode(pathway?.nodes[newCurrentNodeKey]);
+    if (pathwayRef.current && newCurrentNodeKey) {
+      setCurrentNode(pathwayRef.current.nodes[newCurrentNodeKey]);
       // redirect(pathway.id, newCurrentNodeKey, history);
     }
-  }, [pathway, currentNode, setCurrentNode]);
+  }, [pathwayRef, currentNodeRef, setCurrentNode]);
 
   return (
     <CurrentPathwayContext.Provider
