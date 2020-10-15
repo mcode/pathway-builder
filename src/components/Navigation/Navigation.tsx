@@ -12,8 +12,13 @@ import ExportMenu from 'components/elements/ExportMenu';
 const Navigation: FC = () => {
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { pathway } = useCurrentPathwayContext();
-  const { canUndoPathway, canRedoPathway, undoPathway, redoPathway } = useCurrentPathwayContext();
+  const {
+    pathway,
+    canUndoPathway,
+    canRedoPathway,
+    undoPathway,
+    redoPathway
+  } = useCurrentPathwayContext();
   const styles = useStyles();
   const history = useHistory();
 

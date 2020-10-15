@@ -11,6 +11,7 @@ import React, {
 import { Pathway } from 'pathways-model';
 import useRefUndoState from 'utils/useRefUndoState';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { usePathwaysContext } from './PathwaysProvider';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -43,9 +44,12 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
   const { currentNode, setCurrentNode } = useCurrentNodeContext();
+  const { updatePathway } = usePathwaysContext();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
+    // Update Pathways Context
+    if (pathway) updatePathway(pathway);
   }, [_undoPathway]);
 
   const redoPathway = useCallback(() => {
@@ -68,12 +72,18 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   // Update CurrentNode based on undo
   useEffect(() => {
+    let newCurrentNodeKey;
     if (pathway && currentNode && Object.keys(pathway.nodes).includes(currentNode.key)) {
       // Update current node to use the latest value of the node from the pathway
-      setCurrentNode(pathway.nodes[currentNode.key]);
+      newCurrentNodeKey = currentNode.key;
     } else if (pathway && currentNode && !Object.keys(pathway.nodes).includes(currentNode.key)) {
       // Current node is set but it has been deleted and default to start
-      setCurrentNode(pathway.nodes['Start']);
+      newCurrentNodeKey = 'Start';
+    }
+
+    if (pathway && newCurrentNodeKey) {
+      setCurrentNode(pathway?.nodes[newCurrentNodeKey]);
+      // redirect(pathway.id, newCurrentNodeKey, history);
     }
   }, [pathway, currentNode, setCurrentNode]);
 
