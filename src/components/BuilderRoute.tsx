@@ -1,4 +1,4 @@
-import React, { FC, memo, useMemo, useEffect, useState } from 'react';
+import React, { FC, memo, useMemo, useEffect } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
 import Builder from 'components/Builder';
@@ -23,7 +23,7 @@ const BuilderRoute: FC = () => {
     if (pathwayRef.current) setCurrentNode(pathwayRef.current.nodes[currentNodeId]);
     if (pathwayRef?.current?.id === pathway?.id) setPathway(pathway);
     else resetPathway(pathway);
-  }, [pathway, pathwayRef, setPathway, resetPathway]);
+  }, [pathway, pathwayRef, setCurrentNode, setPathway, resetPathway]); // eslint-disable-line
 
   useEffect(() => {
     if (pathwayRef.current?.nodes[currentNodeId])

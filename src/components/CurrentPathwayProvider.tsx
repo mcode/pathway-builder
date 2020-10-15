@@ -56,14 +56,14 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     (value: Pathway) => {
       _resetPathway(value);
     },
-    [_resetPathway, updatePathway]
+    [_resetPathway]
   );
 
   const setPathway = useCallback(
     (value: Pathway) => {
       _setPathway(value);
     },
-    [_setPathway, updatePathway]
+    [_setPathway]
   );
 
   useEffect(() => {
