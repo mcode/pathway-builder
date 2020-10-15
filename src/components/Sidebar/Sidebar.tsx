@@ -10,8 +10,7 @@ import {
   BranchTransition,
   ReferenceNodeEditor
 } from 'components/Sidebar';
-import { setNodeType, addTransition, createNode, addNode, getNodeType } from 'utils/builder';
-import { usePathwaysContext } from 'components/PathwaysProvider';
+import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';

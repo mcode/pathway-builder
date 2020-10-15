@@ -8,6 +8,7 @@
       "Start": {
         "key": "Start",
         "label": "Start",
+        "type": "start",
         "transitions": []
       }
     }
