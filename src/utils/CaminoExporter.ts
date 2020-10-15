@@ -46,8 +46,10 @@ export class CaminoExporter {
 
             referencedDefines[transition.condition.cql] = libraryIdentifier.id;
 
-            // prepend the library name
-            transition.condition.cql = `${libraryIdentifier.id}.${transition.condition.cql}`;
+            // prepend the library name if not already done
+            if (!transition.condition.cql.startsWith(libraryIdentifier.id)) {
+              transition.condition.cql = `${libraryIdentifier.id}.${transition.condition.cql}`;
+            }
           } else if (criteriaSource?.builder) {
             builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
 
