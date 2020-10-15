@@ -1,40 +1,43 @@
-import React, { FC, useCallback, useRef, memo, FormEvent, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
+import React, { FC, useState, useRef, FormEvent, useCallback, memo } from 'react';
 import {
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Input,
-  IconButton
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Input
 } from '@material-ui/core';
-
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import useStyles from './styles';
+import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-interface ImportCriteriaModalProps {
+interface FileImportModalProps {
   open: boolean;
   onClose: () => void;
+  onSelectFile: (files: FileList | undefined | null) => void;
+  allowedFileType?: string; // Setting this to undefined will allow any file type to be selected
 }
 
-const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) => {
+const FileImportModal: FC<FileImportModalProps> = ({
+  open,
+  onClose,
+  onSelectFile,
+  allowedFileType
+}) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
   const importFileRef = useRef<HTMLInputElement>(null);
-
-  const { addCriteria } = useCriteriaContext();
 
   const selectFile = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const files = importFileRef?.current?.files;
-      if (files?.length) addCriteria(files[0]);
+      onSelectFile(files);
       onClose();
       setFileName('');
     },
-    [addCriteria, onClose]
+    [onClose, onSelectFile]
   );
 
   const handleChooseFile = useCallback(() => {
@@ -42,7 +45,7 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
   }, [importFileRef]);
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="import-criteria" fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} aria-labelledby="import-pathway" fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
         <IconButton aria-label="close" onClick={onClose} className={styles.dialogCloseButton}>
           <FontAwesomeIcon icon={faTimes} />
@@ -57,10 +60,9 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
               className={styles.input}
               inputRef={importFileRef}
               type="file"
-              inputProps={{ accept: '.cql' }} // TODO: how to allow multiple types?
+              inputProps={{ accept: allowedFileType }} // TODO: how to allow multiple types?
               onChange={handleChooseFile}
             />
-
             <label htmlFor="choose-file-input">
               <Button
                 className={styles.inputButton}
@@ -77,7 +79,6 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
             </div>
           </div>
         </DialogContent>
-
         <DialogActions>
           <Button
             variant="contained"
@@ -93,4 +94,4 @@ const ImportCriteriaModal: FC<ImportCriteriaModalProps> = ({ open, onClose }) =>
   );
 };
 
-export default memo(ImportCriteriaModal);
+export default memo(FileImportModal);

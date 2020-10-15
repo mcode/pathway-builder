@@ -12,6 +12,7 @@ import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
 import produce from 'immer';
 import { CPGExporter } from './cpg';
+import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 
@@ -20,7 +21,7 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
     id: pathwayId ?? shortid.generate(),
     name: name,
     description: description,
-    library: '',
+    library: [''],
     preconditions: [],
     nodes: {
       Start: {
@@ -65,6 +66,9 @@ export function exportPathway(
   let pathwayToExport: Pathway | Bundle = pathwayWithElm;
   if (cpg) {
     const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
+    pathwayToExport = exporter.export();
+  } else {
+    const exporter = new CaminoExporter(pathwayWithElm, criteria);
     pathwayToExport = exporter.export();
   }
   return JSON.stringify(pathwayToExport, undefined, 2);
@@ -416,7 +420,7 @@ export function setPathwayDescription(pathway: Pathway, description: string): Pa
 
 export function setLibrary(pathway: Pathway, library: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
-    draftPathway.library = library;
+    draftPathway.library = [library];
   });
 }
 
@@ -450,6 +454,7 @@ export function setTransitionConditionDescription(
     } else if (foundTransition) {
       foundTransition.condition = {
         description: description,
+        criteriaSource: '',
         cql: ''
       };
     }
@@ -596,8 +601,8 @@ export function createCQL(action: Action, nodeKey: string): string {
       coding.display
     }'\n`;
     cql += `${defineStatement()}
-      if exists ${retrieveStatement('Procedure')} 
-      then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')} 
+      if exists ${retrieveStatement('Procedure')}
+      then ${retrieveStatement('Procedure')} R ${returnStatement('Procedure')}
       else ${retrieveStatement('ServiceRequest')} R ${returnStatement('ServiceRequest')}`;
   } else if (resource.resourceType === 'CarePlan') {
     cql += `${defineStatement()}

@@ -2,7 +2,7 @@
     "id": "test_breast_cancer",
     "name": "Test Pathway (Example)",
     "description": "Mock breast cancer pathway used for testing the system",
-    "library": "mCODE_Library.cql",
+    "library": ["mCODE_Library.cql"],
     "preconditions": [
       {
         "id": "1",

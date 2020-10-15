@@ -12,11 +12,13 @@ import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import useRefState from 'utils/useRefState';
+import { useCriteriaContext } from './CriteriaProvider';
 
 interface PathwaysContextInterface {
   pathways: Pathway[];
   status: string;
   addPathway: (pathway: Pathway) => void;
+  addPathwayFromFile: (file: File) => void;
   deletePathway: (id: string) => void;
   updatePathway: (pathway: Pathway) => void;
 }
@@ -35,12 +37,43 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   const [pathways, pathwaysRef, setPathways] = useRefState<Pathway[]>([]);
   const service = useGetService<Pathway>(config.get('demoPathwaysService'));
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
+  const { addCqlCriteria, criteria } = useCriteriaContext();
 
   const addPathway = useCallback(
     (pathway: Pathway) => {
       setPathways((currentPathways: Pathway[]) => [...currentPathways, pathway]);
     },
     [setPathways]
+  );
+
+  const loadPathwayLibraries = useCallback(
+    (pathway: Pathway): void => {
+      pathway.library.forEach(lib => addCqlCriteria(lib));
+    },
+    [addCqlCriteria]
+  );
+
+  const addPathwayFromFile = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>): void => {
+        if (event.target?.result) {
+          const rawContent = event.target.result as string;
+          const pathway = JSON.parse(rawContent);
+          setPathways((currentPathways: Pathway[]) => {
+            if (!currentPathways.map(path => path.id).includes(pathway.id)) {
+              loadPathwayLibraries(pathway);
+              return [...currentPathways, pathway];
+            } else {
+              alert('Pathway with that id already exists!');
+              return currentPathways;
+            }
+          });
+        } else alert('Unable to read that file');
+      };
+      reader.readAsText(file);
+    },
+    [loadPathwayLibraries, setPathways]
   );
 
   const deletePathway = useCallback(
@@ -64,9 +97,28 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
     [pathwaysRef, setPathways]
   );
 
+  // Load the pathways present at the configured service
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload, setPathways]);
+
+  // Update criteriaSource if criteria change
+  useEffect(() => {
+    const criteriaIds = criteria.map(crit => crit.id);
+    pathways.forEach(pathway =>
+      Object.values(pathway.nodes).forEach(node => {
+        node.transitions.forEach(({ condition }) => {
+          // If a matching criteria does not already exist, try and find one
+          if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
+            const [library, statement] = condition.cql.split('.');
+            condition.criteriaSource = criteria.find(
+              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
+            )?.id;
+          }
+        });
+      })
+    );
+  }, [criteria, pathways]);
 
   switch (service.status) {
     case 'error':
@@ -78,6 +130,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
           value={{
             pathways,
             addPathway,
+            addPathwayFromFile,
             deletePathway,
             updatePathway,
             status: service.status

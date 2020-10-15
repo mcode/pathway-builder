@@ -6,13 +6,16 @@ import { Button } from '@material-ui/core';
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
-import ImportCriteriaModal from './ImportCriteriaModal';
 
 import useStyles from './styles';
+import FileImportModal from 'components/FileImportModal';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
   const { status } = usePathwaysContext();
+
+  const { addCriteria } = useCriteriaContext();
 
   const [open, setOpen] = useState<boolean>(false);
   const openImportModal = useCallback((): void => {
@@ -22,6 +25,13 @@ const CriteriaList: FC = () => {
   const closeImportModal = useCallback((): void => {
     setOpen(false);
   }, []);
+
+  const selectFile = useCallback(
+    (files: FileList | undefined | null) => {
+      if (files?.length) addCriteria(files[0]);
+    },
+    [addCriteria]
+  );
 
   return (
     <div className={styles.root}>
@@ -45,7 +55,12 @@ const CriteriaList: FC = () => {
         </Button>
       </div>
 
-      <ImportCriteriaModal open={open} onClose={closeImportModal} />
+      <FileImportModal
+        open={open}
+        onClose={closeImportModal}
+        onSelectFile={selectFile}
+        allowedFileType=".cql"
+      />
 
       {status === 'loading' ? <Loading /> : <CriteriaTable />}
     </div>

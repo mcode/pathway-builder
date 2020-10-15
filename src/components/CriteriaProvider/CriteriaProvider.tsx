@@ -11,7 +11,7 @@ import React, {
 import shortid from 'shortid';
 import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
-import useGetService from './Services';
+import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
 import { convertBasicCQL } from 'engine/cql-to-elm';
@@ -19,6 +19,7 @@ import { convertBasicCQL } from 'engine/cql-to-elm';
 interface CriteriaContextInterface {
   criteria: Criteria[];
   addCriteria: (file: File) => void;
+  addCqlCriteria: (cql: string) => void;
   deleteCriteria: (id: string) => void;
   addElmCriteria: (elm: ElmLibrary) => Criteria[];
   addBuilderCriteria: (
@@ -125,29 +126,41 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     }
   }, [payload]);
 
-  const addCriteria = useCallback((file: File) => {
-    // figure out incoming file type
-    const reader = new FileReader();
-    reader.onload = (event: ProgressEvent<FileReader>): void => {
-      if (event.target?.result) {
-        const rawContent = event.target.result as string;
-        // TODO: more robust file type identification?
-        if (file.name.endsWith('.json')) {
-          const newCriteria = jsonToCriteria(rawContent);
-          if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-        } else if (file.name.endsWith('.cql')) {
-          cqlToCriteria(rawContent).then(newCriteria => {
-            if (newCriteria.length > 0) {
-              setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-            } else {
-              alert('No valid criteria were found in the provided file');
-            }
-          });
-        }
-      } else alert('Unable to read that file');
-    };
-    reader.readAsText(file);
+  const addCqlCriteria = useCallback((cql: string) => {
+    cqlToCriteria(cql).then(newCriteria => {
+      if (newCriteria.length > 0) {
+        setCriteria(currentCriteria => {
+          // Do not add CQL Criteria that already exists
+          return currentCriteria.find(crit => crit.cql === cql)
+            ? currentCriteria
+            : [...currentCriteria, ...newCriteria];
+        });
+      } else {
+        alert('No valid criteria were found in the provided file');
+      }
+    });
   }, []);
+
+  const addCriteria = useCallback(
+    (file: File) => {
+      // figure out incoming file type
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>): void => {
+        if (event.target?.result) {
+          const rawContent = event.target.result as string;
+          // TODO: more robust file type identification?
+          if (file.name.endsWith('.json')) {
+            const newCriteria = jsonToCriteria(rawContent);
+            if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
+          } else if (file.name.endsWith('.cql')) {
+            addCqlCriteria(rawContent);
+          }
+        } else alert('Unable to read that file');
+      };
+      reader.readAsText(file);
+    },
+    [addCqlCriteria]
+  );
 
   const deleteCriteria = useCallback((id: string) => {
     setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
@@ -191,6 +204,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       value={{
         criteria,
         addCriteria,
+        addCqlCriteria,
         deleteCriteria,
         addElmCriteria,
         addBuilderCriteria

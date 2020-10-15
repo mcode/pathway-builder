@@ -22,9 +22,9 @@ const App: FC = () => {
     <ThemeProvider theme="light">
       <UserProvider>
         <CurrentPathwayProvider>
-          <PathwaysProvider>
-            <CurrentNodeProvider>
-              <CriteriaProvider>
+          <CriteriaProvider>
+            <PathwaysProvider>
+              <CurrentNodeProvider>
                 <SnackbarProvider>
                   <CurrentCriteriaProvider>
                     <CriteriaBuilderProvider>
@@ -50,9 +50,9 @@ const App: FC = () => {
                     </CriteriaBuilderProvider>
                   </CurrentCriteriaProvider>
                 </SnackbarProvider>
-              </CriteriaProvider>
-            </CurrentNodeProvider>
-          </PathwaysProvider>
+              </CurrentNodeProvider>
+            </PathwaysProvider>
+          </CriteriaProvider>
         </CurrentPathwayProvider>
       </UserProvider>
     </ThemeProvider>
