@@ -1,8 +1,9 @@
-import React, { FC, memo, useState, useCallback, MouseEvent } from 'react';
+import React, { FC, memo, useState, useCallback, MouseEvent, useMemo, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -29,6 +30,7 @@ const PathwaysTable: FC = () => {
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const openEditPathwayModal = useCallback((pathway: Pathway): void => {
     setOpen(true);
@@ -59,12 +61,58 @@ const PathwaysTable: FC = () => {
     [deletePathway]
   );
 
+  const numSelected = useMemo(() => selected.size, [selected.size]);
+  const rowCount = useMemo(() => pathways.length, [pathways.length]);
+  const indeterminate = useMemo(() => numSelected > 0 && numSelected < rowCount, [
+    numSelected,
+    rowCount
+  ]);
+  const checked = useMemo(() => rowCount > 0 && numSelected === rowCount, [numSelected, rowCount]);
+  const handleSelectAllClick = useCallback(
+    event => {
+      if (event.target.checked) {
+        const newSelected = new Set(pathways.map(n => n.id));
+        setSelected(newSelected);
+      } else setSelected(new Set());
+    },
+    [pathways]
+  );
+  const itemSelected = useCallback(
+    item => {
+      return selected.has(item);
+    },
+    [selected]
+  );
+  const handleSelectClick = useCallback((id: string) => {
+    return (event: ChangeEvent<HTMLInputElement>): void => {
+      console.log('clicked!');
+      console.log(id);
+      console.log(event.target.checked);
+      event.target.checked
+        ? setSelected(currentSelected => {
+            currentSelected.add(id);
+            return new Set(currentSelected);
+          })
+        : setSelected(currentSelected => {
+            currentSelected.delete(id);
+            return new Set(currentSelected);
+          });
+    };
+  }, []);
+
   return (
     <div>
       <TableContainer className={styles.pathwayList}>
         <Table aria-label="pathway list">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={indeterminate}
+                  checked={checked}
+                  onChange={handleSelectAllClick}
+                />
+              </TableCell>
               <TableCell>Pathway Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Last Updated</TableCell>
@@ -75,6 +123,12 @@ const PathwaysTable: FC = () => {
           <TableBody>
             {pathways.map(pathway => (
               <TableRow key={pathway.id}>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={itemSelected(pathway.id)}
+                    onChange={handleSelectClick(pathway.id)}
+                  />
+                </TableCell>
                 <TableCell component="th" scope="row">
                   <Link
                     component={RouterLink}
