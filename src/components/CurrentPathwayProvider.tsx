@@ -11,6 +11,7 @@ import React, {
 import { Pathway } from 'pathways-model';
 import useRefUndoState from 'utils/useRefUndoState';
 import { usePathwaysContext } from './PathwaysProvider';
+import HotKeys from 'react-hot-keys';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -54,6 +55,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   const resetPathway = useCallback(
     (value: Pathway) => {
+      console.log('resetPathway');
       _resetPathway(value);
     },
     [_resetPathway]
@@ -61,6 +63,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   const setPathway = useCallback(
     (value: Pathway) => {
+      console.log('setPathway');
       _setPathway(value);
     },
     [_setPathway]
@@ -69,30 +72,6 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   useEffect(() => {
     if (pathway) updatePathway(pathway);
   }, [pathway, updatePathway]);
-
-  // // Update CurrentNode based on undo
-  // useEffect(() => {
-  //   let newCurrentNodeKey;
-  //   if (pathway && currentNodeRef.current) {
-  //     if (Object.keys(pathway.nodes).includes(currentNodeRef.current.key)) {
-  //       // Update current node to use the latest value of the node from the pathway
-  //       newCurrentNodeKey = currentNodeRef.current.key;
-  //     } else if (!Object.keys(pathway.nodes).includes(currentNodeRef.current.key)) {
-  //       // Current node is set but it has been deleted and default to start
-  //       newCurrentNodeKey = 'Start';
-  //     }
-  //   }
-
-  //   console.log('Updating based on undo');
-  //   console.log('oldCurrentNodeKey:' + currentNodeRef.current?.key);
-  //   console.log('newCurrentNodeKey: ' + newCurrentNodeKey);
-  //   console.log(pathway);
-  //   if (pathway && newCurrentNodeKey) {
-  //     setCurrentNode(pathway.nodes[newCurrentNodeKey]);
-  //     // updatePathway(pathway);
-  //     // redirect(pathway.id, newCurrentNodeKey, history);
-  //   }
-  // }, [pathway, currentNodeRef, setCurrentNode, updatePathway]);
 
   return (
     <CurrentPathwayContext.Provider
@@ -107,7 +86,11 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
         setPathway
       }}
     >
-      {children}
+      <HotKeys keyName="control+z" onKeyDown={undoPathway}>
+        <HotKeys keyName="control+y" onKeyDown={redoPathway}>
+          {children}
+        </HotKeys>
+      </HotKeys>
     </CurrentPathwayContext.Provider>
   );
 });
