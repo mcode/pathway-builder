@@ -11,7 +11,7 @@ import React, {
 import shortid from 'shortid';
 import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
-import useGetService from './Services';
+import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
 import { convertBasicCQL } from 'engine/cql-to-elm';
