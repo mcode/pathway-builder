@@ -55,7 +55,6 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   const resetPathway = useCallback(
     (value: Pathway) => {
-      console.log('resetPathway');
       _resetPathway(value);
     },
     [_resetPathway]
@@ -63,7 +62,6 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   const setPathway = useCallback(
     (value: Pathway) => {
-      console.log('setPathway');
       _setPathway(value);
     },
     [_setPathway]
