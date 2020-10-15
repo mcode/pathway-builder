@@ -1,4 +1,4 @@
-import React, { FC, memo, useMemo, useEffect } from 'react';
+import React, { FC, memo, useMemo, useEffect, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
 import Builder from 'components/Builder';
@@ -17,19 +17,23 @@ const BuilderRoute: FC = () => {
     pathways
   ]);
   const pathway = pathways[pathwayIndex];
-  const currentNode = pathway?.nodes?.[decodeURIComponent(nodeId)];
+  const currentNodeId = decodeURIComponent(nodeId);
 
   useEffect(() => {
+    if (pathwayRef.current) setCurrentNode(pathwayRef.current.nodes[currentNodeId]);
     if (pathwayRef?.current?.id === pathway?.id) setPathway(pathway);
     else resetPathway(pathway);
   }, [pathway, pathwayRef, setPathway, resetPathway]);
 
   useEffect(() => {
-    setCurrentNode(currentNode);
-  }, [currentNode, setCurrentNode]);
+    if (pathwayRef.current?.nodes[currentNodeId])
+      setCurrentNode(pathwayRef.current.nodes[currentNodeId]);
+    else if (pathway?.nodes[currentNodeId]) setCurrentNode(pathway.nodes[currentNodeId]);
+    else if (pathway) setCurrentNode(pathway.nodes['Start']);
+  }, [pathway, pathwayRef, currentNodeId, setCurrentNode]);
 
   if (pathway == null) return null;
-  if (currentNode == null) return <Redirect to={`/builder/${id}/node/Start`} />;
+  if (!currentNodeId) return <Redirect to={`/builder/${id}/node/Start`} />;
 
   return <Builder />;
 };

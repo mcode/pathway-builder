@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { Pathway } from 'pathways-model';
 import useRefUndoState from 'utils/useRefUndoState';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { usePathwaysContext } from './PathwaysProvider';
 
 interface CurrentPathwayContextInterface {
@@ -43,14 +42,11 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _resetPathway,
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
-  const { currentNodeRef, setCurrentNode } = useCurrentNodeContext();
   const { updatePathway } = usePathwaysContext();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
-    // Update Pathways Context
-    if (pathwayRef.current) updatePathway(pathwayRef.current);
-  }, [pathwayRef, _undoPathway]);
+  }, [_undoPathway]);
 
   const redoPathway = useCallback(() => {
     _redoPathway();
@@ -60,34 +56,43 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     (value: Pathway) => {
       _resetPathway(value);
     },
-    [_resetPathway]
+    [_resetPathway, updatePathway]
   );
 
   const setPathway = useCallback(
     (value: Pathway) => {
       _setPathway(value);
     },
-    [_setPathway]
+    [_setPathway, updatePathway]
   );
 
-  // Update CurrentNode based on undo
   useEffect(() => {
-    let newCurrentNodeKey;
-    if (pathwayRef.current && currentNodeRef.current) {
-      if (Object.keys(pathwayRef.current.nodes).includes(currentNodeRef.current.key)) {
-        // Update current node to use the latest value of the node from the pathway
-        newCurrentNodeKey = currentNodeRef.current.key;
-      } else if (!Object.keys(pathwayRef.current.nodes).includes(currentNodeRef.current.key)) {
-        // Current node is set but it has been deleted and default to start
-        newCurrentNodeKey = 'Start';
-      }
-    }
+    if (pathway) updatePathway(pathway);
+  }, [pathway, updatePathway]);
 
-    if (pathwayRef.current && newCurrentNodeKey) {
-      setCurrentNode(pathwayRef.current.nodes[newCurrentNodeKey]);
-      // redirect(pathway.id, newCurrentNodeKey, history);
-    }
-  }, [pathwayRef, currentNodeRef, setCurrentNode]);
+  // // Update CurrentNode based on undo
+  // useEffect(() => {
+  //   let newCurrentNodeKey;
+  //   if (pathway && currentNodeRef.current) {
+  //     if (Object.keys(pathway.nodes).includes(currentNodeRef.current.key)) {
+  //       // Update current node to use the latest value of the node from the pathway
+  //       newCurrentNodeKey = currentNodeRef.current.key;
+  //     } else if (!Object.keys(pathway.nodes).includes(currentNodeRef.current.key)) {
+  //       // Current node is set but it has been deleted and default to start
+  //       newCurrentNodeKey = 'Start';
+  //     }
+  //   }
+
+  //   console.log('Updating based on undo');
+  //   console.log('oldCurrentNodeKey:' + currentNodeRef.current?.key);
+  //   console.log('newCurrentNodeKey: ' + newCurrentNodeKey);
+  //   console.log(pathway);
+  //   if (pathway && newCurrentNodeKey) {
+  //     setCurrentNode(pathway.nodes[newCurrentNodeKey]);
+  //     // updatePathway(pathway);
+  //     // redirect(pathway.id, newCurrentNodeKey, history);
+  //   }
+  // }, [pathway, currentNodeRef, setCurrentNode, updatePathway]);
 
   return (
     <CurrentPathwayContext.Provider
