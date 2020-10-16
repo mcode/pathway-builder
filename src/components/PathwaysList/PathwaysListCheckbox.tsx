@@ -6,6 +6,8 @@ export interface ListCheckboxReturn {
   handleSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
   itemSelected: (item: string) => boolean;
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
+  selected: Set<string>;
+  setSelected: (selection: Set<string>) => void;
 }
 
 const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
@@ -46,7 +48,15 @@ const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
     };
   }, []);
 
-  return { indeterminate, checked, handleSelectAllClick, itemSelected, handleSelectClick };
+  return {
+    indeterminate,
+    checked,
+    handleSelectAllClick,
+    itemSelected,
+    handleSelectClick,
+    selected,
+    setSelected
+  };
 };
 
 export default useListCheckbox;

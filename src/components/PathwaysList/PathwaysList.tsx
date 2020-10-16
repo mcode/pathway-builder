@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState, memo } from 'react';
+import React, { FC, useCallback, useState, memo, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileImport,
@@ -21,16 +21,17 @@ import useListCheckbox from './PathwaysListCheckbox';
 const PathwaysList: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
-  const { status } = usePathwaysContext();
+  const { status, pathways, deletePathway } = usePathwaysContext();
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
-  const { pathways } = usePathwaysContext();
-  const pathwayIds = pathways.map(n => n.id);
+  const pathwayIds = useMemo(() => pathways.map(n => n.id), [pathways]);
   const {
     indeterminate,
     checked,
     handleSelectAllClick,
     itemSelected,
-    handleSelectClick
+    handleSelectClick,
+    selected,
+    setSelected
   } = useListCheckbox(pathwayIds);
 
   const { addPathwayFromFile } = usePathwaysContext();
@@ -54,6 +55,13 @@ const PathwaysList: FC = () => {
 
   const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
 
+  const handleDelete = useCallback(() => {
+    selected.forEach(id => {
+      deletePathway(id);
+      setSelected(new Set());
+    });
+  }, [deletePathway, selected, setSelected]);
+
   return (
     <div className={styles.root}>
       <div className={styles.tableTop}>
@@ -76,7 +84,7 @@ const PathwaysList: FC = () => {
             </IconButton>
           </Tooltip>
           <Tooltip placement="top" title="Delete" arrow>
-            <IconButton size="small">
+            <IconButton size="small" onClick={handleDelete}>
               <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
             </IconButton>
           </Tooltip>
