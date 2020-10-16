@@ -33,7 +33,7 @@ export default makeStyles(
       display: 'flex',
       paddingLeft: '4px',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'flex-end',
       '& > :not(:first-child)': {
         marginRight: '0.5em'
       }
@@ -43,6 +43,9 @@ export default makeStyles(
     },
     deleteIcon: {
       color: theme.palette.secondary.main
+    },
+    selectAll: {
+      paddingBottom: '0em'
     }
   }),
   { name: 'PathwaysList', index: 1 }
