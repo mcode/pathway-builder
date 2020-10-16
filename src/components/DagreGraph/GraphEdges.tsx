@@ -65,7 +65,7 @@ const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
         truncated = true;
         return `${trimmedLine.substring(0, TRUNCATION_SIZE - 1)}...`;
       }
-      return line;
+      return trimmedLine;
     });
 
     return { lines: labelTextLines, isTruncated: truncated };
