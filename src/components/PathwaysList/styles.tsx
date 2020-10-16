@@ -1,10 +1,10 @@
 import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
 
-const selectionIconDefault = (theme: AugmentedTheme) => {
+const selectionIconDefault = (theme: AugmentedTheme): Record<string, string> => {
   return {
     color: theme.palette.primary.main,
-    fontSize: '1.25em',
-  }
+    fontSize: '1.25em'
+  };
 };
 
 export default makeStyles(
@@ -50,7 +50,7 @@ export default makeStyles(
     },
     deleteIcon: {
       ...selectionIconDefault(theme),
-      color: theme.palette.secondary.main,
+      color: theme.palette.secondary.main
     }
   }),
   { name: 'PathwaysList', index: 1 }
