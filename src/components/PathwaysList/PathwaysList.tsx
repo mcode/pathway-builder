@@ -17,6 +17,9 @@ import PathwayModal from './PathwayModal';
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from './PathwaysListCheckbox';
+import JSZip from 'jszip';
+import { CaminoExporter } from 'utils/CaminoExporter';
+import { useCriteriaContext } from 'components/CriteriaProvider';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -33,6 +36,7 @@ const PathwaysList: FC = () => {
     selected,
     setSelected
   } = useListCheckbox(pathwayIds);
+  const { criteria } = useCriteriaContext();
 
   const { addPathwayFromFile } = usePathwaysContext();
 
@@ -62,6 +66,33 @@ const PathwaysList: FC = () => {
     });
   }, [deletePathway, selected, setSelected]);
 
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportAll = useCallback(() => {
+    setExporting(true);
+    const zip = new JSZip();
+    selected.forEach(id => {
+      const selectedPathway = pathways.find(pathway => pathway.id === id);
+      if (selectedPathway) {
+        zip.file(
+          `${selectedPathway.name}.json`,
+          JSON.stringify(new CaminoExporter(selectedPathway, criteria).export(), undefined, 2)
+        );
+      }
+    });
+    zip.generateAsync({ type: 'blob' }).then(function(content) {
+      // Temporarily create hidden <a> tag to download pathwayBlob
+      // File name is set to <pathway-name>.json
+      const url = window.URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pathways.zip';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      setExporting(false);
+    });
+  }, [criteria, pathways, selected]);
+
   return (
     <div className={styles.root}>
       <div className={styles.tableTop}>
@@ -75,7 +106,7 @@ const PathwaysList: FC = () => {
             />
           </Tooltip>
           <Tooltip placement="top" title="Export" arrow>
-            <IconButton size="small">
+            <IconButton size="small" onClick={handleExportAll} disabled={exporting}>
               <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
             </IconButton>
           </Tooltip>
