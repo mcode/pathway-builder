@@ -12,7 +12,7 @@ export default makeStyles(
       marginLeft: '20px'
     },
     pathwayList: {
-      marginTop: '2em'
+      marginTop: '1em'
     },
     pathwaysListButton: {
       marginRight: '1em'
