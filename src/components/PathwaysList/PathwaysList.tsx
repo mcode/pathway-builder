@@ -7,7 +7,7 @@ import {
   faFileExport,
   faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
-import { Button, Checkbox } from '@material-ui/core';
+import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
@@ -58,14 +58,28 @@ const PathwaysList: FC = () => {
     <div className={styles.root}>
       <div className={styles.tableTop}>
         <div className={styles.selectionOptions}>
-          <Checkbox
-            indeterminate={indeterminate}
-            checked={checked}
-            onChange={handleSelectAllClick}
-          />
-          <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
-          <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
-          <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
+          <Tooltip placement="top" title="Select All" arrow>
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checked}
+              onChange={handleSelectAllClick}
+            />
+          </Tooltip>
+          <Tooltip placement="top" title="Export" arrow>
+            <IconButton size="small">
+              <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="top" title="Move to" arrow>
+            <IconButton size="small">
+              <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement="top" title="Delete" arrow>
+            <IconButton size="small">
+              <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
+            </IconButton>
+          </Tooltip>
         </div>
         <div className={styles.buttonRow}>
           <Button

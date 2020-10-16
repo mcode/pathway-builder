@@ -1,12 +1,5 @@
 import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
 
-const selectionIconDefault = (theme: AugmentedTheme): Record<string, string> => {
-  return {
-    color: theme.palette.primary.main,
-    fontSize: '1.25em'
-  };
-};
-
 export default makeStyles(
   (theme: AugmentedTheme) => ({
     root: {
@@ -46,10 +39,9 @@ export default makeStyles(
       }
     },
     selectionIcon: {
-      ...selectionIconDefault(theme)
+      color: theme.palette.primary.main
     },
     deleteIcon: {
-      ...selectionIconDefault(theme),
       color: theme.palette.secondary.main
     }
   }),
