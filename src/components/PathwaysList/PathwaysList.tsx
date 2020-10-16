@@ -65,7 +65,7 @@ const PathwaysList: FC = () => {
           />
           <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
           <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
-          <FontAwesomeIcon icon={faTrashAlt} className={styles.selectionIcon} />
+          <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
         </div>
         <div className={styles.buttonRow}>
           <Button
