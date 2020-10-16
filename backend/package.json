@@ -1,0 +1,9 @@
+{
+  "name": "pathways-backend",
+  "version": "0.0.1",
+  "description": "Backend Service for Camino and the Pathways Builder",
+  "main": "index.ts",
+  "repository": "https://github.com/mcode/pathway-builder",
+  "license": "Apache 2.0",
+  "private": true
+}
