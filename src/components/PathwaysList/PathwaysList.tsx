@@ -10,12 +10,22 @@ import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
+import useListCheckbox from './PathwaysListCheckbox';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const { status } = usePathwaysContext();
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
+  const { pathways } = usePathwaysContext();
+  const pathwayIds = pathways.map(n => n.id); //useMemo(() => {pathways.map(n => n.id)}, []);
+  const {
+    indeterminate,
+    checked,
+    handleSelectAllClick,
+    itemSelected,
+    handleSelectClick
+  } = useListCheckbox(pathwayIds);
 
   const { addPathwayFromFile } = usePathwaysContext();
 
@@ -71,7 +81,17 @@ const PathwaysList: FC = () => {
 
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
 
-      {status === 'loading' ? <Loading /> : <PathwaysTable />}
+      {status === 'loading' ? (
+        <Loading />
+      ) : (
+        <PathwaysTable
+          indeterminate={indeterminate}
+          checked={checked}
+          handleSelectClick={handleSelectClick}
+          handleSelectAllClick={handleSelectAllClick}
+          itemSelected={itemSelected}
+        />
+      )}
     </div>
   );
 };
