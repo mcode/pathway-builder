@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '@material-ui/core';
+import { Button, Checkbox } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
@@ -50,26 +50,35 @@ const PathwaysList: FC = () => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.buttonRow}>
-        <Button
-          className={styles.createPathwayButton}
-          variant="contained"
-          color="primary"
-          startIcon={<FontAwesomeIcon icon={faFileImport} />}
-          onClick={openImportPathwayModal}
-        >
-          Import Pathway
-        </Button>
+      <div className={styles.tableTop}>
+        <div className={styles.selectionOptions}>
+          <Checkbox
+            indeterminate={indeterminate}
+            checked={checked}
+            onChange={handleSelectAllClick}
+          />
+        </div>
+        <div className={styles.buttonRow}>
+          <Button
+            className={styles.createPathwayButton}
+            variant="contained"
+            color="primary"
+            startIcon={<FontAwesomeIcon icon={faFileImport} />}
+            onClick={openImportPathwayModal}
+          >
+            Import Pathway
+          </Button>
 
-        <Button
-          className={styles.createPathwayButton}
-          variant="contained"
-          color="primary"
-          startIcon={<FontAwesomeIcon icon={faPlus} />}
-          onClick={openNewPathwayModal}
-        >
-          Create Pathway
-        </Button>
+          <Button
+            className={styles.createPathwayButton}
+            variant="contained"
+            color="primary"
+            startIcon={<FontAwesomeIcon icon={faPlus} />}
+            onClick={openNewPathwayModal}
+          >
+            Create Pathway
+          </Button>
+        </div>
       </div>
 
       <FileImportModal
@@ -84,13 +93,7 @@ const PathwaysList: FC = () => {
       {status === 'loading' ? (
         <Loading />
       ) : (
-        <PathwaysTable
-          indeterminate={indeterminate}
-          checked={checked}
-          handleSelectClick={handleSelectClick}
-          handleSelectAllClick={handleSelectAllClick}
-          itemSelected={itemSelected}
-        />
+        <PathwaysTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
       )}
     </div>
   );

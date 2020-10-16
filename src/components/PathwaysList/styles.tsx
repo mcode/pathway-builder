@@ -24,6 +24,13 @@ export default makeStyles(
     buttonRow: {
       display: 'flex',
       justifyContent: 'flex-end'
+    },
+    tableTop: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    selectionOptions: {
+      paddingLeft: '4px'
     }
   }),
   { name: 'PathwaysList', index: 1 }

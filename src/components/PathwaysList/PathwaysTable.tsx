@@ -1,4 +1,4 @@
-import React, { FC, memo, useState, useCallback, MouseEvent } from 'react';
+import React, { FC, memo, useState, useCallback, MouseEvent, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -22,15 +22,13 @@ import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 import ExportMenu from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import { ListCheckboxReturn } from './PathwaysListCheckbox';
 
-const PathwaysTable: FC<ListCheckboxReturn> = ({
-  indeterminate,
-  checked,
-  handleSelectAllClick,
-  itemSelected,
-  handleSelectClick
-}) => {
+interface PathwaysTableInterface {
+  itemSelected: (item: string) => boolean;
+  handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
   const { pathways, deletePathway } = usePathwaysContext();
   const { setCurrentPathway } = useCurrentPathwayContext();
@@ -73,13 +71,7 @@ const PathwaysTable: FC<ListCheckboxReturn> = ({
         <Table aria-label="pathway list">
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  indeterminate={indeterminate}
-                  checked={checked}
-                  onChange={handleSelectAllClick}
-                />
-              </TableCell>
+              <TableCell padding="checkbox"></TableCell>
               <TableCell>Pathway Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Last Updated</TableCell>
