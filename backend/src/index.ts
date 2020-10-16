@@ -1,5 +1,5 @@
 import express from 'express';
-import pathwayRouter from './routes/pathway';
+import pathwayRouter from 'routes/pathway';
 
 const app = express();
 const PORT = 8000;
