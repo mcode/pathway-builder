@@ -115,10 +115,10 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
             const criteriaSource = criteria.find(
               crit => crit.elm?.library.identifier.id === library && crit.statement === statement
             )?.id;
+            // Only update if a criteria source is actually found.
             if (criteriaSource) {
               setPathways((currentPathways: Pathway[]) => {
                 return produce(currentPathways, draftPathways => {
-                  console.log('producing')
                   const draftCondition =
                     draftPathways[pathwayIndex].nodes[nodeIndex].transitions[transitionIndex]
                       .condition;
