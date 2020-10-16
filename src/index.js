@@ -3,8 +3,9 @@ import 'react-app-polyfill/stable';
 import './immer';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import App from 'components/App';
+import Auth from 'components/Auth';
 
 import './styles/index.scss';
 
@@ -17,4 +18,12 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <Router>
+    <Switch>
+      <Route exact path="/login" render={() => <Auth />}></Route>
+      <Route path="/" render={() => <App />}></Route>
+    </Switch>
+  </Router>,
+  document.getElementById('root')
+);

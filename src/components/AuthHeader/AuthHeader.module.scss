@@ -1,0 +1,61 @@
+@import '../../styles/variables';
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 8em;
+  background-color: $gray-lighter;
+  padding: 0 20px;
+
+  .signupButton {
+    background-color: $red;
+    border: 10px;
+    padding: 10px;
+    font-family: RobotoCondensed-Regular;
+    cursor: pointer;
+    color: $white;
+    font-size: 30px;
+    margin-right: 20px;
+    margin-left: auto;
+  
+    &:focus,
+    &:hover {
+      outline: none;
+  
+      svg {
+        font-size: 30px;
+      }
+    }
+  }
+
+
+  button {
+    background-color: white;
+    border: 1px solid #7D8892;
+    padding: 10px;
+    font-family: RobotoCondensed-Regular;
+    cursor: pointer;
+    color: #7D8892;
+    font-size: 30px;
+
+    &:focus,
+    &:hover {
+      outline: none;
+
+      svg {
+        font-size: 30px;
+      }
+    }
+  }
+}
+
+
+
+.logo {
+  height: 50px;
+}
+
+.homeLink {
+  display: flex;
+}
