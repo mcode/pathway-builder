@@ -30,7 +30,17 @@ export default makeStyles(
       justifyContent: 'space-between'
     },
     selectionOptions: {
-      paddingLeft: '4px'
+      display: 'flex',
+      paddingLeft: '4px',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      '& > :not(:first-child)': {
+        marginRight: '0.5em'
+      }
+    },
+    selectionIcon: {
+      color: theme.palette.primary.main,
+      fontSize: '1.25em'
     }
   }),
   { name: 'PathwaysList', index: 1 }

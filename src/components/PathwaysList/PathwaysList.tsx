@@ -1,6 +1,12 @@
 import React, { FC, useCallback, useState, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faFileImport,
+  faPlus,
+  faFileDownload,
+  faFileExport,
+  faTrashAlt
+} from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/PathwaysProvider';
@@ -18,7 +24,7 @@ const PathwaysList: FC = () => {
   const { status } = usePathwaysContext();
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
   const { pathways } = usePathwaysContext();
-  const pathwayIds = pathways.map(n => n.id); //useMemo(() => {pathways.map(n => n.id)}, []);
+  const pathwayIds = pathways.map(n => n.id);
   const {
     indeterminate,
     checked,
@@ -57,6 +63,9 @@ const PathwaysList: FC = () => {
             checked={checked}
             onChange={handleSelectAllClick}
           />
+          <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
+          <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
+          <FontAwesomeIcon icon={faTrashAlt} className={styles.selectionIcon} />
         </div>
         <div className={styles.buttonRow}>
           <Button
