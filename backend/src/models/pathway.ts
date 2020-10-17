@@ -7,7 +7,7 @@ const pathwaySchema = new mongoose.Schema({
   library: [String],
   preconditions: [Object],
   nodes: Object,
-  elm: Object
+  elm: Object,
 });
 
 const Pathway = mongoose.model('Pathway', pathwaySchema);
