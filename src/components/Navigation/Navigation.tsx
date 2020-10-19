@@ -45,14 +45,14 @@ const Navigation: FC = () => {
         <span className={styles.pathwayName}>{pathway?.name}</span>
       </div>
       <div>
-        <Tooltip title="Undo">
+        <Tooltip placement="top" title="Undo" arrow>
           <span>
             <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
               <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
             </IconButton>
           </span>
         </Tooltip>
-        <Tooltip title="Redo">
+        <Tooltip placement="top" title="Redo" arrow>
           <span>
             <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
               <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
