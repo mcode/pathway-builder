@@ -8,6 +8,7 @@ export interface ListCheckboxReturn {
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
   selected: Set<string>;
   setSelected: (selection: Set<string>) => void;
+  numSelected: number;
 }
 
 const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
@@ -55,7 +56,8 @@ const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
     itemSelected,
     handleSelectClick,
     selected,
-    setSelected
+    setSelected,
+    numSelected
   };
 };
 

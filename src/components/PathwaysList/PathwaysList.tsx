@@ -34,7 +34,8 @@ const PathwaysList: FC = () => {
     itemSelected,
     handleSelectClick,
     selected,
-    setSelected
+    setSelected,
+    numSelected
   } = useListCheckbox(pathwayIds);
   const { criteria } = useCriteriaContext();
 
@@ -104,21 +105,25 @@ const PathwaysList: FC = () => {
               onChange={handleSelectAllClick}
             />
           </Tooltip>
-          <Tooltip placement="top" title="Export" arrow>
-            <IconButton size="small" onClick={handleExportAll} disabled={exporting}>
-              <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip placement="top" title="Move to" arrow>
-            <IconButton size="small">
-              <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip placement="top" title="Delete" arrow>
-            <IconButton size="small" onClick={handleDelete}>
-              <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
-            </IconButton>
-          </Tooltip>
+          {numSelected > 0 && (
+            <>
+              <Tooltip placement="top" title="Export" arrow>
+                <IconButton size="small" onClick={handleExportAll} disabled={exporting}>
+                  <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip placement="top" title="Move to" arrow>
+                <IconButton size="small">
+                  <FontAwesomeIcon icon={faFileExport} className={styles.selectionIcon} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip placement="top" title="Delete" arrow>
+                <IconButton size="small" onClick={handleDelete}>
+                  <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
         </div>
         <div className={styles.buttonRow}>
           <Button
