@@ -35,8 +35,6 @@ const Navigation: FC = () => {
     history.push('/');
   }, [history, resetCurrentCriteria]);
 
-  const undoTooltipText = canUndoPathway ? 'Undo' : 'Undo (disabled)';
-  const redoTooltipText = canRedoPathway ? 'Redo' : 'Redo (disabled)';
   return (
     <nav className={styles.root}>
       <div>
@@ -47,14 +45,14 @@ const Navigation: FC = () => {
         <span className={styles.pathwayName}>{pathway?.name}</span>
       </div>
       <div>
-        <Tooltip title={undoTooltipText}>
+        <Tooltip title="Undo">
           <span>
             <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
               <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
             </IconButton>
           </span>
         </Tooltip>
-        <Tooltip title={redoTooltipText}>
+        <Tooltip title="Redo">
           <span>
             <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
               <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
