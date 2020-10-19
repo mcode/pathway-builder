@@ -20,6 +20,7 @@ import useListCheckbox from './PathwaysListCheckbox';
 import JSZip from 'jszip';
 import { CaminoExporter } from 'utils/CaminoExporter';
 import { useCriteriaContext } from 'components/CriteriaProvider';
+import { downloadPathway } from 'utils/builder';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -71,27 +72,8 @@ const PathwaysList: FC = () => {
 
   const handleExportAll = useCallback(() => {
     setExporting(true);
-    const zip = new JSZip();
-    selected.forEach(id => {
-      const selectedPathway = pathways.find(pathway => pathway.id === id);
-      if (selectedPathway) {
-        zip.file(
-          `${selectedPathway.name}.json`,
-          JSON.stringify(new CaminoExporter(selectedPathway, criteria).export(), undefined, 2)
-        );
-      }
-    });
-    zip.generateAsync({ type: 'blob' }).then(function(content) {
-      // Temporarily create hidden <a> tag to download pathwayBlob
-      // File name is set to <pathway-name>.json
-      const url = window.URL.createObjectURL(content);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'pathways.zip';
-      a.click();
-      window.URL.revokeObjectURL(url);
-      setExporting(false);
-    });
+    const selectedPathway = pathways.filter(pathway => selected.has(pathway.id));
+    downloadPathway(selectedPathway, pathways, criteria, false).then(r => setExporting(false));
   }, [criteria, pathways, selected]);
 
   return (
