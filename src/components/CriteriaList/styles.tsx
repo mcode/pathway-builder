@@ -16,7 +16,7 @@ export default makeStyles(
       marginLeft: '20px'
     },
     criteriaList: {
-      marginTop: '2em'
+      marginTop: '1em'
     },
     editButton: {
       marginRight: '1em'
