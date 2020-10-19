@@ -13,6 +13,7 @@ import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import useRefState from 'utils/useRefState';
 import { useCriteriaContext } from './CriteriaProvider';
+import produce from 'immer';
 
 interface PathwaysContextInterface {
   pathways: Pathway[];
@@ -105,20 +106,31 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   // Update criteriaSource if criteria change
   useEffect(() => {
     const criteriaIds = criteria.map(crit => crit.id);
-    pathways.forEach(pathway =>
-      Object.values(pathway.nodes).forEach(node => {
-        node.transitions.forEach(({ condition }) => {
+    pathways.forEach((pathway, pathwayIndex) =>
+      Object.entries(pathway.nodes).forEach(([nodeIndex, node]) => {
+        node.transitions.forEach(({ condition }, transitionIndex) => {
           // If a matching criteria does not already exist, try and find one
           if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
             const [library, statement] = condition.cql.split('.');
-            condition.criteriaSource = criteria.find(
+            const criteriaSource = criteria.find(
               crit => crit.elm?.library.identifier.id === library && crit.statement === statement
             )?.id;
+            // Only update if a criteria source is actually found.
+            if (criteriaSource) {
+              setPathways((currentPathways: Pathway[]) => {
+                return produce(currentPathways, draftPathways => {
+                  const draftCondition =
+                    draftPathways[pathwayIndex].nodes[nodeIndex].transitions[transitionIndex]
+                      .condition;
+                  if (draftCondition) draftCondition.criteriaSource = criteriaSource;
+                });
+              });
+            }
           }
         });
       })
     );
-  }, [criteria, pathways]);
+  }, [criteria, pathways, setPathways]);
 
   switch (service.status) {
     case 'error':
