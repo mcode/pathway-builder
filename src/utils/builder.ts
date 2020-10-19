@@ -41,16 +41,14 @@ export function downloadPathway(
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
-
   // Determine if a single pathway or multiple pathways are being exported
-  const paths = (Array.isArray(pathway) && pathway.length > 1) ?
-    pathway :
-    ([] as Pathway[]).concat(pathway)[0]
+  const paths =
+    Array.isArray(pathway) && pathway.length > 1 ? pathway : ([] as Pathway[]).concat(pathway)[0];
 
   if (Array.isArray(paths)) {
     const zip = new JSZip();
     // If multiple pathways are being exported
-    paths.forEach( path => {
+    paths.forEach(path => {
       zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
     });
     return zip.generateAsync({ type: 'blob' }).then(function(content) {
@@ -67,7 +65,7 @@ export function downloadPathway(
   }
 }
 
-function downloadFile(file: Blob, fileName: string) {
+function downloadFile(file: Blob, fileName: string): void {
   // Temporarily create hidden <a> tag to download pathwayBlob
   // File name is set to <pathway-name>.json
   const url = window.URL.createObjectURL(file);

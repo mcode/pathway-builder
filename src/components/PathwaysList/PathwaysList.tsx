@@ -17,8 +17,6 @@ import PathwayModal from './PathwayModal';
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from './PathwaysListCheckbox';
-import JSZip from 'jszip';
-import { CaminoExporter } from 'utils/CaminoExporter';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
 
