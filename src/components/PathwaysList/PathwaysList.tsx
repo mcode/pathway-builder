@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState, memo, useMemo } from 'react';
+import React, { FC, useCallback, useState, memo, useMemo, MouseEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileImport,
@@ -18,13 +18,15 @@ import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import { downloadPathway } from 'utils/builder';
+import ExportMenu from 'components/elements/ExportMenu';
+import { Pathway } from 'pathways-model';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const { status, pathways, deletePathway } = usePathwaysContext();
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathwayIds = useMemo(() => pathways.map(n => n.id), [pathways]);
   const {
     indeterminate,
@@ -55,6 +57,10 @@ const PathwaysList: FC = () => {
     [addPathwayFromFile]
   );
 
+  const closeMenu = useCallback((): void => {
+    setAnchorEl(null);
+  }, []);
+
   const openImportPathwayModal = useCallback((): void => _setImportPathwayOpen(true), []);
 
   const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
@@ -66,13 +72,14 @@ const PathwaysList: FC = () => {
     });
   }, [deletePathway, selected, setSelected]);
 
-  const [exporting, setExporting] = useState(false);
-
-  const handleExportAll = useCallback(() => {
-    setExporting(true);
-    const selectedPathway = pathways.filter(pathway => selected.has(pathway.id));
-    downloadPathway(selectedPathway, pathways, criteria, false).then(r => setExporting(false));
-  }, [criteria, pathways, selected]);
+  const [pathwaysToExport, setPathwaysToExport] = useState<Pathway[]>([]);
+  const handleExportAll = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      setPathwaysToExport(pathways.filter(pathway => selected.has(pathway.id)));
+      setAnchorEl(event.currentTarget);
+    },
+    [pathways, selected]
+  );
 
   return (
     <div className={styles.root}>
@@ -88,7 +95,7 @@ const PathwaysList: FC = () => {
           {numSelected > 0 && (
             <>
               <Tooltip placement="top" title="Export" arrow>
-                <IconButton size="small" onClick={handleExportAll} disabled={exporting}>
+                <IconButton size="small" onClick={handleExportAll}>
                   <FontAwesomeIcon icon={faFileDownload} className={styles.selectionIcon} />
                 </IconButton>
               </Tooltip>
@@ -136,6 +143,13 @@ const PathwaysList: FC = () => {
       />
 
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
+      <ExportMenu
+        pathway={pathwaysToExport}
+        allPathways={pathways}
+        criteria={criteria}
+        anchorEl={anchorEl}
+        closeMenu={closeMenu}
+      />
 
       {status === 'loading' ? (
         <Loading />

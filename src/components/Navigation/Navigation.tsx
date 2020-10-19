@@ -7,7 +7,7 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import ExportMenu from 'components/elements/ExportMenu';
+import { ContextualExportMenu } from 'components/elements/ExportMenu';
 
 const Navigation: FC = () => {
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
@@ -62,7 +62,7 @@ const Navigation: FC = () => {
         <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
           <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
         </IconButton>
-        <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+        <ContextualExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
       </div>
     </nav>
   );

@@ -20,7 +20,7 @@ import useStyles from './styles';
 import { Pathway } from 'pathways-model';
 import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
-import ExportMenu from 'components/elements/ExportMenu';
+import { ContextualExportMenu } from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
 interface PathwaysTableInterface {
@@ -134,7 +134,7 @@ const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectC
           </TableBody>
         </Table>
       </TableContainer>
-      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      <ContextualExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
       <PathwayModal open={open} onClose={closeEditPathwayModal} editPathway={editablePathway} />
     </div>
   );

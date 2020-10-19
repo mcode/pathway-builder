@@ -4,18 +4,27 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
 import { usePathwaysContext } from 'components/PathwaysProvider';
+import { Pathway } from 'pathways-model';
+import { Criteria } from 'criteria-model';
 
-interface ExportMenuPropsInterface {
+interface ContextualExportMenuProps {
   anchorEl: HTMLElement | null;
   closeMenu: () => void;
 }
 
-const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
-  const { pathway } = useCurrentPathwayContext();
-  const { pathways } = usePathwaysContext();
+interface ExportMenuPropsInterface extends ContextualExportMenuProps {
+  pathway: Pathway | Pathway[] | null;
+  allPathways: Pathway[];
+  criteria: Criteria[];
+}
 
-  const { criteria } = useCriteriaContext();
-
+const ExportMenu: FC<ExportMenuPropsInterface> = ({
+  pathway,
+  allPathways,
+  criteria,
+  anchorEl,
+  closeMenu
+}) => {
   return (
     <Menu
       id="pathway-options-menu"
@@ -28,7 +37,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
     >
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, pathways, criteria);
+          if (pathway) downloadPathway(pathway, allPathways, criteria);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -37,7 +46,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
       </MenuItem>
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, pathways, criteria, true);
+          if (pathway) downloadPathway(pathway, allPathways, criteria, true);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -48,4 +57,22 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ anchorEl, closeMenu }) => {
   );
 };
 
+const ContextualExportMenu: FC<ContextualExportMenuProps> = ({ anchorEl, closeMenu }) => {
+  const { pathway } = useCurrentPathwayContext();
+  const { pathways } = usePathwaysContext();
+
+  const { criteria } = useCriteriaContext();
+
+  return (
+    <ExportMenu
+      pathway={pathway}
+      allPathways={pathways}
+      criteria={criteria}
+      anchorEl={anchorEl}
+      closeMenu={closeMenu}
+    />
+  );
+};
+
 export default memo(ExportMenu);
+export { ContextualExportMenu };
