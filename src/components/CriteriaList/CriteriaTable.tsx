@@ -1,8 +1,9 @@
-import React, { FC, memo, useCallback } from 'react';
+import React, { ChangeEvent, FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +17,12 @@ import useStyles from './styles';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 
-const CriteriaTable: FC = () => {
+interface CriteriaTableProps {
+  itemSelected: (item: string) => boolean;
+  handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const CriteriaTable: FC<CriteriaTableProps> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
   const { criteria, deleteCriteria } = useCriteriaContext();
 
@@ -36,6 +42,7 @@ const CriteriaTable: FC = () => {
       <Table aria-label="criteria list">
         <TableHead>
           <TableRow>
+            <TableCell padding="checkbox"></TableCell>
             <TableCell>Criteria Name</TableCell>
             <TableCell>Version</TableCell>
             <TableCell>Added</TableCell>
@@ -46,6 +53,9 @@ const CriteriaTable: FC = () => {
         <TableBody>
           {criteria.map(c => (
             <TableRow key={c.id}>
+              <TableCell padding="checkbox">
+                <Checkbox checked={itemSelected(c.id)} onChange={handleSelectClick(c.id)} />
+              </TableCell>
               <TableCell component="th" scope="row">
                 {c.label}
               </TableCell>
