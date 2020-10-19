@@ -271,12 +271,12 @@ const materialUiOverridesDark = {
       '&:disabled': {
         color: colors.grayLight
       }
+    },
+    sizeSmall: {
+      width: '20px',
+      height: '20px',
+      margin: '9px'
     }
-  },
-  sizeSmall: {
-    width: '20px',
-    height: '20px',
-    margin: '9px'
   }
 };
 
