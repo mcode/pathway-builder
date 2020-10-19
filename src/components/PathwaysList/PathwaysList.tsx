@@ -102,7 +102,6 @@ const PathwaysList: FC = () => {
               indeterminate={indeterminate}
               checked={checked}
               onChange={handleSelectAllClick}
-              className={styles.selectAll}
             />
           </Tooltip>
           <Tooltip placement="top" title="Export" arrow>
