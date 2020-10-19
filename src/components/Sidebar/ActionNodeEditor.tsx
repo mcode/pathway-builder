@@ -17,7 +17,6 @@ import { ActionNode, Action } from 'pathways-model';
 import useStyles from './styles';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -37,8 +36,7 @@ interface ActionNodeEditorProps {
 }
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
-  const { updatePathway } = usePathwaysContext();
-  const { pathwayRef } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();
 
@@ -57,10 +55,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
       convertBasicCQL(cql).then(elm => {
         // Disable lint for no-null assertion since it is already checked above
         // eslint-disable-next-line
-        updatePathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
+        setCurrentPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
       });
     },
-    [pathwayRef, updatePathway]
+    [pathwayRef, setCurrentPathway]
   );
 
   const changeCode = useCallback(
@@ -70,9 +68,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const code = event?.target.value || '';
       const action = setActionCode(currentNode.action, code);
-      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
-    [currentNodeRef, pathwayRef, updatePathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const changeDescription = useCallback(
@@ -82,9 +80,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const description = event?.target.value || '';
       const action = setActionDescription(currentNode.action, description);
-      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
     },
-    [currentNodeRef, pathwayRef, updatePathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const changeTitle = useCallback(
@@ -94,11 +92,11 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const title = event?.target.value || '';
       const action = setActionTitle(currentNode.action, title);
-      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
 
       addActionCQL(action, currentNode.key);
     },
-    [currentNodeRef, pathwayRef, updatePathway, addActionCQL]
+    [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]
   );
 
   const selectCodeSystem = useCallback(
@@ -108,9 +106,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
       const codeSystem = event?.target.value || '';
       const action = setActionCodeSystem(currentNode.action, codeSystem);
-      updatePathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
-    [currentNodeRef, pathwayRef, updatePathway]
+    [currentNodeRef, pathwayRef, setCurrentPathway]
   );
 
   const validateFunction = useCallback((): void => {
@@ -121,11 +119,11 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
     }
 
     const action = setActionResourceDisplay(currentNode.action, 'Example Text');
-    updatePathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+    setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
 
     // TODO: move addActionCQL to builder.ts
     addActionCQL(action, currentNode.key);
-  }, [currentNodeRef, pathwayRef, updatePathway, addActionCQL]);
+  }, [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]);
 
   const resetDisplay = (action: Action): Action => {
     return produce(action, (draftAction: Action) => {

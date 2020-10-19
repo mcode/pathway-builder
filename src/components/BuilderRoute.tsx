@@ -9,7 +9,7 @@ import { useCurrentNodeContext } from './CurrentNodeProvider';
 const BuilderRoute: FC = () => {
   const { id, nodeId } = useParams();
   const { pathways } = usePathwaysContext();
-  const { setPathway } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway, resetCurrentPathway } = useCurrentPathwayContext();
   const { setCurrentNode } = useCurrentNodeContext();
   const pathwayId = decodeURIComponent(id);
   const pathwayIndex = useMemo(() => pathways.findIndex(pathway => pathway.id === pathwayId), [
@@ -17,18 +17,22 @@ const BuilderRoute: FC = () => {
     pathways
   ]);
   const pathway = pathways[pathwayIndex];
-  const currentNode = pathway?.nodes?.[decodeURIComponent(nodeId)];
+  const currentNodeId = decodeURIComponent(nodeId);
 
   useEffect(() => {
-    setPathway(pathway);
-  }, [pathway, setPathway]);
+    if (pathway && pathwayRef?.current?.id === pathway.id) setCurrentPathway(pathway);
+    else if (pathway) resetCurrentPathway(pathway);
+  }, [pathway, pathwayRef, setCurrentNode, setCurrentPathway, resetCurrentPathway]);
 
   useEffect(() => {
-    setCurrentNode(currentNode);
-  }, [currentNode, setCurrentNode]);
+    if (pathwayRef.current?.nodes[currentNodeId])
+      setCurrentNode(pathwayRef.current.nodes[currentNodeId]);
+    else if (pathway?.nodes[currentNodeId]) setCurrentNode(pathway.nodes[currentNodeId]);
+    else if (pathway) setCurrentNode(pathway.nodes['Start']);
+  }, [pathway, pathwayRef, currentNodeId, setCurrentNode]);
 
   if (pathway == null) return null;
-  if (currentNode == null) return <Redirect to={`/builder/${id}/node/Start`} />;
+  if (!currentNodeId) return <Redirect to={`/builder/${id}/node/Start`} />;
 
   return <Builder />;
 };

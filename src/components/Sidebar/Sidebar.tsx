@@ -11,7 +11,6 @@ import {
   ReferenceNodeEditor
 } from 'components/Sidebar';
 import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -22,8 +21,7 @@ import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 
 const Sidebar: FC = () => {
-  const { updatePathway } = usePathwaysContext();
-  const { pathway, pathwayRef } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
@@ -37,9 +35,9 @@ const Sidebar: FC = () => {
   const changeNodeType = useCallback(
     (nodeType: string): void => {
       if (currentNodeRef.current && pathwayRef.current)
-        updatePathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
+        setCurrentPathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
-    [pathwayRef, updatePathway, currentNodeRef]
+    [pathwayRef, setCurrentPathway, currentNodeRef]
   );
 
   const selectNodeType = useCallback(
@@ -55,10 +53,10 @@ const Sidebar: FC = () => {
     const newNode = createNode();
     let newPathway = addNode(pathwayRef.current, newNode);
     newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
-    updatePathway(newPathway);
+    setCurrentPathway(newPathway);
     if (!isBranchNode(currentNodeRef.current))
       redirect(pathwayRef.current.id, newNode.key, history);
-  }, [pathwayRef, updatePathway, currentNodeRef, history]);
+  }, [pathwayRef, setCurrentPathway, currentNodeRef, history]);
 
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;

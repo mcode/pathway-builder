@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useState, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { IconButton } from '@material-ui/core';
+import { faChevronLeft, faEllipsisH, faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
@@ -12,7 +12,13 @@ import ExportMenu from 'components/elements/ExportMenu';
 const Navigation: FC = () => {
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { pathway } = useCurrentPathwayContext();
+  const {
+    pathway,
+    canUndoPathway,
+    canRedoPathway,
+    undoPathway,
+    redoPathway
+  } = useCurrentPathwayContext();
   const styles = useStyles();
   const history = useHistory();
 
@@ -38,10 +44,26 @@ const Navigation: FC = () => {
 
         <span className={styles.pathwayName}>{pathway?.name}</span>
       </div>
-      <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
-        <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
-      </IconButton>
-      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      <div>
+        <Tooltip placement="top" title="Undo" arrow>
+          <span>
+            <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
+              <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip placement="top" title="Redo" arrow>
+          <span>
+            <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
+              <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
+          <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
+        </IconButton>
+        <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      </div>
     </nav>
   );
 };

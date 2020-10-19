@@ -5,15 +5,23 @@ import React, {
   FC,
   memo,
   useCallback,
-  MutableRefObject
+  MutableRefObject,
+  useEffect
 } from 'react';
 import { Pathway } from 'pathways-model';
-import useRefState from 'utils/useRefState';
+import useRefUndoState from 'utils/useRefUndoState';
+import { usePathwaysContext } from './PathwaysProvider';
+import HotKeys from 'react-hot-keys';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
   pathwayRef: MutableRefObject<Pathway | null>;
-  setPathway: (value: Pathway) => void;
+  canUndoPathway: boolean;
+  canRedoPathway: boolean;
+  undoPathway: () => void;
+  redoPathway: () => void;
+  resetCurrentPathway: (value: Pathway) => void;
+  setCurrentPathway: (value: Pathway) => void;
 }
 
 export const CurrentPathwayContext = createContext<CurrentPathwayContextInterface>(
@@ -25,18 +33,62 @@ interface CurrentPathwayProviderProps {
 }
 
 export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ children }) => {
-  const [pathway, pathwayRef, _setPathway] = useRefState<Pathway | null>(null);
+  const [
+    pathway,
+    pathwayRef,
+    canUndoPathway,
+    canRedoPathway,
+    _undoPathway,
+    _redoPathway,
+    _resetPathway,
+    _setPathway
+  ] = useRefUndoState<Pathway | null>(null);
+  const { updatePathway } = usePathwaysContext();
 
-  const setPathway = useCallback(
+  const undoPathway = useCallback(() => {
+    _undoPathway();
+  }, [_undoPathway]);
+
+  const redoPathway = useCallback(() => {
+    _redoPathway();
+  }, [_redoPathway]);
+
+  const resetCurrentPathway = useCallback(
+    (value: Pathway) => {
+      _resetPathway(value);
+    },
+    [_resetPathway]
+  );
+
+  const setCurrentPathway = useCallback(
     (value: Pathway) => {
       _setPathway(value);
     },
     [_setPathway]
   );
 
+  useEffect(() => {
+    if (pathway) updatePathway(pathway);
+  }, [pathway, updatePathway]);
+
   return (
-    <CurrentPathwayContext.Provider value={{ pathway, pathwayRef, setPathway }}>
-      {children}
+    <CurrentPathwayContext.Provider
+      value={{
+        pathway,
+        pathwayRef,
+        canUndoPathway,
+        canRedoPathway,
+        undoPathway,
+        redoPathway,
+        resetCurrentPathway,
+        setCurrentPathway
+      }}
+    >
+      <HotKeys keyName="control+z,command+z" onKeyDown={undoPathway}>
+        <HotKeys keyName="control+y,command+y" onKeyDown={redoPathway}>
+          {children}
+        </HotKeys>
+      </HotKeys>
     </CurrentPathwayContext.Provider>
   );
 });

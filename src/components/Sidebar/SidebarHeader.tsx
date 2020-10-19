@@ -11,7 +11,6 @@ import { IconButton, FormControl, Input, Tooltip } from '@material-ui/core';
 
 import { PathwayNode } from 'pathways-model';
 import { setNodeLabel, removeNode, removeTransition } from 'utils/builder';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useHistory } from 'react-router-dom';
@@ -26,13 +25,12 @@ interface SidebarHeaderProps {
 }
 
 const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) => {
-  const { updatePathway } = usePathwaysContext();
   const [showInput, setShowInput] = useState<boolean>(false);
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const { currentNodeRef } = useCurrentNodeContext();
   const { setSnackbarText, setOpenSnackbar } = useSnackbarContext();
-  const { pathway, pathwayRef } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
   const styles = useStyles();
@@ -51,9 +49,9 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
 
   const changeNodeLabel = useCallback(() => {
     const label = inputRef.current?.value ?? '';
-    if (pathwayRef.current) updatePathway(setNodeLabel(pathwayRef.current, node.key, label));
+    if (pathwayRef.current) setCurrentPathway(setNodeLabel(pathwayRef.current, node.key, label));
     setShowInput(false);
-  }, [pathwayRef, updatePathway, node.key]);
+  }, [pathwayRef, setCurrentPathway, node.key]);
 
   const handleShowInput = useCallback(() => {
     setShowInput(true);
@@ -62,7 +60,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const deleteNode = useCallback(() => {
     if (pathwayRef.current && canDeleteNode(pathwayRef.current, node.transitions)) {
       const parents = findParents(pathwayRef.current.nodes, node.key);
-      updatePathway(removeNode(pathwayRef.current, node.key));
+      setCurrentPathway(removeNode(pathwayRef.current, node.key));
       redirect(pathwayRef.current.id, parents[0], history);
       setOpenDelete(false);
       setSnackbarText(`${node.label} node deleted successfully`);
@@ -70,7 +68,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
     }
   }, [
     pathwayRef,
-    updatePathway,
+    setCurrentPathway,
     setSnackbarText,
     setOpenSnackbar,
     node.key,
@@ -85,14 +83,14 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
       pathwayRef.current &&
       !willOrphanChild(pathwayRef.current, node.key)
     ) {
-      updatePathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
+      setCurrentPathway(removeTransition(pathwayRef.current, currentNodeRef.current.key, node.key));
       setOpenDelete(false);
       setSnackbarText(
         `Transition from ${currentNodeRef.current.label} to ${node.label} deleted successfully`
       );
       setOpenSnackbar(true);
     }
-  }, [pathwayRef, currentNodeRef, updatePathway, setSnackbarText, setOpenSnackbar, node]);
+  }, [pathwayRef, currentNodeRef, setCurrentPathway, setSnackbarText, setOpenSnackbar, node]);
 
   const openDeleteModal = useCallback((): void => {
     setOpenDelete(true);
@@ -160,7 +158,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
               )}
             >
               {nodeLabel}
-              {node.type !== 'start' && (
+              {node.key !== 'Start' && (
                 <FontAwesomeIcon className={styles.editIcon} icon={faEdit} />
               )}
             </div>

@@ -17,7 +17,6 @@ export default makeStyles(
     },
     navigationIcons: {
       fontSize: '20px',
-      color: theme.palette.common.gray,
       cursor: 'pointer'
     },
     pathwayName: {

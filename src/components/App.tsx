@@ -21,10 +21,10 @@ const App: FC = () => {
   return (
     <ThemeProvider theme="light">
       <UserProvider>
-        <CurrentPathwayProvider>
-          <CriteriaProvider>
-            <PathwaysProvider>
-              <CurrentNodeProvider>
+        <CriteriaProvider>
+          <PathwaysProvider>
+            <CurrentNodeProvider>
+              <CurrentPathwayProvider>
                 <SnackbarProvider>
                   <CurrentCriteriaProvider>
                     <CriteriaBuilderProvider>
@@ -50,10 +50,10 @@ const App: FC = () => {
                     </CriteriaBuilderProvider>
                   </CurrentCriteriaProvider>
                 </SnackbarProvider>
-              </CurrentNodeProvider>
-            </PathwaysProvider>
-          </CriteriaProvider>
-        </CurrentPathwayProvider>
+              </CurrentPathwayProvider>
+            </CurrentNodeProvider>
+          </PathwaysProvider>
+        </CriteriaProvider>
       </UserProvider>
     </ThemeProvider>
   );

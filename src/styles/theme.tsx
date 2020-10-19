@@ -198,8 +198,9 @@ const materialUiOverridesBase = {
   },
   MuiIconButton: {
     root: {
+      color: colors.gray,
       '&:disabled': {
-        color: colors.grayLight
+        color: colors.grayMedium
       }
     }
   }
@@ -262,6 +263,14 @@ const materialUiOverridesDark = {
   MuiMenuItem: {
     root: {
       color: colors.grayDark
+    }
+  },
+  MuiIconButton: {
+    root: {
+      color: colors.white,
+      '&:disabled': {
+        color: colors.grayLight
+      }
     }
   }
 };

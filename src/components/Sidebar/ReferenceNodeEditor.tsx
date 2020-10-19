@@ -18,7 +18,7 @@ interface ReferenceNodeEditorProps {
 const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) => {
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const { pathways, updatePathway } = usePathwaysContext();
-  const { pathwayRef, setPathway } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const history = useHistory();
 
   const pathwayOptions = pathways.map((pathway: Pathway) => {
@@ -42,9 +42,9 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
       return pathway.id === pathwayReferenceId;
     });
     if (referencedPathway) {
-      setPathway(referencedPathway);
+      setCurrentPathway(referencedPathway);
     }
-  }, [currentNode, pathways, setPathway]);
+  }, [currentNode, pathways, setCurrentPathway]);
 
   const selectPathwayReference = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {

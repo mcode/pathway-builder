@@ -11,7 +11,6 @@ import {
 import { OutlinedDiv, SidebarButton } from '.';
 import { Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -24,7 +23,6 @@ interface BranchTransitionProps {
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
-  const { updatePathway } = usePathwaysContext();
   const { criteria, addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
@@ -38,7 +36,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     resetCurrentCriteria
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
-  const { pathwayRef } = useCurrentPathwayContext();
+  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
@@ -69,14 +67,21 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const handleUseCriteria = useCallback((): void => {
     if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
       // delete the transition criteria
-      updatePathway(
+      setCurrentPathway(
         removeTransitionCondition(pathwayRef.current, currentNodeRef.current.key, transition.id)
       );
       setUseCriteriaSelected(false);
     } else {
       setUseCriteriaSelected(!useCriteriaSelected);
     }
-  }, [useCriteriaSelected, currentNodeRef, pathwayRef, hasCriteria, transition.id, updatePathway]);
+  }, [
+    useCriteriaSelected,
+    currentNodeRef,
+    pathwayRef,
+    hasCriteria,
+    transition.id,
+    setCurrentPathway
+  ]);
 
   const selectCriteriaSource = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -93,9 +98,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         selectedCriteria
       );
 
-      updatePathway(newPathway);
+      setCurrentPathway(newPathway);
     },
-    [currentNodeRef, updatePathway, pathwayRef, transitionRef, criteria]
+    [currentNodeRef, setCurrentPathway, pathwayRef, transitionRef, criteria]
   );
 
   const setCriteriaDisplay = useCallback(
@@ -103,7 +108,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       if (!currentNodeRef.current || !pathwayRef.current) return;
 
       const criteriaDisplay = event?.target.value || '';
-      updatePathway(
+      setCurrentPathway(
         setTransitionConditionDescription(
           pathwayRef.current,
           currentNodeRef.current.key,
@@ -112,7 +117,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
         )
       );
     },
-    [currentNodeRef, transition.id, updatePathway, pathwayRef]
+    [currentNodeRef, transition.id, setCurrentPathway, pathwayRef]
   );
 
   const handleCriteriaName = useCallback(
@@ -177,11 +182,11 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
       criteria[0]
     );
 
-    updatePathway(newPathway);
+    setCurrentPathway(newPathway);
     handleBuildCriteriaCancel();
   }, [
     currentNodeRef,
-    updatePathway,
+    setCurrentPathway,
     pathwayRef,
     transitionRef,
     currentCriteria,
