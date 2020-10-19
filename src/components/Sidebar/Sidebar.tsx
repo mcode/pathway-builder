@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useState, useRef, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -38,13 +38,6 @@ const Sidebar: FC = () => {
         setCurrentPathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
     },
     [pathwayRef, setCurrentPathway, currentNodeRef]
-  );
-
-  const selectNodeType = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      changeNodeType(event?.target.value || '');
-    },
-    [changeNodeType]
   );
 
   const addPathwayNode = useCallback((): void => {
@@ -104,7 +97,7 @@ const Sidebar: FC = () => {
                 id="nodeType"
                 label="Node Type"
                 options={nodeTypeOptions}
-                onChange={selectNodeType}
+                onChange={changeNodeType}
                 value=""
               />
             )}
@@ -116,7 +109,7 @@ const Sidebar: FC = () => {
                 id="nodeType"
                 label="Node Type"
                 options={nodeTypeOptions}
-                onChange={selectNodeType}
+                onChange={changeNodeType}
                 value="Observation"
               />
             )}

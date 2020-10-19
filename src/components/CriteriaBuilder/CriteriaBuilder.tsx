@@ -48,27 +48,6 @@ const CriteriaBuilder: FC = () => {
     }
   ];
 
-  const onElementSelected = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      setSelectedElement(event?.target.value || '');
-    },
-    [setSelectedElement]
-  );
-
-  const onDemoElementSelected = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      setSelectedDemoElement(event?.target.value || '');
-    },
-    [setSelectedDemoElement]
-  );
-
-  const onGenderSelected = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      setGender(event?.target.value || '');
-    },
-    [setGender]
-  );
-
   const onMinimumAgeChange = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
       setMinimumAge(parseInt(event?.target.value) || 0);
@@ -136,7 +115,7 @@ const CriteriaBuilder: FC = () => {
               id="Choose Element Type"
               label="Choose Element Type"
               options={elementOptions}
-              onChange={onElementSelected}
+              onChange={setSelectedElement}
               value={selectedElement}
             />
             {selectedElement && (
@@ -144,7 +123,7 @@ const CriteriaBuilder: FC = () => {
                 id={`Select ${selectedElement} element`}
                 label={`Select ${selectedElement} element`}
                 options={demoElementOptions}
-                onChange={onDemoElementSelected}
+                onChange={setSelectedDemoElement}
                 value={selectedDemoElement}
               />
             )}
@@ -165,7 +144,7 @@ const CriteriaBuilder: FC = () => {
                   id="Select Gender"
                   label="Gender"
                   options={genderOptions}
-                  onChange={onGenderSelected}
+                  onChange={setGender}
                   value={gender}
                 />
               </>

@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, ChangeEvent } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
@@ -29,13 +29,6 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
   });
   const styles = useStyles();
 
-  const selectNodeType = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      changeNodeType(event?.target.value || '');
-    },
-    [changeNodeType]
-  );
-
   const showReference = useCallback((): void => {
     const pathwayReferenceId = (currentNode as ReferenceNode).referenceId;
     const referencedPathway = pathways.find(pathway => {
@@ -47,8 +40,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
   }, [currentNode, pathways, setCurrentPathway]);
 
   const selectPathwayReference = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      const referenceId = event?.target.value || '';
+    (referenceId: string): void => {
       const referenceLabel =
         pathwayOptions.find(option => {
           return option.value === referenceId;
@@ -77,7 +69,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
               id="nodeType"
               label="Node Type"
               options={nodeTypeOptions}
-              onChange={selectNodeType}
+              onChange={changeNodeType}
               value="Reference"
             />
             <div className={styles.referenceDropdown}>

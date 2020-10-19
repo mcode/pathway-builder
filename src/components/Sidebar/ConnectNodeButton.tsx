@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, ChangeEvent, FC } from 'react';
+import React, { useState, memo, useCallback, FC } from 'react';
 import { SidebarButton } from 'components/Sidebar';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
@@ -22,8 +22,7 @@ const ConnectNodeButton: FC = () => {
   const optionsAvailable = options.length > 0;
 
   const connectToNode = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      const nodeKey = event?.target.value;
+    (nodeKey: string): void => {
       if (pathwayRef.current && currentNodeRef.current)
         setCurrentPathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
       setOpen(false);

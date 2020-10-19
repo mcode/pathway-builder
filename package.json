@@ -10,6 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.7",
     "@material-ui/core": "^4.9.5",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/dagre": "^0.7.42",
     "@types/fhir": "^0.0.31",
     "@types/jest": "^24.0.25",

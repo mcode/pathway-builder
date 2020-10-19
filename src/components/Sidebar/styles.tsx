@@ -89,10 +89,7 @@ export default makeStyles(
     outlinedDiv: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'flex-start',
-      '& div': {
-        width: '100%'
-      }
+      alignItems: 'flex-start'
     },
     outlinedDivError: {
       borderColor: `${theme.palette.error.main} !important`,
