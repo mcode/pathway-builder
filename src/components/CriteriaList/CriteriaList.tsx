@@ -10,7 +10,7 @@ import CriteriaTable from './CriteriaTable';
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/CriteriaProvider';
-import useListCheckbox from '../../hooks/useListCheckbox';
+import useListCheckbox from 'hooks/useListCheckbox';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
