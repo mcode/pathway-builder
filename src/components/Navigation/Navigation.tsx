@@ -2,7 +2,7 @@ import React, { FC, useCallback, useState, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH, faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
-import { IconButton } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
@@ -35,6 +35,8 @@ const Navigation: FC = () => {
     history.push('/');
   }, [history, resetCurrentCriteria]);
 
+  const undoTooltipText = canUndoPathway ? 'Undo' : 'Undo (disabled)';
+  const redoTooltipText = canRedoPathway ? 'Redo' : 'Redo (disabled)';
   return (
     <nav className={styles.root}>
       <div>
@@ -45,12 +47,20 @@ const Navigation: FC = () => {
         <span className={styles.pathwayName}>{pathway?.name}</span>
       </div>
       <div>
-        <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
-          <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
-        </IconButton>
-        <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
-          <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
-        </IconButton>
+        <Tooltip title={undoTooltipText}>
+          <span>
+            <IconButton onClick={undoPathway} disabled={!canUndoPathway} aria-label="undo">
+              <FontAwesomeIcon icon={faUndo} className={styles.navigationIcons} />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title={redoTooltipText}>
+          <span>
+            <IconButton onClick={redoPathway} disabled={!canRedoPathway} aria-label="redo">
+              <FontAwesomeIcon icon={faRedo} className={styles.navigationIcons} />
+            </IconButton>
+          </span>
+        </Tooltip>
         <IconButton onClick={openMenu} aria-controls="pathway-options-menu" aria-haspopup="true">
           <FontAwesomeIcon icon={faEllipsisH} className={styles.navigationIcons} />
         </IconButton>
