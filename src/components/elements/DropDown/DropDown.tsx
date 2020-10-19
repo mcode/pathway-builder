@@ -34,27 +34,24 @@ const DropDown: FC<DropDownProps> = ({
   );
 
   const handleAutoSelected = useCallback(
-    (event: ChangeEvent<{}>, value: Option): void => {
-      if (onChange) onChange(value.value);
+    (event: ChangeEvent<{}>, value: Option | null): void => {
+      if (onChange && value) onChange(value.value);
     },
     [onChange]
   );
 
   const getValue = (value: string | undefined): Option | undefined => {
-    return (
-      options.find(option => {
-        return option.value === value;
-      }) || options[0]
-    );
+    return options.find(option => {
+      return option.value === value;
+    });
   };
 
   const renderAuto = (): ReactElement => {
     return (
       <Autocomplete
-        disableClearable
         fullWidth
         onChange={handleAutoSelected}
-        value={getValue(value)}
+        value={getValue(value) || null}
         popupIcon={<FontAwesomeIcon icon={faCaretDown} style={{ color: 'white' }} />}
         options={options}
         getOptionLabel={(option): string => option.label}
