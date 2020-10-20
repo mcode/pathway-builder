@@ -223,7 +223,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
             <TextField
               label="Criteria Display"
-              style={{ width: '100%' }}
+              className={styles.criteriaText}
               value={transition.condition?.description || ''}
               variant="outlined"
               onChange={setCriteriaDisplay}

@@ -61,7 +61,12 @@ const DropDown: FC<DropDownProps> = ({
           </div>
         )}
         renderInput={(params): ReactElement => (
-          <TextField {...params} variant="outlined" label={label} />
+          <TextField
+            error={value == null || value === ''}
+            {...params}
+            variant="outlined"
+            label={label}
+          />
         )}
       />
     );

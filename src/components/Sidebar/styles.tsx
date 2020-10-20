@@ -206,6 +206,9 @@ export default makeStyles(
       fontSize: '1em',
       fontStyle: 'italic',
       textTransform: 'none'
+    },
+    criteriaText: {
+      width: '100%'
     }
   }),
   { name: 'Sidebar', index: 1 }
