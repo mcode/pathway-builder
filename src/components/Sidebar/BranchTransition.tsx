@@ -228,6 +228,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
               variant="outlined"
               onChange={setCriteriaDisplay}
               error={!criteriaDisplayIsValid}
+              helperText='Use commas "," to separate into multiple lines (up to 3)'
             />
           </>
 
