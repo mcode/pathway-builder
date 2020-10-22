@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import Pathway from 'models/pathway';
-import mongoose from 'mongoose';
 
 const router = Router();
 
@@ -16,8 +15,7 @@ router.post('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  const pathwayId = mongoose.Types.ObjectId(req.params.id);
-  Pathway.findById(pathwayId, (err, pathway) => {
+  Pathway.findOne({ id: req.params.id }, { _id: 0 }, (err, pathway) => {
     if (err) res.send(err);
     else res.send(pathway);
   });

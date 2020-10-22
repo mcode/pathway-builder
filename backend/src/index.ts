@@ -8,8 +8,8 @@ const app = express();
 const PORT = 8000;
 const payloadSizeLimit = '50mb';
 
-app.use(bodyParser.json({limit: payloadSizeLimit}));
-app.use(cors())
+app.use(bodyParser.json({ limit: payloadSizeLimit }));
+app.use(cors());
 
 mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
 
