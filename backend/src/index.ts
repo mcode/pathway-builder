@@ -4,6 +4,11 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
+// Fix Deprecation Warnings
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+
 const app = express();
 const PORT = 8000;
 const payloadSizeLimit = '50mb';
