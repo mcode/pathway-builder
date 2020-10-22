@@ -12,9 +12,8 @@ router.put('/:id', (req, res) => {
   Pathway.findOneAndUpdate(
     { id: req.params.id },
     req.body,
-    // @ts-ignore
     { overwrite: true, new: true },
-    (err: object, product: Document | null) => {
+    (err, product) => {
       if (err) res.send(err);
       else res.status(201).send(product);
     }
