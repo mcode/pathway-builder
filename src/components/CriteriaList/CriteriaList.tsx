@@ -71,7 +71,9 @@ const CriteriaList: FC = () => {
               <Tooltip placement="top" title="Delete" arrow>
                 <ConfirmationPopover
                   onConfirm={handleDelete}
-                  displayText={'Are you sure that you would like to delete the selected criteria?'}
+                  displayText={`Are you sure that you would like to delete the selected ${
+                    numSelected > 1 ? 'criteria' : 'criterion'
+                  }?`}
                 >
                   <IconButton size="small">
                     <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />

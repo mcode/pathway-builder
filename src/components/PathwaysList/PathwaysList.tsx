@@ -108,9 +108,9 @@ const PathwaysList: FC = () => {
               <Tooltip placement="top" title="Delete" arrow>
                 <ConfirmationPopover
                   onConfirm={handleDelete}
-                  displayText={
-                    'Are you sure that you would like to delete the selected pathway(s)?'
-                  }
+                  displayText={`Are you sure that you would like to delete the selected pathway${
+                    numSelected > 1 ? 's' : ''
+                  }?`}
                 >
                   <IconButton size="small">
                     <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
