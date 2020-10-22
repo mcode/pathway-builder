@@ -74,7 +74,7 @@ const DropDown: FC<DropDownProps> = ({
 
   const renderManual = (): ReactElement => {
     return (
-      <>
+      <FormControl variant="outlined" fullWidth>
         <InputLabel id={id} htmlFor={`${id}-select`}>
           {label}
         </InputLabel>
@@ -104,15 +104,11 @@ const DropDown: FC<DropDownProps> = ({
             </MenuItem>
           ))}
         </Select>
-      </>
+      </FormControl>
     );
   };
 
-  return (
-    <FormControl variant="outlined" fullWidth>
-      {autocomplete ? renderAuto() : renderManual()}
-    </FormControl>
-  );
+  return <>{autocomplete ? renderAuto() : renderManual()}</>;
 };
 
 export default memo(DropDown);
