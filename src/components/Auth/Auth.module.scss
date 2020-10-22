@@ -1,0 +1,150 @@
+@import '../../styles/variables';
+
+div {
+  padding: 10px;
+  margin: 10px;
+}
+
+.mainText {
+  font-family: RobotoCondensed-Light;
+  font-size: 65px;
+  color: #7D8892;
+}
+
+.subText {
+  font-family: RobotoCondensed-Light;
+  font-size: 40px;
+  color: #AAAEB1;
+}
+
+.tryIt {
+  background: #D95D77;
+  box-shadow: 4px 4px 12px 0 rgba(0,0,0,0.50);
+  font-family: RobotoCondensed-Regular;
+  font-size: 50px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  text-align: center;
+  padding: 10px 90px 10px 90px;
+}
+
+.example {
+  float: right;
+  margin: 50px;
+  // margin-bottom: 50px;
+  // margin-top: 50px;
+}
+
+.images {
+  padding: 10px;
+}
+
+.homeLink {
+  display: flex;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 5em;
+  background-color: $gray-lighter;
+  padding: 0 20px;
+  width: 100%;
+
+  .mitreButton {
+    cursor: pointer;
+    padding: 10px;  
+    margin-right: 20px;
+    margin-left: auto;
+  
+    &:focus,
+    &:hover {
+      outline: none;
+    }
+  }
+
+  .mcodeButton {
+    cursor: pointer;
+    padding: 10px;
+  
+    &:focus,
+    &:hover {
+      outline: none;
+    }
+
+}
+
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 8em;
+  background-color: $gray-lighter;
+  padding: 0 20px;
+
+  .signupButton {
+    background-color: $red;
+    border: 10px;
+    padding: 10px;
+    font-family: RobotoCondensed-Regular;
+    cursor: pointer;
+    color: $white;
+    font-size: 30px;
+    margin-right: 20px;
+    margin-left: auto;
+  
+    &:focus,
+    &:hover {
+      outline: none;
+  
+      svg {
+        font-size: 30px;
+      }
+    }
+  }
+
+
+  button {
+    background-color: white;
+    border: 1px solid #7D8892;
+    padding: 10px;
+    font-family: RobotoCondensed-Regular;
+    cursor: pointer;
+    color: #7D8892;
+    font-size: 30px;
+
+    &:focus,
+    &:hover {
+      outline: none;
+
+      svg {
+        font-size: 30px;
+      }
+    }
+  }
+}
+
+.modalHeader
+{
+  font-family: OpenSans-Semibold;
+  font-size: 80px;
+  color: #6A8AA4;
+}
+
+.modalText
+{
+  font-family: OpenSans;
+  font-size: 30px;
+  color: #9B9B9B;
+}
+
+.logo {
+  height: 50px;
+}
+
+.homeLink {
+  display: flex;
+}
