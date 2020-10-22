@@ -1,8 +1,8 @@
 import React, { memo, MouseEvent, ReactElement, useCallback, useState } from 'react';
 import { Popover } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ActionButton from '../../ActionButton/ActionButton';
-import useStyles from '../../ConfirmedDeletionButton/styles';
+import ActionButton from 'components/ActionButton';
+import useStyles from './styles';
 
 interface ConfirmationPopoverProps {
   children: ReactElement;
