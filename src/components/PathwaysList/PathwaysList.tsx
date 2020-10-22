@@ -20,6 +20,7 @@ import useListCheckbox from 'hooks/useListCheckbox';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 import { Pathway } from 'pathways-model';
+import ConfirmationPopover from '../elements/ConfirmationPopover';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -105,9 +106,16 @@ const PathwaysList: FC = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip placement="top" title="Delete" arrow>
-                <IconButton size="small" onClick={handleDelete}>
-                  <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
-                </IconButton>
+                <ConfirmationPopover
+                  onConfirm={handleDelete}
+                  displayText={
+                    'Are you sure that you would like to delete the selected pathway(s)?'
+                  }
+                >
+                  <IconButton size="small">
+                    <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
+                  </IconButton>
+                </ConfirmationPopover>
               </Tooltip>
             </>
           )}

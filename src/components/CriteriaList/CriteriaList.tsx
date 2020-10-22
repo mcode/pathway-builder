@@ -11,6 +11,7 @@ import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
+import ConfirmationPopover from '../elements/ConfirmationPopover/ConfirmationPopover';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
@@ -68,9 +69,14 @@ const CriteriaList: FC = () => {
           {numSelected > 0 && (
             <>
               <Tooltip placement="top" title="Delete" arrow>
-                <IconButton size="small" onClick={handleDelete}>
-                  <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
-                </IconButton>
+                <ConfirmationPopover
+                  onConfirm={handleDelete}
+                  displayText={'Are you sure that you would like to delete the selected criteria?'}
+                >
+                  <IconButton size="small">
+                    <FontAwesomeIcon icon={faTrashAlt} className={styles.deleteIcon} />
+                  </IconButton>
+                </ConfirmationPopover>
               </Tooltip>
             </>
           )}

@@ -1,4 +1,4 @@
-import React, { FC, memo, MouseEvent, useCallback, useState } from 'react';
+import React, { ComponentPropsWithRef, FC, memo, MouseEvent, ReactNode, useCallback, useState } from 'react';
 import { Popover } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ActionButton from '../../ActionButton/ActionButton';
@@ -11,12 +11,15 @@ interface ConfirmationPopoverProps {
   onDecline?: () => void;
 }
 
-const ConfirmationPopover: FC<ConfirmationPopoverProps> = ({
+type Ref = HTMLDivElement;
+
+const ConfirmationPopover = React.forwardRef<Ref, ConfirmationPopoverProps>(({
   children,
   displayText,
   onConfirm,
-  onDecline
-}) => {
+  onDecline,
+  ...props
+}, ref) => {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -39,7 +42,7 @@ const ConfirmationPopover: FC<ConfirmationPopoverProps> = ({
   }, [onDecline]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} {...props} ref={ref}>
       <ClickAwayListener onClickAway={onDeclineHandler}>
         <div onClick={onClickHandler} className={styles.container}>
           {children}
@@ -60,6 +63,6 @@ const ConfirmationPopover: FC<ConfirmationPopoverProps> = ({
       </Popover>
     </div>
   );
-};
+});
 
 export default memo(ConfirmationPopover);
