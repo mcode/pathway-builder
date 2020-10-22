@@ -2,12 +2,14 @@ import express from 'express';
 import pathwayRouter from 'routes/pathway';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 const app = express();
 const PORT = 8000;
 const payloadSizeLimit = '50mb';
 
 app.use(bodyParser.json({limit: payloadSizeLimit}));
+app.use(cors())
 
 mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
 
