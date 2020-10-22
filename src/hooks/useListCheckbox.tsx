@@ -1,4 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import produce from 'immer';
 
 export interface ListCheckboxReturn {
   indeterminate: boolean;
@@ -24,19 +25,18 @@ const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
   useEffect(() => {
     const difference = Array.from(selected).filter(item => !listItems.includes(item));
     if (difference.length > 0) {
-      setSelected(currentSelected => {
-        const updateSelected = new Set(currentSelected);
-        difference.forEach(diff => updateSelected.delete(diff));
-        return updateSelected;
-      });
+      setSelected(
+        produce(currentSelected => {
+          difference.forEach(diff => currentSelected.delete(diff));
+        })
+      );
     }
   }, [listItems, selected]);
 
   const handleSelectAllClick = useCallback(
     event => {
       if (event.target.checked) {
-        const newSelected = new Set(listItems);
-        setSelected(newSelected);
+        setSelected(new Set(listItems));
       } else setSelected(new Set());
     },
     [listItems]
@@ -50,14 +50,16 @@ const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
   const handleSelectClick = useCallback((id: string) => {
     return (event: ChangeEvent<HTMLInputElement>): void => {
       event.target.checked
-        ? setSelected(currentSelected => {
-            currentSelected.add(id);
-            return new Set(currentSelected);
-          })
-        : setSelected(currentSelected => {
-            currentSelected.delete(id);
-            return new Set(currentSelected);
-          });
+        ? setSelected(
+            produce(currentSelected => {
+              currentSelected.add(id);
+            })
+          )
+        : setSelected(
+            produce(currentSelected => {
+              currentSelected.delete(id);
+            })
+          );
     };
   }, []);
 
