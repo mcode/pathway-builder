@@ -13,7 +13,7 @@ interface ContextualExportMenuProps {
 }
 
 interface ExportMenuPropsInterface extends ContextualExportMenuProps {
-  pathway: Pathway | Pathway[] | null;
+  pathway: Pathway[] | null;
   allPathways: Pathway[];
   criteria: Criteria[];
 }
@@ -65,7 +65,7 @@ const ContextualExportMenu: FC<ContextualExportMenuProps> = ({ anchorEl, closeMe
 
   return (
     <ExportMenu
-      pathway={pathway}
+      pathway={pathway ? [pathway] : null}
       allPathways={pathways}
       criteria={criteria}
       anchorEl={anchorEl}

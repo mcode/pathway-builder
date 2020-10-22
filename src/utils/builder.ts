@@ -36,31 +36,27 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
 }
 
 export function downloadPathway(
-  pathway: Pathway | Pathway[],
+  pathway: Pathway[],
   pathways: Pathway[],
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
-  // Determine if a single pathway or multiple pathways are being exported
-  const paths =
-    Array.isArray(pathway) && pathway.length > 1 ? pathway : ([] as Pathway[]).concat(pathway)[0];
-
-  if (Array.isArray(paths)) {
+  if (pathway.length > 1) {
     const zip = new JSZip();
     // If multiple pathways are being exported
-    paths.forEach(path => {
+    pathway.forEach(path => {
       zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
     });
     return zip.generateAsync({ type: 'blob' }).then(function(content) {
       downloadFile(content, 'pathways.zip');
     });
   } else {
-    const pathwayString = exportPathway(paths, pathways, criteria, cpg);
+    const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
     // Create blob from pathwayString to save to file system
     const pathwayBlob = new Blob([pathwayString], {
       type: 'application/json'
     });
-    downloadFile(pathwayBlob, `${paths.name}.json`);
+    downloadFile(pathwayBlob, `${pathway[0].name}.json`);
     return Promise.resolve();
   }
 }
