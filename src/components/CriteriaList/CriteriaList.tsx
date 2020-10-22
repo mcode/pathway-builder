@@ -11,7 +11,7 @@ import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
-import ConfirmationPopover from '../elements/ConfirmationPopover/ConfirmationPopover';
+import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();

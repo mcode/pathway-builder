@@ -20,7 +20,7 @@ import useListCheckbox from 'hooks/useListCheckbox';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 import { Pathway } from 'pathways-model';
-import ConfirmationPopover from '../elements/ConfirmationPopover';
+import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
