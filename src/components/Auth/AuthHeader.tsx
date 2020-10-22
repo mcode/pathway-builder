@@ -10,6 +10,9 @@ import { useThemeToggle } from '../ThemeProvider';
 import SignupModal from './SignupModal';
 import LoginModal from './LoginModal';
 import ResetModal from './ResetModal';
+import LinkSentModal from './LinkSentModal';
+import NewPasswordModal from './NewPasswordModal';
+import PasswordResetModal from './PasswordResetModal';
 
 import logo from 'camino-builder-logo-light-bg.png';
 import styles from './Auth.module.scss';
@@ -43,10 +46,38 @@ const AuthHeader: FC = () => {
     setOpenReset(false);
   }, []);
 
+  const [openLinkSent, setOpenLinkSent] = useState<boolean>(false);
+  const openLinkSentModal = useCallback((): void => {
+    setOpenLinkSent(true);
+  }, []);
+
+  const closeLinkSentModal = useCallback((): void => {
+    setOpenLinkSent(false);
+  }, []);
+
+  const [openNewPassword, setOpenNewPassword] = useState<boolean>(false);
+  const openNewPasswordModal = useCallback((): void => {
+    setOpenNewPassword(true);
+  }, []);
+
+  const closeNewPasswordModal = useCallback((): void => {
+    setOpenNewPassword(false);
+  }, []);
+
+  const [openPasswordReset, setOpenPasswordReset] = useState<boolean>(false);
+  const openPasswordResetModal = useCallback((): void => {
+    setOpenPasswordReset(true);
+  }, []);
+
+  const closePasswordResetModal = useCallback((): void => {
+    setOpenPasswordReset(false);
+  }, []);
+
   const switchToLogin = useCallback((): void => {
     setOpenSignup(false);
     setOpenReset(false);
     setOpenLogin(true);
+    setOpenPasswordReset(false);
   }, []);
 
   const switchToReset = useCallback((): void => {
@@ -59,6 +90,26 @@ const AuthHeader: FC = () => {
     setOpenLogin(false);
     setOpenReset(false);
     setOpenSignup(true);
+  }, []);
+
+  const switchToLinkSent = useCallback((): void => {
+    setOpenReset(false);
+    setOpenLinkSent(true);
+  }, []);
+
+  const switchToPasswordReset = useCallback((): void => {
+    setOpenPasswordReset(true);
+    setOpenNewPassword(false);
+  }, []);
+
+  // remove this - just setup to show the new modal
+  const removeThis = useCallback((): void => {
+    setOpenLinkSent(false);
+    setOpenLogin(false);
+    setOpenReset(false);
+    setOpenSignup(false);
+    setOpenPasswordReset(false);
+    setOpenNewPassword(true);
   }, []);
 
   return (
@@ -84,7 +135,25 @@ const AuthHeader: FC = () => {
         onReset={switchToReset}
       />
       <SignupModal open={openSignup} onClose={closeSingupModal} onLogin={switchToLogin} />
-      <ResetModal open={openReset} onClose={closeResetModal} onLogin={switchToLogin} />
+      <ResetModal
+        open={openReset}
+        onClose={closeResetModal}
+        onLogin={switchToLogin}
+        onLinkSent={switchToLinkSent}
+      />
+      {/* Use commented out version once modals have been reviewed */}
+      {/* <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} /> */}
+      <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} onRemoveMe={removeThis} />
+      <NewPasswordModal
+        open={openNewPassword}
+        onClose={closeNewPasswordModal}
+        onPasswordReset={switchToPasswordReset}
+      />
+      <PasswordResetModal
+        open={openPasswordReset}
+        onClose={closePasswordResetModal}
+        onLogin={switchToLogin}
+      />
     </header>
   );
 };

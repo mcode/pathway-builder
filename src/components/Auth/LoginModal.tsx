@@ -49,6 +49,7 @@ const LoginModal: FC<LoginModalProps> = ({ open, onClose, onSignup, onReset }) =
         <OutlinedInput
           id="password"
           placeholder="Password"
+          type="password"
           startAdornment={
             <InputAdornment position="start">
               <FontAwesomeIcon icon={faLock} />
@@ -57,7 +58,7 @@ const LoginModal: FC<LoginModalProps> = ({ open, onClose, onSignup, onReset }) =
         />
         <span>
           <label>Forgot your password?</label>
-          <Button variant="text"  color="primary" onClick={onReset}>
+          <Button variant="text" color="primary" onClick={onReset}>
             Request a reset link.
           </Button>
         </span>
@@ -66,7 +67,7 @@ const LoginModal: FC<LoginModalProps> = ({ open, onClose, onSignup, onReset }) =
       <DialogActions>
         <span>
           <label>Don't have an account?</label>
-          <Button variant="text"  color="primary" onClick={onSignup}>
+          <Button variant="text" color="primary" onClick={onSignup}>
             Sign up.
           </Button>
         </span>

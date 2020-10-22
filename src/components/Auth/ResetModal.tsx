@@ -18,9 +18,10 @@ interface ResetModalProps {
   open: boolean;
   onClose: () => void;
   onLogin: () => void;
+  onLinkSent: () => void;
 }
 
-const ResetModal: FC<ResetModalProps> = ({ open, onClose, onLogin }) => {
+const ResetModal: FC<ResetModalProps> = ({ open, onClose, onLogin, onLinkSent }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
@@ -54,7 +55,7 @@ const ResetModal: FC<ResetModalProps> = ({ open, onClose, onLogin }) => {
             Log in.
           </Button>
         </span>
-        <Button variant="contained" color="secondary" type="submit">
+        <Button variant="contained" color="secondary" type="submit" onClick={onLinkSent}>
           REQUEST
         </Button>
       </DialogActions>

@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faEnvelope, faBuilding, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faLock } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
   Dialog,
@@ -14,13 +14,13 @@ import {
 
 import styles from './Auth.module.scss';
 
-interface SignupModalProps {
+interface newPassowrdModalProps {
   open: boolean;
   onClose: () => void;
-  onLogin: () => void;
+  onPasswordReset: () => void;
 }
 
-const SignupModal: FC<SignupModalProps> = ({ open, onClose, onLogin }) => {
+const newPassowrdModal: FC<newPassowrdModalProps> = ({ open, onClose, onPasswordReset }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
@@ -30,30 +30,8 @@ const SignupModal: FC<SignupModalProps> = ({ open, onClose, onLogin }) => {
       </DialogTitle>
 
       <DialogContent>
-        <label className={styles.modalHeader}>Sign up</label>
-        <label className={styles.modalText}>
-          Create an account to start building your own clinical pathways
-        </label>
-
-        <OutlinedInput
-          id="email"
-          placeholder="Email"
-          startAdornment={
-            <InputAdornment position="start">
-              <FontAwesomeIcon icon={faEnvelope} />
-            </InputAdornment>
-          }
-        />
-
-        <OutlinedInput
-          id="organization"
-          placeholder="Organization (optional)"
-          startAdornment={
-            <InputAdornment position="start">
-              <FontAwesomeIcon icon={faBuilding} />
-            </InputAdornment>
-          }
-        />
+        <label className={styles.modalHeader}>Reset Password</label>
+        <label className={styles.modalText}>Enter your new password for your account</label>
 
         <OutlinedInput
           id="password"
@@ -79,18 +57,12 @@ const SignupModal: FC<SignupModalProps> = ({ open, onClose, onLogin }) => {
       </DialogContent>
 
       <DialogActions>
-        <span>
-          <label>Already signed up?</label>
-          <Button variant="text" color="primary" onClick={onLogin}>
-            Login.
-          </Button>
-        </span>
-        <Button variant="contained" color="secondary" type="submit">
-          SIGN UP
+        <Button variant="contained" color="secondary" type="submit" onClick={onPasswordReset}>
+          RESET
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default memo(SignupModal);
+export default memo(newPassowrdModal);
