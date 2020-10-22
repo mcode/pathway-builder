@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface ListCheckboxReturn {
   indeterminate: boolean;
@@ -20,6 +20,18 @@ const useListCheckbox = (listItems: Array<string>): ListCheckboxReturn => {
     rowCount
   ]);
   const checked = useMemo(() => rowCount > 0 && numSelected === rowCount, [numSelected, rowCount]);
+
+  useEffect(() => {
+    const difference = Array.from(selected).filter(item => !listItems.includes(item));
+    if (difference.length > 0) {
+      setSelected(currentSelected => {
+        const updateSelected = new Set(currentSelected);
+        difference.forEach(diff => updateSelected.delete(diff));
+        return updateSelected;
+      });
+    }
+  }, [listItems, selected]);
+
   const handleSelectAllClick = useCallback(
     event => {
       if (event.target.checked) {

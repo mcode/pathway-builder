@@ -36,7 +36,6 @@ const PathwaysList: FC = () => {
     itemSelected,
     handleSelectClick,
     selected,
-    setSelected,
     numSelected
   } = useListCheckbox(pathwayIds);
   const { criteria } = useCriteriaContext();
@@ -69,9 +68,8 @@ const PathwaysList: FC = () => {
   const handleDelete = useCallback(() => {
     selected.forEach(id => {
       deletePathway(id);
-      setSelected(new Set());
     });
-  }, [deletePathway, selected, setSelected]);
+  }, [deletePathway, selected]);
 
   const [pathwaysToExport, setPathwaysToExport] = useState<Pathway[]>([]);
   const handleExportAll = useCallback(
