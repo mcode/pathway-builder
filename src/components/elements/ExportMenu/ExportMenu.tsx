@@ -42,7 +42,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({
           closeMenu();
         }}
       >
-        Export Pathway
+        Export Pathway{pathway?.length && pathway.length > 1 ? 's' : ''}
       </MenuItem>
       <MenuItem
         onClick={(): void => {
