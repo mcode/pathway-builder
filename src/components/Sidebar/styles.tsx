@@ -89,10 +89,7 @@ export default makeStyles(
     outlinedDiv: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'flex-start',
-      '& div': {
-        width: '100%'
-      }
+      alignItems: 'flex-start'
     },
     outlinedDivError: {
       borderColor: `${theme.palette.error.main} !important`,
@@ -209,6 +206,9 @@ export default makeStyles(
       fontSize: '1em',
       fontStyle: 'italic',
       textTransform: 'none'
+    },
+    criteriaText: {
+      width: '100%'
     }
   }),
   { name: 'Sidebar', index: 1 }

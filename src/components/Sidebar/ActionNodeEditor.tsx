@@ -40,13 +40,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const styles = useStyles();
 
-  const selectNodeType = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
-      changeNodeType(event?.target.value || '');
-    },
-    [changeNodeType]
-  );
-
   const addActionCQL = useCallback(
     (action: Action, currentNodeKey: string): void => {
       if (!pathwayRef.current) return;
@@ -100,11 +93,9 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
   );
 
   const selectCodeSystem = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
+    (codeSystem: string): void => {
       const currentNode = currentNodeRef.current as ActionNode;
       if (!currentNode.action || !pathwayRef.current) return;
-
-      const codeSystem = event?.target.value || '';
       const action = setActionCodeSystem(currentNode.action, codeSystem);
       setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
     },
@@ -174,7 +165,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
             id="nodeType"
             label="Node Type"
             options={nodeTypeOptions}
-            onChange={selectNodeType}
+            onChange={changeNodeType}
             value={resource.resourceType}
           />
 

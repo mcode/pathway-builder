@@ -84,10 +84,9 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   ]);
 
   const selectCriteriaSource = useCallback(
-    (event: ChangeEvent<{ value: string }>): void => {
+    (criteriaId: string): void => {
       if (!currentNodeRef.current || !pathwayRef.current) return;
 
-      const criteriaId = event?.target.value || '';
       const selectedCriteria = criteria.find(c => c.id === criteriaId);
       if (!selectedCriteria) return;
       const newPathway = setTransitionCondition(
@@ -224,6 +223,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
             <TextField
               label="Criteria Display"
+              className={styles.criteriaText}
               value={transition.condition?.description || ''}
               variant="outlined"
               onChange={setCriteriaDisplay}
