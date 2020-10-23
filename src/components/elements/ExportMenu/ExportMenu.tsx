@@ -51,14 +51,12 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl,
 
 const ContextualExportMenu: FC<ContextualExportMenuProps> = ({ anchorEl, closeMenu }) => {
   const { pathway } = useCurrentPathwayContext();
-  const { pathways } = usePathwaysContext();
 
   const { criteria } = useCriteriaContext();
 
   return (
     <ExportMenu
       pathway={pathway ? [pathway] : null}
-      allPathways={pathways}
       criteria={criteria}
       anchorEl={anchorEl}
       closeMenu={closeMenu}

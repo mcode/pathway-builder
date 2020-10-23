@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState, memo, useMemo, MouseEvent } from 'react';
+import React, { FC, useCallback, useState, memo, MouseEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileImport,

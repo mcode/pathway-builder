@@ -1,8 +1,8 @@
-import React, { FC, memo, useState, useCallback, useMemo } from 'react';
+import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
-import { useQuery, useQueryCache } from 'react-query';
+import { useQuery } from 'react-query';
 
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
@@ -13,19 +13,19 @@ import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
+import { Criteria } from 'criteria-model';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
-  const { addCriteria } = useCriteriaContext();
+  const { addCriteria, deleteCriteria } = useCriteriaContext();
   const baseUrl = config.get('pathwaysBackend');
 
-  const { isLoading, error, data: criteria } = useQuery('criteria', () =>
+  const { isLoading, error, data } = useQuery('criteria', () =>
     fetch(`${baseUrl}/criteria/`).then(res => res.json())
   );
 
   const [open, setOpen] = useState<boolean>(false);
 
-  const pathwayIds = useMemo(() => criteria.map(n => n.id), [criteria]);
   const {
     indeterminate,
     checked,
@@ -35,7 +35,7 @@ const CriteriaList: FC = () => {
     selected,
     setSelected,
     numSelected
-  } = useListCheckbox(pathwayIds);
+  } = useListCheckbox(isLoading ? [] : (data as Criteria[]).map(n => n.id));
 
   const openImportModal = useCallback((): void => {
     setOpen(true);
@@ -117,9 +117,9 @@ const CriteriaList: FC = () => {
 
       {isLoading && !error && <Loading />}
       {error && <div>ERROR: Unable to get criteria</div>}
-      {criteria && (
+      {data && (
         <CriteriaTable
-          criteria={criteria}
+          criteria={data as Criteria[]}
           handleSelectClick={handleSelectClick}
           itemSelected={itemSelected}
         />
