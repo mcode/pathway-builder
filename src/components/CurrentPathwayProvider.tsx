@@ -78,6 +78,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   useEffect(() => {
     if (!pathway) return;
 
+    let updated = false;
     const criteriaIds = criteria.map(crit => crit.id);
     const newPathway = produce(pathway, draftPathway => {
       Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
@@ -92,13 +93,16 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
             if (criteriaSource) {
               const condition =
                 draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
-              if (condition) condition.criteriaSource = criteriaSource;
+              if (condition) {
+                updated = true;
+                condition.criteriaSource = criteriaSource;
+              }
             }
           }
         });
       });
     });
-    resetCurrentPathway(newPathway);
+    if (updated) resetCurrentPathway(newPathway);
   }, [criteria, pathway, resetCurrentPathway]);
 
   return (
