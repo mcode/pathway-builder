@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import shortid from 'shortid';
 import produce from 'immer';
-import { useQuery, useQueryCache, useMutation } from 'react-query';
+import { useQueryCache, useMutation } from 'react-query';
 
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';

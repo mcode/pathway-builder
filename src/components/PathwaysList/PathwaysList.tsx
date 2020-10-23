@@ -63,7 +63,7 @@ const PathwaysList: FC = () => {
   const addPathway = useCallback(
     (files: FileList | undefined | null) => {
       if (files) {
-        readFile(files[0] as File, (event: ProgressEvent<FileReader>): void => {
+        readFile(files[0], (event: ProgressEvent<FileReader>): void => {
           if (event.target?.result) {
             const rawContent = event.target.result as string;
             const pathway = JSON.parse(rawContent) as Pathway;

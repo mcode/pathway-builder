@@ -8,7 +8,7 @@ export function postNewPathway(pathway: Pathway): Promise<any> {
   return axios.post(`${baseUrl}/pathway/`, pathway);
 }
 
-export function deletePathway(id: String): Promise<any> {
+export function deletePathway(id: string): Promise<any> {
   return axios.delete(`${baseUrl}/pathway/${id}`);
 }
 

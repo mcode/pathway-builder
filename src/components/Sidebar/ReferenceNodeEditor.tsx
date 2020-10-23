@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, ChangeEvent, useState } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';

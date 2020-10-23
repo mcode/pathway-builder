@@ -15,7 +15,12 @@ const BuilderRoute: FC = () => {
   const currentNodeId = decodeURIComponent(nodeId);
   const baseUrl = config.get('pathwaysBackend');
   const { setCurrentNode } = useCurrentNodeContext();
-  const { pathwayRef, setCurrentPathway, resetCurrentPathway } = useCurrentPathwayContext();
+  const {
+    pathway,
+    pathwayRef,
+    setCurrentPathway,
+    resetCurrentPathway
+  } = useCurrentPathwayContext();
 
   const { isLoading, error, data } = useQuery(['pathway', { id: id }], () =>
     fetch(`${baseUrl}/pathway/${pathwayId}`).then(res => res.json())
@@ -26,9 +31,13 @@ const BuilderRoute: FC = () => {
     if (pathway) {
       if (pathwayRef?.current?.id === pathway.id) setCurrentPathway(pathway);
       else resetCurrentPathway(pathway);
-      setCurrentNode(pathway.nodes[currentNodeId]);
     }
   }, [data, pathwayRef, currentNodeId, setCurrentNode, setCurrentPathway, resetCurrentPathway]);
+
+  useEffect(() => {
+    if (pathway?.nodes[currentNodeId]) setCurrentNode(pathway.nodes[currentNodeId]);
+    else if (pathway) setCurrentNode(pathway.nodes['Start']);
+  }, [pathway, currentNodeId, setCurrentNode]);
 
   if (isLoading && !error) return <Loading />;
   // TODO: instead of showing error here show error on the builder screen as a toast
