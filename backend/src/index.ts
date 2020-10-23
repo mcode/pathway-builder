@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import * as mg from 'extensions/mongoose.extension';
+import 'extensions/mongoose.extension';
 import pathwayRouter from 'routes/pathway';
 import bodyParser from 'body-parser';
 import cors from 'cors';
