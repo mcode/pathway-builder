@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'extensions/mongoose.extension';
 import pathwayRouter from 'routes/pathway';
+import criteriaRouter from 'routes/criteria';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
@@ -21,4 +22,5 @@ mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
 
 app.get('/', (req, res) => res.send('Pathways Backend'));
 app.use('/pathway', pathwayRouter);
+app.use('/criteria', criteriaRouter);
 app.listen(PORT);

@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-const pathwaySchema = new mongoose.Schema({
+const pathwaySchema = new Schema({
   id: String,
   name: String,
   description: String,
@@ -12,6 +12,6 @@ const pathwaySchema = new mongoose.Schema({
 
 pathwaySchema.index({ id: 1 }, { unique: true });
 
-const Pathway = mongoose.model('Pathway', pathwaySchema);
+const Pathway = model('Pathway', pathwaySchema);
 
 export default Pathway;
