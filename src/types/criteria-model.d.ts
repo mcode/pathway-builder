@@ -7,6 +7,7 @@ declare module 'criteria-model' {
     version?: string;
     modified: number;
     statement: string;
+    cqlLibraries?: { [name: string]: string };
   }
 
   interface Gender {

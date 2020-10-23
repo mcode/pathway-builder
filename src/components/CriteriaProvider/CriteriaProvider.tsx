@@ -15,7 +15,7 @@ import config from 'utils/ConfigManager';
 import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import { convertBasicCQL } from 'engine/cql-to-elm';
+import { convertBasicCQL, convertCQL, CqlObject } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -59,8 +59,17 @@ function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria
 function elmLibraryToCriteria(
   elm: ElmLibrary,
   cql: string | undefined = undefined,
+  cqlLibraries: { [name: string]: string } | undefined = undefined,
   custom = false
 ): Criteria[] {
+  // the cql-to-elm webservice always responds with ELM
+  // even if the CQL was complete garbage
+  // TODO: consider showing the error messages from the annotations?
+  if (!elm.library?.identifier?.id) {
+    // we're async right now so don't show an error here
+    // just return empty
+    return [];
+  }
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
@@ -85,7 +94,8 @@ function elmLibraryToCriteria(
       modified: Date.now(),
       elm: elm,
       cql: cql,
-      statement: statement.name
+      statement: statement.name,
+      ...(cqlLibraries && { cqlLibraries })
     };
   });
 }
@@ -99,18 +109,12 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
-function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
-  return convertBasicCQL(rawCql).then(elm => {
-    // the cql-to-elm webservice always responds with ELM
-    // even if the CQL was complete garbage
-    // TODO: consider showing the error messages from the annotations?
-    if (!elm.library?.identifier?.id) {
-      // we're async right now so don't show an error here
-      // just return empty
-      return [];
-    }
-    return elmLibraryToCriteria(elm, rawCql);
-  });
+function cqlToCriteria(cql: string | CqlObject): Promise<Criteria[]> {
+  if (typeof cql === 'string') {
+    return convertBasicCQL(cql).then(elm => elmLibraryToCriteria(elm, cql));
+  } else {
+    return convertCQL(cql).then(elm => elmLibraryToCriteria(elm, cql.main, cql.libraries));
+  }
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -127,7 +131,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     }
   }, [payload]);
 
-  const addCqlCriteria = useCallback((cql: string) => {
+  const addCqlCriteria = useCallback((cql: string | CqlObject) => {
     cqlToCriteria(cql).then(newCriteria => {
       if (newCriteria.length > 0) {
         setCriteria(currentCriteria => {
@@ -146,7 +150,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     (file: File) => {
       // figure out incoming file type
       const reader = new FileReader();
-      reader.onload = (event: ProgressEvent<FileReader>): void => {
+      reader.onload = async (event: ProgressEvent<FileReader>): Promise<void> => {
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           // TODO: more robust file type identification?
@@ -156,13 +160,20 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
           } else if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
           } else if (file.name.endsWith('.zip')) {
-            JSZip.loadAsync(file).then(zip => {
-              Object.values(zip.files).forEach(file => {
-                file.async('string').then(fileContents => {
-                  addCqlCriteria(fileContents);
-                });
-              });
-            });
+            const cqlObj: CqlObject = { main: '', libraries: {} };
+            const zip = await JSZip.loadAsync(file);
+            const zipFiles = Object.values(zip.files);
+            // Check for criteria in each of the cql files, add cql to libraries if no criteria
+            for (let i = 0; i < zipFiles.length; i++) {
+              const fileContents = await zipFiles[i].async('string');
+              const criteria = await cqlToCriteria(fileContents);
+              if (criteria.length === 0) {
+                cqlObj.libraries[zipFiles[i].name] = fileContents;
+              } else {
+                cqlObj.main = fileContents;
+              }
+            }
+            addCqlCriteria(cqlObj);
           }
         } else alert('Unable to read that file');
       };
@@ -176,7 +187,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, []);
 
   const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, undefined, true);
+    const newCriteria = elmLibraryToCriteria(elm, undefined, undefined, true);
     setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
 
     return newCriteria;
