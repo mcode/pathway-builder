@@ -4,7 +4,10 @@ import Pathway from 'models/pathway';
 const router = Router();
 
 router.get('/', (req, res) => {
-  return Pathway.find({ id: '2TJDsrHux' });
+  Pathway.find((err, product) => {
+    if (err) res.send('Error getting all pathways');
+    else res.send(product);
+  });
 });
 
 router.put('/:id', (req, res) => {
@@ -18,6 +21,13 @@ router.put('/:id', (req, res) => {
       else res.status(201).send(product);
     }
   );
+});
+
+router.delete('/:id', (req, res) => {
+  Pathway.deleteOne({ id: req.params.id }, (err) => {
+    if (err) res.send(err);
+    else res.status(200).send(`Deleted pathway ${req.params.id}`);
+  });
 });
 
 router.get('/:id', (req, res) => {
