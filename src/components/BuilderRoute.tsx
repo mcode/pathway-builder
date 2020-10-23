@@ -1,10 +1,9 @@
-import React, { FC, memo, useMemo, useEffect } from 'react';
+import React, { FC, memo, useEffect } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
-import { useQuery, useQueryCache, useMutation } from 'react-query';
+import { useQuery } from 'react-query';
 
 import Builder from 'components/Builder';
 import config from 'utils/ConfigManager';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from './CurrentPathwayProvider';
 import { useCurrentNodeContext } from './CurrentNodeProvider';
 import Loading from './elements/Loading';

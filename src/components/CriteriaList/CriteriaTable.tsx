@@ -16,15 +16,17 @@ import moment from 'moment';
 import useStyles from './styles';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
+import { Criteria } from 'criteria-model';
 
 interface CriteriaTableProps {
+  criteria: Criteria[];
   itemSelected: (item: string) => boolean;
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const CriteriaTable: FC<CriteriaTableProps> = ({ itemSelected, handleSelectClick }) => {
+const CriteriaTable: FC<CriteriaTableProps> = ({ criteria, itemSelected, handleSelectClick }) => {
   const styles = useStyles();
-  const { criteria, deleteCriteria } = useCriteriaContext();
+  const { deleteCriteria } = useCriteriaContext();
 
   const renderDate = (datetime: number): string => {
     return moment(datetime).fromNow();

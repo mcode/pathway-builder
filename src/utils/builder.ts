@@ -16,6 +16,7 @@ import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 import JSZip from 'jszip';
+import config from 'utils/ConfigManager';
 
 export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
@@ -37,28 +38,33 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
 
 export function downloadPathway(
   pathway: Pathway[],
-  pathways: Pathway[],
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
-  if (pathway.length > 1) {
-    const zip = new JSZip();
-    // If multiple pathways are being exported
-    pathway.forEach(path => {
-      zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
-    });
-    return zip.generateAsync({ type: 'blob' }).then(function(content) {
-      downloadFile(content, 'pathways.zip');
-    });
-  } else {
-    const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
-    // Create blob from pathwayString to save to file system
-    const pathwayBlob = new Blob([pathwayString], {
-      type: 'application/json'
-    });
-    downloadFile(pathwayBlob, `${pathway[0].name}.json`);
-    return Promise.resolve();
-  }
+  const baseUrl = config.get('pathwaysBackend');
+  return fetch(`${baseUrl}/pathway/`).then(res =>
+    res.json().then(data => {
+      const pathways = data as Pathway[];
+      if (pathway.length > 1) {
+        const zip = new JSZip();
+        // If multiple pathways are being exported
+        pathway.forEach(path => {
+          zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
+        });
+        return zip.generateAsync({ type: 'blob' }).then(function(content) {
+          downloadFile(content, 'pathways.zip');
+        });
+      } else {
+        const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
+        // Create blob from pathwayString to save to file system
+        const pathwayBlob = new Blob([pathwayString], {
+          type: 'application/json'
+        });
+        downloadFile(pathwayBlob, `${pathway[0].name}.json`);
+        return Promise.resolve();
+      }
+    })
+  );
 }
 
 function downloadFile(file: Blob, fileName: string): void {

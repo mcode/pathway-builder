@@ -1,8 +1,7 @@
-import React, { FC, memo, useCallback } from 'react';
+import React, { FC, memo, useCallback, ChangeEvent, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { nodeTypeOptions, redirect } from 'utils/nodeUtils';
@@ -10,6 +9,8 @@ import { Pathway, ReferenceNode } from 'pathways-model';
 import { useHistory } from 'react-router-dom';
 import { setNodeReference } from 'utils/builder';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { useQueryCache, useQuery } from 'react-query';
+import config from 'utils/ConfigManager';
 
 interface ReferenceNodeEditorProps {
   changeNodeType: (event: string) => void;
@@ -17,9 +18,20 @@ interface ReferenceNodeEditorProps {
 
 const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) => {
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
-  const { pathways, updatePathway } = usePathwaysContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const history = useHistory();
+  const cache = useQueryCache();
+  const baseUrl = config.get('pathwaysBackend');
+  const [pathways, setPathways] = useState<Pathway[]>(
+    (cache.getQueryData('pathways') as Pathway[]) || []
+  );
+
+  // Update local pathways state in case cache is out of date
+  const { isLoading } = useQuery('pathways', () =>
+    fetch(`${baseUrl}/pathway/`).then(res =>
+      res.json().then(pathways => setPathways(pathways as Pathway[]))
+    )
+  );
 
   const pathwayOptions = pathways.map((pathway: Pathway) => {
     return {
@@ -46,7 +58,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
           return option.value === referenceId;
         })?.label || '';
       if (currentNodeRef.current && pathwayRef.current)
-        updatePathway(
+        setCurrentPathway(
           setNodeReference(
             pathwayRef.current,
             currentNodeRef.current.key,
@@ -55,7 +67,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
           )
         );
     },
-    [currentNodeRef, pathwayOptions, pathwayRef, updatePathway]
+    [currentNodeRef, pathwayOptions, pathwayRef, setCurrentPathway]
   );
 
   const changeNodeTypeEnabled = currentNode?.key && currentNode.type !== 'start';
@@ -78,7 +90,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
                 label="Pathway Reference"
                 options={pathwayOptions}
                 onChange={selectPathwayReference}
-                value={(currentNode as ReferenceNode).referenceId}
+                value={isLoading ? '' : (currentNode as ReferenceNode).referenceId}
               />
               <div className={styles.referenceChevron}>
                 <FontAwesomeIcon

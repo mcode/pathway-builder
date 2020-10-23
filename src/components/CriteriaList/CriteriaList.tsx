@@ -2,12 +2,13 @@ import React, { FC, memo, useState, useCallback, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
+import { useQuery, useQueryCache } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 
 import useStyles from './styles';
+import config from 'utils/ConfigManager';
 import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
@@ -15,9 +16,12 @@ import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
-  const { status } = usePathwaysContext();
+  const { addCriteria } = useCriteriaContext();
+  const baseUrl = config.get('pathwaysBackend');
 
-  const { criteria, addCriteria, deleteCriteria } = useCriteriaContext();
+  const { isLoading, error, data: criteria } = useQuery('criteria', () =>
+    fetch(`${baseUrl}/criteria/`).then(res => res.json())
+  );
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -111,10 +115,14 @@ const CriteriaList: FC = () => {
         allowedFileType=".cql"
       />
 
-      {status === 'loading' ? (
-        <Loading />
-      ) : (
-        <CriteriaTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
+      {isLoading && !error && <Loading />}
+      {error && <div>ERROR: Unable to get criteria</div>}
+      {criteria && (
+        <CriteriaTable
+          criteria={criteria}
+          handleSelectClick={handleSelectClick}
+          itemSelected={itemSelected}
+        />
       )}
     </div>
   );

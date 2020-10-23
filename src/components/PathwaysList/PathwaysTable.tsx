@@ -61,7 +61,10 @@ const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, itemSelected, handleS
   }, []);
 
   const [mutateDelete] = useMutation(deletePathway, {
-    onSettled: () => cache.invalidateQueries('pathways')
+    onSettled: () => {
+      cache.invalidateQueries('pathways');
+      cache.invalidateQueries('pathway'); // TODO: only invalidate the deleted one
+    }
   });
 
   const deletion = useCallback(

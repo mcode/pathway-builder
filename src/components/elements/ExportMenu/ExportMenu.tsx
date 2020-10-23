@@ -3,7 +3,6 @@ import { Menu, MenuItem } from '@material-ui/core';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { Pathway } from 'pathways-model';
 import { Criteria } from 'criteria-model';
 
@@ -14,17 +13,10 @@ interface ContextualExportMenuProps {
 
 interface ExportMenuPropsInterface extends ContextualExportMenuProps {
   pathway: Pathway[] | null;
-  allPathways: Pathway[];
   criteria: Criteria[];
 }
 
-const ExportMenu: FC<ExportMenuPropsInterface> = ({
-  pathway,
-  allPathways,
-  criteria,
-  anchorEl,
-  closeMenu
-}) => {
+const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl, closeMenu }) => {
   return (
     <Menu
       id="pathway-options-menu"
@@ -37,7 +29,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({
     >
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, allPathways, criteria);
+          if (pathway) downloadPathway(pathway, criteria);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -46,7 +38,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({
       </MenuItem>
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, allPathways, criteria, true);
+          if (pathway) downloadPathway(pathway, criteria, true);
           else alert('No pathway to download!');
           closeMenu();
         }}
