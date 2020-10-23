@@ -11,7 +11,7 @@ import { Pathway } from 'pathways-model';
 import { ServiceLoaded } from 'pathways-objects';
 import config from 'utils/ConfigManager';
 import useGetService from './Services';
-import useRefState from 'utils/useRefState';
+import useRefState from 'hooks/useRefState';
 import { useCriteriaContext } from './CriteriaProvider';
 import produce from 'immer';
 

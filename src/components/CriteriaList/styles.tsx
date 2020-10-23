@@ -16,7 +16,7 @@ export default makeStyles(
       marginLeft: '20px'
     },
     criteriaList: {
-      marginTop: '2em'
+      marginTop: '1em'
     },
     editButton: {
       marginRight: '1em'
@@ -38,6 +38,22 @@ export default makeStyles(
     },
     fileName: {
       fontStyle: 'italic'
+    },
+    tableTop: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    selectionOptions: {
+      display: 'flex',
+      paddingLeft: '4px',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end'
+    },
+    selectionIcon: {
+      color: theme.palette.primary.main
+    },
+    deleteIcon: {
+      color: theme.palette.secondary.main
     }
   }),
   { name: 'CriteriaList', index: 1 }

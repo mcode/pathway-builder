@@ -8,7 +8,7 @@ import React, {
   useContext
 } from 'react';
 import { PathwayNode } from 'pathways-model';
-import useRefState from 'utils/useRefState';
+import useRefState from 'hooks/useRefState';
 
 interface CurrentNodeContextInterface {
   currentNode: PathwayNode | null;

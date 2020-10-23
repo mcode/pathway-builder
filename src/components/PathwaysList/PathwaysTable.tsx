@@ -1,8 +1,9 @@
-import React, { FC, memo, useState, useCallback, MouseEvent } from 'react';
+import React, { FC, memo, useState, useCallback, MouseEvent, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFileDownload } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -19,10 +20,15 @@ import useStyles from './styles';
 import { Pathway } from 'pathways-model';
 import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
-import ExportMenu from 'components/elements/ExportMenu';
+import { ContextualExportMenu } from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 
-const PathwaysTable: FC = () => {
+interface PathwaysTableInterface {
+  itemSelected: (item: string) => boolean;
+  handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
   const { pathways, deletePathway } = usePathwaysContext();
   const { setCurrentPathway } = useCurrentPathwayContext();
@@ -65,6 +71,7 @@ const PathwaysTable: FC = () => {
         <Table aria-label="pathway list">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox"></TableCell>
               <TableCell>Pathway Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Last Updated</TableCell>
@@ -75,6 +82,12 @@ const PathwaysTable: FC = () => {
           <TableBody>
             {pathways.map(pathway => (
               <TableRow key={pathway.id}>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={itemSelected(pathway.id)}
+                    onChange={handleSelectClick(pathway.id)}
+                  />
+                </TableCell>
                 <TableCell component="th" scope="row">
                   <Link
                     component={RouterLink}
@@ -121,7 +134,7 @@ const PathwaysTable: FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <ExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
+      <ContextualExportMenu anchorEl={anchorEl} closeMenu={closeMenu} />
       <PathwayModal open={open} onClose={closeEditPathwayModal} editPathway={editablePathway} />
     </div>
   );

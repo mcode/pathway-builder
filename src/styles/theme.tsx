@@ -202,6 +202,11 @@ const materialUiOverridesBase = {
       '&:disabled': {
         color: colors.grayMedium
       }
+    },
+    sizeSmall: {
+      width: '20px',
+      height: '20px',
+      margin: '9px'
     }
   }
 };

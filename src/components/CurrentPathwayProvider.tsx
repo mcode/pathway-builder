@@ -9,7 +9,7 @@ import React, {
   useEffect
 } from 'react';
 import { Pathway } from 'pathways-model';
-import useRefUndoState from 'utils/useRefUndoState';
+import useRefUndoState from 'hooks/useRefUndoState';
 import { usePathwaysContext } from './PathwaysProvider';
 import HotKeys from 'react-hot-keys';
 

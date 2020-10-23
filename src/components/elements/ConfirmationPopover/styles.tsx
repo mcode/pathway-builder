@@ -33,5 +33,5 @@ export default makeStyles(
       marginRight: '0.5em'
     }
   }),
-  { name: 'ConfirmedDeletionButton' }
+  { name: 'ConfirmationPopover' }
 );
