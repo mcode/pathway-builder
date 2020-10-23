@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import 'extensions/mongoose.extension';
 import pathwayRouter from 'routes/pathway';
 import criteriaRouter from 'routes/criteria';
+import workspaceRouter from 'routes/workspace';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
@@ -18,9 +19,10 @@ const payloadSizeLimit = '50mb';
 app.use(bodyParser.json({ limit: payloadSizeLimit }));
 app.use(cors());
 
-mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/pathway', { useNewUrlParser: true });
 
 app.get('/', (req, res) => res.send('Pathways Backend'));
 app.use('/pathway', pathwayRouter);
 app.use('/criteria', criteriaRouter);
+app.use('/workspace', workspaceRouter);
 app.listen(PORT);
