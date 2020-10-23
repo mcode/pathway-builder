@@ -8,8 +8,8 @@ import {
   faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
+import { useQuery, useQueryCache, useMutation } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
 import PathwaysTable from './PathwaysTable';
 import PathwayModal from './PathwayModal';
@@ -19,16 +19,25 @@ import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import ExportMenu from 'components/elements/ExportMenu';
-import { Pathway } from 'pathways-model';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
+import config from 'utils/ConfigManager';
+import { postNewPathway, readFile } from 'utils/backend';
+import { Pathway } from 'pathways-model';
+import { deletePathway } from 'utils/backend';
 
 const PathwaysList: FC = () => {
+  const cache = useQueryCache();
   const styles = useStyles();
   const [open, setOpen] = useState(false);
-  const { status, pathways, deletePathway } = usePathwaysContext();
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const pathwayIds = useMemo(() => pathways.map(n => n.id), [pathways]);
+  const { criteria } = useCriteriaContext();
+  const baseUrl = config.get('pathwaysBackend');
+
+  const { isLoading, error, data } = useQuery('pathways', () =>
+    fetch(`${baseUrl}/pathway/`).then(res => res.json())
+  );
+
   const {
     indeterminate,
     checked,
@@ -37,10 +46,7 @@ const PathwaysList: FC = () => {
     handleSelectClick,
     selected,
     numSelected
-  } = useListCheckbox(pathwayIds);
-  const { criteria } = useCriteriaContext();
-
-  const { addPathwayFromFile } = usePathwaysContext();
+  } = useListCheckbox(isLoading ? [] : (data as Pathway[]).map(n => n.id));
 
   const openNewPathwayModal = useCallback((): void => {
     setOpen(true);
@@ -50,11 +56,23 @@ const PathwaysList: FC = () => {
     setOpen(false);
   }, []);
 
-  const selectFile = useCallback(
+  const [mutateAddPathway] = useMutation(postNewPathway, {
+    onSettled: () => cache.invalidateQueries('pathways')
+  });
+
+  const addPathway = useCallback(
     (files: FileList | undefined | null) => {
-      if (files?.length) addPathwayFromFile((files[0] as unknown) as File);
+      if (files) {
+        readFile(files[0] as File, (event: ProgressEvent<FileReader>): void => {
+          if (event.target?.result) {
+            const rawContent = event.target.result as string;
+            const pathway = JSON.parse(rawContent) as Pathway;
+            mutateAddPathway(pathway);
+          }
+        });
+      }
     },
-    [addPathwayFromFile]
+    [mutateAddPathway]
   );
 
   const closeMenu = useCallback((): void => {
@@ -65,19 +83,23 @@ const PathwaysList: FC = () => {
 
   const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
 
+  const [mutateDelete] = useMutation(deletePathway, {
+    onSettled: () => cache.invalidateQueries('pathways')
+  });
+
   const handleDelete = useCallback(() => {
     selected.forEach(id => {
-      deletePathway(id);
+      mutateDelete(id);
     });
-  }, [deletePathway, selected]);
+  }, [mutateDelete, selected]);
 
   const [pathwaysToExport, setPathwaysToExport] = useState<Pathway[]>([]);
   const handleExportAll = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
-      setPathwaysToExport(pathways.filter(pathway => selected.has(pathway.id)));
+      setPathwaysToExport((data as Pathway[]).filter(pathway => selected.has(pathway.id)));
       setAnchorEl(event.currentTarget);
     },
-    [pathways, selected]
+    [data, selected]
   );
 
   return (
@@ -140,27 +162,28 @@ const PathwaysList: FC = () => {
           </Button>
         </div>
       </div>
-
       <FileImportModal
         open={importPathwayOpen}
         onClose={closeImportPathwayModal}
-        onSelectFile={selectFile}
+        onSelectFile={addPathway}
         allowedFileType=".json"
       />
-
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
       <ExportMenu
         pathway={pathwaysToExport}
-        allPathways={pathways}
         criteria={criteria}
         anchorEl={anchorEl}
         closeMenu={closeMenu}
       />
 
-      {status === 'loading' ? (
-        <Loading />
-      ) : (
-        <PathwaysTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
+      {isLoading && !error && <Loading />}
+      {error && <div>ERROR: Unable to get pathways</div>}
+      {data && (
+        <PathwaysTable
+          pathways={data}
+          handleSelectClick={handleSelectClick}
+          itemSelected={itemSelected}
+        />
       )}
     </div>
   );

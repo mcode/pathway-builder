@@ -16,45 +16,50 @@ import { CurrentNodeProvider } from './CurrentNodeProvider';
 import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
+import { QueryCache, ReactQueryCacheProvider } from 'react-query';
+
+const cache = new QueryCache();
 
 const App: FC = () => {
   return (
     <ThemeProvider theme="light">
-      <UserProvider>
-        <CriteriaProvider>
-          <PathwaysProvider>
-            <CurrentNodeProvider>
-              <CurrentPathwayProvider>
-                <SnackbarProvider>
-                  <CurrentCriteriaProvider>
-                    <CriteriaBuilderProvider>
-                      <Router>
-                        <Switch>
-                          <Route path="/builder/:id/node/:nodeId">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/builder/:id">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/">
-                            <Header />
-                            <Tabs
-                              tabs={[
-                                { label: 'Pathway', component: <PathwaysList /> },
-                                { label: 'Criteria', component: <CriteriaList /> }
-                              ]}
-                            />
-                          </Route>
-                        </Switch>
-                      </Router>
-                    </CriteriaBuilderProvider>
-                  </CurrentCriteriaProvider>
-                </SnackbarProvider>
-              </CurrentPathwayProvider>
-            </CurrentNodeProvider>
-          </PathwaysProvider>
-        </CriteriaProvider>
-      </UserProvider>
+      <ReactQueryCacheProvider queryCache={cache}>
+        <UserProvider>
+          <CriteriaProvider>
+            <PathwaysProvider>
+              <CurrentNodeProvider>
+                <CurrentPathwayProvider>
+                  <SnackbarProvider>
+                    <CurrentCriteriaProvider>
+                      <CriteriaBuilderProvider>
+                        <Router>
+                          <Switch>
+                            <Route path="/builder/:id/node/:nodeId">
+                              <BuilderRoute />
+                            </Route>
+                            <Route path="/builder/:id">
+                              <BuilderRoute />
+                            </Route>
+                            <Route path="/">
+                              <Header />
+                              <Tabs
+                                tabs={[
+                                  { label: 'Pathway', component: <PathwaysList /> },
+                                  { label: 'Criteria', component: <CriteriaList /> }
+                                ]}
+                              />
+                            </Route>
+                          </Switch>
+                        </Router>
+                      </CriteriaBuilderProvider>
+                    </CurrentCriteriaProvider>
+                  </SnackbarProvider>
+                </CurrentPathwayProvider>
+              </CurrentNodeProvider>
+            </PathwaysProvider>
+          </CriteriaProvider>
+        </UserProvider>
+      </ReactQueryCacheProvider>
     </ThemeProvider>
   );
 };

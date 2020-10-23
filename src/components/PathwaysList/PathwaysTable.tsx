@@ -12,8 +12,8 @@ import {
   TableRow,
   Link
 } from '@material-ui/core';
+import { useQueryCache, useMutation } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
@@ -22,15 +22,17 @@ import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 import { ContextualExportMenu } from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { deletePathway } from 'utils/backend';
 
-interface PathwaysTableInterface {
+interface PathwaysTableProps {
+  pathways: Pathway[];
   itemSelected: (item: string) => boolean;
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectClick }) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, itemSelected, handleSelectClick }) => {
   const styles = useStyles();
-  const { pathways, deletePathway } = usePathwaysContext();
+  const cache = useQueryCache();
   const { setCurrentPathway } = useCurrentPathwayContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
@@ -58,11 +60,15 @@ const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectC
     setAnchorEl(null);
   }, []);
 
+  const [mutateDelete] = useMutation(deletePathway, {
+    onSettled: () => cache.invalidateQueries('pathways')
+  });
+
   const deletion = useCallback(
     (id: string): void => {
-      deletePathway(id);
+      mutateDelete(id);
     },
-    [deletePathway]
+    [mutateDelete]
   );
 
   return (
