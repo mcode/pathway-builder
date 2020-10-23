@@ -12,6 +12,10 @@ export function deletePathway(id: String): Promise<any> {
   return axios.delete(`${baseUrl}/pathway/${id}`);
 }
 
+export function updatePathway(pathway: Pathway): Promise<any> {
+  return axios.put(`${baseUrl}/pathway/${pathway.id}`);
+}
+
 export function readFile(file: File, callback: (event: ProgressEvent<FileReader>) => any): void {
   const reader = new FileReader();
   reader.onload = callback;
