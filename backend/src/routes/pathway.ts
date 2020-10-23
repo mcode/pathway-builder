@@ -15,7 +15,7 @@ router.put('/:id', (req, res) => {
   Pathway.findOneAndUpdate(
     { id: req.params.id },
     req.body,
-    { overwrite: true, new: true , upsert: true },
+    { overwrite: true, new: true, upsert: true },
     (err, product) => {
       if (err) res.send(err);
       else res.status(201).send(product);
