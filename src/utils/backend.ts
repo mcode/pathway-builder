@@ -13,7 +13,7 @@ export function deletePathway(id: String): Promise<any> {
 }
 
 export function updatePathway(pathway: Pathway): Promise<any> {
-  return axios.put(`${baseUrl}/pathway/${pathway.id}`);
+  return axios.put(`${baseUrl}/pathway/${pathway.id}`, pathway);
 }
 
 export function readFile(file: File, callback: (event: ProgressEvent<FileReader>) => any): void {

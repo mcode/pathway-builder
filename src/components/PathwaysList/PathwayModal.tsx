@@ -13,11 +13,12 @@ import {
 } from '@material-ui/core';
 import shortid from 'shortid';
 import produce from 'immer';
+import { useQuery, useQueryCache, useMutation } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
+import { postNewPathway, updatePathway } from 'utils/backend';
 
 interface PathwayModalProps {
   open: boolean;
@@ -29,9 +30,9 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
   const createNewPathwayMeta = !editPathway;
   const styles = useStyles();
   const history = useHistory();
+  const cache = useQueryCache();
   const pathwayNameRef = useRef<HTMLInputElement>(null);
   const pathwayDescRef = useRef<HTMLInputElement>(null);
-  const { addPathway, updatePathway } = usePathwaysContext();
 
   const closeModal = useCallback(
     (pathwayId: string): void => {
@@ -41,16 +42,24 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
     [history, onClose]
   );
 
+  const [mutateAddPathway] = useMutation(postNewPathway, {
+    onSettled: () => cache.invalidateQueries('pathways')
+  });
+
+  const [mutateUpdatePathway] = useMutation(updatePathway, {
+    onSettled: () => cache.invalidateQueries('pathways')
+  });
+
   const handleCreateNewPathway = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
       const pathwayId = shortid.generate();
       const name: string = pathwayNameRef.current?.value ?? '';
       const description: string = pathwayDescRef.current?.value ?? '';
-      addPathway(createNewPathway(name, description, pathwayId));
+      mutateAddPathway(createNewPathway(name, description, pathwayId));
       closeModal(pathwayId);
     },
-    [addPathway, closeModal]
+    [mutateAddPathway, closeModal]
   );
 
   const handleUpdatePathway = useCallback(
@@ -66,11 +75,11 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
           if (pathwayDescRef.current?.value)
             draftEditPathway.description = pathwayDescRef.current.value;
         });
-        updatePathway(newEditPathway);
+        mutateUpdatePathway(newEditPathway);
       }
       onClose();
     },
-    [updatePathway, editPathway, onClose]
+    [mutateUpdatePathway, editPathway, onClose]
   );
 
   let name, description;
