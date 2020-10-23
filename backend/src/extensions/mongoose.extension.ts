@@ -6,3 +6,5 @@ declare module 'mongoose' {
     overwrite?: boolean;
   }
 }
+
+export {};
