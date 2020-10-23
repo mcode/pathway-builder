@@ -4,7 +4,7 @@ import Criteria from 'models/criteria';
 const router = Router();
 
 router.get('/', (req, res) => {
-  Criteria.find((err, product) => {
+  Criteria.find({}, (err, product) => {
     if (err) res.send('Error getting all Criteria');
     else res.send(product);
   });

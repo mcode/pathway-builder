@@ -4,7 +4,7 @@ import Pathway from 'models/pathway';
 const router = Router();
 
 router.get('/', (req, res) => {
-  Pathway.find((err, product) => {
+  Pathway.find({}, (err, product) => {
     if (err) res.send('Error getting all pathways');
     else res.send(product);
   });
