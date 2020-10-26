@@ -10,7 +10,7 @@ import {
   IconButton
 } from '@material-ui/core';
 
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
 interface LinkSentModalProps {
   open: boolean;
@@ -20,6 +20,7 @@ interface LinkSentModalProps {
 }
 
 const LinkSentModal: FC<LinkSentModalProps> = ({ open, onClose, onRemoveMe }) => {
+    const styles = useStyles();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>

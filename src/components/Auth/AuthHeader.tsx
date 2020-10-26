@@ -1,12 +1,7 @@
-import React, { FC, memo, useCallback, useState, MouseEvent } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
-import { useThemeToggle } from '../ThemeProvider';
 import SignupModal from './SignupModal';
 import LoginModal from './LoginModal';
 import ResetModal from './ResetModal';
@@ -15,9 +10,11 @@ import NewPasswordModal from './NewPasswordModal';
 import PasswordResetModal from './PasswordResetModal';
 
 import logo from 'camino-builder-logo-light-bg.png';
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
 const AuthHeader: FC = () => {
+  const styles = useStyles();
+
   const [openLogin, setOpenLogin] = useState<boolean>(false);
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const openLoginModal = useCallback((): void => {
@@ -125,9 +122,15 @@ const AuthHeader: FC = () => {
       >
         SIGN UP
       </button>
-      <button onClick={openLoginModal} aria-controls="options-menu" aria-haspopup="true">
+      <button
+        className={styles.loginButton}
+        onClick={openLoginModal}
+        aria-controls="options-menu"
+        aria-haspopup="true"
+      >
         LOGIN
       </button>
+
       <LoginModal
         open={openLogin}
         onClose={closeLoginModal}

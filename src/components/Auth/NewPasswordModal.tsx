@@ -12,15 +12,16 @@ import {
   OutlinedInput
 } from '@material-ui/core';
 
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
-interface newPassowrdModalProps {
+interface NewPasswordModalProps {
   open: boolean;
   onClose: () => void;
   onPasswordReset: () => void;
 }
 
-const newPassowrdModal: FC<newPassowrdModalProps> = ({ open, onClose, onPasswordReset }) => {
+const NewPasswordModal: FC<NewPasswordModalProps> = ({ open, onClose, onPasswordReset }) => {
+  const styles = useStyles();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
@@ -65,4 +66,4 @@ const newPassowrdModal: FC<newPassowrdModalProps> = ({ open, onClose, onPassword
   );
 };
 
-export default memo(newPassowrdModal);
+export default memo(NewPasswordModal);

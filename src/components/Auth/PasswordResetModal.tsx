@@ -10,7 +10,7 @@ import {
   IconButton
 } from '@material-ui/core';
 
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
 interface PasswordResetModalProps {
   open: boolean;
@@ -19,6 +19,7 @@ interface PasswordResetModalProps {
 }
 
 const PasswordResetModal: FC<PasswordResetModalProps> = ({ open, onClose, onLogin }) => {
+  const styles = useStyles();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>

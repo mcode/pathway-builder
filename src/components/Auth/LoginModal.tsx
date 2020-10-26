@@ -12,7 +12,7 @@ import {
   OutlinedInput
 } from '@material-ui/core';
 
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
 interface LoginModalProps {
   open: boolean;
@@ -22,6 +22,7 @@ interface LoginModalProps {
 }
 
 const LoginModal: FC<LoginModalProps> = ({ open, onClose, onSignup, onReset }) => {
+  const styles = useStyles();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>

@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import mitre from 'mitre.png';
 import mcode from 'mcode.png';
-import styles from './Auth.module.scss';
+import useStyles from './styles';
 
 const AuthFooter: FC = () => {
+  const styles = useStyles();
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
 
   return (
