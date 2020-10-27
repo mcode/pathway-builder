@@ -36,35 +36,31 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
-export function downloadPathway(
-  pathway: Pathway[],
-  criteria: Criteria[],
-  cpg = false
-): Promise<void> {
+export async function downloadPathway(pathway: Pathway[], cpg = false): Promise<void> {
   const baseUrl = config.get('pathwaysBackend');
-  return fetch(`${baseUrl}/pathway/`).then(res =>
-    res.json().then(data => {
-      const pathways = data as Pathway[];
-      if (pathway.length > 1) {
-        const zip = new JSZip();
-        // If multiple pathways are being exported
-        pathway.forEach(path => {
-          zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
-        });
-        return zip.generateAsync({ type: 'blob' }).then(function(content) {
-          downloadFile(content, 'pathways.zip');
-        });
-      } else {
-        const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
-        // Create blob from pathwayString to save to file system
-        const pathwayBlob = new Blob([pathwayString], {
-          type: 'application/json'
-        });
-        downloadFile(pathwayBlob, `${pathway[0].name}.json`);
-        return Promise.resolve();
-      }
-    })
-  );
+  const pathwayResponse = await fetch(`${baseUrl}/pathway/`);
+  const criteriaResponse = await fetch(`${baseUrl}/criteria/`);
+  const pathways = (await pathwayResponse.json()) as Pathway[];
+  const criteria = (await criteriaResponse.json()) as Criteria[];
+
+  if (pathway.length > 1) {
+    const zip = new JSZip();
+    // If multiple pathways are being exported
+    pathway.forEach(path => {
+      zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
+    });
+    return zip.generateAsync({ type: 'blob' }).then(function(content) {
+      downloadFile(content, 'pathways.zip');
+    });
+  } else {
+    const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
+    // Create blob from pathwayString to save to file system
+    const pathwayBlob = new Blob([pathwayString], {
+      type: 'application/json'
+    });
+    downloadFile(pathwayBlob, `${pathway[0].name}.json`);
+    return Promise.resolve();
+  }
 }
 
 function downloadFile(file: Blob, fileName: string): void {

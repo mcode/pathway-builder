@@ -12,8 +12,8 @@ import { Pathway } from 'pathways-model';
 import useRefUndoState from 'hooks/useRefUndoState';
 import HotKeys from 'react-hot-keys';
 import { updatePathway } from 'utils/backend';
-import { useCriteriaContext } from './CriteriaProvider';
 import produce from 'immer';
+import useCriteria from 'hooks/useCriteria';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -45,7 +45,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _resetPathway,
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
-  const { criteria } = useCriteriaContext();
+  const criteria = useCriteria();
 
   const undoPathway = useCallback(() => {
     _undoPathway();

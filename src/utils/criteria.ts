@@ -71,18 +71,10 @@ export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
 
 export function addCqlCriteria(cql: string): Promise<Criteria[] | undefined> {
   return cqlToCriteria(cql).then(newCriteria => {
-    if (newCriteria.length > 0) {
-      return newCriteria;
-      // Replace with call to backend
-      //   setCriteria(currentCriteria => {
-      //     // Do not add CQL Criteria that already exists
-      //     return currentCriteria.find(crit => crit.cql === cql)
-      //       ? currentCriteria
-      //       : [...currentCriteria, ...newCriteria];
-      //   });
-    } else {
+    if (newCriteria.length <= 0) {
       alert('No valid criteria were found in the provided file');
       return;
     }
+    return newCriteria;
   });
 }

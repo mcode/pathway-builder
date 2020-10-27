@@ -8,23 +8,18 @@ import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 
 import useStyles from './styles';
-import config from 'utils/ConfigManager';
 import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
-import { Criteria } from 'criteria-model';
 import { deleteCriteria, readFile, updateCriteria } from 'utils/backend';
 import { addCqlCriteria, jsonToCriteria } from 'utils/criteria';
+import useCriteria from 'hooks/useCriteria';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
   const cache = useQueryCache();
-  const baseUrl = config.get('pathwaysBackend');
+  const criteria = useCriteria();
   const [open, setOpen] = useState<boolean>(false);
-
-  const { isLoading, error, data } = useQuery('criteria', () =>
-    fetch(`${baseUrl}/criteria/`).then(res => res.json())
-  );
 
   const {
     indeterminate,
@@ -35,7 +30,7 @@ const CriteriaList: FC = () => {
     selected,
     setSelected,
     numSelected
-  } = useListCheckbox(isLoading ? [] : (data as Criteria[]).map(n => n.id));
+  } = useListCheckbox(criteria.length ? criteria.map(n => n.id) : []);
 
   const openImportModal = useCallback((): void => {
     setOpen(true);
@@ -138,11 +133,10 @@ const CriteriaList: FC = () => {
         allowedFileType=".cql"
       />
 
-      {isLoading && !error && <Loading />}
-      {error && <div>ERROR: Unable to get criteria</div>}
-      {data && (
+      {!criteria.length && <Loading />}
+      {criteria && (
         <CriteriaTable
-          criteria={data as Criteria[]}
+          criteria={criteria}
           handleSelectClick={handleSelectClick}
           itemSelected={itemSelected}
         />

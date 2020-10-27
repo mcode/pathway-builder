@@ -17,7 +17,6 @@ import PathwayModal from './PathwayModal';
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 import config from 'utils/ConfigManager';
@@ -31,7 +30,6 @@ const PathwaysList: FC = () => {
   const [open, setOpen] = useState(false);
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { criteria } = useCriteriaContext();
   const baseUrl = config.get('pathwaysBackend');
 
   const { isLoading, error, data } = useQuery('pathways', () =>
@@ -169,12 +167,7 @@ const PathwaysList: FC = () => {
         allowedFileType=".json"
       />
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
-      <ExportMenu
-        pathway={pathwaysToExport}
-        criteria={criteria}
-        anchorEl={anchorEl}
-        closeMenu={closeMenu}
-      />
+      <ExportMenu pathway={pathwaysToExport} anchorEl={anchorEl} closeMenu={closeMenu} />
 
       {isLoading && !error && <Loading />}
       {error && <div>ERROR: Unable to get pathways</div>}

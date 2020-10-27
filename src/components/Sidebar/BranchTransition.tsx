@@ -17,13 +17,17 @@ import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
+import useCriteria from 'hooks/useCriteria';
 
 interface BranchTransitionProps {
   transition: Transition;
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
-  const { criteria, addBuilderCriteria } = useCriteriaContext();
+  const styles = useStyles();
+  const criteria = useCriteria();
+  const transitionRef = useRef(transition);
+  const { addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
@@ -38,22 +42,22 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const { currentNodeRef } = useCurrentNodeContext();
+  const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
+
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
   ]);
   const criteriaAvailable = criteriaOptions.length > 0;
-  const styles = useStyles();
-  const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
+  const displayCriteria =
+    criteriaAvailable &&
+    (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
+
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;
   const criteriaDisplayIsValid = criteriaDescription && criteriaDescription !== '';
   const hasCriteria = transition.condition?.cql || transition.condition?.description;
   const buttonText = hasCriteria ? 'DELETE' : 'CANCEL';
   const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
-  const displayCriteria =
-    criteriaAvailable &&
-    (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
-  const transitionRef = useRef(transition);
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
   // Check if criteria was built by criteria builder
   let builderElements: BuilderModel | null = null;

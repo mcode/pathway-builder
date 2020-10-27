@@ -4,7 +4,6 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
-import { Criteria } from 'criteria-model';
 
 interface ContextualExportMenuProps {
   anchorEl: HTMLElement | null;
@@ -13,10 +12,9 @@ interface ContextualExportMenuProps {
 
 interface ExportMenuPropsInterface extends ContextualExportMenuProps {
   pathway: Pathway[] | null;
-  criteria: Criteria[];
 }
 
-const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl, closeMenu }) => {
+const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, anchorEl, closeMenu }) => {
   return (
     <Menu
       id="pathway-options-menu"
@@ -29,7 +27,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl,
     >
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, criteria);
+          if (pathway) downloadPathway(pathway);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -38,7 +36,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl,
       </MenuItem>
       <MenuItem
         onClick={(): void => {
-          if (pathway) downloadPathway(pathway, criteria, true);
+          if (pathway) downloadPathway(pathway, true);
           else alert('No pathway to download!');
           closeMenu();
         }}
@@ -52,15 +50,8 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, criteria, anchorEl,
 const ContextualExportMenu: FC<ContextualExportMenuProps> = ({ anchorEl, closeMenu }) => {
   const { pathway } = useCurrentPathwayContext();
 
-  const { criteria } = useCriteriaContext();
-
   return (
-    <ExportMenu
-      pathway={pathway ? [pathway] : null}
-      criteria={criteria}
-      anchorEl={anchorEl}
-      closeMenu={closeMenu}
-    />
+    <ExportMenu pathway={pathway ? [pathway] : null} anchorEl={anchorEl} closeMenu={closeMenu} />
   );
 };
 
