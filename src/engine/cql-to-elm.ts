@@ -11,11 +11,9 @@ const url = config.get('cqlToElmWebserviceUrl');
 
 export interface CqlObject {
   main: string;
-  libraries: Library;
-}
-
-export interface Library {
-  [name: string]: string; // should probably have an object for expected ELM structure.
+  libraries: {
+    [name: string]: string;
+  };
 }
 
 export interface ElmObject {
