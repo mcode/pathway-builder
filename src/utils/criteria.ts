@@ -1,7 +1,8 @@
-import { Criteria } from 'criteria-model';
+import { BuilderModel, Criteria } from 'criteria-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import shortid from 'shortid';
+import { updateCriteria } from './backend';
 
 const DEFAULT_ELM_STATEMENTS = [
   'Patient',
@@ -12,7 +13,7 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-function elmLibraryToCriteria(
+export function elmLibraryToCriteria(
   elm: ElmLibrary,
   cql: string | undefined = undefined,
   custom = false
@@ -46,7 +47,7 @@ function elmLibraryToCriteria(
   });
 }
 
-function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
+export function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
   return convertBasicCQL(rawCql).then(elm => {
     // the cql-to-elm webservice always responds with ELM
     // even if the CQL was complete garbage
@@ -69,12 +70,24 @@ export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
-export function addCqlCriteria(cql: string): Promise<Criteria[] | undefined> {
-  return cqlToCriteria(cql).then(newCriteria => {
-    if (newCriteria.length <= 0) {
-      alert('No valid criteria were found in the provided file');
-      return;
-    }
-    return newCriteria;
-  });
+function builderModelToCriteria(criteria: BuilderModel, label: string, id?: string): Criteria {
+  return {
+    id: id ? id : shortid.generate(),
+    label,
+    modified: Date.now(),
+    builder: criteria,
+    statement: label
+  };
+}
+
+export function addBuilderCriteria(
+  buildCriteria: BuilderModel,
+  label: string,
+  criteriaSource: string | undefined
+): Criteria[] {
+  const newCriteria = builderModelToCriteria(buildCriteria, label, criteriaSource);
+
+  updateCriteria(newCriteria);
+
+  return [newCriteria];
 }

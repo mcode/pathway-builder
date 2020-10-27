@@ -6,7 +6,6 @@ import Header from 'components/Header';
 import BuilderRoute from './BuilderRoute';
 import ThemeProvider from './ThemeProvider';
 import { UserProvider } from './UserProvider';
-import { CriteriaProvider } from './CriteriaProvider';
 import Tabs from './Tabs';
 import PathwaysList from './PathwaysList';
 import CriteriaList from './CriteriaList';
@@ -24,37 +23,35 @@ const App: FC = () => {
     <ThemeProvider theme="light">
       <ReactQueryCacheProvider queryCache={cache}>
         <UserProvider>
-          <CriteriaProvider>
-            <CurrentNodeProvider>
-              <CurrentPathwayProvider>
-                <SnackbarProvider>
-                  <CurrentCriteriaProvider>
-                    <CriteriaBuilderProvider>
-                      <Router>
-                        <Switch>
-                          <Route path="/builder/:id/node/:nodeId">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/builder/:id">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/">
-                            <Header />
-                            <Tabs
-                              tabs={[
-                                { label: 'Pathway', component: <PathwaysList /> },
-                                { label: 'Criteria', component: <CriteriaList /> }
-                              ]}
-                            />
-                          </Route>
-                        </Switch>
-                      </Router>
-                    </CriteriaBuilderProvider>
-                  </CurrentCriteriaProvider>
-                </SnackbarProvider>
-              </CurrentPathwayProvider>
-            </CurrentNodeProvider>
-          </CriteriaProvider>
+          <CurrentNodeProvider>
+            <CurrentPathwayProvider>
+              <SnackbarProvider>
+                <CurrentCriteriaProvider>
+                  <CriteriaBuilderProvider>
+                    <Router>
+                      <Switch>
+                        <Route path="/builder/:id/node/:nodeId">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/builder/:id">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/">
+                          <Header />
+                          <Tabs
+                            tabs={[
+                              { label: 'Pathway', component: <PathwaysList /> },
+                              { label: 'Criteria', component: <CriteriaList /> }
+                            ]}
+                          />
+                        </Route>
+                      </Switch>
+                    </Router>
+                  </CriteriaBuilderProvider>
+                </CurrentCriteriaProvider>
+              </SnackbarProvider>
+            </CurrentPathwayProvider>
+          </CurrentNodeProvider>
         </UserProvider>
       </ReactQueryCacheProvider>
     </ThemeProvider>

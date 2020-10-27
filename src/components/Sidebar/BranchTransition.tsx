@@ -10,7 +10,6 @@ import {
 } from 'utils/builder';
 import { OutlinedDiv, SidebarButton } from '.';
 import { Transition } from 'pathways-model';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
@@ -18,6 +17,7 @@ import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
 import useCriteria from 'hooks/useCriteria';
+import { addBuilderCriteria } from 'utils/criteria';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -27,7 +27,6 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const styles = useStyles();
   const { criteria } = useCriteria();
   const transitionRef = useRef(transition);
-  const { addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
@@ -195,8 +194,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     currentCriteria,
     criteriaName,
     transition,
-    handleBuildCriteriaCancel,
-    addBuilderCriteria
+    handleBuildCriteriaCancel
   ]);
 
   return (

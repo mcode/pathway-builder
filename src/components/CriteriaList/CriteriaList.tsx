@@ -12,7 +12,7 @@ import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 import { deleteCriteria, readFile, updateCriteria } from 'utils/backend';
-import { addCqlCriteria, jsonToCriteria } from 'utils/criteria';
+import { cqlToCriteria, jsonToCriteria } from 'utils/criteria';
 import useCriteria from 'hooks/useCriteria';
 
 const CriteriaList: FC = () => {
@@ -55,8 +55,9 @@ const CriteriaList: FC = () => {
               const newCriteria = jsonToCriteria(rawContent);
               if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria));
             } else if (files[0].name.endsWith('.cql')) {
-              addCqlCriteria(rawContent).then(newCriteria => {
-                if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria));
+              cqlToCriteria(rawContent).then(newCriteria => {
+                if (newCriteria.length)
+                  newCriteria.forEach(criteria => mutateAddCriteria(criteria));
               });
             }
           } else alert('Unable to read that file');
