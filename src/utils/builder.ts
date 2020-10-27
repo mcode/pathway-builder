@@ -16,7 +16,6 @@ import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 import JSZip from 'jszip';
-import config from 'utils/ConfigManager';
 
 export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
@@ -36,13 +35,12 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
-export async function downloadPathway(pathway: Pathway[], cpg = false): Promise<void> {
-  const baseUrl = config.get('pathwaysBackend');
-  const pathwayResponse = await fetch(`${baseUrl}/pathway/`);
-  const criteriaResponse = await fetch(`${baseUrl}/criteria/`);
-  const pathways = (await pathwayResponse.json()) as Pathway[];
-  const criteria = (await criteriaResponse.json()) as Criteria[];
-
+export async function downloadPathway(
+  pathway: Pathway[],
+  pathways: Pathway[],
+  criteria: Criteria[],
+  cpg = false
+): Promise<void> {
   if (pathway.length > 1) {
     const zip = new JSZip();
     // If multiple pathways are being exported
