@@ -2,7 +2,7 @@ import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryCache } from 'react-query';
 
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
@@ -10,21 +10,21 @@ import CriteriaTable from './CriteriaTable';
 import useStyles from './styles';
 import config from 'utils/ConfigManager';
 import FileImportModal from 'components/FileImportModal';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 import { Criteria } from 'criteria-model';
+import { deleteCriteria, readFile, updateCriteria } from 'utils/backend';
+import { addCqlCriteria, jsonToCriteria } from 'utils/criteria';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
-  const { addCriteria, deleteCriteria } = useCriteriaContext();
+  const cache = useQueryCache();
   const baseUrl = config.get('pathwaysBackend');
+  const [open, setOpen] = useState<boolean>(false);
 
   const { isLoading, error, data } = useQuery('criteria', () =>
     fetch(`${baseUrl}/criteria/`).then(res => res.json())
   );
-
-  const [open, setOpen] = useState<boolean>(false);
 
   const {
     indeterminate,
@@ -45,19 +45,42 @@ const CriteriaList: FC = () => {
     setOpen(false);
   }, []);
 
-  const selectFile = useCallback(
+  const [mutateAddCriteria] = useMutation(updateCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
+
+  const addCriteria = useCallback(
     (files: FileList | undefined | null) => {
-      if (files?.length) addCriteria(files[0]);
+      if (files) {
+        readFile(files[0], (event: ProgressEvent<FileReader>): void => {
+          if (event.target?.result) {
+            const rawContent = event.target.result as string;
+            // TODO: more robust file type identification?
+            if (files[0].name.endsWith('.json')) {
+              const newCriteria = jsonToCriteria(rawContent);
+              if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria));
+            } else if (files[0].name.endsWith('.cql')) {
+              addCqlCriteria(rawContent).then(newCriteria => {
+                if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria));
+              });
+            }
+          } else alert('Unable to read that file');
+        });
+      }
     },
-    [addCriteria]
+    [mutateAddCriteria]
   );
+
+  const [mutateDelete] = useMutation(deleteCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
 
   const handleDelete = useCallback(() => {
     selected.forEach(id => {
-      deleteCriteria(id);
+      mutateDelete(id);
       setSelected(new Set());
     });
-  }, [deleteCriteria, selected, setSelected]);
+  }, [selected, setSelected, mutateDelete]);
 
   return (
     <div className={styles.root}>
@@ -111,7 +134,7 @@ const CriteriaList: FC = () => {
       <FileImportModal
         open={open}
         onClose={closeImportModal}
-        onSelectFile={selectFile}
+        onSelectFile={addCriteria}
         allowedFileType=".cql"
       />
 
