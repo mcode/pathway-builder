@@ -53,11 +53,11 @@ const CriteriaList: FC = () => {
             // TODO: more robust file type identification?
             if (files[0].name.endsWith('.json')) {
               const newCriteria = jsonToCriteria(rawContent);
-              if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria));
+              if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria)); // eslint-disable-line
             } else if (files[0].name.endsWith('.cql')) {
               cqlToCriteria(rawContent).then(newCriteria => {
                 if (newCriteria.length)
-                  newCriteria.forEach(criteria => mutateAddCriteria(criteria));
+                  newCriteria.forEach(criteria => mutateAddCriteria(criteria)); // eslint-disable-line
               });
             }
           } else alert('Unable to read that file');
