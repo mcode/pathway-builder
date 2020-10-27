@@ -1,14 +1,17 @@
 import React, { FC, memo } from 'react';
 
 import { AuthHeader, AuthBody, AuthFooter } from 'components/Auth';
+import ThemeProvider from '../ThemeProvider';
 
 const Auth: FC = () => {
   return (
-    <>
-      <AuthHeader />
-      <AuthBody />
-      <AuthFooter />
-    </>
+    <ThemeProvider theme="light">
+      <>
+        <AuthHeader />
+        <AuthBody />
+        <AuthFooter />
+      </>
+    </ThemeProvider>
   );
 };
 
