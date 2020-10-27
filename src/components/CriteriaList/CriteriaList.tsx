@@ -2,7 +2,7 @@ import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
-import { useMutation, useQuery, useQueryCache } from 'react-query';
+import { useMutation, useQueryCache } from 'react-query';
 
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';

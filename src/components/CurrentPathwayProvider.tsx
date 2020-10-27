@@ -14,6 +14,7 @@ import HotKeys from 'react-hot-keys';
 import { updatePathway } from 'utils/backend';
 import produce from 'immer';
 import useCriteria from 'hooks/useCriteria';
+import { useQueryCache } from 'react-query';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -46,6 +47,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
   const criteria = useCriteria();
+  const cache = useQueryCache();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
@@ -71,9 +73,9 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
 
   useEffect(() => {
     if (pathway) {
-      updatePathway(pathway);
+      updatePathway(pathway).then(() => cache.invalidateQueries('pathways'));
     }
-  }, [pathway]);
+  }, [cache, pathway]);
 
   // Update criteriaSource if criteria change
   useEffect(() => {

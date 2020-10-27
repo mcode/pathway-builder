@@ -1,7 +1,6 @@
 import React, { FC, memo } from 'react';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import { downloadPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
 

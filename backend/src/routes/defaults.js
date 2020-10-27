@@ -45,6 +45,7 @@ export const pathways = [
               description: 'N0',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ "N0 category (finding)" return Tuple{ resourceType: \'Observation\', id: N0.id.value , status: N0.status.value} ',
+              criteriaSource: 'y6Uxj-4zI5',
             },
           },
           {
@@ -54,6 +55,7 @@ export const pathways = [
               description: 'N+',
               cql:
                 ' [Observation: "Regional lymph nodes.clinical [Class] Cancer code"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ "N1 category (finding)" or NLargeConcept ~ "N2 category (finding)" or NLargeConcept ~ "N3 category (finding)" return Tuple{ resourceType: \'Observation\', id: NLarge.id.value , status: NLarge.status.value} ',
+              criteriaSource: 'O7nLpymn3O',
             },
           },
         ],
@@ -70,6 +72,7 @@ export const pathways = [
               description: 'T > 2cm',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ "T2 category (finding)" or TLageConcept ~ "T3 category (finding)" or TLageConcept ~ "T4 category (finding)" return Tuple{ resourceType: \'Observation\', id: TLarge.id.value , status: TLarge.status.value} ',
+              criteriaSource: 'xwL6INa2fc',
             },
           },
           {
@@ -79,6 +82,7 @@ export const pathways = [
               description: 'T <= 2cm',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TSmall where ToConcept(TSmall.value as FHIR.CodeableConcept) ~ "T0 category (finding)" or ToConcept(TSmall.value as FHIR.CodeableConcept) ~ "T1 category (finding)" return Tuple{ resourceType: \'Observation\', id: TSmall.id.value , status: TSmall.status.value} ',
+              criteriaSource: 'Afg4Tb35Uu',
             },
           },
         ],
@@ -188,6 +192,7 @@ export const pathways = [
               description: 'ERPositive',
               cql:
                 '[Observation: "Estrogen receptor Ag [Presence] in Breast cancer specimen by Immune stain code"] Pos where ToConcept(Pos.value as FHIR.CodeableConcept) ~ "Positive (qualifier value)" return Tuple{ resourceType: \'Observation\', id: Pos.id.value , status: Pos.status.value} ',
+              criteriaSource: 'Jm_o_kfSg',
             },
           },
         ],
@@ -2470,6 +2475,7 @@ export const pathways = [
               description: 'T > 2',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ "T3 category (finding)" or TLageConcept ~ "T4 category (finding)" return Tuple{ resourceType: \'Observation\', id: TLarge.id.value , status: TLarge.status.value} ',
+              criteriaSource: 'fptSA4X3y2',
             },
           },
           {
@@ -2479,6 +2485,7 @@ export const pathways = [
               description: 'T > 2',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ "T3 category (finding)" or TLageConcept ~ "T4 category (finding)" return Tuple{ resourceType: \'Observation\', id: TLarge.id.value , status: TLarge.status.value} ',
+              criteriaSource: 'fptSA4X3y2',
             },
           },
           {
@@ -2488,6 +2495,7 @@ export const pathways = [
               description: 'T > 2',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TLarge let TLageConcept: ToConcept(TLarge.value as FHIR.CodeableConcept) where TLageConcept ~ "T3 category (finding)" or TLageConcept ~ "T4 category (finding)" return Tuple{ resourceType: \'Observation\', id: TLarge.id.value , status: TLarge.status.value} ',
+              criteriaSource: 'fptSA4X3y2',
             },
           },
           {
@@ -2497,6 +2505,7 @@ export const pathways = [
               description: 'T <= 2',
               cql:
                 '[Observation: "Primary tumor.clinical [Class] Cancer code"] TSmall where ToConcept(TSmall.value as FHIR.CodeableConcept) ~ "T0 category (finding)" or ToConcept(TSmall.value as FHIR.CodeableConcept) ~ "T1 category (finding)" or ToConcept(TSmall.value as FHIR.CodeableConcept) ~ "T2 category (finding)" return Tuple{ resourceType: \'Observation\', id: TSmall.id.value , status: TSmall.status.value} ',
+              criteriaSource: 'WKE4zpNYZK',
             },
           },
         ],
@@ -2513,6 +2522,7 @@ export const pathways = [
               description: 'N+',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ "N1 category (finding)" or NLargeConcept ~ "N2 category (finding)" or NLargeConcept ~ "N3 category (finding)" return Tuple{ resourceType: \'Observation\', id: NLarge.id.value , status: NLarge.status.value} ',
+              criteriaSource: 'O7nLpymn3O',
             },
           },
           {
@@ -2522,6 +2532,7 @@ export const pathways = [
               description: 'N+',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ "N1 category (finding)" or NLargeConcept ~ "N2 category (finding)" or NLargeConcept ~ "N3 category (finding)" return Tuple{ resourceType: \'Observation\', id: NLarge.id.value , status: NLarge.status.value} ',
+              criteriaSource: 'O7nLpymn3O',
             },
           },
           {
@@ -2531,6 +2542,7 @@ export const pathways = [
               description: 'N+',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ "N1 category (finding)" or NLargeConcept ~ "N2 category (finding)" or NLargeConcept ~ "N3 category (finding)" return Tuple{ resourceType: \'Observation\', id: NLarge.id.value , status: NLarge.status.value} ',
+              criteriaSource: 'O7nLpymn3O',
             },
           },
           {
@@ -2540,6 +2552,7 @@ export const pathways = [
               description: 'N0',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ "N0 category (finding)" return Tuple{ resourceType: \'Observation\', id: N0.id.value , status: N0.status.value} ',
+              criteriaSource: 'y6Uxj-4zI5',
             },
           },
         ],
@@ -2737,6 +2750,7 @@ export const pathways = [
               description: 'Complete',
               cql:
                 '[Observation "Pathologic response code"] Response where ToConcept(Response.value as FHIR.CodeableConcept) ~ "Complete" return Tuple{ resourceType: \'Observation\', id: Response.id.value, status: Response.status.value} ',
+              criteriaSource: 'ZtFKiG4ywE',
             },
           },
           {
@@ -2746,6 +2760,7 @@ export const pathways = [
               description: 'Partial/Stable/Progressive',
               cql:
                 '[Observation "Pathologic response code"] Response let ResponseConcept: ToConcept(Response.value as FHIR.CodeableConcept) where ResponseConcept ~ "Partial" or ResponseConcept ~ "Stable" or ResponseConcept ~ "Progressive" return Tuple{ resourceType: \'Observation\', id: Response.id.value, status: Response.status.value} ',
+              criteriaSource: 'ZlkCMykMAl',
             },
           },
         ],
@@ -2788,6 +2803,7 @@ export const pathways = [
               description: 'N0',
               cql:
                 '[Observation: "Regional lymph nodes.clinical [Class] Cancer code"] N0 where ToConcept(N0.value as FHIR.CodeableConcept) ~ "N0 category (finding)" return Tuple{ resourceType: \'Observation\', id: N0.id.value , status: N0.status.value} ',
+              criteriaSource: 'y6Uxj-4zI5',
             },
           },
           {
@@ -2797,6 +2813,7 @@ export const pathways = [
               description: 'N+',
               cql:
                 ' [Observation: "Regional lymph nodes.clinical [Class] Cancer code"] NLarge let NLargeConcept: ToConcept(NLarge.value as FHIR.CodeableConcept) where NLargeConcept ~ "N1 category (finding)" or NLargeConcept ~ "N2 category (finding)" or NLargeConcept ~ "N3 category (finding)" return Tuple{ resourceType: \'Observation\', id: NLarge.id.value , status: NLarge.status.value} ',
+              criteriaSource: 'O7nLpymn3O',
             },
           },
         ],
@@ -5470,6 +5487,7 @@ export const pathways = [
                   },
                 },
               },
+              criteriaSource: 'y6Uxj-4zI5',
             },
           },
           {
