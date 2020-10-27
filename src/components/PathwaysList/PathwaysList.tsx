@@ -21,7 +21,7 @@ import { useCriteriaContext } from 'components/CriteriaProvider';
 import ExportMenu from 'components/elements/ExportMenu';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 import config from 'utils/ConfigManager';
-import { postNewPathway, readFile } from 'utils/backend';
+import { readFile, updatePathway } from 'utils/backend';
 import { Pathway } from 'pathways-model';
 import { deletePathway } from 'utils/backend';
 
@@ -56,7 +56,7 @@ const PathwaysList: FC = () => {
     setOpen(false);
   }, []);
 
-  const [mutateAddPathway] = useMutation(postNewPathway, {
+  const [mutateAddPathway] = useMutation(updatePathway, {
     onSettled: () => cache.invalidateQueries('pathways')
   });
 

@@ -18,7 +18,7 @@ import { useQueryCache, useMutation } from 'react-query';
 import useStyles from './styles';
 import { createNewPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
-import { postNewPathway, updatePathway } from 'utils/backend';
+import { updatePathway } from 'utils/backend';
 
 interface PathwayModalProps {
   open: boolean;
@@ -42,7 +42,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
     [history, onClose]
   );
 
-  const [mutateAddPathway] = useMutation(postNewPathway, {
+  const [mutateAddPathway] = useMutation(updatePathway, {
     onSettled: () => cache.invalidateQueries('pathways')
   });
 

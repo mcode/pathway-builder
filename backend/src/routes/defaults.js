@@ -1,3 +1,14 @@
+export const criteria = [
+  {
+    id: '12',
+    label: 'Criteria',
+    version: '1.0.0',
+    modified: 1000,
+    statement: 'T0',
+    cql: 'Cql',
+  },
+];
+
 export const pathways = [
   {
     id: 'tB4jsxTDL',
