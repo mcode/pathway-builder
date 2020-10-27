@@ -18,7 +18,7 @@ import useCriteria from 'hooks/useCriteria';
 const CriteriaList: FC = () => {
   const styles = useStyles();
   const cache = useQueryCache();
-  const criteria = useCriteria();
+  const { isLoading, criteria } = useCriteria();
   const [open, setOpen] = useState<boolean>(false);
 
   const {
@@ -30,7 +30,7 @@ const CriteriaList: FC = () => {
     selected,
     setSelected,
     numSelected
-  } = useListCheckbox(criteria.length ? criteria.map(n => n.id) : []);
+  } = useListCheckbox(isLoading ? [] : criteria.map(n => n.id));
 
   const openImportModal = useCallback((): void => {
     setOpen(true);
@@ -133,13 +133,9 @@ const CriteriaList: FC = () => {
         allowedFileType=".cql"
       />
 
-      {!criteria.length && <Loading />}
-      {criteria && (
-        <CriteriaTable
-          criteria={criteria}
-          handleSelectClick={handleSelectClick}
-          itemSelected={itemSelected}
-        />
+      {isLoading && <Loading />}
+      {!isLoading && criteria && (
+        <CriteriaTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
       )}
     </div>
   );

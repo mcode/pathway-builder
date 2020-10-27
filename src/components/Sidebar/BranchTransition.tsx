@@ -25,7 +25,7 @@ interface BranchTransitionProps {
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const styles = useStyles();
-  const criteria = useCriteria();
+  const { criteria } = useCriteria();
   const transitionRef = useRef(transition);
   const { addBuilderCriteria } = useCriteriaContext();
   const {

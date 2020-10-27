@@ -23,16 +23,17 @@ import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 import { ContextualExportMenu } from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { deletePathway } from 'utils/backend';
+import usePathways from 'hooks/usePathways';
 
 interface PathwaysTableProps {
-  pathways: Pathway[];
   itemSelected: (item: string) => boolean;
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const PathwaysTable: FC<PathwaysTableProps> = ({ pathways, itemSelected, handleSelectClick }) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
   const cache = useQueryCache();
+  const { pathways } = usePathways();
   const { setCurrentPathway } = useCurrentPathwayContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();

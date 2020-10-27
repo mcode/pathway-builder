@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useState } from 'react';
+import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
@@ -9,8 +9,7 @@ import { Pathway, ReferenceNode } from 'pathways-model';
 import { useHistory } from 'react-router-dom';
 import { setNodeReference } from 'utils/builder';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { useQueryCache, useQuery } from 'react-query';
-import config from 'utils/ConfigManager';
+import usePathways from 'hooks/usePathways';
 
 interface ReferenceNodeEditorProps {
   changeNodeType: (event: string) => void;
@@ -20,18 +19,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
   const { currentNode, currentNodeRef } = useCurrentNodeContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const history = useHistory();
-  const cache = useQueryCache();
-  const baseUrl = config.get('pathwaysBackend');
-  const [pathways, setPathways] = useState<Pathway[]>(
-    (cache.getQueryData('pathways') as Pathway[]) || []
-  );
-
-  // Update local pathways state in case cache is out of date
-  const { isLoading } = useQuery('pathways', () =>
-    fetch(`${baseUrl}/pathway/`).then(res =>
-      res.json().then(pathways => setPathways(pathways as Pathway[]))
-    )
-  );
+  const { isLoading, pathways } = usePathways();
 
   const pathwayOptions = pathways.map((pathway: Pathway) => {
     return {

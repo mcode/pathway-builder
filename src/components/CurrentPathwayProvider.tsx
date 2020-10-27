@@ -46,8 +46,8 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _resetPathway,
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
-  const criteria = useCriteria();
   const cache = useQueryCache();
+  const { criteria } = useCriteria();
 
   const undoPathway = useCallback(() => {
     _undoPathway();

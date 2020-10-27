@@ -3,7 +3,13 @@ import { Criteria } from 'criteria-model';
 import { useQuery } from 'react-query';
 import config from 'utils/ConfigManager';
 
-const useCriteria = (): Criteria[] => {
+interface UseCriteriaInterface {
+  isLoading: boolean;
+  error: unknown;
+  criteria: Criteria[];
+}
+
+const useCriteria = (): UseCriteriaInterface => {
   const baseUrl = config.get('pathwaysBackend');
   const [criteria, setCriteria] = useState<Criteria[]>([]);
 
@@ -15,7 +21,7 @@ const useCriteria = (): Criteria[] => {
     if (!error && !isLoading) setCriteria(data as Criteria[]);
   }, [isLoading, error, data]);
 
-  return criteria;
+  return { isLoading, error, criteria };
 };
 
 export default useCriteria;

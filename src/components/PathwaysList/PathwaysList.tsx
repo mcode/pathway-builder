@@ -8,7 +8,7 @@ import {
   faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
-import { useQuery, useQueryCache, useMutation } from 'react-query';
+import { useQueryCache, useMutation } from 'react-query';
 
 import Loading from 'components/elements/Loading';
 import PathwaysTable from './PathwaysTable';
@@ -19,22 +19,18 @@ import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ExportMenu from 'components/elements/ExportMenu';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
-import config from 'utils/ConfigManager';
 import { readFile, updatePathway } from 'utils/backend';
 import { Pathway } from 'pathways-model';
 import { deletePathway } from 'utils/backend';
+import usePathways from 'hooks/usePathways';
 
 const PathwaysList: FC = () => {
-  const cache = useQueryCache();
   const styles = useStyles();
+  const cache = useQueryCache();
+  const { isLoading, pathways } = usePathways();
   const [open, setOpen] = useState(false);
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const baseUrl = config.get('pathwaysBackend');
-
-  const { isLoading, error, data } = useQuery('pathways', () =>
-    fetch(`${baseUrl}/pathway/`).then(res => res.json())
-  );
 
   const {
     indeterminate,
@@ -44,7 +40,7 @@ const PathwaysList: FC = () => {
     handleSelectClick,
     selected,
     numSelected
-  } = useListCheckbox(isLoading ? [] : (data as Pathway[]).map(n => n.id));
+  } = useListCheckbox(isLoading ? [] : pathways.map(n => n.id));
 
   const openNewPathwayModal = useCallback((): void => {
     setOpen(true);
@@ -94,10 +90,10 @@ const PathwaysList: FC = () => {
   const [pathwaysToExport, setPathwaysToExport] = useState<Pathway[]>([]);
   const handleExportAll = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
-      setPathwaysToExport((data as Pathway[]).filter(pathway => selected.has(pathway.id)));
+      setPathwaysToExport(pathways.filter(pathway => selected.has(pathway.id)));
       setAnchorEl(event.currentTarget);
     },
-    [data, selected]
+    [pathways, selected]
   );
 
   return (
@@ -169,14 +165,9 @@ const PathwaysList: FC = () => {
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
       <ExportMenu pathway={pathwaysToExport} anchorEl={anchorEl} closeMenu={closeMenu} />
 
-      {isLoading && !error && <Loading />}
-      {error && <div>ERROR: Unable to get pathways</div>}
-      {data && (
-        <PathwaysTable
-          pathways={data}
-          handleSelectClick={handleSelectClick}
-          itemSelected={itemSelected}
-        />
+      {isLoading && <Loading />}
+      {!isLoading && pathways && (
+        <PathwaysTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
       )}
     </div>
   );
