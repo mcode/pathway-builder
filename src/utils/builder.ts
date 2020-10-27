@@ -35,7 +35,7 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
-export async function downloadPathway(
+export function downloadPathway(
   pathway: Pathway[],
   pathways: Pathway[],
   criteria: Criteria[],
