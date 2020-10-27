@@ -13,7 +13,7 @@ import useRefUndoState from 'hooks/useRefUndoState';
 import { usePathwaysContext } from './PathwaysProvider';
 import HotKeys from 'react-hot-keys';
 import { useCriteriaContext } from './CriteriaProvider';
-import produce from 'immer';
+import { addCriteriaSourceToPathway } from 'utils/builder';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -78,30 +78,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   useEffect(() => {
     if (!pathway) return;
 
-    let updated = false;
-    const criteriaIds = criteria.map(crit => crit.id);
-    const newPathway = produce(pathway, draftPathway => {
-      Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
-        node.transitions.forEach(({ condition }, transitionIndex) => {
-          // If a matching criteria does not already exist, try and find one
-          if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
-            const [library, statement] = condition.cql.split('.');
-            const criteriaSource = criteria.find(
-              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-            )?.id;
-            // Only update if a criteria source is actually found.
-            if (criteriaSource) {
-              const condition =
-                draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
-              if (condition) {
-                updated = true;
-                condition.criteriaSource = criteriaSource;
-              }
-            }
-          }
-        });
-      });
-    });
+    const { updated, newPathway } = addCriteriaSourceToPathway(pathway, criteria);
     if (updated) resetCurrentPathway(newPathway);
   }, [criteria, pathway, resetCurrentPathway]);
 
