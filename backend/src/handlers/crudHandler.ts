@@ -15,19 +15,23 @@ const getAllHandler = <T extends Document>({ model, res }: Handler<T>): void => 
 };
 
 const putByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
-  if (req.params.id !== req.body.id) res.status(409).send(`${model.modelName} id does not match URL id`);
-  model.findOneAndUpdate(
-    // Issues with TypeScript generics make it hard to handle the filter query parameters elegantly
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/46550
-    // https://github.com/microsoft/TypeScript/pull/30639
-    { id: req.params.id } as object,
-    req.body,
-    { overwrite: true, new: true, upsert: true, rawResult: true },
-    (err, product) => {
-      if (err) res.status(500).send(err);
-      else res.status(product.lastErrorObject.updatedExisting ? 200 : 201).send(product.value);
-    }
-  );
+  if (req.params.id !== req.body.id) {
+    res.status(409).send(`${model.modelName} id does not match URL id`);
+  } else {
+    model.findOneAndUpdate(
+      // Issues with TypeScript generics make it hard to handle the
+      // filter query parameters elegantly
+      // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/46550
+      // https://github.com/microsoft/TypeScript/pull/30639
+      { id: req.params.id } as object,
+      req.body,
+      { overwrite: true, new: true, upsert: true, rawResult: true },
+      (err, product) => {
+        if (err) res.status(500).send(err);
+        else res.status(product.lastErrorObject.updatedExisting ? 200 : 201).send(product.value);
+      }
+    );
+  }
 };
 
 const deleteByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
