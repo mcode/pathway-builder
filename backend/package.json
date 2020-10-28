@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start": "NODE_PATH=./src nodemon src/index.ts",
-    "lint": "eslint './src/**/*.{ts,tsx}'",
-    "lint-fix": "eslint './src/**/*.{ts,tsx}' --fix"
+    "lint": "tsc --noEmit && eslint './src/**/*.{ts,tsx}'",
+    "lint-fix": "tsc --noEmit && eslint './src/**/*.{ts,tsx}' --fix"
   }
 }
