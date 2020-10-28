@@ -13,7 +13,7 @@ import useRefUndoState from 'hooks/useRefUndoState';
 import { usePathwaysContext } from './PathwaysProvider';
 import HotKeys from 'react-hot-keys';
 import { useCriteriaContext } from './CriteriaProvider';
-import { addCriteriaSourceToPathway } from 'utils/builder';
+import { updatePathwayCriteriaSources } from 'utils/builder';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -78,7 +78,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
   useEffect(() => {
     if (!pathway) return;
 
-    const { updated, newPathway } = addCriteriaSourceToPathway(pathway, criteria);
+    const { updated, newPathway } = updatePathwayCriteriaSources(pathway, criteria);
     if (updated) resetCurrentPathway(newPathway);
   }, [criteria, pathway, resetCurrentPathway]);
 

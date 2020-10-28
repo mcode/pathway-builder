@@ -40,7 +40,7 @@ interface AddCriteriaSourceInterface {
   newPathway: Pathway;
 }
 
-export function addCriteriaSourceToPathway(
+export function updatePathwayCriteriaSources(
   pathway: Pathway,
   criteria: Criteria[]
 ): AddCriteriaSourceInterface {
@@ -71,12 +71,7 @@ export function addCriteriaSourceToPathway(
 }
 
 function addCriteriaSource(pathways: Pathway[], criteria: Criteria[]): Pathway[] {
-  const newPathways: Pathway[] = [];
-  pathways.forEach(pathway => {
-    const { newPathway } = addCriteriaSourceToPathway(pathway, criteria);
-    newPathways.push(newPathway);
-  });
-  return newPathways;
+  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria).newPathway);
 }
 
 export function downloadPathway(
