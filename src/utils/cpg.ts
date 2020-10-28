@@ -349,12 +349,13 @@ export class CPGExporter {
             if (criteriaSource?.cqlLibraries) {
               Object.entries(criteriaSource.cqlLibraries).forEach(entry => {
                 const [libName, libCql] = entry;
-                includedCqlLibraries[libName] = {
-                  cql: libCql,
-                  // TODO: get actual version
-                  version: '1.0.0'
-                };
-                referencedDefines[libCql] = libName;
+                if (libCql.cql) {
+                  includedCqlLibraries[libName] = {
+                    cql: libCql.cql,
+                    version: libCql?.version || ''
+                  };
+                  referencedDefines[libCql.cql] = libName;
+                }
               });
             }
           } else if (criteriaSource?.builder) {

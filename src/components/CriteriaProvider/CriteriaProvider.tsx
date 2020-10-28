@@ -15,7 +15,7 @@ import config from 'utils/ConfigManager';
 import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import { convertBasicCQL, convertCQL, CqlObject } from 'engine/cql-to-elm';
+import { convertBasicCQL, convertCQL, CqlLibrary, CqlObject } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -59,7 +59,7 @@ function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria
 function elmLibraryToCriteria(
   elm: ElmLibrary,
   cql: string | undefined = undefined,
-  cqlLibraries: { [name: string]: string } | undefined = undefined,
+  cqlLibraries: CqlLibrary | undefined = undefined,
   custom = false
 ): Criteria[] {
   // the cql-to-elm webservice always responds with ELM
@@ -113,7 +113,15 @@ function cqlToCriteria(cql: string | CqlObject): Promise<Criteria[]> {
   if (typeof cql === 'string') {
     return convertBasicCQL(cql).then(elm => elmLibraryToCriteria(elm, cql));
   } else {
-    return convertCQL(cql).then(elm => elmLibraryToCriteria(elm, cql.main, cql.libraries));
+    return convertCQL(cql).then(elm => {
+      // Append library versions
+      Object.keys(elm.libraries).forEach(key => {
+        const cqlLibrary = cql.libraries[key];
+        const elmLibrary = elm.libraries[key] as ElmLibrary;
+        if (cqlLibrary) cqlLibrary.version = elmLibrary.library.identifier.version;
+      });
+      return elmLibraryToCriteria(elm.main as ElmLibrary, cql.main, cql.libraries);
+    });
   }
 }
 
@@ -168,7 +176,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
               const fileContents = await zipFiles[i].async('string');
               const criteria = await cqlToCriteria(fileContents);
               if (criteria.length === 0) {
-                cqlObj.libraries[zipFiles[i].name] = fileContents;
+                cqlObj.libraries[zipFiles[i].name] = { cql: fileContents };
               } else {
                 cqlObj.main = fileContents;
               }

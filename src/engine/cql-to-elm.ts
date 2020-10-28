@@ -11,8 +11,13 @@ const url = config.get('cqlToElmWebserviceUrl');
 
 export interface CqlObject {
   main: string;
-  libraries: {
-    [name: string]: string;
+  libraries: CqlLibrary;
+}
+
+export interface CqlLibrary {
+  [name: string]: {
+    cql?: string;
+    version?: string;
   };
 }
 
@@ -28,11 +33,14 @@ export interface ElmObject {
  * @param cql - cql file that is the input to the function.
  * @return The resulting elm translation of the cql file.
  */
-export function convertCQL(cql: CqlObject): Promise<ElmLibrary> {
+export function convertCQL(cql: CqlObject): Promise<ElmObject> {
   // Connect to web service
   const formdata = new FormData();
   Object.keys(cql.libraries).forEach((key, i) => {
-    formdata.append(`${key}`, cql.libraries[key]);
+    const cqlLibrary = cql.libraries[key];
+    if (cqlLibrary.cql) {
+      formdata.append(`${key}`, cqlLibrary.cql);
+    }
   });
 
   formdata.append('main', cql.main);
@@ -62,7 +70,7 @@ export function convertCQL(cql: CqlObject): Promise<ElmLibrary> {
         return oldArray;
       }, obj);
 
-      return elms.main as ElmLibrary;
+      return elms;
     });
   });
 }
