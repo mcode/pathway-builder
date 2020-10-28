@@ -15,10 +15,10 @@ router.put('/:id', (req, res) => {
   Workspace.findOneAndUpdate(
     { id: req.params.id },
     req.body,
-    { overwrite: true, new: true, upsert: true },
+    { overwrite: true, new: true, upsert: true, rawResult: true },
     (err, product) => {
       if (err) res.status(500).send(err);
-      else res.status(201).send(product);
+      else res.status(product.lastErrorObject.updatedExisting ? 200 : 201).send(product.value);
     }
   );
 });
