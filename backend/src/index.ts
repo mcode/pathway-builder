@@ -15,7 +15,7 @@ mongoose.set('useUnifiedTopology', true);
 mongoose.set('useFindAndModify', false);
 
 const app = express();
-const PORT = 8000;
+const PORT = config.port;
 const payloadSizeLimit = '50mb';
 
 app.use(bodyParser.json({ limit: payloadSizeLimit }));
