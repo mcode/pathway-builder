@@ -3,7 +3,7 @@ import Criteria from 'models/criteria';
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
   Criteria.find({}, (err, product) => {
     if (err) res.status(500).send('Error getting all Criteria');
     else res.status(200).send(product);
