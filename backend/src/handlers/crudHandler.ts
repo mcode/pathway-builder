@@ -1,5 +1,5 @@
 import { Model, Document } from 'mongoose';
-import { Response, Request } from 'express';
+import { Response, Request, Router } from 'express';
 
 interface Handler<T extends Document> {
   model: Model<T>;
@@ -46,4 +46,22 @@ const getByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): vo
   });
 };
 
-export { getAllHandler, putByIdHandler, deleteByIdHandler, getByIdHandler };
+const addCrudRoutes = <T extends Document>(router: Router, model: Model<T>): void => {
+  router.get('/', (req, res) => {
+    getAllHandler({ model: model, req: req, res });
+  });
+
+  router.put('/:id', (req, res) => {
+    putByIdHandler({ model: model, req: req, res: res });
+  });
+
+  router.delete('/:id', (req, res) => {
+    deleteByIdHandler({ model: model, req: req, res: res });
+  });
+
+  router.get('/:id', (req, res) => {
+    getByIdHandler({ model: model, req: req, res: res });
+  });
+};
+
+export { getAllHandler, putByIdHandler, deleteByIdHandler, getByIdHandler, addCrudRoutes };
