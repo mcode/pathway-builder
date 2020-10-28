@@ -5,7 +5,7 @@ import {
   putByIdHandler,
   deleteByIdHandler,
   getByIdHandler,
-} from '../handlers/crudHandler';
+} from 'handlers/crudHandler';
 
 const router = Router();
 
