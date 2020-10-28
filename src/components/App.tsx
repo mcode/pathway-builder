@@ -15,6 +15,7 @@ import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
 import { QueryCache, ReactQueryCacheProvider } from 'react-query';
+import StaticApp from './StaticApp/StaticApp';
 
 const cache = new QueryCache();
 
@@ -30,6 +31,9 @@ const App: FC = () => {
                   <CriteriaBuilderProvider>
                     <Router>
                       <Switch>
+                        <Route path="/demo">
+                          <StaticApp />
+                        </Route>
                         <Route path="/builder/:id/node/:nodeId">
                           <BuilderRoute />
                         </Route>
