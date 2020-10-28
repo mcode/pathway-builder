@@ -7,6 +7,7 @@ import workspaceRouter from 'routes/workspace';
 import resetRouter from 'routes/reset';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import config from './config';
 
 // Fix Deprecation Warnings
 mongoose.set('useCreateIndex', true);
@@ -26,5 +27,5 @@ app.get('/', (req, res) => res.send('Pathways Backend'));
 app.use('/pathway', pathwayRouter);
 app.use('/criteria', criteriaRouter);
 app.use('/workspace', workspaceRouter);
-app.use('/reset', resetRouter);
+if (config.enableReset) app.use('/reset', resetRouter);
 app.listen(PORT);
