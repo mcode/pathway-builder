@@ -3,7 +3,7 @@ import Workspace from 'models/workspace';
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
   Workspace.find({}, (err, product) => {
     if (err) res.status(500).send('Error getting all Workspaces');
     else res.status(200).send(product);
