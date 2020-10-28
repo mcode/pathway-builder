@@ -35,36 +35,36 @@ const AuthHeader: FC = () => {
   }, []);
 
   const [openReset, setOpenReset] = useState<boolean>(false);
-  const openResetModal = useCallback((): void => {
-    setOpenReset(true);
-  }, []);
+  // const openResetModal = useCallback((): void => {
+  //   setOpenReset(true);
+  // }, []);
 
   const closeResetModal = useCallback((): void => {
     setOpenReset(false);
   }, []);
 
   const [openLinkSent, setOpenLinkSent] = useState<boolean>(false);
-  const openLinkSentModal = useCallback((): void => {
-    setOpenLinkSent(true);
-  }, []);
+  // const openLinkSentModal = useCallback((): void => {
+  //   setOpenLinkSent(true);
+  // }, []);
 
   const closeLinkSentModal = useCallback((): void => {
     setOpenLinkSent(false);
   }, []);
 
   const [openNewPassword, setOpenNewPassword] = useState<boolean>(false);
-  const openNewPasswordModal = useCallback((): void => {
-    setOpenNewPassword(true);
-  }, []);
+  // const openNewPasswordModal = useCallback((): void => {
+  //   setOpenNewPassword(true);
+  // }, []);
 
   const closeNewPasswordModal = useCallback((): void => {
     setOpenNewPassword(false);
   }, []);
 
   const [openPasswordReset, setOpenPasswordReset] = useState<boolean>(false);
-  const openPasswordResetModal = useCallback((): void => {
-    setOpenPasswordReset(true);
-  }, []);
+  // const openPasswordResetModal = useCallback((): void => {
+  //   setOpenPasswordReset(true);
+  // }, []);
 
   const closePasswordResetModal = useCallback((): void => {
     setOpenPasswordReset(false);

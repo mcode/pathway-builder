@@ -20,7 +20,7 @@ interface LinkSentModalProps {
 }
 
 const LinkSentModal: FC<LinkSentModalProps> = ({ open, onClose, onRemoveMe }) => {
-    const styles = useStyles();
+  const styles = useStyles();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle disableTypography>
