@@ -13,14 +13,23 @@ import { IconButton } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { PathwayNode } from 'pathways-model';
+import { useParams } from 'react-router-dom';
 
 const Builder: FC = () => {
   const styles = useStyles();
+  const { nodeId } = useParams();
+  const currentNodeId = decodeURIComponent(nodeId);
   const { pathway } = useCurrentPathwayContext();
   const { currentCriteriaNodeId } = useCurrentCriteriaContext();
   const theme = useTheme('dark');
   const [showCriteriaBuilder, setShowCriteriaBuilder] = useState<boolean>(true);
-
+  let currentNode: PathwayNode | null = null;
+  if (pathway?.nodes[currentNodeId]) {
+    currentNode = pathway.nodes[currentNodeId];
+  } else if (pathway) {
+    currentNode = pathway.nodes['Start'];
+  }
   const toggleShowCriteria = useCallback((): void => {
     setShowCriteriaBuilder(!showCriteriaBuilder);
   }, [showCriteriaBuilder]);
@@ -40,7 +49,7 @@ const Builder: FC = () => {
       {pathway && (
         <div className={styles.main}>
           <MuiThemeProvider theme={theme}>
-            <Sidebar />
+            <Sidebar currentNode={currentNode} />
           </MuiThemeProvider>
 
           <div className={styles.graph}>
@@ -60,7 +69,7 @@ const Builder: FC = () => {
             {currentCriteriaNodeId !== '' && showCriteriaBuilder ? (
               <CriteriaBuilder />
             ) : (
-              <DagreGraph />
+              <DagreGraph currentNode={currentNode} />
             )}
           </div>
         </div>

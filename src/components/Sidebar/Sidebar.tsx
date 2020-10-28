@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -13,16 +13,22 @@ import {
 import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { isBranchNode, redirect, getNodeType } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
+import { PathwayNode } from 'pathways-model';
 
-const Sidebar: FC = () => {
+interface SidebarProps {
+  currentNode: PathwayNode | null;
+}
+
+const Sidebar: FC<SidebarProps> = ({ currentNode }) => {
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { currentNode, currentNodeRef } = useCurrentNodeContext();
+  const { nodeId } = useParams();
+  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeStatic = pathway?.nodes[currentNodeId];
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
   const history = useHistory();
@@ -34,22 +40,21 @@ const Sidebar: FC = () => {
 
   const changeNodeType = useCallback(
     (nodeType: string): void => {
-      if (currentNodeRef.current && pathwayRef.current)
-        setCurrentPathway(setNodeType(pathwayRef.current, currentNodeRef.current.key, nodeType));
+      if (currentNodeStatic && pathwayRef.current)
+        setCurrentPathway(setNodeType(pathwayRef.current, currentNodeStatic.key, nodeType));
     },
-    [pathwayRef, setCurrentPathway, currentNodeRef]
+    [pathwayRef, setCurrentPathway, currentNodeStatic]
   );
 
   const addPathwayNode = useCallback((): void => {
-    if (!currentNodeRef.current || !pathwayRef.current) return;
+    if (!currentNodeStatic || !pathwayRef.current) return;
 
     const newNode = createNode();
     let newPathway = addNode(pathwayRef.current, newNode);
-    newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
+    newPathway = addTransition(newPathway, currentNodeStatic.key, newNode.key);
     setCurrentPathway(newPathway);
-    if (!isBranchNode(currentNodeRef.current))
-      redirect(pathwayRef.current.id, newNode.key, history);
-  }, [pathwayRef, setCurrentPathway, currentNodeRef, history]);
+    if (!isBranchNode(currentNodeStatic)) redirect(pathwayRef.current.id, newNode.key, history);
+  }, [pathwayRef, setCurrentPathway, currentNodeStatic, history]);
 
   if (!pathway) return <div>Error: No pathway</div>;
   if (!currentNode) return <div>Error: No current node</div>;
@@ -101,8 +106,12 @@ const Sidebar: FC = () => {
                 value=""
               />
             )}
-            {nodeType === 'reference' && <ReferenceNodeEditor changeNodeType={changeNodeType} />}
-            {nodeType === 'action' && <ActionNodeEditor changeNodeType={changeNodeType} />}
+            {nodeType === 'reference' && (
+              <ReferenceNodeEditor changeNodeType={changeNodeType} currentNode={currentNode} />
+            )}
+            {nodeType === 'action' && (
+              <ActionNodeEditor changeNodeType={changeNodeType} currentNode={currentNode} />
+            )}
 
             {nodeType === 'branch' && (
               <DropDown
@@ -122,7 +131,11 @@ const Sidebar: FC = () => {
               return (
                 <TransitionEditor key={transition.id} transition={transition}>
                   {nodeType === 'branch' && (
-                    <BranchTransition key={transition.id} transition={transition} />
+                    <BranchTransition
+                      key={transition.id}
+                      transition={transition}
+                      currentNode={currentNode}
+                    />
                   )}
                 </TransitionEditor>
               );
@@ -136,7 +149,7 @@ const Sidebar: FC = () => {
                   buttonText="Add a new transition to a new node in the pathway."
                   onClick={addPathwayNode}
                 />
-                <ConnectNodeButton />
+                <ConnectNodeButton currentNode={currentNode} />
               </>
             )}
           </div>

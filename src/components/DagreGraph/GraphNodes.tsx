@@ -3,22 +3,22 @@ import { useUpdateEffect } from 'react-use';
 
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useGraphCoordinates, useGraphProvider } from './GraphProvider';
 import Node from './Node';
 import useExpandedState from './useExpandedState';
 import useRedirectToNode from './useRedirectToNode';
+import { PathwayNode } from 'pathways-model';
 
 interface GraphNodesProps {
   interactive: boolean;
+  currentNode: PathwayNode | null;
 }
 
-const GraphNodes: FC<GraphNodesProps> = ({ interactive }) => {
+const GraphNodes: FC<GraphNodesProps> = ({ interactive, currentNode }) => {
   const { pathway } = useCurrentPathwayContext();
   const { expanded: expandedNodes, toggleExpanded, openNode } = useExpandedState();
   const { reflow } = useGraphProvider();
   const { nodes: nodeCoordinates } = useGraphCoordinates();
-  const { currentNode } = useCurrentNodeContext();
   const redirectToNode = useRedirectToNode();
   const { resetCurrentCriteria } = useCurrentCriteriaContext();
   const onClick = useCallback(

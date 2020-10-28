@@ -2,9 +2,9 @@ import React, { FC, ReactElement, memo, useMemo } from 'react';
 import { Tooltip } from '@material-ui/core';
 
 import { Label, Coordinate } from 'graph-model';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useGraphCoordinates } from './GraphProvider';
 import useStyles from './GraphEdges.styles';
+import { PathwayNode } from 'pathways-model';
 
 interface EdgeProps {
   label: Label | null;
@@ -97,10 +97,13 @@ const Edge: FC<EdgeProps> = ({ label, points, isActive }) => {
   );
 };
 
-const GraphEdges: FC = () => {
+interface GraphEdgesProps {
+  currentNode: PathwayNode | null;
+}
+
+const GraphEdges: FC<GraphEdgesProps> = ({ currentNode }) => {
   const styles = useStyles();
   const { edges: edgeCoordinates } = useGraphCoordinates();
-  const { currentNode } = useCurrentNodeContext();
 
   return (
     <svg className={styles.edges}>

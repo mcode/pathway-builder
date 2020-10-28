@@ -11,7 +11,6 @@ import Tabs from './Tabs';
 import PathwaysList from './PathwaysList';
 import CriteriaList from './CriteriaList';
 import { CurrentPathwayProvider } from './CurrentPathwayProvider';
-import { CurrentNodeProvider } from './CurrentNodeProvider';
 import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
@@ -21,35 +20,33 @@ const App: FC = () => {
     <UserProvider>
       <CriteriaProvider>
         <PathwaysProvider>
-          <CurrentNodeProvider>
-            <CurrentPathwayProvider>
-              <SnackbarProvider>
-                <CurrentCriteriaProvider>
-                  <CriteriaBuilderProvider>
-                    <Router>
-                      <Switch>
-                        <Route path="/demo/builder/:id/node/:nodeId">
-                          <BuilderRoute />
-                        </Route>
-                        <Route path="/demo/builder/:id">
-                          <BuilderRoute />
-                        </Route>
-                        <Route path="/demo">
-                          <Header />
-                          <Tabs
-                            tabs={[
-                              { label: 'Pathway', component: <PathwaysList /> },
-                              { label: 'Criteria', component: <CriteriaList /> }
-                            ]}
-                          />
-                        </Route>
-                      </Switch>
-                    </Router>
-                  </CriteriaBuilderProvider>
-                </CurrentCriteriaProvider>
-              </SnackbarProvider>
-            </CurrentPathwayProvider>
-          </CurrentNodeProvider>
+          <CurrentPathwayProvider>
+            <SnackbarProvider>
+              <CurrentCriteriaProvider>
+                <CriteriaBuilderProvider>
+                  <Router>
+                    <Switch>
+                      <Route path="/demo/builder/:id/node/:nodeId">
+                        <BuilderRoute />
+                      </Route>
+                      <Route path="/demo/builder/:id">
+                        <BuilderRoute />
+                      </Route>
+                      <Route path="/demo">
+                        <Header />
+                        <Tabs
+                          tabs={[
+                            { label: 'Pathway', component: <PathwaysList /> },
+                            { label: 'Criteria', component: <CriteriaList /> }
+                          ]}
+                        />
+                      </Route>
+                    </Switch>
+                  </Router>
+                </CriteriaBuilderProvider>
+              </CurrentCriteriaProvider>
+            </SnackbarProvider>
+          </CurrentPathwayProvider>
         </PathwaysProvider>
       </CriteriaProvider>
     </UserProvider>
