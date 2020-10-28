@@ -4,6 +4,7 @@ import 'extensions/mongoose.extension';
 import pathwayRouter from 'routes/pathway';
 import criteriaRouter from 'routes/criteria';
 import workspaceRouter from 'routes/workspace';
+import resetRouter from 'routes/reset';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
@@ -25,4 +26,5 @@ app.get('/', (req, res) => res.send('Pathways Backend'));
 app.use('/pathway', pathwayRouter);
 app.use('/criteria', criteriaRouter);
 app.use('/workspace', workspaceRouter);
+app.use('/reset', resetRouter);
 app.listen(PORT);
