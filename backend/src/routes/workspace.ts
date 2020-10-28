@@ -5,8 +5,8 @@ const router = Router();
 
 router.get('/', (req, res) => {
   Workspace.find({}, (err, product) => {
-    if (err) res.send('Error getting all Workspaces');
-    else res.send(product);
+    if (err) res.status(500).send('Error getting all Workspaces');
+    else res.status(200).send(product);
   });
 });
 
@@ -17,7 +17,7 @@ router.put('/:id', (req, res) => {
     req.body,
     { overwrite: true, new: true, upsert: true },
     (err, product) => {
-      if (err) res.send(err);
+      if (err) res.status(500).send(err);
       else res.status(201).send(product);
     }
   );
@@ -25,14 +25,14 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   Workspace.deleteOne({ id: req.params.id }, (err) => {
-    if (err) res.send(err);
+    if (err) res.status(500).send(err);
     else res.status(200).send(`Deleted Workspace ${req.params.id}`);
   });
 });
 
 router.get('/:id', (req, res) => {
   Workspace.findOne({ id: req.params.id }, { _id: 0 }, (err, Workspace) => {
-    if (err) res.send(err);
+    if (err) res.status(500).send(err);
     if (Workspace) {
       res.status(200).send(Workspace);
     } else res.status(404).send(Workspace);
