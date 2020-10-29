@@ -48,17 +48,21 @@ export default makeStyles(
       }
     },
     tryItButton: {
-      backgroundColor: theme.palette.common.red,
-      color: theme.palette.common.white,
-      boxShadow: '4px 4px 12px 0 rgba(0,0,0,0.50)',
       height: '60px',
       width: '200px',
-      fontSize: '2.5em',
       marginBottom: '1em',
-      '&:hover': {
+      '& button': {
+        backgroundColor: theme.palette.common.red,
+        color: theme.palette.common.white,
+        boxShadow: '4px 4px 12px 0 rgba(0,0,0,0.50)',
+        fontSize: '2.5em',
+        height: '100%',
+        width: '100%'
+      },
+      '& button:hover': {
         backgroundColor: theme.palette.common.redDark
       },
-      '& span': {
+      '& button span': {
         fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
         fontWeight: 400,
         textTransform: 'none'

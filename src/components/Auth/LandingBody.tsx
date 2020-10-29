@@ -32,8 +32,8 @@ const LandingBody: FC = () => {
           , a standardized data model around cancer
         </div>
 
-        <Link to="/demo">
-          <Button className={styles.tryItButton}>Try It</Button>
+        <Link to="/demo" className={styles.tryItButton}>
+          <Button>Try It</Button>
         </Link>
 
         <div className={styles.socialMedia}>
