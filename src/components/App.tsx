@@ -15,7 +15,7 @@ import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
 import { QueryCache, ReactQueryCacheProvider } from 'react-query';
-import StaticApp from './StaticApp/StaticApp';
+import StaticApp from './StaticApp';
 
 const cache = new QueryCache();
 
