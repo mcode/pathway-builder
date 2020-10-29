@@ -27,7 +27,8 @@ export default makeStyles(
       padding: '25px',
       '& span': {
         fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
-        fontWeight: 400
+        fontWeight: 400,
+        lineHeight: '0.2em'
       }
     }
   }),

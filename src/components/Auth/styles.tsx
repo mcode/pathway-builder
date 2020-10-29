@@ -21,12 +21,17 @@ export default makeStyles(
     logo: {
       height: '5em'
     },
+    headerButtons: {
+      display: 'flex',
+      justifyContent: 'flex-end'
+    },
     authButton: {
       padding: '30px',
       fontSize: '1.5em',
       '& span': {
         fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
-        fontWeight: 400
+        fontWeight: 400,
+        lineHeight: '0.2em'
       }
     },
     signupButton: {
@@ -65,7 +70,8 @@ export default makeStyles(
       '& button span': {
         fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
         fontWeight: 400,
-        textTransform: 'none'
+        textTransform: 'none',
+        lineHeight: '0.2em'
       }
     },
     landingBody: {
@@ -139,13 +145,14 @@ export default makeStyles(
       padding: '0.5em 4em'
     },
     footerLogo: {
-      display: 'flex',
-      '& img': {
-        width: '150px'
-      }
+      display: 'flex'
     },
     mitreLogo: {
-      marginRight: '20px'
+      marginRight: '20px',
+      height: '60px'
+    },
+    mcodeLogo: {
+      height: '30px'
     }
   }),
   { name: 'Auth', index: 1 }

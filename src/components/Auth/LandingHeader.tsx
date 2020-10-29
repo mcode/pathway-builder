@@ -23,7 +23,7 @@ const LandingHeader: FC<LandingHeaderProps> = ({ openLogin, openSignup }) => {
         <img src={logo} alt="logo" className={styles.logo} />
       </Link>
 
-      <>
+      <div className={styles.headerButtons}>
         <Button className={clsx(styles.authButton, styles.signupButton)} onClick={openSignup}>
           SIGN UP
         </Button>
@@ -31,7 +31,7 @@ const LandingHeader: FC<LandingHeaderProps> = ({ openLogin, openSignup }) => {
         <Button className={clsx(styles.authButton, styles.loginButton)} onClick={openLogin}>
           LOGIN
         </Button>
-      </>
+      </div>
     </header>
   );
 };

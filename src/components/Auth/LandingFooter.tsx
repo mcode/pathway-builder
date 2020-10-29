@@ -24,7 +24,7 @@ const LandingFooter: FC = () => {
         rel="noopener noreferrer"
         className={styles.footerLogo}
       >
-        <img src={mcode} alt="mcode logo" />
+        <img src={mcode} alt="mcode logo" className={styles.mcodeLogo} />
       </a>
     </footer>
   );
