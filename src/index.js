@@ -4,8 +4,10 @@ import './immer';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+
 import App from 'components/App';
-import Auth from 'components/Auth';
+import { Landing } from 'components/Auth';
+import ThemeProvider from 'components/ThemeProvider';
 
 import './styles/index.scss';
 
@@ -19,11 +21,13 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 ReactDOM.render(
-  <Router>
-    <Switch>
-      <Route exact path="/login" render={() => <Auth />}></Route>
-      <Route path="/" render={() => <App />}></Route>
-    </Switch>
-  </Router>,
+  <ThemeProvider theme="light">
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Landing} />
+        <Route path="/demo" component={App} />
+      </Switch>
+    </Router>
+  </ThemeProvider>,
   document.getElementById('root')
 );

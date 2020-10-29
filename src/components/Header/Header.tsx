@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useThemeToggle } from '../ThemeProvider';
 
-import logo from 'camino-logo-dark.png';
+import logo from 'assets/camino-logo-dark.png';
 import styles from './Header.module.scss';
 
 const Header: FC = () => {

@@ -1,18 +1,8 @@
 import React, { FC, memo } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faLock } from '@fortawesome/free-solid-svg-icons';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  InputAdornment,
-  OutlinedInput
-} from '@material-ui/core';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
 
-import useStyles from './styles';
+import Modal from '../elements/Modal';
+import TextInput from '../elements/TextInput';
 
 interface NewPasswordModalProps {
   open: boolean;
@@ -21,48 +11,26 @@ interface NewPasswordModalProps {
 }
 
 const NewPasswordModal: FC<NewPasswordModalProps> = ({ open, onClose, onPasswordReset }) => {
-  const styles = useStyles();
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle disableTypography>
-        <IconButton aria-label="close" onClick={onClose}>
-          <FontAwesomeIcon icon={faTimes} />
-        </IconButton>
-      </DialogTitle>
+    <Modal
+      handleShowModal={open}
+      handleCloseModal={onClose}
+      handleSaveModal={onPasswordReset}
+      headerTitle="Reset password"
+      headerSubtitle="Enter your new password for your account"
+      submitButtonText="Reset"
+    >
+      <>
+        <TextInput id="password" placeholder="Password" type="password" icon={faLock} />
 
-      <DialogContent>
-        <label className={styles.modalHeader}>Reset Password</label>
-        <label className={styles.modalText}>Enter your new password for your account</label>
-
-        <OutlinedInput
-          id="password"
-          placeholder="Password"
-          type="password"
-          startAdornment={
-            <InputAdornment position="start">
-              <FontAwesomeIcon icon={faLock} />
-            </InputAdornment>
-          }
-        />
-
-        <OutlinedInput
+        <TextInput
           id="confirm-password"
-          placeholder="Confirm Password"
+          placeholder="Confirm password"
           type="password"
-          startAdornment={
-            <InputAdornment position="start">
-              <FontAwesomeIcon icon={faLock} />
-            </InputAdornment>
-          }
+          icon={faLock}
         />
-      </DialogContent>
-
-      <DialogActions>
-        <Button variant="contained" color="secondary" type="submit" onClick={onPasswordReset}>
-          RESET
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </>
+    </Modal>
   );
 };
 

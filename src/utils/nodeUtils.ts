@@ -169,7 +169,7 @@ export function redirect(
   nodeKey: string,
   history: History<History.PoorMansUnknown>
 ): void {
-  const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeKey)}`;
+  const url = `/demo/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeKey)}`;
   if (url !== history.location.pathname) {
     history.push(url);
   }

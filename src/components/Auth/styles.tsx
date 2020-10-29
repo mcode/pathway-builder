@@ -2,144 +2,146 @@ import { makeStyles, Theme as AugmentedTheme } from '@material-ui/core/styles';
 
 export default makeStyles(
   (theme: AugmentedTheme) => ({
-    root: {
+    landing: {
       display: 'flex',
       flexDirection: 'column',
-      padding: theme.variables.spacing.globalPadding
-    },
-    mainText: {
-      fontFamily: 'RobotoCondensed-Light',
-      fontSize: '65px',
-      color: '#7D8892'
-    },
-    subText: {
-      fontFamily: 'RobotoCondensed-Light',
-      fontSize: '40px',
-      color: '#AAAEB1'
-    },
-    tryItButton: {
-      background: '#D95D77',
-      boxShadow: '4px 4px 12px 0 rgba(0,0,0,0.50)',
-      fontFamily: 'RobotoCondensed-Light',
-      fontSize: '50px',
-      color: '#FFFFFF',
-      letterSpacing: '0px',
-      textAlign: 'center',
-      padding: '10px 90px 10px 90px'
-    },
-    exampleImage: {
-      float: 'right',
-      margin: '50px'
-    },
-    images: {
-      padding: '10px'
-    },
-    homelink: {
-      display: 'flex'
-    },
-    footer: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      height: '5em',
-      backgroundColor: theme.palette.common.grayLighter,
-      padding: '0 20px',
-      width: '100%'
-    },
-    mitreButton: {
-      cursor: 'pointer',
-      padding: '10px',
-      marginRight: '20px',
-      marginLeft: 'auto',
-
-      '&:focus': {
-        outline: 'none'
-      },
-      '&:hover': {
-        outline: 'none'
-      }
-    },
-    mcodeButton: {
-      cursor: 'pointer',
-      padding: '10px',
-
-      '&:focus': {
-        outline: 'none'
-      },
-      '&:hover': {
-        outline: 'none'
-      }
+      minHeight: '100vh'
     },
     header: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: '8em',
-      backgroundColor: theme.palette.common.grayLighter,
-      padding: '0 20px'
+      height: '7em',
+      backgroundColor: theme.palette.common.grayLightest,
+      padding: '0 4em'
     },
-
+    logoLink: {
+      display: 'block'
+    },
+    logo: {
+      height: '5em'
+    },
+    authButton: {
+      padding: '30px',
+      fontSize: '1.5em',
+      '& span': {
+        fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
+        fontWeight: 400
+      }
+    },
     signupButton: {
       backgroundColor: theme.palette.common.red,
-      border: '10px',
-      padding: '10px',
-      fontFamily: 'RobotoCondensed-Regular',
-      cursor: 'pointer',
       color: theme.palette.common.white,
-      fontSize: '30px',
       marginRight: '20px',
       marginLeft: 'auto',
-
-      '&:focus': {
-        outline: 'none',
-        svg: {
-          fontSize: '30px'
-        }
-      },
       '&:hover': {
-        outline: 'none',
-        svg: {
-          fontSize: '30px'
-        }
+        backgroundColor: theme.palette.common.redDark
       }
     },
     loginButton: {
       backgroundColor: theme.palette.common.white,
-      border: '1px solid #7D8892',
-      padding: '10px',
-      fontFamily: 'RobotoCondensed-Regular',
-      cursor: 'pointer',
-      color: '#7D8892',
-      fontSize: '30px',
-
-      '&:focus': {
-        outline: 'none',
-        svg: {
-          fontSize: '30px'
-        }
-      },
+      border: '1px solid',
+      borderColor: theme.palette.common.grayBlueDark,
+      color: theme.palette.common.grayBlueDark,
       '&:hover': {
-        outline: 'none',
-        svg: {
-          fontSize: '30px'
-        }
+        color: theme.palette.common.grayVeryDark
       }
     },
-    modalHeader: {
-      fontFamily: 'OpenSans-Semibold',
-      fontSize: '80px',
-      color: '#6A8AA4'
+    tryItButton: {
+      backgroundColor: theme.palette.common.red,
+      color: theme.palette.common.white,
+      boxShadow: '4px 4px 12px 0 rgba(0,0,0,0.50)',
+      height: '60px',
+      width: '200px',
+      fontSize: '2.5em',
+      marginBottom: '1em',
+      '&:hover': {
+        backgroundColor: theme.palette.common.redDark
+      },
+      '& span': {
+        fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
+        fontWeight: 400,
+        textTransform: 'none'
+      }
     },
-    modalText: {
-      fontFamily: 'OpenSans',
-      fontSize: '30px',
-      color: '#9B9B9B'
+    landingBody: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      flex: '1',
+      margin: '4em'
     },
-    logo: {
-      height: '50px'
+    landingContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      marginRight: '10em'
     },
-    homeLink: {
-      display: 'flex'
+    text: {
+      fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),
+      fontWeight: 300,
+      lineHeight: '1.2em'
+    },
+    mainText: {
+      fontSize: '4em',
+      color: theme.palette.common.grayBlueDark,
+      marginBottom: '0.5em'
+    },
+    subText: {
+      fontSize: '2.5em',
+      color: theme.palette.common.grayLighter,
+      marginBottom: '2em',
+      width: '80%'
+    },
+    link: {
+      fontWeight: 500,
+      color: theme.palette.common.blue,
+      '&:hover': {
+        color: theme.palette.common.blueDark
+      }
+    },
+    socialMedia: {
+      display: 'flex',
+      color: theme.palette.common.grayDark
+    },
+    iconGithub: {
+      fontSize: '3em'
+    },
+    iconEmail: {
+      marginLeft: '5px',
+      color: theme.palette.common.white,
+      '& svg': {
+        fontSize: '1.8em',
+        padding: '5px'
+      }
+    },
+    iconEmailCircle: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      backgroundColor: theme.palette.common.grayDark,
+      borderRadius: '50%',
+      width: '42px',
+      height: '42px'
+    },
+    exampleImage: {
+      width: '50%',
+      maxWidth: '800px'
+    },
+    footer: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      backgroundColor: theme.palette.common.grayLightest,
+      padding: '0.5em 4em'
+    },
+    footerLogo: {
+      display: 'flex',
+      '& img': {
+        width: '150px'
+      }
+    },
+    mitreLogo: {
+      marginRight: '20px'
     }
   }),
   { name: 'Auth', index: 1 }

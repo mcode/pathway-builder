@@ -91,7 +91,7 @@ const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectC
                 <TableCell component="th" scope="row">
                   <Link
                     component={RouterLink}
-                    to={`/builder/${encodeURIComponent(pathway.id)}`}
+                    to={`/demo/builder/${encodeURIComponent(pathway.id)}`}
                     color="primary"
                     underline="none"
                   >

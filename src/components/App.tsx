@@ -4,7 +4,6 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from 'components/Header';
 
 import BuilderRoute from './BuilderRoute';
-import ThemeProvider from './ThemeProvider';
 import { PathwaysProvider } from './PathwaysProvider';
 import { UserProvider } from './UserProvider';
 import { CriteriaProvider } from './CriteriaProvider';
@@ -19,43 +18,41 @@ import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
 
 const App: FC = () => {
   return (
-    <ThemeProvider theme="light">
-      <UserProvider>
-        <CriteriaProvider>
-          <PathwaysProvider>
-            <CurrentNodeProvider>
-              <CurrentPathwayProvider>
-                <SnackbarProvider>
-                  <CurrentCriteriaProvider>
-                    <CriteriaBuilderProvider>
-                      <Router>
-                        <Switch>
-                          <Route path="/builder/:id/node/:nodeId">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/builder/:id">
-                            <BuilderRoute />
-                          </Route>
-                          <Route path="/">
-                            <Header />
-                            <Tabs
-                              tabs={[
-                                { label: 'Pathway', component: <PathwaysList /> },
-                                { label: 'Criteria', component: <CriteriaList /> }
-                              ]}
-                            />
-                          </Route>
-                        </Switch>
-                      </Router>
-                    </CriteriaBuilderProvider>
-                  </CurrentCriteriaProvider>
-                </SnackbarProvider>
-              </CurrentPathwayProvider>
-            </CurrentNodeProvider>
-          </PathwaysProvider>
-        </CriteriaProvider>
-      </UserProvider>
-    </ThemeProvider>
+    <UserProvider>
+      <CriteriaProvider>
+        <PathwaysProvider>
+          <CurrentNodeProvider>
+            <CurrentPathwayProvider>
+              <SnackbarProvider>
+                <CurrentCriteriaProvider>
+                  <CriteriaBuilderProvider>
+                    <Router>
+                      <Switch>
+                        <Route path="/demo/builder/:id/node/:nodeId">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/demo/builder/:id">
+                          <BuilderRoute />
+                        </Route>
+                        <Route path="/demo">
+                          <Header />
+                          <Tabs
+                            tabs={[
+                              { label: 'Pathway', component: <PathwaysList /> },
+                              { label: 'Criteria', component: <CriteriaList /> }
+                            ]}
+                          />
+                        </Route>
+                      </Switch>
+                    </Router>
+                  </CriteriaBuilderProvider>
+                </CurrentCriteriaProvider>
+              </SnackbarProvider>
+            </CurrentPathwayProvider>
+          </CurrentNodeProvider>
+        </PathwaysProvider>
+      </CriteriaProvider>
+    </UserProvider>
   );
 };
 
