@@ -19,75 +19,50 @@ const Landing: FC = () => {
   const [openNewPassword, setOpenNewPassword] = useState<boolean>(false);
   const [openPasswordReset, setOpenPasswordReset] = useState<boolean>(false);
 
-  const toggleModal = useCallback((modalType, open): void => {
-    switch (modalType) {
-      case 'login':
-        setOpenLogin(open);
-        break;
-      case 'signup':
-        setOpenSignup(open);
-        break;
-      case 'reset':
-        setOpenReset(open);
-        break;
-      case 'linkSent':
-        setOpenLinkSent(open);
-        break;
-      case 'newPassword':
-        setOpenNewPassword(open);
-        break;
-      case 'passwordReset':
-        setOpenPasswordReset(open);
-        break;
-      default:
-        break;
-    }
+  const switchToLogin = useCallback((): void => {
+    setOpenSignup(false);
+    setOpenReset(false);
+    setOpenLogin(true);
+    setOpenPasswordReset(false);
   }, []);
 
-  const switchToLogin = useCallback((): void => {
-    toggleModal('signup', false);
-    toggleModal('reset', false);
-    toggleModal('login', true);
-    toggleModal('passwordReset', false);
-  }, [toggleModal]);
-
   const switchToReset = useCallback((): void => {
-    toggleModal('signup', false);
-    toggleModal('login', false);
-    toggleModal('reset', true);
-  }, [toggleModal]);
+    setOpenSignup(false);
+    setOpenLogin(false);
+    setOpenReset(true);
+  }, []);
 
   const switchToSignup = useCallback((): void => {
-    toggleModal('login', false);
-    toggleModal('reset', false);
-    toggleModal('signup', true);
-  }, [toggleModal]);
+    setOpenLogin(false);
+    setOpenReset(false);
+    setOpenSignup(true);
+  }, []);
 
   const switchToLinkSent = useCallback((): void => {
-    toggleModal('reset', false);
-    toggleModal('linkSent', true);
-  }, [toggleModal]);
+    setOpenReset(false);
+    setOpenLinkSent(true);
+  }, []);
 
   const switchToPasswordReset = useCallback((): void => {
-    toggleModal('passwordReset', true);
-    toggleModal('newPassword', false);
-  }, [toggleModal]);
+    setOpenPasswordReset(true);
+    setOpenNewPassword(false);
+  }, []);
 
   // TODO: remove this - just setup to show the new modal
   const removeThis = useCallback((): void => {
-    toggleModal('linkSent', false);
-    toggleModal('login', false);
-    toggleModal('reset', false);
-    toggleModal('signup', false);
-    toggleModal('passwordReset', false);
-    toggleModal('newPassword', true);
-  }, [toggleModal]);
+    setOpenLinkSent(false);
+    setOpenLogin(false);
+    setOpenReset(false);
+    setOpenSignup(false);
+    setOpenPasswordReset(false);
+    setOpenNewPassword(true);
+  }, []);
 
   return (
     <div className={styles.landing}>
       <LandingHeader
-        openLogin={(): void => toggleModal('login', true)}
-        openSignup={(): void => toggleModal('signup', true)}
+        openLogin={(): void => setOpenLogin(true)}
+        openSignup={(): void => setOpenSignup(true)}
       />
 
       <LandingBody />
@@ -95,20 +70,20 @@ const Landing: FC = () => {
 
       <LoginModal
         open={openLogin}
-        onClose={(): void => toggleModal('login', false)}
+        onClose={(): void => setOpenLogin(false)}
         onSignup={switchToSignup}
         onReset={switchToReset}
       />
 
       <SignupModal
         open={openSignup}
-        onClose={(): void => toggleModal('signup', false)}
+        onClose={(): void => setOpenSignup(false)}
         onLogin={switchToLogin}
       />
 
       <ResetModal
         open={openReset}
-        onClose={(): void => toggleModal('reset', false)}
+        onClose={(): void => setOpenReset(false)}
         onLogin={switchToLogin}
         onLinkSent={switchToLinkSent}
       />
@@ -117,19 +92,19 @@ const Landing: FC = () => {
       {/* <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} /> */}
       <LinkSentModal
         open={openLinkSent}
-        onClose={(): void => toggleModal('linkSent', false)}
+        onClose={(): void => setOpenLinkSent(false)}
         onRemoveMe={removeThis}
       />
 
       <NewPasswordModal
         open={openNewPassword}
-        onClose={(): void => toggleModal('newPassword', false)}
+        onClose={(): void => setOpenNewPassword(false)}
         onPasswordReset={switchToPasswordReset}
       />
 
       <PasswordResetModal
         open={openPasswordReset}
-        onClose={(): void => toggleModal('passwordReset', false)}
+        onClose={(): void => setOpenPasswordReset(false)}
         onLogin={switchToLogin}
       />
     </div>
