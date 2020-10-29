@@ -1,22 +1,19 @@
 import React, { FC, memo } from 'react';
 
-import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import mitre from 'assets/mitre.png';
 import mcode from 'assets/mcode.png';
 import useStyles from './styles';
 
 const LandingFooter: FC = () => {
   const styles = useStyles();
-  const { resetCurrentCriteria } = useCurrentCriteriaContext();
 
   return (
     <footer className={styles.footer}>
       <a
-        href="https://mitre.org/"
+        href="https://www.mitre.org/"
         target="_blank"
         rel="noopener noreferrer"
         className={styles.footerLogo}
-        onClick={resetCurrentCriteria}
       >
         <img src={mitre} alt="mitre logo" className={styles.mitreLogo} />
       </a>
@@ -26,7 +23,6 @@ const LandingFooter: FC = () => {
         target="_blank"
         rel="noopener noreferrer"
         className={styles.footerLogo}
-        onClick={resetCurrentCriteria}
       >
         <img src={mcode} alt="mcode logo" />
       </a>
