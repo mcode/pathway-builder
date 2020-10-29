@@ -7,8 +7,12 @@ interface Handler<T extends Document> {
   res: Response;
 }
 
+// https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
+// Do not include _id or __v
+const defaultProjection = { _id: 0, __v: 0 };
+
 const getAllHandler = <T extends Document>({ model, res }: Handler<T>): void => {
-  model.find({}, (err, product) => {
+  model.find({},defaultProjection , (err, product) => {
     if (err) res.status(500).send(`Error getting all ${model.modelName} instances`);
     else res.status(200).send(product);
   });
@@ -25,7 +29,7 @@ const putByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): vo
       // https://github.com/microsoft/TypeScript/pull/30639
       { id: req.params.id } as object,
       req.body,
-      { overwrite: true, new: true, upsert: true, rawResult: true },
+      { overwrite: true, new: true, upsert: true, rawResult: true, projection: defaultProjection },
       (err, product) => {
         if (err) res.status(500).send(err);
         else res.status(product.lastErrorObject.updatedExisting ? 200 : 201).send(product.value);
@@ -42,7 +46,7 @@ const deleteByIdHandler = <T extends Document>({ model, req, res }: Handler<T>):
 };
 
 const getByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
-  model.findOne({ id: req.params.id } as object, { _id: 0 }, (err, document) => {
+  model.findOne({ id: req.params.id } as object, defaultProjection, (err, document) => {
     if (err) res.status(500).send(err);
     if (document) {
       res.status(200).send(document);
