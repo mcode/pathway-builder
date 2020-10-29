@@ -16,7 +16,7 @@ const LandingFooter: FC = () => {
         target="_blank"
         rel="noopener noreferrer"
         className={styles.footerLogo}
-        onClick={(): void => resetCurrentCriteria()}
+        onClick={resetCurrentCriteria}
       >
         <img src={mitre} alt="mitre logo" className={styles.mitreLogo} />
       </a>
@@ -26,7 +26,7 @@ const LandingFooter: FC = () => {
         target="_blank"
         rel="noopener noreferrer"
         className={styles.footerLogo}
-        onClick={(): void => resetCurrentCriteria()}
+        onClick={resetCurrentCriteria}
       >
         <img src={mcode} alt="mcode logo" />
       </a>

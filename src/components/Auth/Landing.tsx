@@ -58,53 +58,73 @@ const Landing: FC = () => {
     setOpenNewPassword(true);
   }, []);
 
+  const openLoginModal = useCallback((): void => {
+    setOpenLogin(true);
+  }, []);
+
+  const closeLoginModal = useCallback((): void => {
+    setOpenLogin(false);
+  }, []);
+
+  const openSignupModal = useCallback((): void => {
+    setOpenSignup(true);
+  }, []);
+
+  const closeSignupModal = useCallback((): void => {
+    setOpenSignup(false);
+  }, []);
+
+  const closeResetModal = useCallback((): void => {
+    setOpenReset(false);
+  }, []);
+
+  const closeLinkSentModal = useCallback((): void => {
+    setOpenLinkSent(false);
+  }, []);
+
+  const closeNewPasswordModal = useCallback((): void => {
+    setOpenNewPassword(false);
+  }, []);
+
+  const closePasswordResetModal = useCallback((): void => {
+    setOpenPasswordReset(false);
+  }, []);
+
   return (
     <div className={styles.landing}>
-      <LandingHeader
-        openLogin={(): void => setOpenLogin(true)}
-        openSignup={(): void => setOpenSignup(true)}
-      />
-
+      <LandingHeader openLogin={openLoginModal} openSignup={openSignupModal} />
       <LandingBody />
       <LandingFooter />
 
       <LoginModal
         open={openLogin}
-        onClose={(): void => setOpenLogin(false)}
+        onClose={closeLoginModal}
         onSignup={switchToSignup}
         onReset={switchToReset}
       />
 
-      <SignupModal
-        open={openSignup}
-        onClose={(): void => setOpenSignup(false)}
-        onLogin={switchToLogin}
-      />
+      <SignupModal open={openSignup} onClose={closeSignupModal} onLogin={switchToLogin} />
 
       <ResetModal
         open={openReset}
-        onClose={(): void => setOpenReset(false)}
+        onClose={closeResetModal}
         onLogin={switchToLogin}
         onLinkSent={switchToLinkSent}
       />
 
       {/* Use commented out version once modals have been reviewed */}
-      {/* <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} /> */}
-      <LinkSentModal
-        open={openLinkSent}
-        onClose={(): void => setOpenLinkSent(false)}
-        onRemoveMe={removeThis}
-      />
+      {/* <LinkSentModal open={openLinkSent} onClose={closeLinkSent} /> */}
+      <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} onRemoveMe={removeThis} />
 
       <NewPasswordModal
         open={openNewPassword}
-        onClose={(): void => setOpenNewPassword(false)}
+        onClose={closeNewPasswordModal}
         onPasswordReset={switchToPasswordReset}
       />
 
       <PasswordResetModal
         open={openPasswordReset}
-        onClose={(): void => setOpenPasswordReset(false)}
+        onClose={closePasswordResetModal}
         onLogin={switchToLogin}
       />
     </div>

@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
 
-import Modal from '../elements/Modal';
+import Modal from 'components/elements/Modal';
 
 interface LinkSentModalProps {
   open: boolean;

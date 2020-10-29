@@ -2,8 +2,8 @@ import React, { FC, memo } from 'react';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 
-import Modal from '../elements/Modal';
-import TextInput from '../elements/TextInput';
+import Modal from 'components/elements/Modal';
+import TextInput from 'components/elements/TextInput';
 
 interface ResetModalProps {
   open: boolean;

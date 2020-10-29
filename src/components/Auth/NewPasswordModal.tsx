@@ -1,8 +1,8 @@
 import React, { FC, memo } from 'react';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 
-import Modal from '../elements/Modal';
-import TextInput from '../elements/TextInput';
+import Modal from 'components/elements/Modal';
+import TextInput from 'components/elements/TextInput';
 
 interface NewPasswordModalProps {
   open: boolean;

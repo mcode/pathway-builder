@@ -1,4 +1,5 @@
 import React, { FC, memo } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, IconButton } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -31,7 +32,9 @@ const LandingBody: FC = () => {
           , a standardized data model around cancer
         </div>
 
-        <Button className={styles.tryItButton}>Try It</Button>
+        <Link to="/demo">
+          <Button className={styles.tryItButton}>Try It</Button>
+        </Link>
 
         <div className={styles.socialMedia}>
           <a
