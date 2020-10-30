@@ -15,24 +15,16 @@ const BuilderRoute: FC = () => {
   const currentNodeId = decodeURIComponent(nodeId);
   const baseUrl = config.get('pathwaysBackend');
   const { setCurrentNode } = useCurrentNodeContext();
-  const {
-    pathway,
-    pathwayRef,
-    setCurrentPathway,
-    resetCurrentPathway
-  } = useCurrentPathwayContext();
+  const { pathway, pathwayRef, resetCurrentPathway } = useCurrentPathwayContext();
 
-  const { isLoading, error, data } = useQuery(['pathway', { id: id }], () =>
+  const { isLoading, error, data } = useQuery('pathway', () =>
     fetch(`${baseUrl}/pathway/${pathwayId}`).then(res => res.json())
   );
 
   useEffect(() => {
     const pathway = data as Pathway;
-    if (pathway) {
-      if (pathwayRef?.current?.id === pathway.id) setCurrentPathway(pathway);
-      else resetCurrentPathway(pathway);
-    }
-  }, [data, pathwayRef, currentNodeId, setCurrentNode, setCurrentPathway, resetCurrentPathway]);
+    if (pathwayRef.current?.id !== pathway?.id) resetCurrentPathway(pathway);
+  }, [data, pathwayRef, resetCurrentPathway]);
 
   useEffect(() => {
     if (pathway?.nodes[currentNodeId]) setCurrentNode(pathway.nodes[currentNodeId]);
@@ -45,8 +37,7 @@ const BuilderRoute: FC = () => {
     alert('ERROR: Could not load pathway. Redirecting to Pathway List screen');
     return <Redirect to={`/builder`} />;
   } else if (data) {
-    const pathway = data as Pathway;
-    if (currentNodeId && pathway.nodes[currentNodeId]) return <Builder />;
+    if (currentNodeId && pathway?.nodes[currentNodeId]) return <Builder />;
     else return <Redirect to={`/builder/${id}/node/Start`} />;
   } else return <Redirect to={`/builder`} />;
 };

@@ -12,9 +12,7 @@ import { Pathway } from 'pathways-model';
 import useRefUndoState from 'hooks/useRefUndoState';
 import HotKeys from 'react-hot-keys';
 import { updatePathway } from 'utils/backend';
-import produce from 'immer';
-import useCriteria from 'hooks/useCriteria';
-import { useQueryCache } from 'react-query';
+import { useMutation, useQueryCache } from 'react-query';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -47,7 +45,6 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
   const cache = useQueryCache();
-  const { criteria } = useCriteria();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
@@ -71,42 +68,13 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     [_setPathway]
   );
 
-  useEffect(() => {
-    if (pathway) {
-      updatePathway(pathway).then(() => cache.invalidateQueries('pathways'));
-    }
-  }, [cache, pathway]);
+  const [mutateUpdatePathway] = useMutation(updatePathway, {
+    onSettled: () => cache.invalidateQueries('pathway')
+  });
 
-  // Update criteriaSource if criteria change
   useEffect(() => {
-    if (!pathway) return;
-
-    let updated = false;
-    const criteriaIds = criteria.map(crit => crit.id);
-    const newPathway = produce(pathway, draftPathway => {
-      Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
-        node.transitions.forEach(({ condition }, transitionIndex) => {
-          // If a matching criteria does not already exist, try and find one
-          if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
-            const [library, statement] = condition.cql.split('.');
-            const criteriaSource = criteria.find(
-              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-            )?.id;
-            // Only update if a criteria source is actually found.
-            if (criteriaSource) {
-              const condition =
-                draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
-              if (condition) {
-                updated = true;
-                condition.criteriaSource = criteriaSource;
-              }
-            }
-          }
-        });
-      });
-    });
-    if (updated) resetCurrentPathway(newPathway);
-  }, [criteria, pathway, resetCurrentPathway]);
+    if (pathway) mutateUpdatePathway(pathway);
+  }, [pathway, mutateUpdatePathway]);
 
   return (
     <CurrentPathwayContext.Provider
