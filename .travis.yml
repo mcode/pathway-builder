@@ -23,11 +23,10 @@ jobs:
             &&
             sed -i "/cqlToElmWebserviceUrl:/c\  cqlToElmWebserviceUrl: 'https://cql-translation-service-zfk47ib3kq-uc.a.run.app/cql/translator?annotations=true&result-types=true'," build/config.js
     - name: "Backend"
-      script:
+      before_install:
         - cd backend
+      script:
         - yarn lint
-        - yarn test
-
 
 deploy:
   provider: pages

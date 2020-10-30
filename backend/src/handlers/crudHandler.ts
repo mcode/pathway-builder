@@ -12,7 +12,7 @@ interface Handler<T extends Document> {
 const defaultProjection = { _id: 0, __v: 0 };
 
 const getAllHandler = <T extends Document>({ model, res }: Handler<T>): void => {
-  model.find({},defaultProjection , (err, product) => {
+  model.find({}, defaultProjection, (err, product) => {
     if (err) res.status(500).send(`Error getting all ${model.modelName} instances`);
     else res.status(200).send(product);
   });
