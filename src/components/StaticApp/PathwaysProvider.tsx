@@ -13,7 +13,6 @@ import config from 'utils/ConfigManager';
 import useGetService from './Services';
 import useRefState from 'hooks/useRefState';
 import { useCriteriaContext } from './CriteriaProvider';
-import produce from 'immer';
 
 interface PathwaysContextInterface {
   pathways: Pathway[];
@@ -38,7 +37,7 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   const [pathways, pathwaysRef, setPathways] = useRefState<Pathway[]>([]);
   const service = useGetService<Pathway>(config.get('demoPathwaysService'));
   const servicePayload = (service as ServiceLoaded<Pathway[]>).payload;
-  const { addCqlCriteria, criteria } = useCriteriaContext();
+  const { addCqlCriteria } = useCriteriaContext();
 
   const addPathway = useCallback(
     (pathway: Pathway) => {
@@ -102,35 +101,6 @@ export const PathwaysProvider: FC<PathwaysProviderProps> = memo(function Pathway
   useEffect(() => {
     if (servicePayload) setPathways(servicePayload);
   }, [servicePayload, setPathways]);
-
-  // Update criteriaSource if criteria change
-  useEffect(() => {
-    const criteriaIds = criteria.map(crit => crit.id);
-    pathways.forEach((pathway, pathwayIndex) =>
-      Object.entries(pathway.nodes).forEach(([nodeIndex, node]) => {
-        node.transitions.forEach(({ condition }, transitionIndex) => {
-          // If a matching criteria does not already exist, try and find one
-          if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
-            const [library, statement] = condition.cql.split('.');
-            const criteriaSource = criteria.find(
-              crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-            )?.id;
-            // Only update if a criteria source is actually found.
-            if (criteriaSource) {
-              setPathways((currentPathways: Pathway[]) => {
-                return produce(currentPathways, draftPathways => {
-                  const draftCondition =
-                    draftPathways[pathwayIndex].nodes[nodeIndex].transitions[transitionIndex]
-                      .condition;
-                  if (draftCondition) draftCondition.criteriaSource = criteriaSource;
-                });
-              });
-            }
-          }
-        });
-      })
-    );
-  }, [criteria, pathways, setPathways]);
 
   switch (service.status) {
     case 'error':

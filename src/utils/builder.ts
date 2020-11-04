@@ -35,28 +35,68 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
+interface AddCriteriaSourceInterface {
+  updated: boolean;
+  newPathway: Pathway;
+}
+
+export function updatePathwayCriteriaSources(
+  pathway: Pathway,
+  criteria: Criteria[]
+): AddCriteriaSourceInterface {
+  let updated = false;
+  const criteriaIds = criteria.map(crit => crit.id);
+  const newPathway = produce(pathway, draftPathway => {
+    Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
+      node.transitions.forEach(({ condition }, transitionIndex) => {
+        // If a matching criteria does not already exist, try and find one
+        if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
+          const [library, statement] = condition.cql.split('.');
+          const criteriaSource = criteria.find(
+            crit => crit.elm?.library.identifier.id === library && crit.statement === statement
+          )?.id;
+          // Only update if a criteria source is actually found.
+          if (criteriaSource) {
+            const condition = draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
+            if (condition) {
+              updated = true;
+              condition.criteriaSource = criteriaSource;
+            }
+          }
+        }
+      });
+    });
+  });
+  return { updated, newPathway };
+}
+
+function addCriteriaSource(pathways: Pathway[], criteria: Criteria[]): Pathway[] {
+  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria).newPathway);
+}
+
 export function downloadPathway(
-  pathway: Pathway[],
-  pathways: Pathway[],
+  pathwaysToExport: Pathway[],
+  allPathways: Pathway[],
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
-  if (pathway.length > 1) {
+  pathwaysToExport = addCriteriaSource(pathwaysToExport, criteria);
+  if (pathwaysToExport.length > 1) {
     const zip = new JSZip();
     // If multiple pathways are being exported
-    pathway.forEach(path => {
-      zip.file(`${path.name}.json`, exportPathway(path, pathways, criteria, cpg));
+    pathwaysToExport.forEach(path => {
+      zip.file(`${path.name}.json`, exportPathway(path, allPathways, criteria, cpg));
     });
     return zip.generateAsync({ type: 'blob' }).then(function(content) {
       downloadFile(content, 'pathways.zip');
     });
   } else {
-    const pathwayString = exportPathway(pathway[0], pathways, criteria, cpg);
+    const pathwayString = exportPathway(pathwaysToExport[0], allPathways, criteria, cpg);
     // Create blob from pathwayString to save to file system
     const pathwayBlob = new Blob([pathwayString], {
       type: 'application/json'
     });
-    downloadFile(pathwayBlob, `${pathway[0].name}.json`);
+    downloadFile(pathwayBlob, `${pathwaysToExport[0].name}.json`);
     return Promise.resolve();
   }
 }
