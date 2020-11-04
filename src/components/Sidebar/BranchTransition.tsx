@@ -16,7 +16,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
-import { useParams } from 'react-router-dom';
+import useNodeId from 'hooks/useNodeId';
 
 interface BranchTransitionProps {
   transition: Transition;
@@ -38,8 +38,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathwayRef.current?.nodes[currentNodeId];
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria

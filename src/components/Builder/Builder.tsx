@@ -14,12 +14,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { PathwayNode } from 'pathways-model';
-import { useParams } from 'react-router-dom';
+import useNodeId from 'hooks/useNodeId';
 
 const Builder: FC = () => {
   const styles = useStyles();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const { pathway } = useCurrentPathwayContext();
   const { currentCriteriaNodeId } = useCurrentCriteriaContext();
   const theme = useTheme('dark');

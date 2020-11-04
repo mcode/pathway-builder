@@ -6,9 +6,10 @@ import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { nodeTypeOptions, redirect } from 'utils/nodeUtils';
 import { Pathway, PathwayNode, ReferenceNode } from 'pathways-model';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { setNodeReference } from 'utils/builder';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import useNodeId from 'hooks/useNodeId';
 
 interface ReferenceNodeEditorProps {
   changeNodeType: (event: string) => void;
@@ -18,8 +19,7 @@ interface ReferenceNodeEditorProps {
 const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const { pathways, updatePathway } = usePathwaysContext();
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathway?.nodes[currentNodeId];
   const history = useHistory();
 

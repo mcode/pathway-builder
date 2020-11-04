@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, useState, useRef } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -19,6 +19,7 @@ import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 import { PathwayNode } from 'pathways-model';
+import useNodeId from 'hooks/useNodeId';
 
 interface SidebarProps {
   currentNode: PathwayNode | null;
@@ -26,8 +27,7 @@ interface SidebarProps {
 
 const Sidebar: FC<SidebarProps> = ({ currentNode }) => {
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathway?.nodes[currentNodeId];
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();

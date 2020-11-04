@@ -20,7 +20,7 @@ import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { nodeTypeOptions } from 'utils/nodeUtils';
-import { useParams } from 'react-router-dom';
+import useNodeId from 'hooks/useNodeId';
 
 const codeSystemOptions = [
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
@@ -38,8 +38,7 @@ interface ActionNodeEditorProps {
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathwayRef.current?.nodes[currentNodeId];
   const styles = useStyles();
 

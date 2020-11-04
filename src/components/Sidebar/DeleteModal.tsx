@@ -11,8 +11,8 @@ import {
 } from '@material-ui/core';
 
 import useStyles from './styles';
-import { useParams } from 'react-router-dom';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import useNodeId from 'hooks/useNodeId';
 
 interface DeleteModalProps {
   open: boolean;
@@ -31,8 +31,7 @@ const DeleteModal: FC<DeleteModalProps> = ({
 }) => {
   const styles = useStyles();
   const { pathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathway?.nodes[currentNodeId];
 
   const text = isTransition ? (

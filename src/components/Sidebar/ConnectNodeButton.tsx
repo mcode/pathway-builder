@@ -9,7 +9,7 @@ import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
 import { PathwayNode } from 'pathways-model';
-import { useParams } from 'react-router-dom';
+import useNodeId from 'hooks/useNodeId';
 
 interface ConnectNodeButtonProps {
   currentNode: PathwayNode | null;
@@ -17,8 +17,7 @@ interface ConnectNodeButtonProps {
 
 const ConnectNodeButton: FC<ConnectNodeButtonProps> = ({ currentNode }) => {
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { nodeId } = useParams();
-  const currentNodeId = decodeURIComponent(nodeId);
+  const currentNodeId = useNodeId();
   const currentNodeStatic = pathway?.nodes[currentNodeId];
 
   const styles = useStyles();
