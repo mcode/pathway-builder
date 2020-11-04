@@ -1,10 +1,10 @@
 import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DropDown from 'components/StaticApp/elements/DropDown';
-import useStyles from './styles';
+import DropDown from 'components/elements/DropDown';
+import useStyles from 'components/Sidebar/styles';
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { nodeTypeOptions, redirect } from 'utils/nodeUtils';
 import { Pathway, ReferenceNode } from 'pathways-model';
 import { useHistory } from 'react-router-dom';

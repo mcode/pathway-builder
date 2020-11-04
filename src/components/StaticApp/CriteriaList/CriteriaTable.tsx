@@ -13,9 +13,9 @@ import {
 } from '@material-ui/core';
 import moment from 'moment';
 
-import useStyles from './styles';
+import useStyles from 'components/CriteriaList/styles';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
-import ConfirmedDeletionButton from 'components/StaticApp/ConfirmedDeletionButton';
+import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 
 interface CriteriaTableProps {
   itemSelected: (item: string) => boolean;

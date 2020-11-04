@@ -2,22 +2,22 @@ import React, { FC, memo, useCallback, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { SidebarButton } from 'components/Sidebar';
 import {
-  SidebarHeader,
   ActionNodeEditor,
-  SidebarButton,
-  TransitionEditor,
   BranchTransition,
-  ReferenceNodeEditor
+  SidebarHeader,
+  ReferenceNodeEditor,
+  TransitionEditor
 } from 'components/StaticApp/Sidebar';
 import { setNodeType, addTransition, createNode, addNode } from 'utils/builder';
-import useStyles from './styles';
+import useStyles from 'components/Sidebar/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { isBranchNode, redirect, getNodeType } from 'utils/nodeUtils';
 import { nodeTypeOptions } from 'utils/nodeUtils';
-import DropDown from 'components/StaticApp/elements/DropDown';
-import DeleteSnackbar from './DeleteSnackbar';
+import DropDown from 'components/elements/DropDown';
+import DeleteSnackbar from 'components/Sidebar/DeleteSnackbar';
 import ConnectNodeButton from 'components/StaticApp/Sidebar/ConnectNodeButton';
 
 const Sidebar: FC = () => {
@@ -48,7 +48,7 @@ const Sidebar: FC = () => {
     newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
     setCurrentPathway(newPathway);
     if (!isBranchNode(currentNodeRef.current))
-      redirect(pathwayRef.current.id, newNode.key, history, true);
+      redirect(pathwayRef.current.id, newNode.key, history);
   }, [pathwayRef, setCurrentPathway, currentNodeRef, history]);
 
   if (!pathway) return <div>Error: No pathway</div>;

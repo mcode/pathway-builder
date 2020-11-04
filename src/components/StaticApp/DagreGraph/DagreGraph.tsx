@@ -1,9 +1,9 @@
 import React, { FC, memo } from 'react';
 
-import GraphEdges from './GraphEdges';
-import GraphProvider from './GraphProvider';
+import GraphEdges from 'components/DagreGraph/GraphEdges';
+import GraphProvider from 'components/DagreGraph/GraphProvider';
 import GraphNodes from './GraphNodes';
-import GraphRoot from './GraphRoot';
+import GraphRoot from 'components/DagreGraph/GraphRoot';
 
 interface DagreGraphProps {
   interactive?: boolean;

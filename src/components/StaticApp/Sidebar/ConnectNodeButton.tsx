@@ -1,11 +1,11 @@
 import React, { useState, memo, useCallback, FC } from 'react';
-import { SidebarButton } from 'components/StaticApp/Sidebar';
-import DropDown from 'components/StaticApp/elements/DropDown';
-import useStyles from './styles';
+import { SidebarButton } from 'components/Sidebar';
+import DropDown from 'components/elements/DropDown';
+import useStyles from 'components/Sidebar/styles';
 import { addTransition } from 'utils/builder';
 import { getConnectableNodes } from 'utils/nodeUtils';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';

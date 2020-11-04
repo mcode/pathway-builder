@@ -1,14 +1,14 @@
 import React, { FC, useEffect, memo, useState, useCallback } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
-import { useCurrentCriteriaContext } from 'components/StaticApp/CurrentCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 
 import Header from 'components/StaticApp/Header';
 import Navigation from 'components/StaticApp/Navigation';
 import Sidebar from 'components/StaticApp/Sidebar';
 import DagreGraph from 'components/StaticApp/DagreGraph';
-import CriteriaBuilder from 'components/StaticApp/CriteriaBuilder';
-import { useTheme } from 'components/StaticApp/ThemeProvider';
-import useStyles from './styles';
+import CriteriaBuilder from 'components/CriteriaBuilder';
+import { useTheme } from 'components/ThemeProvider';
+import useStyles from 'components/Builder/styles';
 import { IconButton } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';

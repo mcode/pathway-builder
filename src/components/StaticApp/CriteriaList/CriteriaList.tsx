@@ -4,14 +4,14 @@ import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-i
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
-import Loading from 'components/StaticApp/elements/Loading';
+import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 
-import useStyles from './styles';
-import FileImportModal from 'components/StaticApp/FileImportModal';
+import useStyles from 'components/CriteriaList/styles';
+import FileImportModal from 'components/FileImportModal';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
-import ConfirmationPopover from 'components/StaticApp/elements/ConfirmationPopover';
+import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();

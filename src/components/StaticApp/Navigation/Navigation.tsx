@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faEllipsisH, faRedo, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Tooltip } from '@material-ui/core';
 
-import { useCurrentCriteriaContext } from 'components/StaticApp/CurrentCriteriaProvider';
-import useStyles from './styles';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
+import useStyles from 'components/Navigation/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import { ContextualExportMenu } from 'components/StaticApp/elements/ExportMenu';
 

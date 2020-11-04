@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, ChangeEvent } from 'react';
-import { SidebarButton } from '.';
+import { SidebarButton } from 'components/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -12,14 +12,14 @@ import {
   setActionTitle,
   setActionCodeSystem
 } from 'utils/builder';
-import DropDown from 'components/StaticApp/elements/DropDown';
+import DropDown from 'components/elements/DropDown';
 import { ActionNode, Action } from 'pathways-model';
-import useStyles from './styles';
+import useStyles from 'components/Sidebar/styles';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import produce from 'immer';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { nodeTypeOptions } from 'utils/nodeUtils';
 
 const codeSystemOptions = [

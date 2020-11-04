@@ -1,12 +1,12 @@
 import React, { FC, memo, useCallback } from 'react';
 import { useUpdateEffect } from 'react-use';
 
-import { useCurrentCriteriaContext } from 'components/StaticApp/CurrentCriteriaProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
-import { useGraphCoordinates, useGraphProvider } from './GraphProvider';
-import Node from './Node';
-import useExpandedState from './useExpandedState';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useGraphCoordinates, useGraphProvider } from 'components/DagreGraph/GraphProvider';
+import Node from 'components/DagreGraph/Node';
+import useExpandedState from 'components/DagreGraph/useExpandedState';
 import useRedirectToNode from './useRedirectToNode';
 
 interface GraphNodesProps {

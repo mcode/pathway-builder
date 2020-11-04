@@ -16,10 +16,10 @@ import {
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
 import PathwayModal from './PathwayModal';
 
-import useStyles from './styles';
+import useStyles from 'components/PathwaysList/styles';
 import { Pathway } from 'pathways-model';
 import { Link as RouterLink } from 'react-router-dom';
-import ConfirmedDeletionButton from 'components/StaticApp/ConfirmedDeletionButton';
+import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 import { ContextualExportMenu } from 'components/StaticApp/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 

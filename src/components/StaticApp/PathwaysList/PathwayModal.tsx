@@ -15,7 +15,7 @@ import shortid from 'shortid';
 import produce from 'immer';
 
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
-import useStyles from './styles';
+import useStyles from 'components/PathwaysList/styles';
 import { createNewPathway } from 'utils/builder';
 import { Pathway } from 'pathways-model';
 

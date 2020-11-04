@@ -4,10 +4,15 @@ import { Redirect, useParams } from 'react-router-dom';
 import Builder from 'components/StaticApp/Builder';
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
 import { useCurrentPathwayContext } from './CurrentPathwayProvider';
-import { useCurrentNodeContext } from './CurrentNodeProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+
+interface BuilderParams {
+  id: string;
+  nodeId: string;
+}
 
 const BuilderRoute: FC = () => {
-  const { id, nodeId } = useParams();
+  const { id, nodeId } = useParams<BuilderParams>();
   const { pathways } = usePathwaysContext();
   const { pathwayRef, setCurrentPathway, resetCurrentPathway } = useCurrentPathwayContext();
   const { setCurrentNode } = useCurrentNodeContext();

@@ -10,17 +10,17 @@ import {
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
 
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
-import Loading from 'components/StaticApp/elements/Loading';
+import Loading from 'components/elements/Loading';
 import PathwaysTable from './PathwaysTable';
 import PathwayModal from './PathwayModal';
 
-import useStyles from './styles';
-import FileImportModal from 'components/StaticApp/FileImportModal';
+import useStyles from 'components/PathwaysList/styles';
+import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
 import ExportMenu from 'components/StaticApp/elements/ExportMenu';
 import { Pathway } from 'pathways-model';
-import ConfirmationPopover from 'components/StaticApp/elements/ConfirmationPopover';
+import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();

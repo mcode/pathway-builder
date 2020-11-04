@@ -5,11 +5,11 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { useCurrentCriteriaContext } from 'components/StaticApp/CurrentCriteriaProvider';
-import { useThemeToggle } from '../ThemeProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
+import { useThemeToggle } from 'components/ThemeProvider';
 
 import logo from 'camino-logo-dark.png';
-import styles from './Header.module.scss';
+import styles from 'components/Header/Header.module.scss';
 
 const Header: FC = () => {
   const { resetCurrentCriteria } = useCurrentCriteriaContext();

@@ -11,13 +11,13 @@ import { IconButton, FormControl, Input, Tooltip } from '@material-ui/core';
 
 import { PathwayNode } from 'pathways-model';
 import { setNodeLabel, removeNode, removeTransition } from 'utils/builder';
-import useStyles from './styles';
+import useStyles from 'components/Sidebar/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import { useHistory } from 'react-router-dom';
 import { canDeleteNode, redirect, findParents, willOrphanChild } from 'utils/nodeUtils';
-import { DeleteModal } from '.';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
-import { useSnackbarContext } from 'components/StaticApp/SnackbarProvider';
+import { DeleteModal } from 'components/Sidebar';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useSnackbarContext } from 'components/SnackbarProvider';
 
 interface SidebarHeaderProps {
   node: PathwayNode;

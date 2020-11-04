@@ -1,21 +1,21 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faTools, faTrashAlt, faThList, faEdit } from '@fortawesome/free-solid-svg-icons';
-import DropDown from 'components/StaticApp/elements/DropDown';
+import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
   removeTransitionCondition,
   setTransitionCondition,
   setTransitionConditionDescription
 } from 'utils/builder';
-import { OutlinedDiv, SidebarButton } from '.';
+import { OutlinedDiv, SidebarButton } from 'components/Sidebar';
 import { Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
-import useStyles from './styles';
+import useStyles from 'components/Sidebar/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/StaticApp/CurrentNodeProvider';
-import { useCurrentCriteriaContext } from 'components/StaticApp/CurrentCriteriaProvider';
-import { useCriteriaBuilderContext } from 'components/StaticApp/CriteriaBuilderProvider';
+import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
+import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
 
 interface BranchTransitionProps {

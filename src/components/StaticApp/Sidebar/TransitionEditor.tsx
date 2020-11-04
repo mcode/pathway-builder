@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, memo } from 'react';
 import SidebarHeader from './SidebarHeader';
-import useStyles from './styles';
+import useStyles from 'components/Sidebar/styles';
 import { Card } from '@material-ui/core';
 import { Transition } from 'pathways-model';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
