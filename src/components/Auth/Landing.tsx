@@ -48,16 +48,6 @@ const Landing: FC = () => {
     setOpenNewPassword(false);
   }, []);
 
-  // TODO: remove this - just setup to show the new modal
-  const removeThis = useCallback((): void => {
-    setOpenLinkSent(false);
-    setOpenLogin(false);
-    setOpenReset(false);
-    setOpenSignup(false);
-    setOpenPasswordReset(false);
-    setOpenNewPassword(true);
-  }, []);
-
   const openLoginModal = useCallback((): void => {
     setOpenLogin(true);
   }, []);
@@ -112,9 +102,7 @@ const Landing: FC = () => {
         onLinkSent={switchToLinkSent}
       />
 
-      {/* Use commented out version once modals have been reviewed */}
-      {/* <LinkSentModal open={openLinkSent} onClose={closeLinkSent} /> */}
-      <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} onRemoveMe={removeThis} />
+      <LinkSentModal open={openLinkSent} onClose={closeLinkSentModal} />
 
       <NewPasswordModal
         open={openNewPassword}
