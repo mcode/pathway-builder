@@ -3,8 +3,11 @@ import 'react-app-polyfill/stable';
 import './immer';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import App from 'components/App';
+import { Landing } from 'components/Auth';
+import ThemeProvider from 'components/ThemeProvider';
 
 import './styles/index.scss';
 
@@ -17,4 +20,14 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <ThemeProvider theme="light">
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Landing} />
+        <Route path="/demo" component={App} />
+      </Switch>
+    </Router>
+  </ThemeProvider>,
+  document.getElementById('root')
+);

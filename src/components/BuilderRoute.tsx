@@ -32,7 +32,7 @@ const BuilderRoute: FC = () => {
   }, [pathway, pathwayRef, currentNodeId, setCurrentNode]);
 
   if (pathway == null) return null;
-  if (!currentNodeId) return <Redirect to={`/builder/${id}/node/Start`} />;
+  if (!currentNodeId) return <Redirect to={`/demo/builder/${id}/node/Start`} />;
 
   return <Builder />;
 };

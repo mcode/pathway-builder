@@ -14,7 +14,7 @@ export default makeStyles(
       borderRadius: '0.2em',
       fontWeight: 500,
       width: 'auto',
-      backgroundColor: theme.palette.common.grayLighter
+      backgroundColor: theme.palette.common.grayLightest
     },
     elementSelect: {
       display: 'flex',

@@ -8,7 +8,9 @@ const useRedirectToNode = (): RedirectToNodeCallback => {
   const history = useHistory();
   const redirectToNode = useCallback(
     nodeId => {
-      const url = `/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(nodeId)}`;
+      const url = `/demo/builder/${encodeURIComponent(pathwayId)}/node/${encodeURIComponent(
+        nodeId
+      )}`;
       if (url !== history.location.pathname) {
         history.push(url);
       }

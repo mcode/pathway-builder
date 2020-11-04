@@ -25,7 +25,7 @@ export default makeStyles(
       lineHeight: '2.5em',
       cursor: 'pointer',
       '&:hover': {
-        color: theme.palette.common.grayLighter
+        color: theme.palette.common.grayLightest
       }
     },
     divider: {
