@@ -46,6 +46,19 @@ export class CaminoExporter {
 
             referencedDefines[transition.condition.cql] = libraryIdentifier.id;
 
+            if (criteriaSource?.cqlLibraries) {
+              Object.entries(criteriaSource.cqlLibraries).forEach(entry => {
+                const [libName, libCql] = entry;
+                if (libCql.cql) {
+                  includedCqlLibraries[libName] = {
+                    cql: libCql.cql,
+                    version: libCql?.version || ''
+                  };
+                  referencedDefines[libCql.cql] = libName;
+                }
+              });
+            }
+
             // prepend the library name if not already done
             if (!transition.condition.cql.startsWith(libraryIdentifier.id)) {
               transition.condition.cql = `${libraryIdentifier.id}.${transition.condition.cql}`;
