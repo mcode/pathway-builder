@@ -39,7 +39,7 @@ const putByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): vo
 };
 
 const deleteByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
-  model.deleteOne({ id: req.params.id } as object, err => {
+  model.deleteOne({ id: req.params.id } as object, (err) => {
     if (err) res.status(500).send(err);
     else res.status(200).send(`Deleted ${model.modelName} ${req.params.id}`);
   });
