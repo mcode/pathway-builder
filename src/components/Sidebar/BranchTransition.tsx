@@ -92,11 +92,12 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
 
       const selectedCriteria = criteria.find(c => c.id === criteriaId);
       if (!selectedCriteria) return;
+      console.log(selectedCriteria);
       const newPathway = setTransitionCondition(
         pathwayRef.current,
         currentNodeStatic.key,
         transitionRef.current.id,
-        transitionRef.current.condition?.description || '',
+        transitionRef.current.condition?.description || selectedCriteria.display,
         selectedCriteria
       );
 

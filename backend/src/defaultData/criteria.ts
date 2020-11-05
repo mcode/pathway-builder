@@ -2,6 +2,7 @@ export const criteria = [
   {
     id: 'Jm_o_kfSg',
     label: 'Tumor_Markers: ER Positive',
+    display: 'ER Positive',
     version: '1.0.0',
     modified: 1603816649112,
     elm: {
@@ -2008,6 +2009,7 @@ export const criteria = [
   {
     id: 'z5cDHxm5kh',
     label: 'Tumor_Markers: ER Negative',
+    display: 'ER Negative',
     version: '1.0.0',
     modified: 1603816649112,
     elm: {
@@ -4014,6 +4016,7 @@ export const criteria = [
   {
     id: 'IkhkQ6dWk2',
     label: 'Tumor_Markers: HER2 Positive',
+    display: 'HER2 Positive',
     version: '1.0.0',
     modified: 1603816649113,
     elm: {
@@ -6020,6 +6023,7 @@ export const criteria = [
   {
     id: 'ecsKJs8d9E',
     label: 'Tumor_Markers: HER2 Negative',
+    display: 'HER2 Negative',
     version: '1.0.0',
     modified: 1603816649113,
     elm: {
@@ -8026,6 +8030,7 @@ export const criteria = [
   {
     id: 'tcFmvOHETN',
     label: 'Tumor_Markers: PR Positive',
+    display: 'PR Positive',
     version: '1.0.0',
     modified: 1603816649113,
     elm: {
@@ -10032,6 +10037,7 @@ export const criteria = [
   {
     id: 'OvPxOJcI1_',
     label: 'Tumor_Markers: PR Negative',
+    display: 'PR Negative',
     version: '1.0.0',
     modified: 1603816649113,
     elm: {
@@ -12038,6 +12044,7 @@ export const criteria = [
   {
     id: 'ZtFKiG4ywE',
     label: 'Pathologic-Response: Complete',
+    display: 'Complete',
     version: '1.0.0',
     modified: 1603816649116,
     elm: {
@@ -13305,6 +13312,7 @@ export const criteria = [
   {
     id: 'ZlkCMykMAl',
     label: 'Pathologic-Response: Partial/Stable/Progressive',
+    display: 'Partial/Stable/Progressive',
     version: '1.0.0',
     modified: 1603816649116,
     elm: {
@@ -14572,6 +14580,7 @@ export const criteria = [
   {
     id: 'y6Uxj-4zI5',
     label: 'TNM: N0',
+    display: 'N0',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {
@@ -18258,6 +18267,7 @@ export const criteria = [
   {
     id: 'O7nLpymn3O',
     label: 'TNM: N+',
+    display: 'N+',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {
@@ -21944,6 +21954,7 @@ export const criteria = [
   {
     id: 'xwL6INa2fc',
     label: 'TNM: T > 2cm',
+    display: 'T > 2cm',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {
@@ -25630,6 +25641,7 @@ export const criteria = [
   {
     id: 'Afg4Tb35Uu',
     label: 'TNM: T <= 2cm',
+    display: ' T <= 2cm',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {
@@ -29316,6 +29328,7 @@ export const criteria = [
   {
     id: 'fptSA4X3y2',
     label: 'TNM: T > 2',
+    display: 'T > 2',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {
@@ -33002,6 +33015,7 @@ export const criteria = [
   {
     id: 'WKE4zpNYZK',
     label: 'TNM: T <= 2',
+    display: 'T <= 2',
     version: '1.0.0',
     modified: 1603816649140,
     elm: {

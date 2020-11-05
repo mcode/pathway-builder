@@ -38,6 +38,7 @@ export function elmLibraryToCriteria(
     return {
       id: shortid.generate(),
       label: `${labelTitle}: ${statement.name}`,
+      display: statement.name,
       version: elm.library.identifier.version,
       modified: Date.now(),
       elm: elm,
@@ -70,10 +71,15 @@ export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
-function builderModelToCriteria(criteria: BuilderModel, label: string, id?: string): Criteria {
+export function builderModelToCriteria(
+  criteria: BuilderModel,
+  label: string,
+  id?: string
+): Criteria {
   return {
     id: id ? id : shortid.generate(),
     label,
+    display: label,
     modified: Date.now(),
     builder: criteria,
     statement: label

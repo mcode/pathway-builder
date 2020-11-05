@@ -3,6 +3,7 @@ import { Schema, model } from 'mongoose';
 const criteriaSchema = new Schema({
   id: String,
   label: String,
+  display: String,
   version: String,
   modified: Number,
   statement: String,

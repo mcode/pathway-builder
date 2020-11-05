@@ -4,6 +4,7 @@ declare module 'criteria-model' {
   export interface CriteriaModel {
     id: string;
     label: string;
+    display: string;
     version?: string;
     modified: number;
     statement: string;
