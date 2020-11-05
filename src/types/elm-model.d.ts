@@ -1,4 +1,8 @@
 declare module 'elm-model' {
+  export interface ElmLibraries {
+    [key: string]: ElmLibrary;
+  }
+
   export interface ElmLibrary {
     library: {
       identifier: {

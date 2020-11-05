@@ -5,45 +5,32 @@ import {
   extractMultipartBoundary,
   extractMultipartFileName
 } from 'utils/regexes';
-import { ElmLibrary } from 'elm-model';
+import { ElmLibrary, ElmLibraries } from 'elm-model';
 
 const url = config.get('cqlToElmWebserviceUrl');
 
-export interface CqlObject {
-  main: string;
-  libraries: CqlLibrary;
-}
-
-export interface CqlLibrary {
+export interface CqlLibraries {
   [name: string]: {
     cql?: string;
     version?: string;
   };
 }
 
-export interface ElmObject {
-  main: object;
-  libraries: {
-    [key: string]: object;
-  };
-}
-
 /**
  * Function that requests web_service to convert the cql into elm.
- * @param cql - cql file that is the input to the function.
- * @return The resulting elm translation of the cql file.
+ * @param cqlLibraries - object containing CqlLibraries that is the input to the function.
+ * @return The resulting elm translation of the cql libraries.
  */
-export function convertCQL(cql: CqlObject): Promise<ElmObject> {
+export function convertCQL(cqlLibraries: CqlLibraries): Promise<ElmLibraries> {
   // Connect to web service
   const formdata = new FormData();
-  Object.keys(cql.libraries).forEach((key, i) => {
-    const cqlLibrary = cql.libraries[key];
+  Object.keys(cqlLibraries).forEach((key, i) => {
+    const cqlLibrary = cqlLibraries[key];
     if (cqlLibrary.cql) {
       formdata.append(`${key}`, cqlLibrary.cql);
     }
   });
 
-  formdata.append('main', cql.main);
   return fetch(url, {
     method: 'POST',
     body: formdata
@@ -55,20 +42,16 @@ export function convertCQL(cql: CqlObject): Promise<ElmObject> {
       const result = extractMultipartBoundary.exec(header);
       boundary = result ? `--${result[1]}` : '';
     }
-    const obj: ElmObject = { main: {}, libraries: {} };
+    const elmLibraries: ElmLibraries = {};
     return elm.text().then(text => {
       const elms = text.split(boundary).reduce((oldArray, line, i) => {
         const body = extractJSONContent.exec(line);
         if (body) {
           const elmName = extractMultipartFileName.exec(line);
-          if (elmName && elmName[1] === 'main') {
-            oldArray[elmName[1]] = JSON.parse(body[1]);
-          } else if (elmName) {
-            oldArray.libraries[elmName[1]] = JSON.parse(body[1]);
-          }
+          if (elmName) oldArray[elmName[1]] = JSON.parse(body[1]);
         }
         return oldArray;
-      }, obj);
+      }, elmLibraries);
 
       return elms;
     });

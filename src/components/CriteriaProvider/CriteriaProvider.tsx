@@ -15,7 +15,7 @@ import config from 'utils/ConfigManager';
 import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import { convertBasicCQL, convertCQL, CqlLibrary, CqlObject } from 'engine/cql-to-elm';
+import { convertBasicCQL, convertCQL, CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -47,13 +47,6 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-const CQL_HELPER_LIBRARIES = [
-  'FHIRHelpers.cql',
-  'CDS_Connect_Commons_for_FHIRv400.cql',
-  'CDS_Connect_Commons_for_FHIRv401.cql',
-  'CDS_Connect_Conversions.cql'
-];
-
 function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria {
   return {
     id: shortid.generate(),
@@ -66,7 +59,7 @@ function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria
 function elmLibraryToCriteria(
   elm: ElmLibrary,
   cql: string | undefined = undefined,
-  cqlLibraries: CqlLibrary | undefined = undefined,
+  cqlLibraries: CqlLibraries | undefined = undefined,
   custom = false
 ): Criteria[] {
   // the cql-to-elm webservice always responds with ELM
@@ -116,18 +109,26 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
-function cqlToCriteria(cql: string | CqlObject): Promise<Criteria[]> {
+function cqlToCriteria(cql: string | CqlLibraries): Promise<Criteria[]> {
   if (typeof cql === 'string') {
     return convertBasicCQL(cql).then(elm => elmLibraryToCriteria(elm, cql));
   } else {
     return convertCQL(cql).then(elm => {
       // Append library versions
-      Object.keys(elm.libraries).forEach(key => {
-        const cqlLibrary = cql.libraries[key];
-        const elmLibrary = elm.libraries[key] as ElmLibrary;
+      Object.keys(elm).forEach(key => {
+        const cqlLibrary = cql[key];
+        const elmLibrary = elm[key];
         if (cqlLibrary) cqlLibrary.version = elmLibrary.library.identifier.version;
       });
-      return elmLibraryToCriteria(elm.main as ElmLibrary, cql.main, cql.libraries);
+
+      // Loop through all elm libraries searching for criteria, use other libraries as dependencies
+      return Object.keys(elm)
+        .map(key => {
+          // Exclude current library from the list of cql libraries to pass to elmLibraryToCriteria
+          const { [key]: keyToExclude, ...dependencies } = cql;
+          return elmLibraryToCriteria(elm[key], cql[key].cql, dependencies);
+        })
+        .flat(1);
     });
   }
 }
@@ -146,7 +147,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     }
   }, [payload]);
 
-  const addCqlCriteria = useCallback((cql: string | CqlObject) => {
+  const addCqlCriteria = useCallback((cql: string | CqlLibraries) => {
     cqlToCriteria(cql).then(newCriteria => {
       if (newCriteria.length > 0) {
         setCriteria(currentCriteria => {
@@ -175,7 +176,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
           } else if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
           } else if (file.name.endsWith('.zip')) {
-            const cqlObj: CqlObject = { main: '', libraries: {} };
+            const cqlLibraries: CqlLibraries = {};
             const zip = await JSZip.loadAsync(file);
             const zipFiles = Object.values(zip.files);
             // Check for criteria in each of the cql files, add cql to libraries if no criteria
@@ -184,23 +185,10 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
 
               // Skip files that do not end with .cql
               if (!zipFile.name.endsWith('.cql')) continue;
-
               const fileContents = await zipFile.async('string');
-              if (CQL_HELPER_LIBRARIES.includes(zipFile.name)) {
-                cqlObj.libraries[zipFile.name] = { cql: fileContents };
-              } else {
-                if (cqlObj.main) {
-                  console.error(
-                    `cqlObj.main is already set, files in zip are ${zipFiles
-                      .map(z => z.name)
-                      .join(', ')}`
-                  );
-                  alert('cqlObj.main is already set.');
-                }
-                cqlObj.main = fileContents;
-              }
+              cqlLibraries[zipFile.name] = { cql: fileContents };
             }
-            addCqlCriteria(cqlObj);
+            addCqlCriteria(cqlLibraries);
           }
         } else alert('Unable to read that file');
       };
