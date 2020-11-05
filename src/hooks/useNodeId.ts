@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-const useNodeId = () => {
+const useNodeId = (): string => {
   const { nodeId } = useParams<{ nodeId: string }>();
   return decodeURIComponent(nodeId);
 };

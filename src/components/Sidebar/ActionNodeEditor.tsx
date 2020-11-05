@@ -38,7 +38,7 @@ interface ActionNodeEditorProps {
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current);
+  const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current) as ActionNode;
   const styles = useStyles();
 
   const addActionCQL = useCallback(
@@ -57,54 +57,56 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNo
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeStatic as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const code = event?.target.value || '';
-      const action = setActionCode(currentNode.action, code);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      const action = setActionCode(currentNodeStatic.action, code);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
     },
     [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const changeDescription = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeStatic as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const description = event?.target.value || '';
-      const action = setActionDescription(currentNode.action, description);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+      const action = setActionDescription(currentNodeStatic.action, description);
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNodeStatic.key, action));
     },
     [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const changeTitle = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeStatic as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const title = event?.target.value || '';
-      const action = setActionTitle(currentNode.action, title);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      const action = setActionTitle(currentNodeStatic.action, title);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
 
-      addActionCQL(action, currentNode.key);
+      addActionCQL(action, currentNodeStatic.key);
     },
     [currentNodeStatic, pathwayRef, setCurrentPathway, addActionCQL]
   );
 
   const selectCodeSystem = useCallback(
     (codeSystem: string): void => {
-      const currentNode = currentNodeStatic as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
-      const action = setActionCodeSystem(currentNode.action, codeSystem);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
+      const action = setActionCodeSystem(currentNodeStatic.action, codeSystem);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
     },
     [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const validateFunction = useCallback((): void => {
-    const currentNode = currentNodeStatic as ActionNode;
+    const currentNode = currentNodeStatic;
     if (!currentNode.action || !pathwayRef.current) {
       console.error('No Actions -- Cannot Validate');
       return;
