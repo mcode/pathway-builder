@@ -94,7 +94,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
         pathwayRef.current,
         currentNodeStatic.key,
         transitionRef.current.id,
-        transitionRef.current.condition?.description || '',
+        transitionRef.current.condition?.description || selectedCriteria.display,
         selectedCriteria
       );
 
