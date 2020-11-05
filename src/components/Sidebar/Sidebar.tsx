@@ -19,7 +19,7 @@ import DropDown from 'components/elements/DropDown';
 import DeleteSnackbar from './DeleteSnackbar';
 import ConnectNodeButton from 'components/Sidebar/ConnectNodeButton';
 import { PathwayNode } from 'pathways-model';
-import useNodeId from 'hooks/useNodeId';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface SidebarProps {
   currentNode: PathwayNode | null;
@@ -27,8 +27,7 @@ interface SidebarProps {
 
 const Sidebar: FC<SidebarProps> = ({ currentNode }) => {
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const currentNodeId = useNodeId();
-  const currentNodeStatic = pathway?.nodes[currentNodeId];
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const styles = useStyles();
   const history = useHistory();

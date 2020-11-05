@@ -12,7 +12,7 @@ import {
 
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import useNodeId from 'hooks/useNodeId';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface DeleteModalProps {
   open: boolean;
@@ -31,8 +31,7 @@ const DeleteModal: FC<DeleteModalProps> = ({
 }) => {
   const styles = useStyles();
   const { pathway } = useCurrentPathwayContext();
-  const currentNodeId = useNodeId();
-  const currentNodeStatic = pathway?.nodes[currentNodeId];
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
 
   const text = isTransition ? (
     <span>

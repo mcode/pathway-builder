@@ -17,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 import { canDeleteNode, redirect, findParents, willOrphanChild } from 'utils/nodeUtils';
 import { DeleteModal } from '.';
 import { useSnackbarContext } from 'components/SnackbarProvider';
-import useNodeId from 'hooks/useNodeId';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface SidebarHeaderProps {
   node: PathwayNode;
@@ -30,8 +30,7 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ node, isTransition = false }) =
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const { setSnackbarText, setOpenSnackbar } = useSnackbarContext();
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const currentNodeId = useNodeId();
-  const currentNodeStatic = pathway?.nodes[currentNodeId];
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
   const inputRef = useRef<HTMLInputElement>(null);
   const nodeLabel = node?.label || '';
   const styles = useStyles();

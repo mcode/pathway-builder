@@ -20,7 +20,7 @@ import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
 import { nodeTypeOptions } from 'utils/nodeUtils';
-import useNodeId from 'hooks/useNodeId';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 const codeSystemOptions = [
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
@@ -38,8 +38,7 @@ interface ActionNodeEditorProps {
 
 const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const currentNodeId = useNodeId();
-  const currentNodeStatic = pathwayRef.current?.nodes[currentNodeId];
+  const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current);
   const styles = useStyles();
 
   const addActionCQL = useCallback(
