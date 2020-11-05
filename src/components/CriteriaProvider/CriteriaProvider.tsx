@@ -50,6 +50,7 @@ const DEFAULT_ELM_STATEMENTS = [
 const CQL_HELPER_LIBRARIES = [
   'FHIRHelpers.cql',
   'CDS_Connect_Commons_for_FHIRv400.cql',
+  'CDS_Connect_Commons_for_FHIRv401.cql',
   'CDS_Connect_Conversions.cql'
 ];
 
@@ -183,10 +184,19 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
 
               // Skip files that do not end with .cql
               if (!zipFile.name.endsWith('.cql')) continue;
+
               const fileContents = await zipFile.async('string');
               if (CQL_HELPER_LIBRARIES.includes(zipFile.name)) {
                 cqlObj.libraries[zipFile.name] = { cql: fileContents };
               } else {
+                if (cqlObj.main) {
+                  console.error(
+                    `cqlObj.main is already set, files in zip are ${zipFiles
+                      .map(z => z.name)
+                      .join(', ')}`
+                  );
+                  alert('cqlObj.main is already set.');
+                }
                 cqlObj.main = fileContents;
               }
             }
