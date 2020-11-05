@@ -48,7 +48,7 @@ const Sidebar: FC = () => {
     newPathway = addTransition(newPathway, currentNodeRef.current.key, newNode.key);
     setCurrentPathway(newPathway);
     if (!isBranchNode(currentNodeRef.current))
-      redirect(pathwayRef.current.id, newNode.key, history);
+      redirect(pathwayRef.current.id, newNode.key, history, true);
   }, [pathwayRef, setCurrentPathway, currentNodeRef, history]);
 
   if (!pathway) return <div>Error: No pathway</div>;
