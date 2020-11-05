@@ -23,10 +23,13 @@ import { readFile, updatePathway } from 'utils/backend';
 import { Pathway } from 'pathways-model';
 import { deletePathway } from 'utils/backend';
 import usePathways from 'hooks/usePathways';
+import { updatePathwayCriteriaSources } from 'utils/builder';
+import useCriteria from 'hooks/useCriteria';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
   const cache = useQueryCache();
+  const { criteria } = useCriteria();
   const { isLoading, pathways } = usePathways();
   const [open, setOpen] = useState(false);
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
@@ -60,13 +63,16 @@ const PathwaysList: FC = () => {
         readFile(files[0], (event: ProgressEvent<FileReader>): void => {
           if (event.target?.result) {
             const rawContent = event.target.result as string;
-            const pathway = JSON.parse(rawContent) as Pathway;
-            mutateAddPathway(pathway);
+            const { newPathway } = updatePathwayCriteriaSources(
+              JSON.parse(rawContent) as Pathway,
+              criteria
+            );
+            mutateAddPathway(newPathway);
           }
         });
       }
     },
-    [mutateAddPathway]
+    [criteria, mutateAddPathway]
   );
 
   const closeMenu = useCallback((): void => {
