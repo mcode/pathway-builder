@@ -13,14 +13,14 @@ import {
   setActionCodeSystem
 } from 'utils/builder';
 import DropDown from 'components/elements/DropDown';
-import { ActionNode, Action } from 'pathways-model';
+import { ActionNode, Action, PathwayNode } from 'pathways-model';
 import useStyles from './styles';
 import { TextField } from '@material-ui/core';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import produce from 'immer';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { nodeTypeOptions } from 'utils/nodeUtils';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 const codeSystemOptions = [
   { label: 'ICD-9-CM', value: 'http://hl7.org/fhir/sid/icd-9-cm' },
@@ -33,11 +33,12 @@ const codeSystemOptions = [
 
 interface ActionNodeEditorProps {
   changeNodeType: (event: string) => void;
+  currentNode: PathwayNode | null;
 }
 
-const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
+const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { currentNode, currentNodeRef } = useCurrentNodeContext();
+  const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current) as ActionNode;
   const styles = useStyles();
 
   const addActionCQL = useCallback(
@@ -56,54 +57,56 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeRef.current as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const code = event?.target.value || '';
-      const action = setActionCode(currentNode.action, code);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      const action = setActionCode(currentNodeStatic.action, code);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
     },
-    [currentNodeRef, pathwayRef, setCurrentPathway]
+    [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const changeDescription = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeRef.current as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const description = event?.target.value || '';
-      const action = setActionDescription(currentNode.action, description);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+      const action = setActionDescription(currentNodeStatic.action, description);
+      setCurrentPathway(setNodeAction(pathwayRef.current, currentNodeStatic.key, action));
     },
-    [currentNodeRef, pathwayRef, setCurrentPathway]
+    [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const changeTitle = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      const currentNode = currentNodeRef.current as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
 
       const title = event?.target.value || '';
-      const action = setActionTitle(currentNode.action, title);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      const action = setActionTitle(currentNodeStatic.action, title);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
 
-      addActionCQL(action, currentNode.key);
+      addActionCQL(action, currentNodeStatic.key);
     },
-    [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]
+    [currentNodeStatic, pathwayRef, setCurrentPathway, addActionCQL]
   );
 
   const selectCodeSystem = useCallback(
     (codeSystem: string): void => {
-      const currentNode = currentNodeRef.current as ActionNode;
-      if (!currentNode.action || !pathwayRef.current) return;
-      const action = setActionCodeSystem(currentNode.action, codeSystem);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
+      if (!currentNodeStatic.action || !pathwayRef.current) return;
+      const action = setActionCodeSystem(currentNodeStatic.action, codeSystem);
+      setCurrentPathway(
+        setNodeAction(pathwayRef.current, currentNodeStatic.key, resetDisplay(action))
+      );
     },
-    [currentNodeRef, pathwayRef, setCurrentPathway]
+    [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const validateFunction = useCallback((): void => {
-    const currentNode = currentNodeRef.current as ActionNode;
+    const currentNode = currentNodeStatic;
     if (!currentNode.action || !pathwayRef.current) {
       console.error('No Actions -- Cannot Validate');
       return;
@@ -114,7 +117,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType }) => {
 
     // TODO: move addActionCQL to builder.ts
     addActionCQL(action, currentNode.key);
-  }, [currentNodeRef, pathwayRef, setCurrentPathway, addActionCQL]);
+  }, [currentNodeStatic, pathwayRef, setCurrentPathway, addActionCQL]);
 
   const resetDisplay = (action: Action): Action => {
     return produce(action, (draftAction: Action) => {

@@ -11,7 +11,8 @@ import {
 } from '@material-ui/core';
 
 import useStyles from './styles';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
+import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface DeleteModalProps {
   open: boolean;
@@ -29,11 +30,12 @@ const DeleteModal: FC<DeleteModalProps> = ({
   onDelete
 }) => {
   const styles = useStyles();
-  const { currentNode } = useCurrentNodeContext();
+  const { pathway } = useCurrentPathwayContext();
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
 
   const text = isTransition ? (
     <span>
-      Delete the transition from <strong>{currentNode?.label}</strong> to{' '}
+      Delete the transition from <strong>{currentNodeStatic?.label}</strong> to{' '}
       <strong>{nodeLabel}</strong>? This will not delete either node, just the transition between
       them.
     </span>
