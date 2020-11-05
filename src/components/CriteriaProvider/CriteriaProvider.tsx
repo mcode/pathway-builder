@@ -47,6 +47,12 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
+const CQL_HELPER_LIBRARIES = [
+  'FHIRHelpers.cql',
+  'CDS_Connect_Commons_for_FHIRv400.cql',
+  'CDS_Connect_Conversions.cql'
+];
+
 function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria {
   return {
     id: shortid.generate(),
@@ -173,10 +179,13 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             const zipFiles = Object.values(zip.files);
             // Check for criteria in each of the cql files, add cql to libraries if no criteria
             for (let i = 0; i < zipFiles.length; i++) {
-              const fileContents = await zipFiles[i].async('string');
-              const criteria = await cqlToCriteria(fileContents);
-              if (criteria.length === 0) {
-                cqlObj.libraries[zipFiles[i].name] = { cql: fileContents };
+              const zipFile = zipFiles[i];
+
+              // Skip files that do not end with .cql
+              if (!zipFile.name.endsWith('.cql')) continue;
+              const fileContents = await zipFile.async('string');
+              if (CQL_HELPER_LIBRARIES.includes(zipFile.name)) {
+                cqlObj.libraries[zipFile.name] = { cql: fileContents };
               } else {
                 cqlObj.main = fileContents;
               }
