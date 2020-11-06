@@ -11,6 +11,7 @@ import ThemeProvider from 'components/ThemeProvider';
 
 import './styles/index.scss';
 import StaticApp from 'components/StaticApp';
+import { AuthModalProvider } from 'components/Auth/AuthModalProvider';
 
 // Enable why did you render for development mode
 // Will automatically track all memoized components
@@ -23,13 +24,15 @@ if (process.env.NODE_ENV === 'development') {
 
 ReactDOM.render(
   <ThemeProvider theme="light">
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Landing} />
-        <Route path="/builder" component={App} />
-        <Route path="/demo" component={StaticApp} />
-      </Switch>
-    </Router>
+    <AuthModalProvider>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/builder" component={App} />
+          <Route path="/demo" component={StaticApp} />
+        </Switch>
+      </Router>
+    </AuthModalProvider>
   </ThemeProvider>,
   document.getElementById('root')
 );
