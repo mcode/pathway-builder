@@ -9,10 +9,12 @@ import Loading from './elements/Loading';
 import { Pathway } from 'pathways-model';
 import usePathwayId from 'hooks/usePathwayId';
 import useNodeId from 'hooks/useNodeId';
+import { useAlertContext } from './AlertProvider';
 
 const BuilderRoute: FC = () => {
   const pathwayId = usePathwayId();
   const currentNodeId = useNodeId();
+  const { setAlertText, setOpenAlert } = useAlertContext();
   const baseUrl = config.get('pathwaysBackend');
   const { pathway, pathwayRef, resetCurrentPathway } = useCurrentPathwayContext();
 
@@ -26,10 +28,10 @@ const BuilderRoute: FC = () => {
   }, [data, pathwayRef, resetCurrentPathway]);
 
   if (isLoading && !error) return <Loading />;
-  // TODO: instead of showing error here show error on the builder screen as a toast
   else if (error) {
-    alert('ERROR: Could not load pathway. Redirecting to Pathway List screen');
-    return <Redirect to={`/builder`} />;
+    setAlertText('Connection to server lost. Please save your work then restart the server.');
+    setOpenAlert(true);
+    return <Builder />;
   } else if (data) {
     if (currentNodeId && pathway?.nodes[currentNodeId]) return <Builder />;
     else return <Redirect to={`/builder/${pathwayId}/node/Start`} />;
