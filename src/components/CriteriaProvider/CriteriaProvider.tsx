@@ -9,12 +9,13 @@ import React, {
   useEffect
 } from 'react';
 import shortid from 'shortid';
+import JSZip from 'jszip';
 import { ElmStatement, ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from 'components/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import { convertBasicCQL } from 'engine/cql-to-elm';
+import { convertBasicCQL, convertCQL, CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
   criteria: Criteria[];
@@ -58,8 +59,17 @@ function builderModelToCriteria(criteria: BuilderModel, label: string): Criteria
 function elmLibraryToCriteria(
   elm: ElmLibrary,
   cql: string | undefined = undefined,
+  cqlLibraries: CqlLibraries | undefined = undefined,
   custom = false
 ): Criteria[] {
+  // the cql-to-elm webservice always responds with ELM
+  // even if the CQL was complete garbage
+  // TODO: consider showing the error messages from the annotations?
+  if (!elm.library?.identifier?.id) {
+    // we're async right now so don't show an error here
+    // just return empty
+    return [];
+  }
   const allElmStatements: ElmStatement[] = elm.library.statements.def;
   let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
@@ -84,7 +94,8 @@ function elmLibraryToCriteria(
       modified: Date.now(),
       elm: elm,
       cql: cql,
-      statement: statement.name
+      statement: statement.name,
+      ...(cqlLibraries && { cqlLibraries })
     };
   });
 }
@@ -98,18 +109,28 @@ function jsonToCriteria(rawElm: string): Criteria[] | undefined {
   return elmLibraryToCriteria(elm);
 }
 
-function cqlToCriteria(rawCql: string): Promise<Criteria[]> {
-  return convertBasicCQL(rawCql).then(elm => {
-    // the cql-to-elm webservice always responds with ELM
-    // even if the CQL was complete garbage
-    // TODO: consider showing the error messages from the annotations?
-    if (!elm.library?.identifier?.id) {
-      // we're async right now so don't show an error here
-      // just return empty
-      return [];
-    }
-    return elmLibraryToCriteria(elm, rawCql);
-  });
+function cqlToCriteria(cql: string | CqlLibraries): Promise<Criteria[]> {
+  if (typeof cql === 'string') {
+    return convertBasicCQL(cql).then(elm => elmLibraryToCriteria(elm, cql));
+  } else {
+    return convertCQL(cql).then(elm => {
+      // Append library versions
+      Object.keys(elm).forEach(key => {
+        const cqlLibrary = cql[key];
+        const elmLibrary = elm[key];
+        if (cqlLibrary) cqlLibrary.version = elmLibrary.library.identifier.version;
+      });
+
+      // Loop through all elm libraries searching for criteria, use other libraries as dependencies
+      return Object.keys(elm)
+        .map(key => {
+          // Exclude current library from the list of cql libraries to pass to elmLibraryToCriteria
+          const { [key]: keyToExclude, ...dependencies } = cql;
+          return elmLibraryToCriteria(elm[key], cql[key].cql, dependencies);
+        })
+        .flat(1);
+    });
+  }
 }
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
@@ -126,7 +147,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     }
   }, [payload]);
 
-  const addCqlCriteria = useCallback((cql: string) => {
+  const addCqlCriteria = useCallback((cql: string | CqlLibraries) => {
     cqlToCriteria(cql).then(newCriteria => {
       if (newCriteria.length > 0) {
         setCriteria(currentCriteria => {
@@ -145,7 +166,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     (file: File) => {
       // figure out incoming file type
       const reader = new FileReader();
-      reader.onload = (event: ProgressEvent<FileReader>): void => {
+      reader.onload = async (event: ProgressEvent<FileReader>): Promise<void> => {
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           // TODO: more robust file type identification?
@@ -154,6 +175,20 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
           } else if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
+          } else if (file.name.endsWith('.zip')) {
+            const cqlLibraries: CqlLibraries = {};
+            const zip = await JSZip.loadAsync(file);
+            const zipFiles = Object.values(zip.files);
+            // Check for criteria in each of the cql files, add cql to libraries if no criteria
+            for (let i = 0; i < zipFiles.length; i++) {
+              const zipFile = zipFiles[i];
+
+              // Skip files that do not end with .cql
+              if (!zipFile.name.endsWith('.cql')) continue;
+              const fileContents = await zipFile.async('string');
+              cqlLibraries[zipFile.name] = { cql: fileContents };
+            }
+            addCqlCriteria(cqlLibraries);
           }
         } else alert('Unable to read that file');
       };
@@ -167,7 +202,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   }, []);
 
   const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, undefined, true);
+    const newCriteria = elmLibraryToCriteria(elm, undefined, undefined, true);
     setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
 
     return newCriteria;

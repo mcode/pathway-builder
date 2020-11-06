@@ -108,7 +108,7 @@ const CriteriaList: FC = () => {
         open={open}
         onClose={closeImportModal}
         onSelectFile={selectFile}
-        allowedFileType=".cql"
+        allowedFileType=".cql, .zip"
       />
 
       {status === 'loading' ? (

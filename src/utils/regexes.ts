@@ -1,6 +1,6 @@
 // sample header= "multipart/form-data;boundary=Boundary_1"
 // get the part after "boundary=" and before any subsequent ;
-export const extractMultipartBoundary = /.*;boundary=(Boundary.*);?.*/g;
+export const extractMultipartBoundary = /.*;boundary=(Boundary.*);?.*/;
 
 export const extractMultipartFileName = /Content-Disposition: form-data; name="([^"]+)"/;
 
