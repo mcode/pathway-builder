@@ -19,12 +19,14 @@ import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ExportMenu from 'components/elements/ExportMenu';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
-import { readFile, updatePathway } from 'utils/backend';
+import { readFile, updateCriteria, updatePathway } from 'utils/backend';
 import { Pathway } from 'pathways-model';
 import { deletePathway } from 'utils/backend';
 import usePathways from 'hooks/usePathways';
 import { updatePathwayCriteriaSources } from 'utils/builder';
 import useCriteria from 'hooks/useCriteria';
+import { cqlToCriteria } from 'utils/criteria';
+import { Criteria } from 'criteria-model';
 
 const PathwaysList: FC = () => {
   const styles = useStyles();
@@ -57,22 +59,59 @@ const PathwaysList: FC = () => {
     onSettled: () => cache.invalidateQueries('pathways')
   });
 
+  const [mutateAddCriteria] = useMutation(updateCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
+
+  const addCqlCriteria = useCallback(
+    (cql: string, criteriaToAdd: Criteria[]) => {
+      const dbCriteria = criteria.map(c => c.label);
+      return cqlToCriteria(cql).then(newCriteria => {
+        if (newCriteria.length > 0) {
+          // Do not add CQL Criteria that already exists
+          newCriteria.forEach(c => {
+            if (!dbCriteria.includes(c.label)) {
+              criteriaToAdd.push(c);
+              mutateAddCriteria(c);
+            }
+          });
+        } else {
+          alert('No valid criteria were found in the provided file');
+        }
+      });
+    },
+    [criteria, mutateAddCriteria]
+  );
+
+  const loadPathwayLibraries = useCallback(
+    async (pathway: Pathway): Promise<Criteria[]> => {
+      const newCriteria: Criteria[] = [];
+      const listOfPromises: Promise<void>[] = [];
+      pathway.library.forEach(lib => listOfPromises.push(addCqlCriteria(lib, newCriteria)));
+      return Promise.all(listOfPromises).then(() => newCriteria);
+    },
+    [addCqlCriteria]
+  );
+
   const addPathway = useCallback(
     (files: FileList | undefined | null) => {
       if (files) {
         readFile(files[0], (event: ProgressEvent<FileReader>): void => {
           if (event.target?.result) {
             const rawContent = event.target.result as string;
-            const { newPathway } = updatePathwayCriteriaSources(
-              JSON.parse(rawContent) as Pathway,
-              criteria
-            );
-            mutateAddPathway(newPathway);
+            const tempPathway = JSON.parse(rawContent) as Pathway;
+            loadPathwayLibraries(tempPathway).then(newCriteria => {
+              const { newPathway } = updatePathwayCriteriaSources(tempPathway, [
+                ...criteria,
+                ...newCriteria
+              ]);
+              mutateAddPathway(newPathway);
+            });
           }
         });
       }
     },
-    [criteria, mutateAddPathway]
+    [criteria, mutateAddPathway, loadPathwayLibraries]
   );
 
   const closeMenu = useCallback((): void => {
