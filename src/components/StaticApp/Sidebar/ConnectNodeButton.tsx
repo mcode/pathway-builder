@@ -5,14 +5,19 @@ import useStyles from 'components/Sidebar/styles';
 import { addTransition } from 'utils/builder';
 import { getConnectableNodes } from 'utils/nodeUtils';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@material-ui/core';
+import { PathwayNode } from 'pathways-model';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
-const ConnectNodeButton: FC = () => {
+interface ConnectNodeButtonProps {
+  currentNode: PathwayNode | null;
+}
+
+const ConnectNodeButton: FC<ConnectNodeButtonProps> = ({ currentNode }) => {
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { currentNode, currentNodeRef } = useCurrentNodeContext();
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
 
   const styles = useStyles();
   const [open, setOpen] = useState(false);
@@ -23,11 +28,11 @@ const ConnectNodeButton: FC = () => {
 
   const connectToNode = useCallback(
     (nodeKey: string): void => {
-      if (pathwayRef.current && currentNodeRef.current)
-        setCurrentPathway(addTransition(pathwayRef.current, currentNodeRef.current.key, nodeKey));
+      if (pathwayRef.current && currentNodeStatic)
+        setCurrentPathway(addTransition(pathwayRef.current, currentNodeStatic.key, nodeKey));
       setOpen(false);
     },
-    [setCurrentPathway, currentNodeRef, pathwayRef]
+    [setCurrentPathway, currentNodeStatic, pathwayRef]
   );
 
   const showDropdown = useCallback(() => {

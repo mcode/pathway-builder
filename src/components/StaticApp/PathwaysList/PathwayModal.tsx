@@ -35,7 +35,7 @@ const PathwayModal: FC<PathwayModalProps> = ({ open, onClose, editPathway }) => 
 
   const closeModal = useCallback(
     (pathwayId: string): void => {
-      history.push(`/builder/${encodeURIComponent(pathwayId)}/node/Start`);
+      history.push(`/demo/builder/${encodeURIComponent(pathwayId)}/node/Start`);
       onClose();
     },
     [history, onClose]

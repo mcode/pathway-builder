@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useThemeToggle } from '../ThemeProvider';
 
-import logo from 'camino-logo-dark.png';
+import logo from 'assets/camino-logo-dark.png';
 import styles from './Header.module.scss';
 
 const Header: FC = () => {
@@ -31,7 +31,7 @@ const Header: FC = () => {
 
   return (
     <header className={styles.header}>
-      <Link to="/" className={styles.homeLink} onClick={(): void => resetCurrentCriteria()}>
+      <Link to="/builder" className={styles.homeLink} onClick={resetCurrentCriteria}>
         <img src={logo} alt="logo" className={styles.logo} />
       </Link>
 

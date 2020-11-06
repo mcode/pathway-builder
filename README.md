@@ -5,7 +5,7 @@
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 # Pathway Builder
-Camino™ is a prototype SMART on FHIR application intended to demonstrate the value of mCODE™, a standardized data model around cancer, through computable oncology clinical pathways. Camino uses mCODE data in the patient's record fetched from the EHR to automatically evaluate the patient's current location on a structured pathway and provides recommendations as to next steps. [See a live demo](https://mcode.github.io/pathway-builder/#/)
+Camino™ is a prototype SMART on FHIR application intended to demonstrate the value of mCODE™, a standardized data model around cancer, through computable oncology clinical pathways. Camino uses mCODE data in the patient's record fetched from the EHR to automatically evaluate the patient's current location on a structured pathway and provides recommendations as to next steps. [See a live demo](https://mcode.github.io/pathway-builder/#/demo)
 
 ## Clinical Pathways
 The American Society of Clinical Oncology (ASCO®) defines oncology clinical pathways as "detailed, evidence-based treatment protocols for delivering cancer care to patients with specific disease types and stages. When properly designed and implemented, oncology pathways can serve as an important tool in improving care quality and reducing costs." Read more about clinical pathways at https://www.asco.org/practice-policy/cancer-care-initiatives/clinical-pathways

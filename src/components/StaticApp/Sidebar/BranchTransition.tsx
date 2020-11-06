@@ -9,20 +9,21 @@ import {
   setTransitionConditionDescription
 } from 'utils/builder';
 import { OutlinedDiv, SidebarButton } from 'components/Sidebar';
-import { Transition } from 'pathways-model';
+import { PathwayNode, Transition } from 'pathways-model';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
 import useStyles from 'components/Sidebar/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface BranchTransitionProps {
   transition: Transition;
+  currentNode: PathwayNode | null;
 }
 
-const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
+const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }) => {
   const { criteria, addBuilderCriteria } = useCriteriaContext();
   const {
     buildCriteriaSelected,
@@ -37,7 +38,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
-  const { currentNodeRef } = useCurrentNodeContext();
+  const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current);
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
   ]);
@@ -65,10 +66,10 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   const dislayEditCriteria = !transitionSelected && builderElements;
 
   const handleUseCriteria = useCallback((): void => {
-    if (hasCriteria && currentNodeRef.current && pathwayRef.current) {
+    if (hasCriteria && currentNodeStatic && pathwayRef.current) {
       // delete the transition criteria
       setCurrentPathway(
-        removeTransitionCondition(pathwayRef.current, currentNodeRef.current.key, transition.id)
+        removeTransitionCondition(pathwayRef.current, currentNodeStatic.key, transition.id)
       );
       setUseCriteriaSelected(false);
     } else {
@@ -76,7 +77,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     }
   }, [
     useCriteriaSelected,
-    currentNodeRef,
+    currentNodeStatic,
     pathwayRef,
     hasCriteria,
     transition.id,
@@ -85,13 +86,13 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
   const selectCriteriaSource = useCallback(
     (criteriaId: string): void => {
-      if (!currentNodeRef.current || !pathwayRef.current) return;
+      if (!currentNodeStatic || !pathwayRef.current) return;
 
       const selectedCriteria = criteria.find(c => c.id === criteriaId);
       if (!selectedCriteria) return;
       const newPathway = setTransitionCondition(
         pathwayRef.current,
-        currentNodeRef.current.key,
+        currentNodeStatic.key,
         transitionRef.current.id,
         transitionRef.current.condition?.description || '',
         selectedCriteria
@@ -99,24 +100,24 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
 
       setCurrentPathway(newPathway);
     },
-    [currentNodeRef, setCurrentPathway, pathwayRef, transitionRef, criteria]
+    [currentNodeStatic, setCurrentPathway, pathwayRef, transitionRef, criteria]
   );
 
   const setCriteriaDisplay = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
-      if (!currentNodeRef.current || !pathwayRef.current) return;
+      if (!currentNodeStatic || !pathwayRef.current) return;
 
       const criteriaDisplay = event?.target.value || '';
       setCurrentPathway(
         setTransitionConditionDescription(
           pathwayRef.current,
-          currentNodeRef.current.key,
+          currentNodeStatic.key,
           transition.id,
           criteriaDisplay
         )
       );
     },
-    [currentNodeRef, transition.id, setCurrentPathway, pathwayRef]
+    [currentNodeStatic, transition.id, setCurrentPathway, pathwayRef]
   );
 
   const handleCriteriaName = useCallback(
@@ -166,7 +167,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
   }, [resetCurrentCriteria, resetCriteriaBuilder]);
 
   const handleBuildCriteriaSave = useCallback(() => {
-    if (!currentNodeRef.current || !pathwayRef.current || !currentCriteria?.cql) return;
+    if (!currentNodeStatic || !pathwayRef.current || !currentCriteria?.cql) return;
 
     const criteria = addBuilderCriteria(
       currentCriteria,
@@ -175,7 +176,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     );
     const newPathway = setTransitionCondition(
       pathwayRef.current,
-      currentNodeRef.current.key,
+      currentNodeStatic.key,
       transitionRef.current.id,
       criteriaName,
       criteria[0]
@@ -184,7 +185,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition }) => {
     setCurrentPathway(newPathway);
     handleBuildCriteriaCancel();
   }, [
-    currentNodeRef,
+    currentNodeStatic,
     setCurrentPathway,
     pathwayRef,
     transitionRef,

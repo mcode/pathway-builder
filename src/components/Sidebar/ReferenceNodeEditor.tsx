@@ -3,23 +3,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
-import { useCurrentNodeContext } from 'components/CurrentNodeProvider';
 import { nodeTypeOptions, redirect } from 'utils/nodeUtils';
-import { Pathway, ReferenceNode } from 'pathways-model';
+import { Pathway, PathwayNode, ReferenceNode } from 'pathways-model';
 import { useHistory } from 'react-router-dom';
 import { setNodeReference } from 'utils/builder';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import usePathways from 'hooks/usePathways';
+import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface ReferenceNodeEditorProps {
   changeNodeType: (event: string) => void;
+  currentNode: PathwayNode | null;
 }
 
-const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) => {
-  const { currentNode, currentNodeRef } = useCurrentNodeContext();
-  const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
+const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType, currentNode }) => {
   const history = useHistory();
   const { isLoading, pathways } = usePathways();
+  const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
+  const currentNodeStatic = useCurrentNodeStatic(pathway);
 
   const pathwayOptions = pathways.map((pathway: Pathway) => {
     return {
@@ -45,17 +46,12 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType }) =
         pathwayOptions.find(option => {
           return option.value === referenceId;
         })?.label || '';
-      if (currentNodeRef.current && pathwayRef.current)
+      if (currentNodeStatic && pathwayRef.current)
         setCurrentPathway(
-          setNodeReference(
-            pathwayRef.current,
-            currentNodeRef.current.key,
-            referenceId,
-            referenceLabel
-          )
+          setNodeReference(pathwayRef.current, currentNodeStatic.key, referenceId, referenceLabel)
         );
     },
-    [currentNodeRef, pathwayOptions, pathwayRef, setCurrentPathway]
+    [currentNodeStatic, pathwayOptions, pathwayRef, setCurrentPathway]
   );
 
   const changeNodeTypeEnabled = currentNode?.key && currentNode.type !== 'start';
