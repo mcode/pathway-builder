@@ -36,6 +36,7 @@ const PathwaysList: FC = () => {
   const [open, setOpen] = useState(false);
   const [importPathwayOpen, _setImportPathwayOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [importLoading, setImportLoading] = useState<boolean>(false);
 
   const {
     indeterminate,
@@ -54,6 +55,10 @@ const PathwaysList: FC = () => {
   const closeNewPathwayModal = useCallback((): void => {
     setOpen(false);
   }, []);
+
+  const openImportPathwayModal = useCallback((): void => _setImportPathwayOpen(true), []);
+
+  const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
 
   const [mutateAddPathway] = useMutation(updatePathway, {
     onSettled: () => cache.invalidateQueries('pathways')
@@ -96,6 +101,7 @@ const PathwaysList: FC = () => {
   const addPathway = useCallback(
     (files: FileList | undefined | null) => {
       if (files) {
+        setImportLoading(true);
         readFile(files[0], (event: ProgressEvent<FileReader>): void => {
           if (event.target?.result) {
             const rawContent = event.target.result as string;
@@ -106,21 +112,21 @@ const PathwaysList: FC = () => {
                 ...newCriteria
               ]);
               mutateAddPathway(newPathway);
+              closeImportPathwayModal();
+              setImportLoading(false);
             });
           }
         });
+      } else {
+        closeImportPathwayModal();
       }
     },
-    [criteria, mutateAddPathway, loadPathwayLibraries]
+    [criteria, mutateAddPathway, loadPathwayLibraries, closeImportPathwayModal]
   );
 
   const closeMenu = useCallback((): void => {
     setAnchorEl(null);
   }, []);
-
-  const openImportPathwayModal = useCallback((): void => _setImportPathwayOpen(true), []);
-
-  const closeImportPathwayModal = useCallback((): void => _setImportPathwayOpen(false), []);
 
   const [mutateDelete] = useMutation(deletePathway, {
     onSettled: () => cache.invalidateQueries('pathways')
@@ -206,6 +212,7 @@ const PathwaysList: FC = () => {
         onClose={closeImportPathwayModal}
         onSelectFile={addPathway}
         allowedFileType=".json"
+        loading={importLoading}
       />
       <PathwayModal open={open} onClose={closeNewPathwayModal} />
       <ExportMenu pathway={pathwaysToExport} anchorEl={anchorEl} closeMenu={closeMenu} />

@@ -63,8 +63,9 @@ const CriteriaList: FC = () => {
           } else alert('Unable to read that file');
         });
       }
+      closeImportModal();
     },
-    [mutateAddCriteria]
+    [mutateAddCriteria, closeImportModal]
   );
 
   const [mutateDelete] = useMutation(deleteCriteria, {

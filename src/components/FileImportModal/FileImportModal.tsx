@@ -9,7 +9,7 @@ import {
   Input
 } from '@material-ui/core';
 import useStyles from './styles';
-import { faFileImport, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface FileImportModalProps {
@@ -17,13 +17,15 @@ interface FileImportModalProps {
   onClose: () => void;
   onSelectFile: (files: FileList | undefined | null) => void;
   allowedFileType?: string; // Setting this to undefined will allow any file type to be selected
+  loading?: boolean;
 }
 
 const FileImportModal: FC<FileImportModalProps> = ({
   open,
   onClose,
   onSelectFile,
-  allowedFileType
+  allowedFileType,
+  loading = false
 }) => {
   const styles = useStyles();
   const [fileName, setFileName] = useState<string>('');
@@ -34,10 +36,9 @@ const FileImportModal: FC<FileImportModalProps> = ({
       event.preventDefault();
       const files = importFileRef?.current?.files;
       onSelectFile(files);
-      onClose();
       setFileName('');
     },
-    [onClose, onSelectFile]
+    [onSelectFile]
   );
 
   const handleChooseFile = useCallback(() => {
@@ -84,7 +85,9 @@ const FileImportModal: FC<FileImportModalProps> = ({
             variant="contained"
             color="primary"
             startIcon={<FontAwesomeIcon icon={faFileImport} />}
+            endIcon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : null}
             type="submit"
+            disabled={loading}
           >
             Import
           </Button>
