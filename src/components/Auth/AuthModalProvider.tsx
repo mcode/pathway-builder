@@ -104,7 +104,7 @@ interface AuthModalProviderProps {
   children: ReactNode;
 }
 
-export const AuthModalProvider: FC<AuthModalProviderProps> = memo(({ children }) => {
+const AuthModalProvider: FC<AuthModalProviderProps> = memo(({ children }) => {
   const [openLogin, setOpenLogin] = useState<boolean>(false);
   const [openSignup, setOpenSignup] = useState<boolean>(false);
   const [openReset, setOpenReset] = useState<boolean>(false);
@@ -201,4 +201,5 @@ export const AuthModalProvider: FC<AuthModalProviderProps> = memo(({ children })
   );
 });
 
+export default AuthModalProvider;
 export const useAuthModalContext = (): AuthModalContextInterface => useContext(AuthModalContext);
