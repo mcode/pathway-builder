@@ -1,17 +1,21 @@
 import { Schema, model } from 'mongoose';
+import wrappedSchema from './wrappedSchema';
 
-const criteriaSchema = new Schema({
-  id: String,
-  label: String,
-  version: String,
-  modified: Number,
-  statement: String,
-  builder: Object,
-  elm: Object,
-  cql: String,
-});
-
-criteriaSchema.index({ id: 1 }, { unique: true });
+const criteriaSchema = wrappedSchema(
+  new Schema(
+    {
+      id: String,
+      label: String,
+      version: String,
+      modified: Number,
+      statement: String,
+      builder: Object,
+      elm: Object,
+      cql: String,
+    },
+    { _id: false }
+  )
+);
 
 const Criteria = model('Criteria', criteriaSchema);
 

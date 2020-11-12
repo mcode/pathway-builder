@@ -9,6 +9,12 @@ import { Model, Document } from 'mongoose';
 
 const resetRouter = Router();
 
+const wrapData = (data: Array<object>): Array<object> => {
+  return data.map((d) => {
+    return { metadata: {}, value: d };
+  });
+};
+
 const resetData = <T extends Document>(
   model: Model<T>,
   defaultData: Array<object> | undefined,
@@ -18,7 +24,7 @@ const resetData = <T extends Document>(
   model.remove({}, (err) => {
     if (err) res.status(500).send('Error purging the table').end();
     else if (defaultData)
-      model.insertMany(defaultData, (err, product) => {
+      model.insertMany(wrapData(defaultData), (err, product) => {
         if (err) res.status(500).send('Error inserting new criteria').end();
         else res.status(200);
       });

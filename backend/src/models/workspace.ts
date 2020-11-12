@@ -1,10 +1,14 @@
 import { Schema, model } from 'mongoose';
+import wrappedSchema from './wrappedSchema';
 
-const workspaceSchema = new Schema({
-  id: String,
-});
-
-workspaceSchema.index({ id: 1 }, { unique: true });
+const workspaceSchema = wrappedSchema(
+  new Schema(
+    {
+      id: String,
+    },
+    { _id: false }
+  )
+);
 
 const Workspace = model('Workspace', workspaceSchema);
 
