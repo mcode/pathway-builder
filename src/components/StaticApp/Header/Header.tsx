@@ -14,19 +14,19 @@ import useStyles from './styles';
 import { useAuthModalContext } from 'components/Auth/AuthModalProvider';
 
 const DemoBanner: FC = () => {
-  const styles = useStyles();
+  const styleOverrides = useStyles();
   const { openLoginModal, openSignupModal } = useAuthModalContext();
 
   return (
-    <div className={styles.root}>
-      <FontAwesomeIcon icon={faExclamationCircle} className={styles.icon} />
+    <div className={styleOverrides.root}>
+      <FontAwesomeIcon icon={faExclamationCircle} className={styleOverrides.icon} />
       You are currently viewing syntheic demo data. Any changes made will not be saved. To create
       your own pathways,{' '}
-      <span className={styles.underline} onClick={openLoginModal}>
+      <span className={styleOverrides.underline} onClick={openLoginModal}>
         login
       </span>{' '}
       or{' '}
-      <span className={styles.underline} onClick={openSignupModal}>
+      <span className={styleOverrides.underline} onClick={openSignupModal}>
         sign up
       </span>
       .
@@ -55,7 +55,7 @@ const Header: FC = () => {
   return (
     <>
       <header className={styles.header}>
-        <Link to="/demo" className={styles.homeLink} onClick={resetCurrentCriteria}>
+        <Link to="/" className={styles.homeLink} onClick={resetCurrentCriteria}>
           <img src={logo} alt="logo" className={styles.logo} />
         </Link>
 
