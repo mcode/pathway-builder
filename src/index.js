@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import App from 'components/App';
-import { Landing } from 'components/Auth';
+import { Landing, AuthModalProvider } from 'components/Auth';
 import ThemeProvider from 'components/ThemeProvider';
 
 import './styles/index.scss';
@@ -23,13 +23,15 @@ if (process.env.NODE_ENV === 'development') {
 
 ReactDOM.render(
   <ThemeProvider theme="light">
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Landing} />
-        <Route path="/builder" component={App} />
-        <Route path="/demo" component={StaticApp} />
-      </Switch>
-    </Router>
+    <AuthModalProvider>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/builder" component={App} />
+          <Route path="/demo" component={StaticApp} />
+        </Switch>
+      </Router>
+    </AuthModalProvider>
   </ThemeProvider>,
   document.getElementById('root')
 );
