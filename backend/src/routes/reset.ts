@@ -6,18 +6,13 @@ import { Response, Request } from 'express';
 import { criteria as baseCriteria } from 'defaultData/criteria';
 import { pathways as basePathways } from 'defaultData/pathways';
 import { Model, Document } from 'mongoose';
+import { ObjectWithID, wrapData } from 'models/wrappedSchema';
 
 const resetRouter = Router();
 
-const wrapData = (data: Array<object>): Array<object> => {
-  return data.map((d) => {
-    return { metadata: {}, value: d };
-  });
-};
-
 const resetData = <T extends Document>(
   model: Model<T>,
-  defaultData: Array<object> | undefined,
+  defaultData: ObjectWithID[] | undefined,
   req: Request,
   res: Response
 ): void => {

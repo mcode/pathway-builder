@@ -10,12 +10,25 @@ const wrappedSchema = (childSchema: Schema): Schema => {
   const schema = new Schema({
     metadata: Object,
     value: childSchema,
+    id: String,
   });
 
   // Add a unique index to the child schema id
-  schema.index({ 'value.id': 1 }, { unique: true });
+  schema.index({ id: 1 }, { unique: true });
 
   return schema;
 };
 
+interface ObjectWithID {
+  id: string;
+}
+
+const wrapData = (data: ObjectWithID[] | ObjectWithID): object => {
+  return Array.isArray(data)
+    ? data.map((d) => wrapData(d))
+    : { metadata: {}, value: data, id: data.id };
+};
+
 export default wrappedSchema;
+export { wrapData };
+export type { ObjectWithID };

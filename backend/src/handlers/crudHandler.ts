@@ -1,5 +1,6 @@
 import { Model, Document } from 'mongoose';
 import { Response, Request, Router } from 'express';
+import { wrapData } from 'models/wrappedSchema';
 
 interface ProductWithValue extends Document {
   value?: string;
@@ -14,10 +15,6 @@ interface Handler<T extends ProductWithValue> {
 // https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
 // Do not include _id or __v
 const defaultProjection = { __v: 0, _id: 0 };
-
-const wrapData = (data: object): object => {
-  return { metadata: {}, value: data };
-};
 
 const getAllHandler = <T extends Document>({ model, res }: Handler<T>): void => {
   model.find({}, defaultProjection, (err, product) => {
@@ -35,7 +32,7 @@ const putByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): vo
       // filter query parameters elegantly
       // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/46550
       // https://github.com/microsoft/TypeScript/pull/30639
-      { 'value.id': req.params.id } as object,
+      { id: req.params.id } as object,
       wrapData(req.body),
       { overwrite: true, new: true, upsert: true, rawResult: true, projection: defaultProjection },
       (err, product) => {
@@ -50,14 +47,14 @@ const putByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): vo
 };
 
 const deleteByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
-  model.deleteOne({ 'value.id': req.params.id } as object, (err) => {
+  model.deleteOne({ id: req.params.id } as object, (err) => {
     if (err) res.status(500).send(err);
     else res.status(200).send(`Deleted ${model.modelName} ${req.params.id}`);
   });
 };
 
 const getByIdHandler = <T extends Document>({ model, req, res }: Handler<T>): void => {
-  model.findOne({ 'value.id': req.params.id } as object, defaultProjection, (err, document) => {
+  model.findOne({ id: req.params.id } as object, defaultProjection, (err, document) => {
     if (err) res.status(500).send(err);
     if (document) {
       res.status(200).send((document as ProductWithValue).value);
