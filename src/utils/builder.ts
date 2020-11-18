@@ -16,6 +16,8 @@ import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 import JSZip from 'jszip';
+import { convertBasicCQL } from 'engine/cql-to-elm';
+import { isActionNode } from './nodeUtils';
 
 export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
@@ -42,13 +44,25 @@ interface AddCriteriaSourceInterface {
 
 export function updatePathwayCriteriaSources(
   pathway: Pathway,
-  criteria: Criteria[]
+  criteria: Criteria[],
+  exporting: boolean = false
 ): AddCriteriaSourceInterface {
   let updated = false;
   const criteriaIds = criteria.map(crit => crit.id);
   const newPathway = produce(pathway, draftPathway => {
     Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
       node.transitions.forEach(({ condition }, transitionIndex) => {
+        // update the CQL for action nodes
+        if (exporting && isActionNode(draftPathway.nodes[nodeIndex])) {
+          const action = draftPathway.nodes[nodeIndex] as ActionNode;
+          const cql = createCQL(action.action, draftPathway.nodes[nodeIndex].key);
+          convertBasicCQL(cql).then((elm: ElmLibrary) => {
+            // Disable lint for no-null assertion since it is already checked above
+            // eslint-disable-next-line
+            draftPathway = setActionNodeElm(draftPathway, draftPathway.nodes[nodeIndex].key, elm);
+          });
+        }
+
         // If a matching criteria does not already exist, try and find one
         if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
           const [library, statement] = condition.cql.split('.');
@@ -71,7 +85,7 @@ export function updatePathwayCriteriaSources(
 }
 
 function addCriteriaSource(pathways: Pathway[], criteria: Criteria[]): Pathway[] {
-  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria).newPathway);
+  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria, true).newPathway);
 }
 
 export function downloadPathway(
@@ -80,6 +94,7 @@ export function downloadPathway(
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
+  console.log('In Download Pathway');
   pathwaysToExport = addCriteriaSource(pathwaysToExport, criteria);
   if (pathwaysToExport.length > 1) {
     const zip = new JSZip();
@@ -122,8 +137,10 @@ export function exportPathway(
   const pathwayWithElm = setNavigationalElm(pathway, elm);
   let pathwayToExport: Pathway | Bundle = pathwayWithElm;
   if (cpg) {
+    console.log(pathwayWithElm);
     const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
     pathwayToExport = exporter.export();
+    console.log(pathwayToExport);
   } else {
     const exporter = new CaminoExporter(pathwayWithElm, criteria);
     pathwayToExport = exporter.export();

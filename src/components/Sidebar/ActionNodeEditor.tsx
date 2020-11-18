@@ -49,7 +49,7 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ changeNodeType, currentNo
       convertBasicCQL(cql).then(elm => {
         // Disable lint for no-null assertion since it is already checked above
         // eslint-disable-next-line
-        setCurrentPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
+        //setCurrentPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
       });
     },
     [pathwayRef, setCurrentPathway]
