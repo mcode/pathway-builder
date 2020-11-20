@@ -12,8 +12,8 @@ import {
   TableRow,
   Link
 } from '@material-ui/core';
+import { useQueryCache, useMutation } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import PathwayModal from './PathwayModal';
 
 import useStyles from './styles';
@@ -22,15 +22,18 @@ import { Link as RouterLink } from 'react-router-dom';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
 import { ContextualExportMenu } from 'components/elements/ExportMenu';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
+import { deletePathway } from 'utils/backend';
+import usePathways from 'hooks/usePathways';
 
-interface PathwaysTableInterface {
+interface PathwaysTableProps {
   itemSelected: (item: string) => boolean;
   handleSelectClick: (item: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectClick }) => {
+const PathwaysTable: FC<PathwaysTableProps> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
-  const { pathways, deletePathway } = usePathwaysContext();
+  const cache = useQueryCache();
+  const { pathways } = usePathways();
   const { setCurrentPathway } = useCurrentPathwayContext();
   const [open, setOpen] = useState(false);
   const [editablePathway, setEditablePathway] = useState<Pathway>();
@@ -58,11 +61,18 @@ const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectC
     setAnchorEl(null);
   }, []);
 
+  const [mutateDelete] = useMutation(deletePathway, {
+    onSettled: () => {
+      cache.invalidateQueries('pathways');
+      cache.invalidateQueries('pathway'); // TODO: only invalidate the deleted one
+    }
+  });
+
   const deletion = useCallback(
     (id: string): void => {
-      deletePathway(id);
+      mutateDelete(id);
     },
-    [deletePathway]
+    [mutateDelete]
   );
 
   return (
@@ -91,7 +101,7 @@ const PathwaysTable: FC<PathwaysTableInterface> = ({ itemSelected, handleSelectC
                 <TableCell component="th" scope="row">
                   <Link
                     component={RouterLink}
-                    to={`/demo/builder/${encodeURIComponent(pathway.id)}`}
+                    to={`/builder/${encodeURIComponent(pathway.id)}`}
                     color="primary"
                     underline="none"
                   >

@@ -10,12 +10,13 @@ import {
 } from 'utils/builder';
 import { OutlinedDiv, SidebarButton } from '.';
 import { PathwayNode, Transition } from 'pathways-model';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import useStyles from './styles';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
 import { BuilderModel, Criteria } from 'criteria-model';
+import useCriteria from 'hooks/useCriteria';
+import { addBuilderCriteria } from 'utils/criteria';
 import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface BranchTransitionProps {
@@ -24,7 +25,9 @@ interface BranchTransitionProps {
 }
 
 const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }) => {
-  const { criteria, addBuilderCriteria } = useCriteriaContext();
+  const styles = useStyles();
+  const { criteria } = useCriteria();
+  const transitionRef = useRef(transition);
   const {
     buildCriteriaSelected,
     setBuildCriteriaSelected,
@@ -38,23 +41,22 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
+  const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current);
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
     criteria
   ]);
   const criteriaAvailable = criteriaOptions.length > 0;
-  const styles = useStyles();
-  const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
+  const displayCriteria =
+    criteriaAvailable &&
+    (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
+
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;
   const criteriaDisplayIsValid = criteriaDescription && criteriaDescription !== '';
   const hasCriteria = transition.condition?.cql || transition.condition?.description;
   const buttonText = hasCriteria ? 'DELETE' : 'CANCEL';
   const icon = hasCriteria ? <FontAwesomeIcon icon={faTrashAlt} /> : null;
-  const displayCriteria =
-    criteriaAvailable &&
-    (useCriteriaSelected || transition.condition?.cql || transition.condition?.description);
-  const transitionRef = useRef(transition);
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
   // Check if criteria was built by criteria builder
   let builderElements: BuilderModel | null = null;
@@ -94,7 +96,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
         pathwayRef.current,
         currentNodeStatic.key,
         transitionRef.current.id,
-        transitionRef.current.condition?.description || '',
+        transitionRef.current.condition?.description || selectedCriteria.display,
         selectedCriteria
       );
 
@@ -192,8 +194,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
     currentCriteria,
     criteriaName,
     transition,
-    handleBuildCriteriaCancel,
-    addBuilderCriteria
+    handleBuildCriteriaCancel
   ]);
 
   return (

@@ -19,7 +19,7 @@ const LandingHeader: FC<LandingHeaderProps> = ({ openLogin, openSignup }) => {
 
   return (
     <header className={styles.header}>
-      <Link to="/demo" onClick={resetCurrentCriteria} className={styles.logoLink}>
+      <Link to="/" onClick={resetCurrentCriteria} className={styles.logoLink}>
         <img src={logo} alt="logo" className={styles.logo} />
       </Link>
 

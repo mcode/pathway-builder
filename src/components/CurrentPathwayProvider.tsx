@@ -10,10 +10,9 @@ import React, {
 } from 'react';
 import { Pathway } from 'pathways-model';
 import useRefUndoState from 'hooks/useRefUndoState';
-import { usePathwaysContext } from './PathwaysProvider';
 import HotKeys from 'react-hot-keys';
-import { useCriteriaContext } from './CriteriaProvider';
-import { updatePathwayCriteriaSources } from 'utils/builder';
+import { updatePathway } from 'utils/backend';
+import { useMutation, useQueryCache } from 'react-query';
 
 interface CurrentPathwayContextInterface {
   pathway: Pathway | null;
@@ -45,8 +44,7 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     _resetPathway,
     _setPathway
   ] = useRefUndoState<Pathway | null>(null);
-  const { criteria } = useCriteriaContext();
-  const { updatePathway } = usePathwaysContext();
+  const cache = useQueryCache();
 
   const undoPathway = useCallback(() => {
     _undoPathway();
@@ -70,17 +68,13 @@ export const CurrentPathwayProvider: FC<CurrentPathwayProviderProps> = memo(({ c
     [_setPathway]
   );
 
-  useEffect(() => {
-    if (pathway) updatePathway(pathway);
-  }, [pathway, updatePathway]);
+  const [mutateUpdatePathway] = useMutation(updatePathway, {
+    onSettled: () => cache.invalidateQueries('pathway')
+  });
 
-  // Update criteriaSource if criteria change
   useEffect(() => {
-    if (!pathway) return;
-
-    const { updated, newPathway } = updatePathwayCriteriaSources(pathway, criteria);
-    if (updated) resetCurrentPathway(newPathway);
-  }, [criteria, pathway, resetCurrentPathway]);
+    if (pathway) mutateUpdatePathway(pathway);
+  }, [pathway, mutateUpdatePathway]);
 
   return (
     <CurrentPathwayContext.Provider

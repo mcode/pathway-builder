@@ -2,13 +2,13 @@ import React, { FC, memo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropDown from 'components/elements/DropDown';
 import useStyles from './styles';
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import { useCurrentPathwayContext } from 'components/CurrentPathwayProvider';
 import { nodeTypeOptions, redirect } from 'utils/nodeUtils';
 import { Pathway, PathwayNode, ReferenceNode } from 'pathways-model';
 import { useHistory } from 'react-router-dom';
 import { setNodeReference } from 'utils/builder';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import usePathways from 'hooks/usePathways';
 import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface ReferenceNodeEditorProps {
@@ -17,10 +17,10 @@ interface ReferenceNodeEditorProps {
 }
 
 const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType, currentNode }) => {
-  const { pathways, updatePathway } = usePathwaysContext();
+  const history = useHistory();
+  const { isLoading, pathways } = usePathways();
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const currentNodeStatic = useCurrentNodeStatic(pathway);
-  const history = useHistory();
 
   const pathwayOptions = pathways.map((pathway: Pathway) => {
     return {
@@ -47,11 +47,11 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType, cur
           return option.value === referenceId;
         })?.label || '';
       if (currentNodeStatic && pathwayRef.current)
-        updatePathway(
+        setCurrentPathway(
           setNodeReference(pathwayRef.current, currentNodeStatic.key, referenceId, referenceLabel)
         );
     },
-    [currentNodeStatic, pathwayOptions, pathwayRef, updatePathway]
+    [currentNodeStatic, pathwayOptions, pathwayRef, setCurrentPathway]
   );
 
   const changeNodeTypeEnabled = currentNode?.key && currentNode.type !== 'start';
@@ -74,7 +74,7 @@ const ReferenceNodeEditor: FC<ReferenceNodeEditorProps> = ({ changeNodeType, cur
                 label="Pathway Reference"
                 options={pathwayOptions}
                 onChange={selectPathwayReference}
-                value={(currentNode as ReferenceNode).referenceId}
+                value={isLoading ? '' : (currentNode as ReferenceNode).referenceId}
               />
               <div className={styles.referenceChevron}>
                 <FontAwesomeIcon
