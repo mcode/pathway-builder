@@ -78,15 +78,15 @@ const simplePathway: Pathway = {
 describe('convert pathway', () => {
   Object.keys(testPathways).forEach(name => {
     it(`correctly converts ${name} to a form that can be turned into JSON`, () => {
-      const exporter = new CaminoExporter(testPathways[name], []);
+      const exporter = new CaminoExporter(testPathways[name], [], []);
       const caminoPathway = exporter.export();
       JSON.stringify(caminoPathway, undefined, 2);
     });
   });
 
   it('does not prepend a library again if it is already prepended once', () => {
-    const firstExport = new CaminoExporter(simplePathway, [simpleCriteria]).export();
-    const secondExport = new CaminoExporter(firstExport, [simpleCriteria]).export();
+    const firstExport = new CaminoExporter(simplePathway, [simpleCriteria], []).export();
+    const secondExport = new CaminoExporter(firstExport, [simpleCriteria], []).export();
     expect(firstExport.nodes['Start'].transitions[0].condition?.cql).toBe('LIBFoo.isMale');
     expect(secondExport.nodes['Start'].transitions[0].condition?.cql).toBe('LIBFoo.isMale');
   });

@@ -6,7 +6,8 @@ import {
   Action,
   ActionNode,
   BranchNode,
-  ReferenceNode
+  ReferenceNode,
+  ActionCqlLibrary
 } from 'pathways-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import shortid from 'shortid';
@@ -18,6 +19,11 @@ import { Bundle } from 'fhir-objects';
 import JSZip from 'jszip';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import { isActionNode } from './nodeUtils';
+
+interface AddCriteriaSourceInterface {
+  updated: boolean;
+  newPathway: Pathway;
+}
 
 export function createNewPathway(name: string, description: string, pathwayId?: string): Pathway {
   return {
@@ -37,32 +43,15 @@ export function createNewPathway(name: string, description: string, pathwayId?: 
   };
 }
 
-interface AddCriteriaSourceInterface {
-  updated: boolean;
-  newPathway: Pathway;
-}
-
 export function updatePathwayCriteriaSources(
   pathway: Pathway,
-  criteria: Criteria[],
-  exporting: boolean = false
+  criteria: Criteria[]
 ): AddCriteriaSourceInterface {
   let updated = false;
   const criteriaIds = criteria.map(crit => crit.id);
   const newPathway = produce(pathway, draftPathway => {
     Object.entries(draftPathway.nodes).forEach(([nodeIndex, node]) => {
       node.transitions.forEach(({ condition }, transitionIndex) => {
-        // update the CQL for action nodes
-        if (exporting && isActionNode(draftPathway.nodes[nodeIndex])) {
-          const action = draftPathway.nodes[nodeIndex] as ActionNode;
-          const cql = createCQL(action.action, draftPathway.nodes[nodeIndex].key);
-          convertBasicCQL(cql).then((elm: ElmLibrary) => {
-            // Disable lint for no-null assertion since it is already checked above
-            // eslint-disable-next-line
-            draftPathway = setActionNodeElm(draftPathway, draftPathway.nodes[nodeIndex].key, elm);
-          });
-        }
-
         // If a matching criteria does not already exist, try and find one
         if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
           const [library, statement] = condition.cql.split('.');
@@ -85,7 +74,7 @@ export function updatePathwayCriteriaSources(
 }
 
 function addCriteriaSource(pathways: Pathway[], criteria: Criteria[]): Pathway[] {
-  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria, true).newPathway);
+  return pathways.map(pathway => updatePathwayCriteriaSources(pathway, criteria).newPathway);
 }
 
 export function downloadPathway(
@@ -94,7 +83,6 @@ export function downloadPathway(
   criteria: Criteria[],
   cpg = false
 ): Promise<void> {
-  console.log('In Download Pathway');
   pathwaysToExport = addCriteriaSource(pathwaysToExport, criteria);
   if (pathwaysToExport.length > 1) {
     const zip = new JSZip();
@@ -106,13 +94,13 @@ export function downloadPathway(
       downloadFile(content, 'pathways.zip');
     });
   } else {
-    const pathwayString = exportPathway(pathwaysToExport[0], allPathways, criteria, cpg);
-    // Create blob from pathwayString to save to file system
-    const pathwayBlob = new Blob([pathwayString], {
-      type: 'application/json'
+    return exportPathway(pathwaysToExport[0], allPathways, criteria, cpg).then(pathwayString => {
+      // Create blob from pathwayString to save to file system
+      const pathwayBlob = new Blob([pathwayString], {
+        type: 'application/json'
+      });
+      downloadFile(pathwayBlob, `${pathwaysToExport[0].name}.json`);
     });
-    downloadFile(pathwayBlob, `${pathwaysToExport[0].name}.json`);
-    return Promise.resolve();
   }
 }
 
@@ -127,29 +115,32 @@ function downloadFile(file: Blob, fileName: string): void {
   window.URL.revokeObjectURL(url);
 }
 
-export function exportPathway(
+export async function exportPathway(
   pathway: Pathway,
   pathways: Pathway[],
   criteria: Criteria[],
   cpg: boolean
-): string {
-  const elm = generateNavigationalElm(pathway);
-  const pathwayWithElm = setNavigationalElm(pathway, elm);
-  let pathwayToExport: Pathway | Bundle = pathwayWithElm;
-  if (cpg) {
-    console.log(pathwayWithElm);
-    const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
-    pathwayToExport = exporter.export();
-    console.log(pathwayToExport);
-  } else {
-    const exporter = new CaminoExporter(pathwayWithElm, criteria);
-    pathwayToExport = exporter.export();
-  }
-  return JSON.stringify(pathwayToExport, undefined, 2);
+): Promise<string> {
+  const actionNodeCqlLibraries = generateActionNodeCql(pathway);
+  return generateNavigationalElm(pathway, actionNodeCqlLibraries).then(elmLibraries => {
+    const pathwayWithElm = setNavigationalElm(pathway, elmLibraries);
+    let pathwayToExport: Pathway | Bundle;
+    if (cpg) {
+      const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
+      pathwayToExport = exporter.export();
+    } else {
+      const exporter = new CaminoExporter(pathwayWithElm, criteria, actionNodeCqlLibraries);
+      pathwayToExport = exporter.export();
+    }
+    return JSON.stringify(pathwayToExport, undefined, 2);
+  });
 }
 
-function generateNavigationalElm(pathway: Pathway): ElmLibrary {
-  const elm: ElmLibrary = {
+async function generateNavigationalElm(
+  pathway: Pathway,
+  actionNodeCqlLibraries: ActionCqlLibrary[]
+): Promise<ElmLibrary[]> {
+  const mainElm: ElmLibrary = {
     library: {
       identifier: {
         id: pathway.id,
@@ -198,32 +189,44 @@ function generateNavigationalElm(pathway: Pathway): ElmLibrary {
     }
   };
 
-  Object.keys(pathway.nodes).forEach((nodeKey: string) => {
+  // Convert action node cql to elm
+  const listOfPromises: Promise<ElmLibrary>[] = [];
+  actionNodeCqlLibraries.forEach(cqlLibrary =>
+    listOfPromises.push(convertBasicCQL(cqlLibrary.cql))
+  );
+
+  for (const nodeKey of Object.keys(pathway.nodes)) {
     const node = pathway.nodes[nodeKey];
-    if ('elm' in node && node.elm) {
-      mergeElm(elm, node.elm);
-      const elmStatement = produce(getElmStatement(node.elm), (draftElmStatement: ElmStatement) => {
-        draftElmStatement.name = node.key;
-      });
-      elm.library.statements.def.push(elmStatement);
-    }
 
     node.transitions.forEach((transition: Transition) => {
       if (transition.condition?.elm) {
         // Add tranistion.condition.elm to elm
-        mergeElm(elm, transition.condition.elm);
+        mergeElm(mainElm, transition.condition.elm);
         const elmStatement = produce(
           getElmStatement(transition.condition.elm),
           (draftElmStatement: ElmStatement) => {
             draftElmStatement.name = transition.condition?.description ?? 'Unknown';
           }
         );
-        elm.library.statements.def.push(elmStatement);
+        mainElm.library.statements.def.push(elmStatement);
       }
     });
+  }
+
+  return Promise.all(listOfPromises).then(elmLibraries => {
+    return [mainElm, ...elmLibraries];
+  });
+}
+
+function generateActionNodeCql(pathway: Pathway): ActionCqlLibrary[] {
+  const libraries: ActionCqlLibrary[] = [];
+
+  Object.keys(pathway.nodes).forEach(nodeKey => {
+    const node = pathway.nodes[nodeKey];
+    if (isActionNode(node)) libraries.push(createCQL(node.action, nodeKey));
   });
 
-  return elm;
+  return libraries;
 }
 
 function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
@@ -245,11 +248,13 @@ function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
     if (!elm.library.valueSets?.def.find(def => def.id === valueSet.id))
       elm.library.valueSets?.def.push(valueSet);
   });
+
   // Merge codes
   additionalElm.library.codes?.def.forEach(code => {
     if (!elm.library.codes?.def.find(def => def.name === code.name))
       elm.library.codes?.def.push(code);
   });
+
   // Merge codesystems
   additionalElm.library.codeSystems?.def.forEach(codesystem => {
     if (!elm.library.codeSystems?.def.find(def => def.name === codesystem.name))
@@ -296,10 +301,13 @@ export function addPrecondition(
   });
 }
 
-export function setNavigationalElm(pathway: Pathway, elm: object): Pathway {
+export function setNavigationalElm(pathway: Pathway, elm: ElmLibrary[]): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     if (!draftPathway.elm) draftPathway.elm = {};
-    draftPathway.elm.navigational = elm;
+    draftPathway.elm.navigational = {
+      main: elm[0],
+      libraries: elm.slice(1)
+    };
   });
 }
 
@@ -333,6 +341,7 @@ export function setNodeLabel(pathway: Pathway, key: string, label: string): Path
     draftPathway.nodes[key].label = label;
   });
 }
+
 export function setNodeReference(
   pathway: Pathway,
   key: string,
@@ -344,6 +353,7 @@ export function setNodeReference(
     (draftPathway.nodes[key] as ReferenceNode).referenceLabel = referenceLabel;
   });
 }
+
 export function setNodeType(pathway: Pathway, nodeKey: string, nodeType: string): Pathway {
   let action: Action;
   let newPathway: Pathway;
@@ -470,13 +480,6 @@ export function setTransitionCondition(
   });
 }
 
-export function setActionNodeElm(pathway: Pathway, nodeKey: string, elm: ElmLibrary): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    (draftPathway.nodes[nodeKey] as ActionNode).elm = elm;
-    (draftPathway.nodes[nodeKey] as ActionNode).cql = getElmStatement(elm).name;
-  });
-}
-
 /*
 Set Element Functions
 */
@@ -535,24 +538,6 @@ export function setTransitionConditionDescription(
   });
 }
 
-export function setTransitionConditionElm(
-  pathway: Pathway,
-  startNodeKey: string,
-  transitionId: string,
-  criteria: Criteria
-): Pathway {
-  return produce(pathway, (draftPathway: Pathway) => {
-    const foundTransition = draftPathway.nodes[startNodeKey]?.transitions?.find(
-      (transition: Transition) => transition.id === transitionId
-    );
-
-    if (foundTransition?.condition) {
-      foundTransition.condition.elm = criteria.elm;
-      foundTransition.condition.cql = criteria.statement;
-    }
-  });
-}
-
 export function setActionCode(action: Action, code: string): Action {
   return produce(action, (draftAction: Action) => {
     if (draftAction.resource.medicationCodeableConcept) {
@@ -601,9 +586,6 @@ export function makeNodeAction(pathway: Pathway, nodeKey: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const node = draftPathway.nodes[nodeKey] as ActionNode;
     node.type = 'action';
-    if (node.cql === undefined && node.action === undefined) {
-      node.cql = '';
-    }
 
     node.transitions.forEach(transition => {
       delete transition.condition;
@@ -639,11 +621,12 @@ export function makeNodeReference(pathway: Pathway, nodeKey: string): Pathway {
     draftPathway.nodes[nodeKey] = newNode;
   });
 }
-export function createCQL(action: Action, nodeKey: string): string {
+
+export function createCQL(action: Action, nodeKey: string): ActionCqlLibrary {
   const resource = action.resource;
   // CQl identifier cannot start with a number or contain '-'
   const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
-  let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.0'\n`;
+  let cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.1'\n`;
 
   const codesystemStatement = (system: string): string => `codesystem "${system}": '${system}'\n`;
 
@@ -689,11 +672,16 @@ export function createCQL(action: Action, nodeKey: string): string {
     );
   }
 
-  return cql;
+  return {
+    name: cqlId,
+    version: '1',
+    cql: cql,
+    nodeKey: nodeKey
+  };
 }
 
 /*
-Remove Element Function
+Remove Element Functions
 */
 export function removePrecondition(pathway: Pathway, id: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {

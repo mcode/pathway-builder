@@ -15,12 +15,12 @@ import useStyles from './styles';
 interface ModalProps {
   handleShowModal: boolean;
   handleCloseModal: () => void;
-  handleSaveModal: () => void;
+  handleSaveModal?: () => void;
   headerTitle: string;
   headerSubtitle: string;
   footerText?: ReactNode;
   hasSecondaryButton?: boolean;
-  submitButtonText: string;
+  submitButtonText?: string;
   children?: ReactNode;
 }
 
@@ -61,15 +61,17 @@ const Modal: FC<ModalProps> = ({
           </Button>
         )}
 
-        <Button
-          variant="contained"
-          color="secondary"
-          type="submit"
-          onClick={handleSaveModal}
-          className={styles.submitButton}
-        >
-          {submitButtonText}
-        </Button>
+        {submitButtonText && handleSaveModal !== undefined && (
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            onClick={handleSaveModal}
+            className={styles.submitButton}
+          >
+            {submitButtonText}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

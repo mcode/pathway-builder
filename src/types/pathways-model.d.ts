@@ -35,8 +35,6 @@ declare module 'pathways-model' {
   }
 
   export interface ActionNode extends PathwayNode {
-    cql: string;
-    elm?: ElmLibrary;
     action: Action;
   }
 
@@ -70,5 +68,12 @@ declare module 'pathways-model' {
       elm?: ElmLibrary;
       criteriaSource?: string;
     };
+  }
+
+  interface ActionCqlLibrary {
+    name: string;
+    version: string;
+    cql: string;
+    nodeKey: string;
   }
 }
