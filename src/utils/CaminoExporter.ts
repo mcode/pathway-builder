@@ -1,4 +1,4 @@
-import { Pathway } from 'pathways-model';
+import { ActionCqlLibrary, Pathway } from 'pathways-model';
 import { Criteria } from 'criteria-model';
 import { v4 as uuidv4 } from 'uuid';
 import { deepCopyPathway } from './nodeUtils';
@@ -7,10 +7,12 @@ import { constructCqlLibrary, IncludedCqlLibraries } from './export';
 export class CaminoExporter {
   pathway: Pathway;
   criteria: Criteria[];
+  actionCqlLibraries: ActionCqlLibrary[];
 
-  constructor(pathway: Pathway, criteria: Criteria[]) {
+  constructor(pathway: Pathway, criteria: Criteria[], actionCqlLibraries: ActionCqlLibrary[]) {
     this.pathway = deepCopyPathway(pathway);
     this.criteria = criteria;
+    this.actionCqlLibraries = actionCqlLibraries;
   }
 
   export(): Pathway {
@@ -25,6 +27,15 @@ export class CaminoExporter {
 
     const builderDefines: Record<string, string> = {};
 
+    // Handle action cql
+    this.actionCqlLibraries.forEach(cqlLibrary => {
+      includedCqlLibraries[cqlLibrary.name] = {
+        cql: cqlLibrary.cql,
+        version: cqlLibrary.version
+      };
+      referencedDefines[cqlLibrary.nodeKey] = cqlLibrary.name;
+    });
+
     // iterate through the nodes and find all criteria that are actually used.
     // for each one, add the criteria CQL to our appropriate map
     //  - if it's an included library, keep track of the library name and version
@@ -32,6 +43,8 @@ export class CaminoExporter {
     //  - if it was constructed in the builder, track the name and raw CQL
     for (const nodeId in this.pathway.nodes) {
       const node = this.pathway.nodes[nodeId];
+
+      // Handle transition cql
       for (const transition of node.transitions) {
         if (transition.condition?.criteriaSource) {
           const criteriaSource = this.criteria.find(
@@ -75,11 +88,13 @@ export class CaminoExporter {
 
     const libraries: string[] = [];
 
-    if (Object.keys(builderDefines).length > 0) {
-      // intentionally do not include any extra libraries here
-      const mainLibrary = constructCqlLibrary(libraryName, {}, {}, builderDefines);
-      libraries.push(mainLibrary);
-    }
+    const mainLibrary = constructCqlLibrary(
+      libraryName,
+      includedCqlLibraries,
+      referencedDefines,
+      builderDefines
+    );
+    libraries.push(mainLibrary);
 
     // add any other libraries
     if (Object.keys(includedCqlLibraries).length > 0) {

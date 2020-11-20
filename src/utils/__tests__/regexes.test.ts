@@ -2,7 +2,9 @@ import {
   extractMultipartBoundary,
   extractMultipartFileName,
   extractJSONContent,
-  extractCQLInclude
+  extractCQLInclude,
+  extractCQLLibraryName,
+  extractCQLVersion
 } from 'utils/regexes';
 
 // sample response from https://github.com/cqframework/cql-translation-service
@@ -136,6 +138,28 @@ describe('extractCQLInclude', () => {
     if (result) {
       // typescript doesn't understand expect not null
       expect(result[1]).toEqual('FHIRHelpers');
+    }
+  });
+});
+
+describe('extractCQLLibraryName', () => {
+  it('correctly matches expected test', () => {
+    const result = extractCQLLibraryName.exec(sampleCQL);
+    expect(result).not.toBeNull();
+    if (result) {
+      // typescript doesn't understand expect not null
+      expect(result[1]).toEqual('DiabeticFootExam');
+    }
+  });
+});
+
+describe('extractCQLVersion', () => {
+  it('correctly matches expected test', () => {
+    const result = extractCQLVersion.exec(sampleCQL);
+    expect(result).not.toBeNull();
+    if (result) {
+      // typescript doesn't understand expect not null
+      expect(result[1]).toEqual('1.0.0');
     }
   });
 });
