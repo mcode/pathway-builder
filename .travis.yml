@@ -22,17 +22,16 @@ jobs:
             sed -i "/pathwaysService:/c\  pathwaysService: 'https://mcode.github.io/pathways/static/pathways/'," build/config.js
             &&
             sed -i "/cqlToElmWebserviceUrl:/c\  cqlToElmWebserviceUrl: 'https://cql-translation-service-zfk47ib3kq-uc.a.run.app/cql/translator?annotations=true&result-types=true'," build/config.js
+      deploy:
+        provider: pages
+        local_dir: build
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: true
+        on:
+          branch: master
     - name: "Backend"
       before_install:
         - cd backend
       script:
         - yarn lint
-
-deploy:
-  provider: pages
-  local_dir: build
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
-  on:
-    branch: master
