@@ -6,6 +6,7 @@ const criteriaSchema = wrappedSchema(
     {
       id: String,
       label: String,
+      display: String,
       version: String,
       modified: Number,
       statement: String,
