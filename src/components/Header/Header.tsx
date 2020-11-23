@@ -31,7 +31,7 @@ const Header: FC = () => {
 
   return (
     <header className={styles.header}>
-      <Link to="/" className={styles.homeLink} onClick={(): void => resetCurrentCriteria()}>
+      <Link to="/builder" className={styles.homeLink} onClick={resetCurrentCriteria}>
         <img src={logo} alt="logo" className={styles.logo} />
       </Link>
 

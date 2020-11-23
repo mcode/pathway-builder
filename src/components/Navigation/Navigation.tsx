@@ -32,7 +32,7 @@ const Navigation: FC = () => {
 
   const handleGoBack = useCallback((): void => {
     resetCurrentCriteria();
-    history.push('/demo/');
+    history.push('/builder');
   }, [history, resetCurrentCriteria]);
 
   return (

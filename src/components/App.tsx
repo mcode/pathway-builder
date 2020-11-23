@@ -4,9 +4,7 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from 'components/Header';
 
 import BuilderRoute from './BuilderRoute';
-import { PathwaysProvider } from './PathwaysProvider';
 import { UserProvider } from './UserProvider';
-import { CriteriaProvider } from './CriteriaProvider';
 import Tabs from './Tabs';
 import PathwaysList from './PathwaysList';
 import CriteriaList from './CriteriaList';
@@ -14,25 +12,29 @@ import { CurrentPathwayProvider } from './CurrentPathwayProvider';
 import { CurrentCriteriaProvider } from './CurrentCriteriaProvider';
 import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
+import { QueryCache, ReactQueryCacheProvider } from 'react-query';
+import { AlertProvider } from './AlertProvider';
+
+const cache = new QueryCache();
 
 const App: FC = () => {
   return (
-    <UserProvider>
-      <CriteriaProvider>
-        <PathwaysProvider>
-          <CurrentPathwayProvider>
+    <ReactQueryCacheProvider queryCache={cache}>
+      <UserProvider>
+        <CurrentPathwayProvider>
+          <AlertProvider>
             <SnackbarProvider>
               <CurrentCriteriaProvider>
                 <CriteriaBuilderProvider>
                   <Router>
                     <Switch>
-                      <Route path="/demo/builder/:id/node/:nodeId">
+                      <Route path="/builder/:id/node/:nodeId">
                         <BuilderRoute />
                       </Route>
-                      <Route path="/demo/builder/:id">
+                      <Route path="/builder/:id">
                         <BuilderRoute />
                       </Route>
-                      <Route path="/demo">
+                      <Route path="/">
                         <Header />
                         <Tabs
                           tabs={[
@@ -46,10 +48,10 @@ const App: FC = () => {
                 </CriteriaBuilderProvider>
               </CurrentCriteriaProvider>
             </SnackbarProvider>
-          </CurrentPathwayProvider>
-        </PathwaysProvider>
-      </CriteriaProvider>
-    </UserProvider>
+          </AlertProvider>
+        </CurrentPathwayProvider>
+      </UserProvider>
+    </ReactQueryCacheProvider>
   );
 };
 

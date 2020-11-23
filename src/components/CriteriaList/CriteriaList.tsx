@@ -1,27 +1,28 @@
-import React, { FC, memo, useState, useCallback, useMemo } from 'react';
+import React, { FC, memo, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTools, faFileImport, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Button, Checkbox, IconButton, Tooltip } from '@material-ui/core';
+import { useMutation, useQueryCache } from 'react-query';
 
-import { usePathwaysContext } from 'components/PathwaysProvider';
 import Loading from 'components/elements/Loading';
 import CriteriaTable from './CriteriaTable';
 
 import useStyles from './styles';
 import FileImportModal from 'components/FileImportModal';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
+import { deleteCriteria, readFile, updateCriteria } from 'utils/backend';
+import { cqlToCriteria, jsonToCriteria } from 'utils/criteria';
+import useCriteria from 'hooks/useCriteria';
+import JSZip from 'jszip';
+import { CqlLibraries } from 'engine/cql-to-elm';
 
 const CriteriaList: FC = () => {
   const styles = useStyles();
-  const { status } = usePathwaysContext();
-
-  const { criteria, addCriteria, deleteCriteria } = useCriteriaContext();
-
+  const cache = useQueryCache();
+  const { isLoading, criteria } = useCriteria();
   const [open, setOpen] = useState<boolean>(false);
 
-  const pathwayIds = useMemo(() => criteria.map(n => n.id), [criteria]);
   const {
     indeterminate,
     checked,
@@ -31,7 +32,7 @@ const CriteriaList: FC = () => {
     selected,
     setSelected,
     numSelected
-  } = useListCheckbox(pathwayIds);
+  } = useListCheckbox(isLoading ? [] : criteria.map(n => n.id));
 
   const openImportModal = useCallback((): void => {
     setOpen(true);
@@ -41,19 +42,67 @@ const CriteriaList: FC = () => {
     setOpen(false);
   }, []);
 
-  const selectFile = useCallback(
-    (files: FileList | undefined | null) => {
-      if (files?.length) addCriteria(files[0]);
+  const [mutateAddCriteria] = useMutation(updateCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
+
+  const addCqlCriteria = useCallback(
+    (cql: string | CqlLibraries): void => {
+      cqlToCriteria(cql).then(newCriteria => {
+        // eslint-disable-next-line
+        if (newCriteria.length) newCriteria.forEach(c => mutateAddCriteria(c));
+        else alert('No valid criteria were found in the provided file');
+      });
     },
-    [addCriteria]
+    [mutateAddCriteria]
   );
+
+  const addCriteria = useCallback(
+    (files: FileList | undefined | null) => {
+      if (files) {
+        readFile(files[0], (event: ProgressEvent<FileReader>): void => {
+          if (event.target?.result) {
+            const rawContent = event.target.result as string;
+            // TODO: more robust file type identification?
+            if (files[0].name.endsWith('.json')) {
+              const newCriteria = jsonToCriteria(rawContent);
+              if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria)); // eslint-disable-line
+            } else if (files[0].name.endsWith('.cql')) {
+              addCqlCriteria(rawContent);
+            } else if (files[0].name.endsWith('.zip')) {
+              const cqlLibraries: CqlLibraries = {};
+              JSZip.loadAsync(files[0]).then(async zip => {
+                const zipFiles = Object.values(zip.files);
+                // Check for criteria in each of the cql files, add cql to libraries if no criteria
+                for (let i = 0; i < zipFiles.length; i++) {
+                  const zipFile = zipFiles[i];
+
+                  // Skip files that do not end with .cql
+                  if (!zipFile.name.endsWith('.cql')) continue;
+                  const fileContents = await zipFile.async('string');
+                  cqlLibraries[zipFile.name] = { cql: fileContents };
+                }
+                addCqlCriteria(cqlLibraries);
+              });
+            }
+          } else alert('Unable to read that file');
+        });
+      }
+      closeImportModal();
+    },
+    [mutateAddCriteria, closeImportModal, addCqlCriteria]
+  );
+
+  const [mutateDelete] = useMutation(deleteCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
 
   const handleDelete = useCallback(() => {
     selected.forEach(id => {
-      deleteCriteria(id);
+      mutateDelete(id);
       setSelected(new Set());
     });
-  }, [deleteCriteria, selected, setSelected]);
+  }, [selected, setSelected, mutateDelete]);
 
   return (
     <div className={styles.root}>
@@ -107,13 +156,12 @@ const CriteriaList: FC = () => {
       <FileImportModal
         open={open}
         onClose={closeImportModal}
-        onSelectFile={selectFile}
+        onSelectFile={addCriteria}
         allowedFileType=".cql, .zip"
       />
 
-      {status === 'loading' ? (
-        <Loading />
-      ) : (
+      {isLoading && <Loading />}
+      {!isLoading && criteria && (
         <CriteriaTable handleSelectClick={handleSelectClick} itemSelected={itemSelected} />
       )}
     </div>

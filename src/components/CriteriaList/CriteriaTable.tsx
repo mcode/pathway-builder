@@ -14,8 +14,10 @@ import {
 import moment from 'moment';
 
 import useStyles from './styles';
-import { useCriteriaContext } from 'components/CriteriaProvider';
 import ConfirmedDeletionButton from 'components/ConfirmedDeletionButton';
+import { useMutation, useQueryCache } from 'react-query';
+import { deleteCriteria } from 'utils/backend';
+import useCriteria from 'hooks/useCriteria';
 
 interface CriteriaTableProps {
   itemSelected: (item: string) => boolean;
@@ -24,17 +26,22 @@ interface CriteriaTableProps {
 
 const CriteriaTable: FC<CriteriaTableProps> = ({ itemSelected, handleSelectClick }) => {
   const styles = useStyles();
-  const { criteria, deleteCriteria } = useCriteriaContext();
+  const cache = useQueryCache();
+  const { criteria } = useCriteria();
 
   const renderDate = (datetime: number): string => {
     return moment(datetime).fromNow();
   };
 
+  const [mutateDelete] = useMutation(deleteCriteria, {
+    onSettled: () => cache.invalidateQueries('criteria')
+  });
+
   const deletion = useCallback(
     (id: string): void => {
-      deleteCriteria(id);
+      mutateDelete(id);
     },
-    [deleteCriteria]
+    [mutateDelete]
   );
 
   return (
