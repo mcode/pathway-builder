@@ -31,9 +31,9 @@ export function elmLibraryToCriteria(
   let elmStatements = allElmStatements.filter(def => !DEFAULT_ELM_STATEMENTS.includes(def.name));
   const includesTypes = !!allElmStatements.find(s => s.resultTypeName);
   if (includesTypes) {
-    // if we have types, filter down to just booleans
+    // if we have types, filter down to just booleans, and not functions (eg FHIRHelpers.ToBoolean)
     elmStatements = elmStatements.filter(
-      s => s.resultTypeName === '{urn:hl7-org:elm-types:r1}Boolean'
+      s => s.resultTypeName === '{urn:hl7-org:elm-types:r1}Boolean' && s.type !== 'FunctionDef'
     );
   }
   if (!elmStatements) {

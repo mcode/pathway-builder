@@ -67,7 +67,6 @@ export class CaminoExporter {
                     cql: libCql.cql,
                     version: libCql?.version || ''
                   };
-                  referencedDefines[libCql.cql] = libName;
                 }
               });
             }

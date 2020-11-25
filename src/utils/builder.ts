@@ -161,7 +161,7 @@ async function generateNavigationalElm(
             locator: '3:1-3:26',
             localIdentifier: 'FHIR',
             uri: 'http://hl7.org/fhir',
-            version: '4.0.0'
+            version: '4.0.1'
           }
         ]
       },
@@ -319,7 +319,7 @@ export function setPreconditionElm(pathway: Pathway, elm: object): Pathway {
 }
 
 export function createNode(key?: string): PathwayNode {
-  if (!key) key = shortid.generate();
+  if (!key) key = 'N' + shortid.generate();
   const node: PathwayNode = {
     key,
     label: 'New Node',
@@ -449,7 +449,7 @@ export function setNodeOtherCriteria(
 export function addTransition(pathway: Pathway, startNodeKey: string, endNodeKey: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const transition: Transition = {
-      id: shortid.generate(),
+      id: 'T' + shortid.generate(),
       transition: endNodeKey
     };
 
