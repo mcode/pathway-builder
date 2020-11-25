@@ -242,7 +242,7 @@ export const pathways = [
               {
                 localIdentifier: 'FHIR',
                 uri: 'http://hl7.org/fhir',
-                version: '4.0.0',
+                version: '4.0.1',
               },
             ],
           },
@@ -1690,7 +1690,7 @@ export const pathways = [
               {
                 localIdentifier: 'FHIR',
                 uri: 'http://hl7.org/fhir',
-                version: '4.0.0',
+                version: '4.0.1',
               },
             ],
           },
@@ -2891,7 +2891,7 @@ export const pathways = [
               {
                 localIdentifier: 'FHIR',
                 uri: 'http://hl7.org/fhir',
-                version: '4.0.0',
+                version: '4.0.1',
               },
             ],
           },
@@ -4521,7 +4521,7 @@ export const pathways = [
               {
                 localIdentifier: 'FHIR',
                 uri: 'http://hl7.org/fhir',
-                version: '4.0.0',
+                version: '4.0.1',
               },
             ],
           },
