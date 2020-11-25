@@ -82,11 +82,12 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             // Check for criteria in each of the cql files, add cql to libraries if no criteria
             for (let i = 0; i < zipFiles.length; i++) {
               const zipFile = zipFiles[i];
-
-              // Skip files that do not end with .cql
-              if (!zipFile.name.endsWith('.cql')) continue;
+              const zipFileName = zipFile.name;
+              // Skip files that do not end with .cql, or other MacOS nonsense
+              if (!zipFileName.endsWith('.cql') || zipFileName.startsWith('__MACOSX/')) continue;
               const fileContents = await zipFile.async('string');
-              cqlLibraries[zipFile.name] = { cql: fileContents };
+              const libName = zipFile.name.slice(0, -4); // slice off the .cql extension
+              cqlLibraries[libName] = { cql: fileContents };
             }
             addCqlCriteria(cqlLibraries);
           }

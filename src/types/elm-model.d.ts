@@ -87,6 +87,7 @@ declare module 'elm-model' {
     locatorId?: string;
     accessLevel?: string;
     resultTypeName?: string;
+    type?: string;
     annotation?: object[];
   }
 }

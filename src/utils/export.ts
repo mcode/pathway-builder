@@ -29,7 +29,7 @@ export function constructCqlLibrary(
     .map(([name, details]) => `include "${name}" version '${details.version}' called ${name}\n\n`)
     .join('');
   const definesList = Object.entries(referencedDefines).map(
-    ([name, srcLibrary]) => `define "${name}": ${srcLibrary}.${name}\n\n`
+    ([name, srcLibrary]) => `define "${name}": ${srcLibrary}."${name}"\n\n`
   );
 
   Object.entries(builderDefines).forEach(([statement, cql]) =>
