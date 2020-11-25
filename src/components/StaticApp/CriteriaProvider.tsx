@@ -11,8 +11,6 @@ import React, {
 import JSZip from 'jszip';
 import { ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
-import useGetService from 'components/StaticApp/Services';
-import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
 import {
   builderModelToCriteria,
@@ -45,17 +43,17 @@ interface CriteriaProviderProps {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const service = useGetService<string>(config.get('demoCriteria'), true);
-  const payload = (service as ServiceLoaded<string[]>).payload;
+  const defaultCriteriaPath = `${config.get('demoCriteria')}default_criteria.json`;
 
   useEffect(() => {
-    if (payload) {
-      const listOfPromises = payload.map(rawCql => cqlToCriteria(rawCql));
-      Promise.all(listOfPromises)
-        .then(listOfLists => listOfLists.flat())
-        .then(newCriteria => setCriteria(newCriteria));
-    }
-  }, [payload]);
+    fetch(defaultCriteriaPath, {
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(defaultCriteria => setCriteria(defaultCriteria));
+  }, [defaultCriteriaPath]);
 
   const addCqlCriteria = useCallback((cql: string | CqlLibraries) => {
     cqlToCriteria(cql).then(newCriteria => {
