@@ -70,7 +70,7 @@ declare module 'pathways-model' {
     };
   }
 
-  interface ActionCqlLibrary {
+  export interface ActionCqlLibrary {
     name: string;
     version: string;
     cql: string;

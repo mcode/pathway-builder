@@ -2,11 +2,13 @@ import React, { FC, memo, useCallback, useEffect, ChangeEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, TextField } from '@material-ui/core';
+import shortid from 'shortid';
 
 import DropDown from 'components/elements/DropDown';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import useStyles from './styles';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
+import { convertBasicCQL } from 'engine/cql-to-elm';
 
 const CriteriaBuilder: FC = () => {
   const {
@@ -70,33 +72,66 @@ const CriteriaBuilder: FC = () => {
   const genderString = `The patient's gender is ${gender}`;
   const ageRangeString = `The patient's age is between ${minimumAge} years and ${maximumAge} years`;
 
-  useEffect(() => {
-    const cql = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
-    if (selectedDemoElement === 'Age Range') {
-      if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
-        setCurrentCriteria({
-          cql,
-          text: ageRangeString,
-          type: 'age',
-          min: minimumAge,
-          max: maximumAge
-        });
-      } else {
-        setCurrentCriteria(null);
-      }
-    }
-  }, [selectedDemoElement, minimumAge, maximumAge, ageRangeString, setCurrentCriteria]);
+  const createCqlLibrary = useCallback((cqlStatement: string, name: string) => {
+    // CQl identifier cannot start with a number or contain '-'
+    const cqlId = `cql${shortid.generate().replace(/-/g, 'a')}`;
+    const cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.1'\ncontext Patient\n
+    define "${name}":\n${cqlStatement}`;
+
+    return cql;
+  }, []);
 
   useEffect(() => {
-    const cql = `Patient.gender.value ~ '${gender}'`;
-    if (selectedDemoElement === 'Gender') {
-      if (gender !== '') {
-        setCurrentCriteria({ cql, text: genderString, type: 'gender', gender });
+    const cqlStatement = `AgeInYears() >= ${minimumAge} and AgeInYears() < ${maximumAge}`;
+    const cql = createCqlLibrary(cqlStatement, 'age');
+    if (selectedDemoElement === 'Age Range') {
+      if (minimumAge >= 0 && maximumAge > 0 && minimumAge < maximumAge) {
+        convertBasicCQL(cql).then(elm =>
+          setCurrentCriteria({
+            cql: cql,
+            builder: {
+              text: ageRangeString,
+              type: 'age',
+              min: minimumAge,
+              max: maximumAge
+            },
+            elm: elm
+          })
+        );
       } else {
         setCurrentCriteria(null);
       }
     }
-  }, [selectedDemoElement, gender, genderString, setCurrentCriteria]);
+  }, [
+    selectedDemoElement,
+    minimumAge,
+    maximumAge,
+    ageRangeString,
+    setCurrentCriteria,
+    createCqlLibrary
+  ]);
+
+  useEffect(() => {
+    const cqlStatement = `Patient.gender.value ~ '${gender}'`;
+    const cql = createCqlLibrary(cqlStatement, 'gender');
+    if (selectedDemoElement === 'Gender') {
+      if (gender !== '') {
+        convertBasicCQL(cql).then(elm =>
+          setCurrentCriteria({
+            cql: cql,
+            builder: {
+              text: genderString,
+              type: 'gender',
+              gender
+            },
+            elm: elm
+          })
+        );
+      } else {
+        setCurrentCriteria(null);
+      }
+    }
+  }, [selectedDemoElement, gender, genderString, setCurrentCriteria, createCqlLibrary]);
 
   return (
     <>

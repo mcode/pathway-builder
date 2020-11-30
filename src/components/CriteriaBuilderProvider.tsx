@@ -7,7 +7,7 @@ import React, {
   FC,
   useContext
 } from 'react';
-import { BuilderModel } from 'criteria-model';
+import { CriteriaExecutionModel } from 'criteria-model';
 
 interface CriteriaBuilderContextInterface {
   selectedElement: string;
@@ -21,7 +21,7 @@ interface CriteriaBuilderContextInterface {
   setMinimumAge: (age: number) => void;
   setMaximumAge: (age: number) => void;
   resetCriteriaBuilder: () => void;
-  setCriteriaBuilder: (buildCriteria: BuilderModel) => void;
+  setCriteriaBuilder: (buildCriteria: CriteriaExecutionModel) => void;
 }
 
 export const CriteriaBuilderContext = createContext<CriteriaBuilderContextInterface>(
@@ -47,15 +47,15 @@ export const CriteriaBuilderProvider: FC<CriteriaBuilderProviderProps> = memo(({
     setMaximumAge(0);
   }, [setSelectedElement, setSelectedDemoElement, setGender, setMinimumAge, setMaximumAge]);
 
-  const setCriteriaBuilder = useCallback((buildCriteria: BuilderModel) => {
+  const setCriteriaBuilder = useCallback((buildCriteria: CriteriaExecutionModel) => {
     setSelectedElement('Demographics');
-    if (buildCriteria.type === 'gender') {
+    if (buildCriteria.builder?.type === 'gender') {
       setSelectedDemoElement('Gender');
-      setGender(buildCriteria.gender);
-    } else {
+      setGender(buildCriteria.builder.gender);
+    } else if (buildCriteria.builder?.type === 'age') {
       setSelectedDemoElement('Age Range');
-      setMinimumAge(buildCriteria.min);
-      setMaximumAge(buildCriteria.max);
+      setMinimumAge(buildCriteria.builder.min);
+      setMaximumAge(buildCriteria.builder.max);
     }
   }, []);
 

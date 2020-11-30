@@ -76,8 +76,8 @@ export class CaminoExporter {
             if (!transition.condition.cql.startsWith(libraryIdentifier.id)) {
               transition.condition.cql = `${libraryIdentifier.id}.${transition.condition.cql}`;
             }
-          } else if (criteriaSource?.builder) {
-            builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
+          } else if (criteriaSource) {
+            builderDefines[criteriaSource.statement] = criteriaSource.cql;
 
             // prepend the library name
             transition.condition.cql = `${libraryName}.${transition.condition.cql}`;
@@ -101,7 +101,6 @@ export class CaminoExporter {
       const addtlLibraries = Object.values(includedCqlLibraries).map(l => l.cql);
       libraries.push(...addtlLibraries);
     }
-
     this.pathway.library = libraries;
 
     return this.pathway;

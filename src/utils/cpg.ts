@@ -358,8 +358,8 @@ export class CPGExporter {
                 }
               });
             }
-          } else if (criteriaSource?.builder) {
-            builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
+          } else if (criteriaSource) {
+            builderDefines[criteriaSource.statement] = criteriaSource.cql;
           }
         }
       }

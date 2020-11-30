@@ -1,4 +1,4 @@
-import { BuilderModel, Criteria } from 'criteria-model';
+import { CriteriaExecutionModel, Criteria } from 'criteria-model';
 import { ElmLibrary, ElmStatement } from 'elm-model';
 import { convertBasicCQL, convertCQL, CqlLibraries } from 'engine/cql-to-elm';
 import shortid from 'shortid';
@@ -15,7 +15,7 @@ const DEFAULT_ELM_STATEMENTS = [
 
 export function elmLibraryToCriteria(
   elm: ElmLibrary,
-  cql: string | undefined = undefined,
+  cql: string,
   cqlLibraries: CqlLibraries | undefined = undefined,
   custom = false
 ): Criteria[] {
@@ -75,39 +75,35 @@ export function cqlToCriteria(cql: string | CqlLibraries): Promise<Criteria[]> {
         .map(key => {
           // Exclude current library from the list of cql libraries to pass to elmLibraryToCriteria
           const { [key]: keyToExclude, ...dependencies } = cql;
-          return elmLibraryToCriteria(elm[key], cql[key].cql, dependencies);
+          // eslint-disable-next-line
+          return elmLibraryToCriteria(elm[key], cql[key]!.cql, dependencies);
         })
         .flat(1);
     });
   }
 }
 
-export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
-  const elm = JSON.parse(rawElm);
-  if (!elm.library?.identifier) {
-    alert('Please upload ELM file');
-    return;
-  }
-  return elmLibraryToCriteria(elm);
-}
-
 export function builderModelToCriteria(
-  criteria: BuilderModel,
+  criteria: CriteriaExecutionModel,
   label: string,
   id?: string
 ): Criteria {
+  // convert buildermodel to elm and add that to return
+
   return {
     id: id ? id : shortid.generate(),
     label,
     display: label,
     modified: Date.now(),
-    builder: criteria,
-    statement: label
+    builder: criteria.builder ?? undefined,
+    statement: label,
+    cql: criteria.cql,
+    elm: criteria.elm
   };
 }
 
 export function addBuilderCriteria(
-  buildCriteria: BuilderModel,
+  buildCriteria: CriteriaExecutionModel,
   label: string,
   criteriaSource: string | undefined
 ): Criteria[] {

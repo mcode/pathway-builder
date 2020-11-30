@@ -19,7 +19,6 @@ declare module 'criteria-model' {
   interface Gender {
     type: 'gender';
     gender: string;
-    cql: string;
     text?: string;
   }
 
@@ -27,15 +26,10 @@ declare module 'criteria-model' {
     type: 'age';
     min: number;
     max: number;
-    cql: string;
     text?: string;
   }
 
   export type BuilderModel = Age | Gender;
-  export type Criteria = CriteriaModel &
-    (
-      | { builder: BuilderModel; elm?: ElmLibrary; cql?: string }
-      | { builder?: BuilderModel; elm: ElmLibrary; cql?: string }
-      | { builder?: BuilderModel; elm?: ElmLibrary; cql: string }
-    );
+  export type CriteriaExecutionModel = { builder?: BuilderModel; elm: ElmLibrary; cql: string };
+  export type Criteria = CriteriaModel & CriteriaExecutionModel;
 }

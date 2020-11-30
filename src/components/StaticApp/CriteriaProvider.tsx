@@ -9,17 +9,11 @@ import React, {
   useEffect
 } from 'react';
 import JSZip from 'jszip';
-import { ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from 'components/StaticApp/Services';
 import { ServiceLoaded } from 'pathways-objects';
-import { Criteria, BuilderModel } from 'criteria-model';
-import {
-  builderModelToCriteria,
-  cqlToCriteria,
-  elmLibraryToCriteria,
-  jsonToCriteria
-} from 'utils/criteria';
+import { Criteria, CriteriaExecutionModel } from 'criteria-model';
+import { builderModelToCriteria, cqlToCriteria } from 'utils/criteria';
 import { CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
@@ -27,9 +21,8 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   addCqlCriteria: (cql: string) => void;
   deleteCriteria: (id: string) => void;
-  addElmCriteria: (elm: ElmLibrary) => Criteria[];
   addBuilderCriteria: (
-    criteria: BuilderModel,
+    criteria: CriteriaExecutionModel,
     label: string,
     criteriaSource: string | undefined
   ) => Criteria[];
@@ -80,10 +73,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           // TODO: more robust file type identification?
-          if (file.name.endsWith('.json')) {
-            const newCriteria = jsonToCriteria(rawContent);
-            if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-          } else if (file.name.endsWith('.cql')) {
+          if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
           } else if (file.name.endsWith('.zip')) {
             const cqlLibraries: CqlLibraries = {};
@@ -111,16 +101,9 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
     setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
   }, []);
 
-  const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, undefined, undefined, true);
-    setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-
-    return newCriteria;
-  }, []);
-
   const addBuilderCriteria = useCallback(
     (
-      buildCriteria: BuilderModel,
+      buildCriteria: CriteriaExecutionModel,
       label: string,
       criteriaSource: string | undefined
     ): Criteria[] => {
@@ -151,7 +134,6 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         addCriteria,
         addCqlCriteria,
         deleteCriteria,
-        addElmCriteria,
         addBuilderCriteria
       }}
     >

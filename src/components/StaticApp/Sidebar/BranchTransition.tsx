@@ -15,7 +15,7 @@ import useStyles from 'components/Sidebar/styles';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import { useCurrentCriteriaContext } from 'components/CurrentCriteriaProvider';
 import { useCriteriaBuilderContext } from 'components/CriteriaBuilderProvider';
-import { BuilderModel, Criteria } from 'criteria-model';
+import { Criteria, CriteriaExecutionModel } from 'criteria-model';
 import useCurrentNodeStatic from 'hooks/useCurrentNodeStatic';
 
 interface BranchTransitionProps {
@@ -57,11 +57,16 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   const transitionRef = useRef(transition);
   const transitionSelected = buildCriteriaSelected && currentCriteriaNodeId === transition.id;
   // Check if criteria was built by criteria builder
-  let builderElements: BuilderModel | null = null;
+  let builderElements: CriteriaExecutionModel | null = null;
   let builderCriteria: Criteria | undefined;
   if (transition.condition) {
     builderCriteria = criteria.find(c => c.id === transition.condition?.criteriaSource);
-    if (builderCriteria?.builder) builderElements = builderCriteria.builder;
+    if (builderCriteria?.builder)
+      builderElements = {
+        builder: builderCriteria.builder,
+        cql: builderCriteria.cql,
+        elm: builderCriteria.elm
+      };
   }
   const dislayEditCriteria = !transitionSelected && builderElements;
 
@@ -145,7 +150,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
 
   const handleEditCriteria = useCallback((): void => {
     setCurrentCriteriaNodeId(transition.id);
-    setCurrentCriteria(builderElements as BuilderModel);
+    setCurrentCriteria(builderElements);
     if (builderCriteria?.label) setCriteriaName(builderCriteria?.label);
     if (!buildCriteriaSelected) setBuildCriteriaSelected(true);
     if (builderElements) setCriteriaBuilder(builderElements);
@@ -255,7 +260,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
             fullWidth
             disabled
           />
-          <span className={styles.buildCriteriaText}>{builderElements?.text}</span>
+          <span className={styles.buildCriteriaText}>{builderElements?.builder?.text}</span>
           <div className={styles.buildCriteriaContainer}>
             <Button
               className={styles.cancelButton}
@@ -302,8 +307,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
             value={criteriaName}
             fullWidth
           />
-          {currentCriteria?.text && (
-            <span className={styles.buildCriteriaText}>{currentCriteria.text}</span>
+          {currentCriteria?.builder?.text && (
+            <span className={styles.buildCriteriaText}>{currentCriteria.builder.text}</span>
           )}
           <div className={styles.buildCriteriaContainer}>
             <FormControlLabel
