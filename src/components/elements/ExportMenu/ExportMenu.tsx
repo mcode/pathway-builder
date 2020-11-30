@@ -56,6 +56,7 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({ pathway, anchorEl, closeMenu
         </MenuItem>
         <MenuItem onClick={handleDownloadCPG}>Export to CPG</MenuItem>
       </Menu>
+
       <Modal
         handleShowModal={showModal}
         handleCloseModal={handleCloseModal}

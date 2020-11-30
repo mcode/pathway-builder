@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useState, useCallback } from 'react';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import { useCriteriaContext } from 'components/StaticApp/CriteriaProvider';
@@ -6,6 +6,8 @@ import { downloadPathway } from 'utils/builder';
 import { usePathwaysContext } from 'components/StaticApp/PathwaysProvider';
 import { Pathway } from 'pathways-model';
 import { Criteria } from 'criteria-model';
+import Modal from 'components/elements/Modal';
+import Loading from 'components/elements/Loading';
 
 interface ContextualExportMenuProps {
   anchorEl: HTMLElement | null;
@@ -25,35 +27,51 @@ const ExportMenu: FC<ExportMenuPropsInterface> = ({
   anchorEl,
   closeMenu
 }) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const handleCloseModal = useCallback(() => setShowModal(false), [setShowModal]);
+
+  const handleDownload = useCallback(
+    (cpg: boolean) => {
+      if (pathway) {
+        setShowModal(true);
+        downloadPathway(pathway, allPathways, criteria, cpg).then(() => setShowModal(false));
+      } else alert('No pathway to download!');
+      closeMenu();
+    },
+    [pathway, allPathways, criteria, setShowModal, closeMenu]
+  );
+
+  const handleDownloadPathway = useCallback(() => handleDownload(false), [handleDownload]);
+
+  const handleDownloadCPG = useCallback(() => handleDownload(true), [handleDownload]);
+
   return (
-    <Menu
-      id="pathway-options-menu"
-      anchorEl={anchorEl}
-      getContentAnchorEl={null}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      keepMounted
-      open={Boolean(anchorEl)}
-      onClose={closeMenu}
-    >
-      <MenuItem
-        onClick={(): void => {
-          if (pathway) downloadPathway(pathway, allPathways, criteria);
-          else alert('No pathway to download!');
-          closeMenu();
-        }}
+    <>
+      <Menu
+        id="pathway-options-menu"
+        anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={closeMenu}
       >
-        Export Pathway{pathway?.length && pathway.length > 1 ? 's' : ''}
-      </MenuItem>
-      <MenuItem
-        onClick={(): void => {
-          if (pathway) downloadPathway(pathway, allPathways, criteria, true);
-          else alert('No pathway to download!');
-          closeMenu();
-        }}
+        <MenuItem onClick={handleDownloadPathway}>
+          Export Pathway{pathway?.length && pathway.length > 1 ? 's' : ''}
+        </MenuItem>
+        <MenuItem onClick={handleDownloadCPG}>Export to CPG</MenuItem>
+      </Menu>
+
+      <Modal
+        handleShowModal={showModal}
+        handleCloseModal={handleCloseModal}
+        headerTitle="Pathway Exporting"
+        headerSubtitle="Please wait while the pathway exports."
       >
-        Export to CPG
-      </MenuItem>
-    </Menu>
+        <Loading />
+      </Modal>
+    </>
   );
 };
 
