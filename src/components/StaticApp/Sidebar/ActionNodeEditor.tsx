@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import {
   setNodeAction,
-  createCQL,
-  setActionNodeElm,
   setActionResourceDisplay,
   setActionCode,
   setActionDescription,
@@ -16,7 +14,6 @@ import DropDown from 'components/elements/DropDown';
 import { ActionNode, Action, PathwayNode } from 'pathways-model';
 import useStyles from 'components/Sidebar/styles';
 import { TextField } from '@material-ui/core';
-import { convertBasicCQL } from 'engine/cql-to-elm';
 import { useCurrentPathwayContext } from 'components/StaticApp/CurrentPathwayProvider';
 import produce from 'immer';
 import { nodeTypeOptions } from 'utils/nodeUtils';
@@ -40,20 +37,6 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ currentNode, changeNodeTy
   const { pathway, pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
   const currentNodeStatic = useCurrentNodeStatic(pathway);
   const styles = useStyles();
-
-  const addActionCQL = useCallback(
-    (action: Action, currentNodeKey: string): void => {
-      if (!pathwayRef.current) return;
-
-      const cql = createCQL(action, currentNodeKey);
-      convertBasicCQL(cql).then(elm => {
-        // Disable lint for no-null assertion since it is already checked above
-        // eslint-disable-next-line
-        setCurrentPathway(setActionNodeElm(pathwayRef.current!, currentNodeKey, elm));
-      });
-    },
-    [pathwayRef, setCurrentPathway]
-  );
 
   const changeCode = useCallback(
     (event: ChangeEvent<{ value: string }>): void => {
@@ -86,11 +69,12 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ currentNode, changeNodeTy
 
       const title = event?.target.value || '';
       const action = setActionTitle(currentNode.action, title);
-      setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action)));
 
-      addActionCQL(action, currentNode.key);
+      const pathway = setNodeAction(pathwayRef.current, currentNode.key, resetDisplay(action));
+
+      setCurrentPathway(pathway);
     },
-    [currentNodeStatic, pathwayRef, setCurrentPathway, addActionCQL]
+    [currentNodeStatic, pathwayRef, setCurrentPathway]
   );
 
   const selectCodeSystem = useCallback(
@@ -111,11 +95,10 @@ const ActionNodeEditor: FC<ActionNodeEditorProps> = ({ currentNode, changeNodeTy
     }
 
     const action = setActionResourceDisplay(currentNode.action, 'Example Text');
-    setCurrentPathway(setNodeAction(pathwayRef.current, currentNode.key, action));
+    const pathway = setNodeAction(pathwayRef.current, currentNode.key, action);
 
-    // TODO: move addActionCQL to builder.ts
-    addActionCQL(action, currentNode.key);
-  }, [currentNodeStatic, pathwayRef, setCurrentPathway, addActionCQL]);
+    setCurrentPathway(pathway);
+  }, [currentNodeStatic, pathwayRef, setCurrentPathway]);
 
   const resetDisplay = (action: Action): Action => {
     return produce(action, (draftAction: Action) => {
