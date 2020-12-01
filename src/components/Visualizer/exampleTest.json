@@ -1,0 +1,552 @@
+{
+  "id": "test_breast_cancer",
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "http://example.com/ActivityDefinition/d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b",
+      "resource": {
+        "id": "d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b",
+        "resourceType": "ActivityDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishableactivity"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "publishable"
+          }
+        ],
+        "url": "urn:uuid:d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b",
+        "version": "1.0",
+        "name": "ADd62e8e1",
+        "title": "ActivityDefinition: d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b",
+        "status": "draft",
+        "experimental": true,
+        "date": "2020-12-01T05:45:55.555Z",
+        "publisher": "Logged in user",
+        "description": "Issue Lumpectomy of breast procedure",
+        "kind": "ServiceRequest",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "392021009",
+              "display": "Lumpectomy of breast (procedure)"
+            }
+          ],
+          "text": "Lumpectomy of breast (procedure)"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/ActivityDefinition/d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/ActivityDefinition/6ddfa38e-2b08-4628-b716-61385a11e585",
+      "resource": {
+        "id": "6ddfa38e-2b08-4628-b716-61385a11e585",
+        "resourceType": "ActivityDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishableactivity"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "publishable"
+          }
+        ],
+        "url": "urn:uuid:6ddfa38e-2b08-4628-b716-61385a11e585",
+        "version": "1.0",
+        "name": "AD6ddfa38",
+        "title": "ActivityDefinition: 6ddfa38e-2b08-4628-b716-61385a11e585",
+        "status": "draft",
+        "experimental": true,
+        "date": "2020-12-01T05:45:55.556Z",
+        "publisher": "Logged in user",
+        "description": "Request 10ML Doxorubicin Hydrochloride 2MG/ML Injection",
+        "kind": "MedicationRequest",
+        "productCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1790099",
+              "display": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+            }
+          ],
+          "text": "10 ML Doxorubicin Hydrochloride 2 MG/ML Injection"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/ActivityDefinition/6ddfa38e-2b08-4628-b716-61385a11e585"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/ActivityDefinition/4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f",
+      "resource": {
+        "id": "4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f",
+        "resourceType": "ActivityDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishableactivity"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "publishable"
+          }
+        ],
+        "url": "urn:uuid:4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f",
+        "version": "1.0",
+        "name": "AD4053a7c",
+        "title": "ActivityDefinition: 4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f",
+        "status": "draft",
+        "experimental": true,
+        "date": "2020-12-01T05:45:55.556Z",
+        "publisher": "Logged in user",
+        "description": "f",
+        "kind": "CarePlan",
+        "code": {
+          "coding": [
+            {
+              "system": "FakeCarePlanSystem",
+              "code": "ddddd",
+              "display": "Fake CodeableConcept for CarePlan"
+            }
+          ],
+          "text": "Fake CodeableConcept for CarePlan"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/ActivityDefinition/4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/PlanDefinition/f9e3aa3d-016a-4c58-803b-8f162da4323c",
+      "resource": {
+        "id": "f9e3aa3d-016a-4c58-803b-8f162da4323c",
+        "resourceType": "PlanDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recommendationdefinition"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "executable"
+          }
+        ],
+        "url": "urn:uuid:f9e3aa3d-016a-4c58-803b-8f162da4323c",
+        "version": "1.0",
+        "name": "PDf9e3aa3",
+        "title": "New Pathway",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+              "code": "eca-rule",
+              "display": "ECA Rule"
+            }
+          ]
+        },
+        "status": "draft",
+        "experimental": true,
+        "publisher": "Logged in user",
+        "description": "A new pathway",
+        "action": [
+          {
+            "id": "KSl8TXfWz",
+            "title": "Action: KSl8TXfWz",
+            "description": "Action for New Node (Key: KSl8TXfWz) - Parent Node Key: XiCr51taO",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "definitionCanonical": "http://example.com/ActivityDefinition/4053a7ce-f73e-4aee-9d9d-ae8e75e0b93f",
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/cql",
+                  "expression": "LIBb5e1cf6.undefined"
+                }
+              }
+            ]
+          }
+        ],
+        "library": [
+          "b5e1cf6f-043c-41b3-985b-1eb8fd89df12"
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/PlanDefinition/f9e3aa3d-016a-4c58-803b-8f162da4323c"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/Library/b5e1cf6f-043c-41b3-985b-1eb8fd89df12",
+      "resource": {
+        "id": "b5e1cf6f-043c-41b3-985b-1eb8fd89df12",
+        "resourceType": "Library",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablelibrary"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "executable"
+          }
+        ],
+        "url": "urn:uuid:b5e1cf6f-043c-41b3-985b-1eb8fd89df12",
+        "version": "1.0",
+        "name": "LIBb5e1cf6",
+        "title": "Library for New Pathway",
+        "status": "draft",
+        "experimental": true,
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/library-type",
+              "code": "logic-library",
+              "display": "Logic Library"
+            }
+          ]
+        },
+        "publisher": "Logged in user",
+        "description": "CQL/ELM library for pathway: New Pathway",
+        "content": [
+          {
+            "id": "navigational-cql",
+            "contentType": "text/cql",
+            "data": "CmxpYnJhcnkgTElCYjVlMWNmNiB2ZXJzaW9uICcxLjAnCgp1c2luZyBGSElSIHZlcnNpb24gJzQuMC4xJwoKCgpjb250ZXh0IFBhdGllbnQKCgo=",
+            "title": "CQL for navigating the pathway"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/Library/b5e1cf6f-043c-41b3-985b-1eb8fd89df12"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/PlanDefinition/f2923112-df00-4026-a85f-dce15af2eafe",
+      "resource": {
+        "id": "f2923112-df00-4026-a85f-dce15af2eafe",
+        "resourceType": "PlanDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-recommendationdefinition"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "executable"
+          }
+        ],
+        "url": "urn:uuid:f2923112-df00-4026-a85f-dce15af2eafe",
+        "version": "1.0",
+        "name": "PDf292311",
+        "title": "Test Pathway (Example)",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+              "code": "eca-rule",
+              "display": "ECA Rule"
+            }
+          ]
+        },
+        "status": "draft",
+        "experimental": true,
+        "publisher": "Logged in user",
+        "description": "Mock breast cancer pathway used for testing the system",
+        "action": [
+          {
+            "id": "N-test",
+            "title": "Action: N-test",
+            "description": "Branch based on N-test (Key: N-test) - Parent Node Key: T-test",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/cql",
+                  "expression": "LIB2371205.undefined"
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "ChemoMedication",
+                "title": "Action: ChemoMedication",
+                "description": "Action for ChemoMedication Request (Key: ChemoMedication) - Parent Node Key: N-test",
+                "code": [
+                  {
+                    "coding": [
+                      {
+                        "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                        "code": "guideline-based-care",
+                        "display": "Guideline-based Care"
+                      }
+                    ]
+                  }
+                ],
+                "definitionCanonical": "http://example.com/ActivityDefinition/6ddfa38e-2b08-4628-b716-61385a11e585",
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": {
+                      "language": "text/cql",
+                      "expression": "LIB2371205.undefined"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "Surgery",
+            "title": "Action: Surgery",
+            "description": "Action for Surgery (Key: Surgery) - Parent Node Key: T-test",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "definitionCanonical": "http://example.com/ActivityDefinition/d62e8e11-4c02-40bc-9cc8-70de9ccbbf7b",
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/cql",
+                  "expression": "LIB2371205.undefined"
+                }
+              }
+            ],
+            "relatedAction": [
+              {
+                "actionId": "RThxUTk2z",
+                "relationship": "before-start"
+              }
+            ]
+          },
+          {
+            "id": "RThxUTk2z",
+            "title": "Action: RThxUTk2z",
+            "description": "Action for ChemoMedication Request (Key: RThxUTk2z) - Parent Node Key: Surgery",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "definitionCanonical": "http://example.com/ActivityDefinition/6ddfa38e-2b08-4628-b716-61385a11e585",
+            "relatedAction": [
+              {
+                "actionId": "Surgery",
+                "relationship": "after-end"
+              }
+            ]
+          }
+        ],
+        "library": [
+          "23712055-aed5-4f9a-bb95-363cc49a7044"
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/PlanDefinition/f2923112-df00-4026-a85f-dce15af2eafe"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/Library/23712055-aed5-4f9a-bb95-363cc49a7044",
+      "resource": {
+        "id": "23712055-aed5-4f9a-bb95-363cc49a7044",
+        "resourceType": "Library",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablelibrary"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "executable"
+          }
+        ],
+        "url": "urn:uuid:23712055-aed5-4f9a-bb95-363cc49a7044",
+        "version": "1.0",
+        "name": "LIB2371205",
+        "title": "Library for Test Pathway (Example)",
+        "status": "draft",
+        "experimental": true,
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/library-type",
+              "code": "logic-library",
+              "display": "Logic Library"
+            }
+          ]
+        },
+        "publisher": "Logged in user",
+        "description": "CQL/ELM library for pathway: Test Pathway (Example)",
+        "content": [
+          {
+            "id": "navigational-cql",
+            "contentType": "text/cql",
+            "data": "CmxpYnJhcnkgTElCMjM3MTIwNSB2ZXJzaW9uICcxLjAnCgp1c2luZyBGSElSIHZlcnNpb24gJzQuMC4xJwoKCgpjb250ZXh0IFBhdGllbnQKCgo=",
+            "title": "CQL for navigating the pathway"
+          },
+          {
+            "id": "navigational-elm",
+            "contentType": "application/elm+json",
+            "data": "eyJsaWJyYXJ5Ijp7ImlkZW50aWZpZXIiOnsiaWQiOiJ0ZXN0X2JyZWFzdF9jYW5jZXIiLCJ2ZXJzaW9uIjoiMS4wLjAifSwic2NoZW1hSWRlbnRpZmllciI6eyJpZCI6InVybjpobDctb3JnOmVsbSIsInZlcnNpb24iOiJyMSJ9LCJ1c2luZ3MiOnsiZGVmIjpbeyJsb2NhbElkZW50aWZpZXIiOiJTeXN0ZW0iLCJ1cmkiOiJ1cm46aGw3LW9yZzplbG0tdHlwZXM6cjEifSx7ImxvY2FsSWQiOiIxIiwibG9jYXRvciI6IjM6MS0zOjI2IiwibG9jYWxJZGVudGlmaWVyIjoiRkhJUiIsInVyaSI6Imh0dHA6Ly9obDcub3JnL2ZoaXIiLCJ2ZXJzaW9uIjoiNC4wLjAifSx7ImxvY2FsSWRlbnRpZmllciI6ImV4YW1wbGUiLCJ1cmkiOiJ1cm46ZXhhbXBsZS1vcmcifSx7ImxvY2FsSWRlbnRpZmllciI6ImV4YW1wbGUyIiwidXJpIjoidXJuOmV4YW1wbGUyLW9yZyJ9XX0sInN0YXRlbWVudHMiOnsiZGVmIjpbeyJsb2NhdG9yIjoiMTM6MS0xMzoxNSIsIm5hbWUiOiJQYXRpZW50IiwiY29udGV4dCI6IlBhdGllbnQiLCJleHByZXNzaW9uIjp7InR5cGUiOiJTaW5nbGV0b25Gcm9tIiwib3BlcmFuZCI6eyJsb2NhdG9yIjoiMTM6MS0xMzoxNSIsImRhdGFUeXBlIjoie2h0dHA6Ly9obDcub3JnL2ZoaXJ9UGF0aWVudCIsInR5cGUiOiJSZXRyaWV2ZSJ9fX0seyJuYW1lIjoiVCA9IFQwIiwiY29udGV4dCI6IlBhdGllbnQiLCJleHByZXNzaW9uIjp7fX0seyJuYW1lIjoiVCA9IFQxIiwiY29udGV4dCI6IlBhdGllbnQiLCJleHByZXNzaW9uIjp7fX0seyJuYW1lIjoiTiA9IE4xIiwiY29udGV4dCI6IlBhdGllbnQiLCJleHByZXNzaW9uIjp7fX0seyJuYW1lIjoiU3VyZ2VyeSIsImNvbnRleHQiOiJQYXRpZW50IiwiZXhwcmVzc2lvbiI6e319LHsibmFtZSI6IkNoZW1vTWVkaWNhdGlvbiIsImNvbnRleHQiOiJQYXRpZW50IiwiZXhwcmVzc2lvbiI6e319XX0sImluY2x1ZGVzIjp7ImRlZiI6W3sicGF0aCI6ImV4YW1wbGUtcGF0aCIsInZlcnNpb24iOiIxLjAifSx7InBhdGgiOiJleGFtcGxlLXBhdGgtMiIsInZlcnNpb24iOiIxLjAifV19LCJ2YWx1ZVNldHMiOnsiZGVmIjpbeyJuYW1lIjoiZXhhbXBsZSIsImlkIjoiMSIsImFjY2Vzc0xldmVsIjoiUHVibGljIiwicmVzdWx0VHlwZVNwZWNpZmllciI6e319LHsibmFtZSI6ImV4YW1wbGUyIiwiaWQiOiIyIiwiYWNjZXNzTGV2ZWwiOiJQdWJsaWMiLCJyZXN1bHRUeXBlU3BlY2lmaWVyIjp7fX1dfSwiY29kZXMiOnsiZGVmIjpbXX0sImNvZGVTeXN0ZW1zIjp7ImRlZiI6W119fX0=",
+            "title": "ELM for navigating the pathway"
+          },
+          {
+            "id": "precondition",
+            "contentType": "application/elm+json",
+            "data": "eyJ0ZXN0IjoxfQ==",
+            "title": "ELM for pathway preconditions"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/Library/23712055-aed5-4f9a-bb95-363cc49a7044"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/PlanDefinition/0a2ad4d9-ecff-4c10-93b5-2e1840f9727b",
+      "resource": {
+        "id": "0a2ad4d9-ecff-4c10-93b5-2e1840f9727b",
+        "resourceType": "PlanDefinition",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-strategydefinition"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+            "valueCode": "executable"
+          }
+        ],
+        "url": "urn:uuid:0a2ad4d9-ecff-4c10-93b5-2e1840f9727b",
+        "version": "1.0",
+        "name": "PD0a2ad4d",
+        "title": "StrategyTest Pathway (Example)",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+              "code": "workflow-definition",
+              "display": "Workflow Definition"
+            }
+          ]
+        },
+        "status": "draft",
+        "experimental": true,
+        "publisher": "Logged in user",
+        "description": "Strategy for Test Pathway (Example)",
+        "action": [
+          {
+            "id": "New Pathway",
+            "title": "Action: New Pathway",
+            "description": "Action for New Pathway",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "relatedAction": [
+              {
+                "actionId": "Test Pathway (Example)",
+                "relationship": "after-end"
+              }
+            ],
+            "definitionCanonical": "http://example.com/PlanDefinition/f9e3aa3d-016a-4c58-803b-8f162da4323c"
+          },
+          {
+            "id": "Test Pathway (Example)",
+            "title": "Action: Test Pathway (Example)",
+            "description": "Action for Test Pathway (Example)",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process",
+                    "code": "guideline-based-care",
+                    "display": "Guideline-based Care"
+                  }
+                ]
+              }
+            ],
+            "relatedAction": [
+              {
+                "actionId": "New Pathway",
+                "relationship": "before-start"
+              },
+              {
+                "actionId": "New Pathway",
+                "relationship": "before-start"
+              }
+            ],
+            "definitionCanonical": "http://example.com/PlanDefinition/f2923112-df00-4026-a85f-dce15af2eafe"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "/PlanDefinition/0a2ad4d9-ecff-4c10-93b5-2e1840f9727b"
+      }
+    }
+  ]
+}

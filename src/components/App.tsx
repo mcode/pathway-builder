@@ -14,6 +14,7 @@ import { SnackbarProvider } from './SnackbarProvider';
 import { CriteriaBuilderProvider } from './CriteriaBuilderProvider';
 import { QueryCache, ReactQueryCacheProvider } from 'react-query';
 import { AlertProvider } from './AlertProvider';
+import Visualizer from './Visualizer';
 
 const cache = new QueryCache();
 
@@ -33,6 +34,9 @@ const App: FC = () => {
                       </Route>
                       <Route path="/builder/:id">
                         <BuilderRoute />
+                      </Route>
+                      <Route path="/demo/viz">
+                        <Visualizer />
                       </Route>
                       <Route path="/">
                         <Header />
