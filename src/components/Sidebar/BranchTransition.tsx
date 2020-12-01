@@ -1,6 +1,13 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTools, faTrashAlt, faThList, faEdit } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSave,
+  faTools,
+  faTrashAlt,
+  faThList,
+  faEdit,
+  faSpinner
+} from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
