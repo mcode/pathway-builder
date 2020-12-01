@@ -14,12 +14,7 @@ import config from 'utils/ConfigManager';
 import useGetService from 'components/StaticApp/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import {
-  builderModelToCriteria,
-  cqlToCriteria,
-  elmLibraryToCriteria,
-  jsonToCriteria
-} from 'utils/criteria';
+import { builderModelToCriteria, cqlToCriteria, elmLibraryToCriteria } from 'utils/criteria';
 import { CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
@@ -32,7 +27,7 @@ interface CriteriaContextInterface {
     criteria: BuilderModel,
     label: string,
     criteriaSource: string | undefined
-  ) => Criteria[];
+  ) => Promise<Criteria>;
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -80,10 +75,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           // TODO: more robust file type identification?
-          if (file.name.endsWith('.json')) {
-            const newCriteria = jsonToCriteria(rawContent);
-            if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-          } else if (file.name.endsWith('.cql')) {
+          if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
           } else if (file.name.endsWith('.zip')) {
             const cqlLibraries: CqlLibraries = {};
@@ -123,23 +115,24 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       buildCriteria: BuilderModel,
       label: string,
       criteriaSource: string | undefined
-    ): Criteria[] => {
-      const newCriteria = builderModelToCriteria(buildCriteria, label);
-      if (criteriaSource) {
-        // Find criteria that is being edited
-        const matchingCriteria = criteria.find(c => c.id === criteriaSource);
-        if (matchingCriteria) {
-          newCriteria.id = matchingCriteria.id;
-          setCriteria(currentCriteria => [
-            ...currentCriteria.filter(c => c.id !== matchingCriteria.id),
-            newCriteria
-          ]);
+    ): Promise<Criteria> => {
+      return builderModelToCriteria(buildCriteria, label).then(newCriteria => {
+        if (criteriaSource) {
+          // Find criteria that is being edited
+          const matchingCriteria = criteria.find(c => c.id === criteriaSource);
+          if (matchingCriteria) {
+            newCriteria.id = matchingCriteria.id;
+            setCriteria(currentCriteria => [
+              ...currentCriteria.filter(c => c.id !== matchingCriteria.id),
+              newCriteria
+            ]);
+          }
+        } else {
+          setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
         }
-      } else {
-        setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
-      }
 
-      return [newCriteria];
+        return newCriteria;
+      });
     },
     [criteria]
   );

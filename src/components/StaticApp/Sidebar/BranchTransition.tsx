@@ -1,6 +1,13 @@
 import React, { FC, memo, useState, useCallback, ChangeEvent, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTools, faTrashAlt, faThList, faEdit } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSave,
+  faTools,
+  faTrashAlt,
+  faThList,
+  faEdit,
+  faSpinner
+} from '@fortawesome/free-solid-svg-icons';
 import DropDown from 'components/elements/DropDown';
 import { Button, Checkbox, FormControlLabel, TextField, Box } from '@material-ui/core';
 import {
@@ -44,6 +51,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   ]);
   const criteriaAvailable = criteriaOptions.length > 0;
   const styles = useStyles();
+  const [isSavingBuildCriteria, setIsSavingBuildCriteria] = useState<boolean>(false);
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const criteriaDescription = transition.condition?.description;
   const criteriaIsValid = criteriaDescription != null;
@@ -169,21 +177,22 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   const handleBuildCriteriaSave = useCallback(() => {
     if (!currentNodeStatic || !pathwayRef.current || !currentCriteria?.cql) return;
 
-    const criteria = addBuilderCriteria(
-      currentCriteria,
-      criteriaName,
-      transition.condition?.criteriaSource
-    );
-    const newPathway = setTransitionCondition(
-      pathwayRef.current,
-      currentNodeStatic.key,
-      transitionRef.current.id,
-      criteriaName,
-      criteria[0]
-    );
+    setIsSavingBuildCriteria(true);
+    addBuilderCriteria(currentCriteria, criteriaName, transition.condition?.criteriaSource).then(
+      newCriteria => {
+        const newPathway = setTransitionCondition(
+          pathwayRef.current!, // eslint-disable-line
+          currentNodeStatic.key,
+          transitionRef.current.id,
+          criteriaName,
+          newCriteria
+        );
 
-    setCurrentPathway(newPathway);
-    handleBuildCriteriaCancel();
+        setCurrentPathway(newPathway);
+        handleBuildCriteriaCancel();
+        setIsSavingBuildCriteria(false);
+      }
+    );
   }, [
     currentNodeStatic,
     setCurrentPathway,
@@ -193,7 +202,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
     criteriaName,
     transition,
     handleBuildCriteriaCancel,
-    addBuilderCriteria
+    addBuilderCriteria,
+    setIsSavingBuildCriteria
   ]);
 
   return (
@@ -325,7 +335,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || currentCriteria === null}
+              endIcon={isSavingBuildCriteria ? <FontAwesomeIcon icon={faSpinner} spin /> : null}
+              disabled={criteriaName === '' || currentCriteria === null || isSavingBuildCriteria}
               onClick={handleBuildCriteriaSave}
             >
               Save

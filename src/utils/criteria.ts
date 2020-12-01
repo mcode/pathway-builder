@@ -82,38 +82,36 @@ export function cqlToCriteria(cql: string | CqlLibraries): Promise<Criteria[]> {
   }
 }
 
-export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
-  const elm = JSON.parse(rawElm);
-  if (!elm.library?.identifier) {
-    alert('Please upload ELM file');
-    return;
-  }
-  return elmLibraryToCriteria(elm);
+function createCqlLibrary(cqlStatement: string, name: string, id?: string): string {
+  // CQl identifier cannot start with a number or contain '-'
+  const cqlId = id ?? `cql${shortid.generate().replace(/-/g, 'a')}`;
+  const cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.1'\ncontext Patient\n
+    define "${name}":\n${cqlStatement}`;
+
+  return cql;
 }
 
 export function builderModelToCriteria(
   criteria: BuilderModel,
   label: string,
   id?: string
-): Criteria {
-  return {
-    id: id ? id : shortid.generate(),
-    label,
-    display: label,
-    modified: Date.now(),
-    builder: criteria,
-    statement: label
-  };
+): Promise<Criteria> {
+  const cqlLibrary = createCqlLibrary(criteria.cql, label, id);
+  return cqlToCriteria(cqlLibrary).then(newCriteriaList => {
+    const newCriteria = newCriteriaList[0];
+    newCriteria.builder = criteria;
+    console.log(newCriteria);
+    return newCriteria;
+  });
 }
 
 export function addBuilderCriteria(
   buildCriteria: BuilderModel,
   label: string,
   criteriaSource: string | undefined
-): Criteria[] {
-  const newCriteria = builderModelToCriteria(buildCriteria, label, criteriaSource);
-
-  updateCriteria(newCriteria);
-
-  return [newCriteria];
+): Promise<Criteria> {
+  return builderModelToCriteria(buildCriteria, label, criteriaSource).then(newCriteria => {
+    updateCriteria(newCriteria);
+    return newCriteria;
+  });
 }

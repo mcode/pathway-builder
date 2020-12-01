@@ -41,6 +41,7 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   } = useCurrentCriteriaContext();
   const { resetCriteriaBuilder, setCriteriaBuilder } = useCriteriaBuilderContext();
   const { pathwayRef, setCurrentPathway } = useCurrentPathwayContext();
+  const [isSavingBuildCriteria, setIsSavingBuildCriteria] = useState<boolean>(false);
   const [useCriteriaSelected, setUseCriteriaSelected] = useState<boolean>(false);
   const currentNodeStatic = useCurrentNodeStatic(pathwayRef.current);
   const criteriaOptions = useMemo(() => criteria.map(c => ({ value: c.id, label: c.label })), [
@@ -171,21 +172,22 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
   const handleBuildCriteriaSave = useCallback(() => {
     if (!currentNodeStatic || !pathwayRef.current || !currentCriteria?.cql) return;
 
-    const criteria = addBuilderCriteria(
-      currentCriteria,
-      criteriaName,
-      transition.condition?.criteriaSource
-    );
-    const newPathway = setTransitionCondition(
-      pathwayRef.current,
-      currentNodeStatic.key,
-      transitionRef.current.id,
-      criteriaName,
-      criteria[0]
-    );
+    setIsSavingBuildCriteria(true);
+    addBuilderCriteria(currentCriteria, criteriaName, transition.condition?.criteriaSource).then(
+      newCriteria => {
+        const newPathway = setTransitionCondition(
+          pathwayRef.current!, // eslint-disable-line
+          currentNodeStatic.key,
+          transitionRef.current.id,
+          criteriaName,
+          newCriteria
+        );
 
-    setCurrentPathway(newPathway);
-    handleBuildCriteriaCancel();
+        setCurrentPathway(newPathway);
+        handleBuildCriteriaCancel();
+        setIsSavingBuildCriteria(false);
+      }
+    );
   }, [
     currentNodeStatic,
     setCurrentPathway,
@@ -194,7 +196,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
     currentCriteria,
     criteriaName,
     transition,
-    handleBuildCriteriaCancel
+    handleBuildCriteriaCancel,
+    setIsSavingBuildCriteria
   ]);
 
   return (
@@ -326,7 +329,8 @@ const BranchTransition: FC<BranchTransitionProps> = ({ transition, currentNode }
               size="large"
               variant="outlined"
               startIcon={<FontAwesomeIcon icon={faSave} />}
-              disabled={criteriaName === '' || currentCriteria === null}
+              endIcon={isSavingBuildCriteria ? <FontAwesomeIcon icon={faSpinner} spin /> : null}
+              disabled={criteriaName === '' || currentCriteria === null || isSavingBuildCriteria}
               onClick={handleBuildCriteriaSave}
             >
               Save
