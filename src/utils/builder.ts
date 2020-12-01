@@ -122,100 +122,15 @@ export async function exportPathway(
   cpg: boolean
 ): Promise<string> {
   const actionNodeCqlLibraries = generateActionNodeCql(pathway);
-  return generateNavigationalElm(pathway, actionNodeCqlLibraries).then(elmLibraries => {
-    const pathwayWithElm = setNavigationalElm(pathway, elmLibraries);
-    let pathwayToExport: Pathway | Bundle;
-    if (cpg) {
-      const exporter = new CPGExporter(pathwayWithElm, pathways, criteria);
-      pathwayToExport = exporter.export();
-    } else {
-      const exporter = new CaminoExporter(pathwayWithElm, criteria, actionNodeCqlLibraries);
-      pathwayToExport = exporter.export();
-    }
-    return JSON.stringify(pathwayToExport, undefined, 2);
-  });
-}
-
-async function generateNavigationalElm(
-  pathway: Pathway,
-  actionNodeCqlLibraries: ActionCqlLibrary[]
-): Promise<ElmLibrary[]> {
-  const mainElm: ElmLibrary = {
-    library: {
-      identifier: {
-        id: pathway.id,
-        version: '1.0.0'
-      },
-      schemaIdentifier: {
-        id: 'urn:hl7-org:elm',
-        version: 'r1'
-      },
-      usings: {
-        def: [
-          {
-            localIdentifier: 'System',
-            uri: 'urn:hl7-org:elm-types:r1'
-          },
-          {
-            localId: '1',
-            locator: '3:1-3:26',
-            localIdentifier: 'FHIR',
-            uri: 'http://hl7.org/fhir',
-            version: '4.0.0'
-          }
-        ]
-      },
-      statements: {
-        def: [
-          {
-            locator: '13:1-13:15',
-            name: 'Patient',
-            context: 'Patient',
-            expression: {
-              type: 'SingletonFrom',
-              operand: {
-                locator: '13:1-13:15',
-                dataType: '{http://hl7.org/fhir}Patient',
-                type: 'Retrieve'
-              }
-            }
-          }
-        ]
-      },
-      includes: { def: [] },
-      valueSets: { def: [] },
-      codes: { def: [] },
-      codeSystems: { def: [] }
-    }
-  };
-
-  // Convert action node cql to elm
-  const listOfPromises: Promise<ElmLibrary>[] = [];
-  actionNodeCqlLibraries.forEach(cqlLibrary =>
-    listOfPromises.push(convertBasicCQL(cqlLibrary.cql))
-  );
-
-  for (const nodeKey of Object.keys(pathway.nodes)) {
-    const node = pathway.nodes[nodeKey];
-
-    node.transitions.forEach((transition: Transition) => {
-      if (transition.condition?.elm) {
-        // Add tranistion.condition.elm to elm
-        mergeElm(mainElm, transition.condition.elm);
-        const elmStatement = produce(
-          getElmStatement(transition.condition.elm),
-          (draftElmStatement: ElmStatement) => {
-            draftElmStatement.name = transition.condition?.description ?? 'Unknown';
-          }
-        );
-        mainElm.library.statements.def.push(elmStatement);
-      }
-    });
+  let pathwayToExport: Pathway | Bundle;
+  if (cpg) {
+    const exporter = new CPGExporter(pathway, pathways, criteria);
+    pathwayToExport = exporter.export();
+  } else {
+    const exporter = new CaminoExporter(pathway, criteria, actionNodeCqlLibraries);
+    pathwayToExport = await exporter.export();
   }
-
-  return Promise.all(listOfPromises).then(elmLibraries => {
-    return [mainElm, ...elmLibraries];
-  });
+  return JSON.stringify(pathwayToExport, undefined, 2);
 }
 
 function generateActionNodeCql(pathway: Pathway): ActionCqlLibrary[] {
@@ -227,59 +142,6 @@ function generateActionNodeCql(pathway: Pathway): ActionCqlLibrary[] {
   });
 
   return libraries;
-}
-
-function mergeElm(elm: ElmLibrary, additionalElm: ElmLibrary): void {
-  // Merge usings
-  additionalElm.library.usings?.def.forEach(using => {
-    // Check if it is in ELM
-    if (!elm.library.usings?.def.find(def => def.uri === using.uri))
-      elm.library.usings?.def.push(using);
-  });
-
-  // Merge includes
-  additionalElm.library.includes?.def.forEach(include => {
-    if (!elm.library.includes?.def.find(def => def.path === include.path))
-      elm.library.includes?.def.push(include);
-  });
-
-  // Merge valueSets
-  additionalElm.library.valueSets?.def.forEach(valueSet => {
-    if (!elm.library.valueSets?.def.find(def => def.id === valueSet.id))
-      elm.library.valueSets?.def.push(valueSet);
-  });
-
-  // Merge codes
-  additionalElm.library.codes?.def.forEach(code => {
-    if (!elm.library.codes?.def.find(def => def.name === code.name))
-      elm.library.codes?.def.push(code);
-  });
-
-  // Merge codesystems
-  additionalElm.library.codeSystems?.def.forEach(codesystem => {
-    if (!elm.library.codeSystems?.def.find(def => def.name === codesystem.name))
-      elm.library.codeSystems?.def.push(codesystem);
-  });
-
-  // TODO: merge concepts
-}
-
-function getElmStatement(elm: ElmLibrary): ElmStatement {
-  const defaultStatementNames = [
-    'Patient',
-    'MeetsInclusionCriteria',
-    'InPopulation',
-    'Recommendation',
-    'Rationale',
-    'Errors'
-  ];
-  const elmStatement = elm.library.statements.def.find(
-    def => !defaultStatementNames.includes(def.name)
-  );
-
-  // elmStatement type is ElmStatement | undefined but criteria
-  // provider validates such a statement exists in the elm
-  return elmStatement as ElmStatement;
 }
 
 // TODO: possibly add more precondition methods

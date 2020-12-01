@@ -3,6 +3,9 @@ import { Criteria } from 'criteria-model';
 import { v4 as uuidv4 } from 'uuid';
 import { deepCopyPathway } from './nodeUtils';
 import { constructCqlLibrary, IncludedCqlLibraries } from './export';
+import { convertBasicCQL } from 'engine/cql-to-elm';
+import { ElmLibrary } from 'elm-model';
+import { setNavigationalElm } from './builder';
 
 export class CaminoExporter {
   pathway: Pathway;
@@ -15,7 +18,7 @@ export class CaminoExporter {
     this.actionCqlLibraries = actionCqlLibraries;
   }
 
-  export(): Pathway {
+  export(): Promise<Pathway> {
     // goal here is to iterate through the pathway,
     // find all referenced libraries,
     // and update the CQL in the transition to point to them appropriately
@@ -104,6 +107,11 @@ export class CaminoExporter {
 
     this.pathway.library = libraries;
 
-    return this.pathway;
+    // Convert all of the cql libraries to elm
+    const listOfPromises: Promise<ElmLibrary>[] = [];
+    libraries.forEach(library => listOfPromises.push(convertBasicCQL(library)));
+    return Promise.all(listOfPromises).then(elmLibraries => {
+      return setNavigationalElm(this.pathway, elmLibraries);
+    });
   }
 }
