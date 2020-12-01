@@ -13,12 +13,16 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-export function elmLibraryToCriteria(
+function elmLibraryToCriteria(
   elm: ElmLibrary,
-  cql: string | undefined = undefined,
+  cql: string,
   cqlLibraries: CqlLibraries | undefined = undefined,
   custom = false
 ): Criteria[] {
+  // NOTE: the elm library is not used on the criteria anymore but this
+  //  method is still used to iterate over all statements. It is easier
+  //  to do this in ELM than in CQL even though it is not optimal.
+
   // the cql-to-elm webservice always responds with ELM
   // even if the CQL was complete garbage
   // TODO: consider showing the error messages from the annotations?
@@ -37,7 +41,7 @@ export function elmLibraryToCriteria(
     );
   }
   if (!elmStatements) {
-    alert('No elm statement found in that file');
+    alert('No statement found in that file');
     return [];
   }
   const labelTitle = custom
@@ -50,7 +54,6 @@ export function elmLibraryToCriteria(
       display: statement.name,
       version: elm.library.identifier.version,
       modified: Date.now(),
-      elm: elm,
       cql: cql,
       statement: statement.name,
       ...(cqlLibraries && { cqlLibraries })

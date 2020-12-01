@@ -6,6 +6,7 @@ import { constructCqlLibrary, IncludedCqlLibraries } from './export';
 import { convertBasicCQL } from 'engine/cql-to-elm';
 import { ElmLibrary } from 'elm-model';
 import { setNavigationalElm } from './builder';
+import { extractCQLLibraryName, extractCQLVersion } from './regexes';
 
 export class CaminoExporter {
   pathway: Pathway;
@@ -53,31 +54,36 @@ export class CaminoExporter {
           const criteriaSource = this.criteria.find(
             c => c.id === transition.condition?.criteriaSource
           );
-          if (criteriaSource?.elm && criteriaSource?.cql) {
-            const libraryIdentifier = criteriaSource.elm.library.identifier;
-            includedCqlLibraries[libraryIdentifier.id] = {
-              cql: criteriaSource.cql,
-              version: libraryIdentifier.version
-            };
+          if (criteriaSource?.cql) {
+            const transitionLibraryNameRegex = extractCQLLibraryName.exec(criteriaSource.cql);
+            const transitionLibraryVersionRegex = extractCQLVersion.exec(criteriaSource.cql);
+            if (transitionLibraryNameRegex && transitionLibraryVersionRegex) {
+              const transitionLibraryName = transitionLibraryNameRegex[1];
+              const transitionLibraryVersion = transitionLibraryVersionRegex[1];
+              includedCqlLibraries[transitionLibraryName] = {
+                cql: criteriaSource.cql,
+                version: transitionLibraryVersion
+              };
 
-            referencedDefines[transition.condition.cql] = libraryIdentifier.id;
+              referencedDefines[transition.condition.cql] = transitionLibraryName;
 
-            if (criteriaSource?.cqlLibraries) {
-              Object.entries(criteriaSource.cqlLibraries).forEach(entry => {
-                const [libName, libCql] = entry;
-                if (libCql.cql) {
-                  includedCqlLibraries[libName] = {
-                    cql: libCql.cql,
-                    version: libCql?.version || ''
-                  };
-                  referencedDefines[libCql.cql] = libName;
-                }
-              });
-            }
+              if (criteriaSource?.cqlLibraries) {
+                Object.entries(criteriaSource.cqlLibraries).forEach(entry => {
+                  const [libName, libCql] = entry;
+                  if (libCql.cql) {
+                    includedCqlLibraries[libName] = {
+                      cql: libCql.cql,
+                      version: libCql?.version || ''
+                    };
+                    referencedDefines[libCql.cql] = libName;
+                  }
+                });
+              }
 
-            // prepend the library name if not already done
-            if (!transition.condition.cql.startsWith(libraryIdentifier.id)) {
-              transition.condition.cql = `${libraryIdentifier.id}.${transition.condition.cql}`;
+              // prepend the library name if not already done
+              if (!transition.condition.cql.startsWith(transitionLibraryName)) {
+                transition.condition.cql = `${transitionLibraryName}.${transition.condition.cql}`;
+              }
             }
           } else if (criteriaSource?.builder) {
             builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;

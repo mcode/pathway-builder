@@ -11,7 +11,7 @@ const url = config.get('cqlToElmWebserviceUrl');
 
 export interface CqlLibraries {
   [name: string]: {
-    cql?: string;
+    cql: string;
     version?: string;
   };
 }

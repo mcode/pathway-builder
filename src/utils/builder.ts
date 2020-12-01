@@ -9,7 +9,7 @@ import {
   ReferenceNode,
   ActionCqlLibrary
 } from 'pathways-model';
-import { ElmLibrary, ElmStatement } from 'elm-model';
+import { ElmLibrary } from 'elm-model';
 import shortid from 'shortid';
 import produce from 'immer';
 import { CPGExporter } from './cpg';
@@ -17,8 +17,8 @@ import { CaminoExporter } from './CaminoExporter';
 import { Criteria } from 'criteria-model';
 import { Bundle } from 'fhir-objects';
 import JSZip from 'jszip';
-import { convertBasicCQL } from 'engine/cql-to-elm';
 import { isActionNode } from './nodeUtils';
+import { extractCQLLibraryName } from './regexes';
 
 interface AddCriteriaSourceInterface {
   updated: boolean;
@@ -55,15 +55,20 @@ export function updatePathwayCriteriaSources(
         // If a matching criteria does not already exist, try and find one
         if (condition && !criteriaIds.includes(condition.criteriaSource as string)) {
           const [library, statement] = condition.cql.split('.');
-          const criteriaSource = criteria.find(
-            crit => crit.elm?.library.identifier.id === library && crit.statement === statement
-          )?.id;
+          const criteriaSource = criteria.find(crit => {
+            if (!crit.cql) return false;
+            const critLibraryRegex = extractCQLLibraryName.exec(crit.cql);
+            return (
+              critLibraryRegex && critLibraryRegex[1] === library && crit.statement === statement
+            );
+          })?.id;
           // Only update if a criteria source is actually found.
           if (criteriaSource) {
-            const condition = draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
-            if (condition) {
+            const foundCondition =
+              draftPathway.nodes[nodeIndex].transitions[transitionIndex].condition;
+            if (foundCondition) {
               updated = true;
-              condition.criteriaSource = criteriaSource;
+              foundCondition.criteriaSource = criteriaSource;
             }
           }
         }
@@ -335,7 +340,6 @@ export function setTransitionCondition(
       foundTransition.condition = {
         description: description,
         cql: criteria.statement,
-        elm: criteria.elm,
         criteriaSource: criteria.id
       };
     }
@@ -371,7 +375,7 @@ export function setTransition(
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const transition = draftPathway.nodes[startNodeKey]?.transitions?.find(
-      (transition: Transition) => transition.id === transitionId
+      (t: Transition) => t.id === transitionId
     );
     if (transition) transition.transition = endNodeKey;
   });
@@ -589,7 +593,7 @@ export function removeTransitionCondition(
 ): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const transition = draftPathway.nodes[nodeKey].transitions.find(
-      (transition: Transition) => transition.id === transitionId
+      (t: Transition) => t.id === transitionId
     );
     if (transition) delete transition.condition;
   });

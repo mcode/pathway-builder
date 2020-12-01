@@ -65,7 +65,6 @@ declare module 'pathways-model' {
     condition?: {
       description: string;
       cql: string;
-      elm?: ElmLibrary;
       criteriaSource?: string;
     };
   }

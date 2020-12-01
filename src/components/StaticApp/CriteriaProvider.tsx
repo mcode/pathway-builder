@@ -9,12 +9,11 @@ import React, {
   useEffect
 } from 'react';
 import JSZip from 'jszip';
-import { ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from 'components/StaticApp/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import { builderModelToCriteria, cqlToCriteria, elmLibraryToCriteria } from 'utils/criteria';
+import { builderModelToCriteria, cqlToCriteria } from 'utils/criteria';
 import { CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
@@ -22,7 +21,6 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   addCqlCriteria: (cql: string) => void;
   deleteCriteria: (id: string) => void;
-  addElmCriteria: (elm: ElmLibrary) => Criteria[];
   addBuilderCriteria: (
     criteria: BuilderModel,
     label: string,
@@ -100,14 +98,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   );
 
   const deleteCriteria = useCallback((id: string) => {
-    setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
-  }, []);
-
-  const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, undefined, undefined, true);
-    setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-
-    return newCriteria;
+    setCriteria(currentCriteria => currentCriteria.filter(c => c.id !== id));
   }, []);
 
   const addBuilderCriteria = useCallback(
@@ -144,7 +135,6 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         addCriteria,
         addCqlCriteria,
         deleteCriteria,
-        addElmCriteria,
         addBuilderCriteria
       }}
     >
