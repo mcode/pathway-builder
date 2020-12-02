@@ -3,7 +3,7 @@ import { Criteria } from 'criteria-model';
 import { v4 as uuidv4 } from 'uuid';
 import { deepCopyPathway } from './nodeUtils';
 import { constructCqlLibrary, IncludedCqlLibraries } from './export';
-import { convertBasicCQL, convertCQL } from 'engine/cql-to-elm';
+import { convertCQL } from 'engine/cql-to-elm';
 import { ElmLibrary } from 'elm-model';
 import { setNavigationalElm } from './builder';
 import { extractCQLLibraryName, extractCQLVersion } from './regexes';
