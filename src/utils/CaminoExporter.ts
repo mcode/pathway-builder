@@ -3,7 +3,7 @@ import { Criteria } from 'criteria-model';
 import { v4 as uuidv4 } from 'uuid';
 import { deepCopyPathway } from './nodeUtils';
 import { constructCqlLibrary, IncludedCqlLibraries } from './export';
-import { convertBasicCQL } from 'engine/cql-to-elm';
+import { convertBasicCQL, convertCQL } from 'engine/cql-to-elm';
 import { ElmLibrary } from 'elm-model';
 import { setNavigationalElm } from './builder';
 import { extractCQLLibraryName, extractCQLVersion } from './regexes';
@@ -24,7 +24,7 @@ export class CaminoExporter {
     // find all referenced libraries,
     // and update the CQL in the transition to point to them appropriately
     const libraryId = uuidv4();
-    const libraryName = `LIB${libraryId.substring(0, 7)}`;
+    const mainLibraryName = `LIB${libraryId.substring(0, 7)}`;
 
     const includedCqlLibraries: IncludedCqlLibraries = {};
     const referencedDefines: Record<string, string> = {};
@@ -89,7 +89,7 @@ export class CaminoExporter {
             builderDefines[criteriaSource.statement] = criteriaSource.builder.cql;
 
             // prepend the library name
-            transition.condition.cql = `${libraryName}.${transition.condition.cql}`;
+            transition.condition.cql = `${mainLibraryName}.${transition.condition.cql}`;
           }
         }
       }
@@ -98,7 +98,7 @@ export class CaminoExporter {
     const libraries: string[] = [];
 
     const mainLibrary = constructCqlLibrary(
-      libraryName,
+      mainLibraryName,
       includedCqlLibraries,
       referencedDefines,
       builderDefines
@@ -114,10 +114,18 @@ export class CaminoExporter {
     this.pathway.library = libraries;
 
     // Convert all of the cql libraries to elm
-    const listOfPromises: Promise<ElmLibrary>[] = [];
-    libraries.forEach(library => listOfPromises.push(convertBasicCQL(library)));
-    return Promise.all(listOfPromises).then(elmLibraries => {
-      return setNavigationalElm(this.pathway, elmLibraries);
+    includedCqlLibraries[mainLibraryName] = {
+      cql: mainLibrary,
+      version: '1.0'
+    };
+    return convertCQL(includedCqlLibraries).then(elmLibraries => {
+      const mainElmLibrary = elmLibraries[mainLibraryName];
+      const otherElmLibraries: ElmLibrary[] = [];
+      Object.keys(elmLibraries).forEach(elmLibraryName => {
+        if (elmLibraryName !== mainLibraryName)
+          otherElmLibraries.push(elmLibraries[elmLibraryName]);
+      });
+      return setNavigationalElm(this.pathway, [mainElmLibrary, ...otherElmLibraries]);
     });
   }
 }
