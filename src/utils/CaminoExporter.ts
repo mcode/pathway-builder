@@ -58,7 +58,7 @@ export class CaminoExporter {
             const transitionLibraryNameRegex = extractCQLLibraryName.exec(criteriaSource.cql);
             const transitionLibraryVersionRegex = extractCQLVersion.exec(criteriaSource.cql);
             if (transitionLibraryNameRegex && transitionLibraryVersionRegex) {
-              const transitionLibraryName = transitionLibraryNameRegex[1];
+              const transitionLibraryName = transitionLibraryNameRegex[1].replaceAll('"', '');
               const transitionLibraryVersion = transitionLibraryVersionRegex[1];
               includedCqlLibraries[transitionLibraryName] = {
                 cql: criteriaSource.cql,
