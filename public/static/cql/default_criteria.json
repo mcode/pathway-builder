@@ -2,6 +2,7 @@
   {
     "id": "6kEvmHqwI",
     "label": "TNM: N0",
+    "display": "N0",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -4163,6 +4164,7 @@
   {
     "id": "jibabfqxcr",
     "label": "TNM: N+",
+    "display": "N+",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -8324,6 +8326,7 @@
   {
     "id": "5-x6glwrKS",
     "label": "TNM: T > 2cm",
+    "display": "T > 2 cm",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -12485,6 +12488,7 @@
   {
     "id": "WRtpajRr6i",
     "label": "TNM: T <= 2cm",
+    "display": "T <= 2cm",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -16646,6 +16650,7 @@
   {
     "id": "ugJnv6U1Yg",
     "label": "TNM: T > 2",
+    "display": "T > 2",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -20807,6 +20812,7 @@
   {
     "id": "XWEMXK-LTi",
     "label": "TNM: T <= 2",
+    "display": "T <= 2",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -24968,6 +24974,7 @@
   {
     "id": "ezPjkGSdVn",
     "label": "Pathologic_Response: Complete",
+    "display": "Complete",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -26401,6 +26408,7 @@
   {
     "id": "KOkFFmGvTQ",
     "label": "Pathologic_Response: Partial/Stable/Progressive",
+    "display": "Partial/Stable/Progressive",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -27834,6 +27842,7 @@
   {
     "id": "13_6s1RrEk",
     "label": "Tumor_Markers: ER Positive",
+    "display": "ER Positive",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -30195,6 +30204,7 @@
   {
     "id": "6Qb7nyYgWd",
     "label": "Tumor_Markers: ER Negative",
+    "display": "ER Negative",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -32556,6 +32566,7 @@
   {
     "id": "9IhHeFlYiA",
     "label": "Tumor_Markers: HER2 Positive",
+    "display": "HER2 Positive",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -34917,6 +34928,7 @@
   {
     "id": "Q9Ud3-ccTS",
     "label": "Tumor_Markers: HER2 Negative",
+    "display": "HER2 Negative",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -37278,6 +37290,7 @@
   {
     "id": "vB4xL9lTB2",
     "label": "Tumor_Markers: PR Positive",
+    "display": "PR Positive",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
@@ -39639,6 +39652,7 @@
   {
     "id": "-VRCTZ9lsP",
     "label": "Tumor_Markers: PR Negative",
+    "display": "PR Negative",
     "version": "1.0.0",
     "modified": 1606317604368,
     "elm": {
