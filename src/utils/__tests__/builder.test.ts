@@ -357,7 +357,6 @@ describe('builder interface update functions', () => {
       condition: {
         description: 'test description',
         cql: 'Tumor Size',
-        elm: elm,
         criteriaSource: '1'
       }
     };
