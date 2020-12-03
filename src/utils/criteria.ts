@@ -103,7 +103,6 @@ export function builderModelToCriteria(
   return cqlToCriteria(cqlLibrary).then(newCriteriaList => {
     const newCriteria = newCriteriaList[0];
     newCriteria.builder = criteria;
-    console.log(newCriteria);
     return newCriteria;
   });
 }
