@@ -186,7 +186,7 @@ export function setPreconditionElm(pathway: Pathway, elm: object): Pathway {
 }
 
 export function createNode(key?: string): PathwayNode {
-  if (!key) key = shortid.generate();
+  if (!key) key = 'N' + shortid.generate();
   const node: PathwayNode = {
     key,
     label: 'New Node',
@@ -316,7 +316,7 @@ export function setNodeOtherCriteria(
 export function addTransition(pathway: Pathway, startNodeKey: string, endNodeKey: string): Pathway {
   return produce(pathway, (draftPathway: Pathway) => {
     const transition: Transition = {
-      id: shortid.generate(),
+      id: 'T' + shortid.generate(),
       transition: endNodeKey
     };
 

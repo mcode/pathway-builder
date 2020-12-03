@@ -42,7 +42,7 @@ describe(constructCqlLibrary, () => {
           });
           // Redefines the referenced definitions
           Object.entries(refDef).forEach(([name, srcLib]) => {
-            expect(fooLib).toContain(`define "${name}": ${srcLib}.${name}`);
+            expect(fooLib).toContain(`define "${name}": ${srcLib}."${name}"`);
           });
           // Only contains the referenced definitions
           expect(fooLib.match(/define/g) || []).toHaveLength(2);
@@ -64,7 +64,7 @@ describe(constructCqlLibrary, () => {
             });
             // Redefines the referenced definitions
             Object.entries(refDef).forEach(([name, srcLib]) => {
-              expect(fooLib).toContain(`define "${name}": ${srcLib}.${name}`);
+              expect(fooLib).toContain(`define "${name}": ${srcLib}."${name}"`);
             });
             // Contains the new definitions
             Object.entries(buildDef).forEach(([name, cql]) => {

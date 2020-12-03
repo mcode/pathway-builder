@@ -10,8 +10,6 @@ import React, {
 } from 'react';
 import JSZip from 'jszip';
 import config from 'utils/ConfigManager';
-import useGetService from 'components/StaticApp/Services';
-import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
 import { builderModelToCriteria, cqlToCriteria } from 'utils/criteria';
 import { CqlLibraries } from 'engine/cql-to-elm';
@@ -38,17 +36,17 @@ interface CriteriaProviderProps {
 
 export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
-  const service = useGetService<string>(config.get('demoCriteria'), true);
-  const payload = (service as ServiceLoaded<string[]>).payload;
+  const defaultCriteriaPath = `${config.get('demoCriteria')}default_criteria.json`;
 
   useEffect(() => {
-    if (payload) {
-      const listOfPromises = payload.map(rawCql => cqlToCriteria(rawCql));
-      Promise.all(listOfPromises)
-        .then(listOfLists => listOfLists.flat())
-        .then(newCriteria => setCriteria(newCriteria));
-    }
-  }, [payload]);
+    fetch(defaultCriteriaPath, {
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(defaultCriteria => setCriteria(defaultCriteria));
+  }, [defaultCriteriaPath]);
 
   const addCqlCriteria = useCallback((cql: string | CqlLibraries) => {
     cqlToCriteria(cql).then(newCriteria => {
@@ -82,11 +80,12 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
             // Check for criteria in each of the cql files, add cql to libraries if no criteria
             for (let i = 0; i < zipFiles.length; i++) {
               const zipFile = zipFiles[i];
-
-              // Skip files that do not end with .cql
-              if (!zipFile.name.endsWith('.cql')) continue;
+              const zipFileName = zipFile.name;
+              // Skip files that do not end with .cql, or other MacOS nonsense
+              if (!zipFileName.endsWith('.cql') || zipFileName.startsWith('__MACOSX/')) continue;
               const fileContents = await zipFile.async('string');
-              cqlLibraries[zipFile.name] = { cql: fileContents };
+              const libName = zipFile.name.slice(0, -4); // slice off the .cql extension
+              cqlLibraries[libName] = { cql: fileContents };
             }
             addCqlCriteria(cqlLibraries);
           }
