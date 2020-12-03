@@ -322,8 +322,8 @@ describe('builder interface update functions', () => {
 
   it('set navigational elm', () => {
     const elm = {};
-    const newPathway = Builder.setNavigationalElm(pathway, elm);
-    expect(newPathway.elm?.navigational).toEqual(elm);
+    const newPathway = Builder.setNavigationalElm(pathway, [elm]);
+    expect(newPathway.elm?.navigational).toEqual({ main: elm, libraries: [] });
   });
 
   it('set precondition elm', () => {
@@ -357,7 +357,6 @@ describe('builder interface update functions', () => {
       condition: {
         description: 'test description',
         cql: 'Tumor Size',
-        elm: elm,
         criteriaSource: '1'
       }
     };
@@ -378,25 +377,6 @@ describe('builder interface update functions', () => {
     );
   });
 
-  it('set transition condition elm', () => {
-    const startNodeKey = 'T-test';
-    const transitionId = '1';
-    const newPathway = Builder.setTransitionConditionElm(
-      pathway,
-      startNodeKey,
-      transitionId,
-      criteria
-    );
-    expect(newPathway.nodes[startNodeKey].transitions[0].condition.cql).toBe('Tumor Size');
-  });
-
-  it('set action node elm', () => {
-    const key = 'Radiation';
-    const newPathway = Builder.setActionNodeElm(pathway, key, elm);
-    expect(newPathway.nodes[key].cql).toBe('Tumor Size');
-    expect(newPathway.nodes[key].elm).toEqual(elm);
-  });
-
   it('set node label', () => {
     const key = 'T-test';
 
@@ -410,14 +390,12 @@ describe('builder interface update functions', () => {
     it('converts a branch node into a action node', () => {
       const key = 'N-test';
       const newPathway = Builder.setNodeType(pathway, key, 'ServiceRequest');
-      expect(newPathway.nodes[key].cql).toEqual('');
       expect(newPathway.nodes[key].action).toBeDefined();
     });
 
     it('converts a action node into a branch node', () => {
       const key = 'Surgery';
       const newPathway = Builder.setNodeType(pathway, key, 'Observation');
-      expect(newPathway.nodes[key].cql).not.toBeDefined();
       expect(newPathway.nodes[key].action).not.toBeDefined();
     });
   });
@@ -485,7 +463,6 @@ describe('builder interface update functions', () => {
     it('converts a branch node into a action node', () => {
       const key = 'N-test';
       const newPathway = Builder.makeNodeAction(pathway, key);
-      expect(newPathway.nodes[key].cql).toEqual('');
       expect(newPathway.nodes[key].nodeTypeIsUndefined).not.toBeDefined();
       newPathway.nodes[key].transitions.forEach(transition => {
         expect(transition.condition).not.toBeDefined();
@@ -496,7 +473,6 @@ describe('builder interface update functions', () => {
       const key = 'N-test';
       Builder.makeNodeAction(pathway, key);
 
-      expect(pathway.nodes[key].cql).not.toBeDefined();
       expect(pathway.nodes[key].action).not.toBeDefined();
     });
   });
@@ -505,7 +481,6 @@ describe('builder interface update functions', () => {
     it('converts a action node intoa a branch node', () => {
       const key = 'Surgery';
       const newPathway = Builder.makeNodeBranch(pathway, key);
-      expect(newPathway.nodes[key].cql).not.toBeDefined();
       expect(newPathway.nodes[key].action).not.toBeDefined();
       expect(newPathway.nodes[key].nodeTypeIsUndefined).not.toBeDefined();
     });
@@ -514,7 +489,6 @@ describe('builder interface update functions', () => {
       const key = 'Surgery';
       Builder.makeNodeBranch(pathway, key);
 
-      expect(pathway.nodes[key].cql).toBeDefined();
       expect(pathway.nodes[key].action).toBeDefined();
     });
   });
@@ -596,7 +570,7 @@ describe('builder interface helper functions', () => {
       }
     };
     action.resource = medicationRequest;
-    let cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    let cql = Builder.createCQL(action, 'TestNode').cql.replace(/\s+/g, '');
     expect(cql).toEqual(
       expect.stringContaining(
         `Tuple{ resourceType: 'MedicationRequest', id: R.id.value, status: R.status.value}`.replace(
@@ -621,7 +595,7 @@ describe('builder interface helper functions', () => {
       }
     };
     action.resource = serviceRequest;
-    cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    cql = Builder.createCQL(action, 'TestNode').cql.replace(/\s+/g, '');
     expect(cql).toEqual(
       expect.stringContaining(
         `return Tuple{ resourceType: 'Procedure', id: R.id.value, status: R.status.value }`.replace(
@@ -645,7 +619,7 @@ describe('builder interface helper functions', () => {
       title: 'ChemotherapyTH'
     };
     action.resource = carePlan;
-    cql = Builder.createCQL(action, 'TestNode').replace(/\s+/g, '');
+    cql = Builder.createCQL(action, 'TestNode').cql.replace(/\s+/g, '');
     expect(cql).toEqual(
       expect.stringContaining(
         `[CarePlan] R where R.title.value='ChemotherapyTH'

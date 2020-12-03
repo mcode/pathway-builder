@@ -12,7 +12,7 @@ import FileImportModal from 'components/FileImportModal';
 import useListCheckbox from 'hooks/useListCheckbox';
 import ConfirmationPopover from 'components/elements/ConfirmationPopover';
 import { deleteCriteria, readFile, updateCriteria } from 'utils/backend';
-import { cqlToCriteria, jsonToCriteria } from 'utils/criteria';
+import { cqlToCriteria } from 'utils/criteria';
 import useCriteria from 'hooks/useCriteria';
 import JSZip from 'jszip';
 import { CqlLibraries } from 'engine/cql-to-elm';
@@ -64,10 +64,7 @@ const CriteriaList: FC = () => {
           if (event.target?.result) {
             const rawContent = event.target.result as string;
             // TODO: more robust file type identification?
-            if (files[0].name.endsWith('.json')) {
-              const newCriteria = jsonToCriteria(rawContent);
-              if (newCriteria) newCriteria.forEach(criteria => mutateAddCriteria(criteria)); // eslint-disable-line
-            } else if (files[0].name.endsWith('.cql')) {
+            if (files[0].name.endsWith('.cql')) {
               addCqlCriteria(rawContent);
             } else if (files[0].name.endsWith('.zip')) {
               const cqlLibraries: CqlLibraries = {};
@@ -90,7 +87,7 @@ const CriteriaList: FC = () => {
       }
       closeImportModal();
     },
-    [mutateAddCriteria, closeImportModal, addCqlCriteria]
+    [closeImportModal, addCqlCriteria]
   );
 
   const [mutateDelete] = useMutation(deleteCriteria, {

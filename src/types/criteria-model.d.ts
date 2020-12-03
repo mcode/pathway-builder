@@ -1,11 +1,11 @@
 declare module 'criteria-model' {
-  import { ElmLibrary } from 'elm-model';
-
-  export interface CriteriaModel {
+  export interface Criteria {
     id: string;
     label: string;
     display: string;
+    cql: string;
     version?: string;
+    builder?: BuilderModel;
     modified: number;
     statement: string;
     cqlLibraries?: {
@@ -32,10 +32,4 @@ declare module 'criteria-model' {
   }
 
   export type BuilderModel = Age | Gender;
-  export type Criteria = CriteriaModel &
-    (
-      | { builder: BuilderModel; elm?: ElmLibrary; cql?: string }
-      | { builder?: BuilderModel; elm: ElmLibrary; cql?: string }
-      | { builder?: BuilderModel; elm?: ElmLibrary; cql: string }
-    );
 }

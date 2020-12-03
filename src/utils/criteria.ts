@@ -13,12 +13,16 @@ const DEFAULT_ELM_STATEMENTS = [
   'Errors'
 ];
 
-export function elmLibraryToCriteria(
+function elmLibraryToCriteria(
   elm: ElmLibrary,
-  cql: string | undefined = undefined,
+  cql: string,
   cqlLibraries: CqlLibraries | undefined = undefined,
   custom = false
 ): Criteria[] {
+  // NOTE: the elm library is not used on the criteria anymore but this
+  //  method is still used to iterate over all statements. It is easier
+  //  to do this in ELM than in CQL even though it is not optimal.
+
   // the cql-to-elm webservice always responds with ELM
   // even if the CQL was complete garbage
   // TODO: consider showing the error messages from the annotations?
@@ -37,7 +41,7 @@ export function elmLibraryToCriteria(
     );
   }
   if (!elmStatements) {
-    alert('No elm statement found in that file');
+    alert('No statement found in that file');
     return [];
   }
   const labelTitle = custom
@@ -50,7 +54,6 @@ export function elmLibraryToCriteria(
       display: statement.name,
       version: elm.library.identifier.version,
       modified: Date.now(),
-      elm: elm,
       cql: cql,
       statement: statement.name,
       ...(cqlLibraries && { cqlLibraries })
@@ -82,38 +85,35 @@ export function cqlToCriteria(cql: string | CqlLibraries): Promise<Criteria[]> {
   }
 }
 
-export function jsonToCriteria(rawElm: string): Criteria[] | undefined {
-  const elm = JSON.parse(rawElm);
-  if (!elm.library?.identifier) {
-    alert('Please upload ELM file');
-    return;
-  }
-  return elmLibraryToCriteria(elm);
+function createCqlLibrary(cqlStatement: string, name: string, id?: string): string {
+  // CQl identifier cannot start with a number or contain '-'
+  const cqlId = id ?? `cql${shortid.generate().replace(/-/g, 'a')}`;
+  const cql = `library ${cqlId} version '1'\nusing FHIR version '4.0.1'\ncontext Patient\n
+    define "${name}":\n${cqlStatement}`;
+
+  return cql;
 }
 
 export function builderModelToCriteria(
   criteria: BuilderModel,
   label: string,
   id?: string
-): Criteria {
-  return {
-    id: id ? id : shortid.generate(),
-    label,
-    display: label,
-    modified: Date.now(),
-    builder: criteria,
-    statement: label
-  };
+): Promise<Criteria> {
+  const cqlLibrary = createCqlLibrary(criteria.cql, label, id);
+  return cqlToCriteria(cqlLibrary).then(newCriteriaList => {
+    const newCriteria = newCriteriaList[0];
+    newCriteria.builder = criteria;
+    return newCriteria;
+  });
 }
 
 export function addBuilderCriteria(
   buildCriteria: BuilderModel,
   label: string,
   criteriaSource: string | undefined
-): Criteria[] {
-  const newCriteria = builderModelToCriteria(buildCriteria, label, criteriaSource);
-
-  updateCriteria(newCriteria);
-
-  return [newCriteria];
+): Promise<Criteria> {
+  return builderModelToCriteria(buildCriteria, label, criteriaSource).then(newCriteria => {
+    updateCriteria(newCriteria);
+    return newCriteria;
+  });
 }

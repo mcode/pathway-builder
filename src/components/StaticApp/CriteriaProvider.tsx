@@ -9,17 +9,11 @@ import React, {
   useEffect
 } from 'react';
 import JSZip from 'jszip';
-import { ElmLibrary } from 'elm-model';
 import config from 'utils/ConfigManager';
 import useGetService from 'components/StaticApp/Services';
 import { ServiceLoaded } from 'pathways-objects';
 import { Criteria, BuilderModel } from 'criteria-model';
-import {
-  builderModelToCriteria,
-  cqlToCriteria,
-  elmLibraryToCriteria,
-  jsonToCriteria
-} from 'utils/criteria';
+import { builderModelToCriteria, cqlToCriteria } from 'utils/criteria';
 import { CqlLibraries } from 'engine/cql-to-elm';
 
 interface CriteriaContextInterface {
@@ -27,12 +21,11 @@ interface CriteriaContextInterface {
   addCriteria: (file: File) => void;
   addCqlCriteria: (cql: string) => void;
   deleteCriteria: (id: string) => void;
-  addElmCriteria: (elm: ElmLibrary) => Criteria[];
   addBuilderCriteria: (
     criteria: BuilderModel,
     label: string,
     criteriaSource: string | undefined
-  ) => Criteria[];
+  ) => Promise<Criteria>;
 }
 
 export const CriteriaContext = createContext<CriteriaContextInterface>(
@@ -80,10 +73,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         if (event.target?.result) {
           const rawContent = event.target.result as string;
           // TODO: more robust file type identification?
-          if (file.name.endsWith('.json')) {
-            const newCriteria = jsonToCriteria(rawContent);
-            if (newCriteria) setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-          } else if (file.name.endsWith('.cql')) {
+          if (file.name.endsWith('.cql')) {
             addCqlCriteria(rawContent);
           } else if (file.name.endsWith('.zip')) {
             const cqlLibraries: CqlLibraries = {};
@@ -108,14 +98,7 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
   );
 
   const deleteCriteria = useCallback((id: string) => {
-    setCriteria(currentCriteria => currentCriteria.filter(criteria => criteria.id !== id));
-  }, []);
-
-  const addElmCriteria = useCallback((elm: ElmLibrary): Criteria[] => {
-    const newCriteria = elmLibraryToCriteria(elm, undefined, undefined, true);
-    setCriteria(currentCriteria => [...currentCriteria, ...newCriteria]);
-
-    return newCriteria;
+    setCriteria(currentCriteria => currentCriteria.filter(c => c.id !== id));
   }, []);
 
   const addBuilderCriteria = useCallback(
@@ -123,23 +106,24 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
       buildCriteria: BuilderModel,
       label: string,
       criteriaSource: string | undefined
-    ): Criteria[] => {
-      const newCriteria = builderModelToCriteria(buildCriteria, label);
-      if (criteriaSource) {
-        // Find criteria that is being edited
-        const matchingCriteria = criteria.find(c => c.id === criteriaSource);
-        if (matchingCriteria) {
-          newCriteria.id = matchingCriteria.id;
-          setCriteria(currentCriteria => [
-            ...currentCriteria.filter(c => c.id !== matchingCriteria.id),
-            newCriteria
-          ]);
+    ): Promise<Criteria> => {
+      return builderModelToCriteria(buildCriteria, label).then(newCriteria => {
+        if (criteriaSource) {
+          // Find criteria that is being edited
+          const matchingCriteria = criteria.find(c => c.id === criteriaSource);
+          if (matchingCriteria) {
+            newCriteria.id = matchingCriteria.id;
+            setCriteria(currentCriteria => [
+              ...currentCriteria.filter(c => c.id !== matchingCriteria.id),
+              newCriteria
+            ]);
+          }
+        } else {
+          setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
         }
-      } else {
-        setCriteria(currentCriteria => [...currentCriteria, newCriteria]);
-      }
 
-      return [newCriteria];
+        return newCriteria;
+      });
     },
     [criteria]
   );
@@ -151,7 +135,6 @@ export const CriteriaProvider: FC<CriteriaProviderProps> = memo(({ children }) =
         addCriteria,
         addCqlCriteria,
         deleteCriteria,
-        addElmCriteria,
         addBuilderCriteria
       }}
     >
