@@ -33,4 +33,7 @@ declare module 'fhir-objects' {
     url: string;
   };
   export type Library = R4.ILibrary & { id: string; content: R4.IAttachment[] };
+
+  export type CpgCarePlan = R4.ICarePlan;
+  export type RequestGroup = R4.IRequestGroup;
 }

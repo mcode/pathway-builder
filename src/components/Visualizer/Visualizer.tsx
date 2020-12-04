@@ -1,6 +1,13 @@
 import React, { ChangeEvent, FC, memo, useState } from 'react';
 import { Graphviz } from 'graphviz-react';
-import { ActivityDefinition, Bundle, PlanDefinition, Library } from 'fhir-objects';
+import {
+  ActivityDefinition,
+  Bundle,
+  PlanDefinition,
+  Library,
+  CpgCarePlan,
+  RequestGroup
+} from 'fhir-objects';
 
 interface TransitionData {
   [key: string]: string | number;
@@ -15,7 +22,7 @@ const Visualizer: FC = () => {
     const transitionData: TransitionData = {
       id: fromState + '_' + toState,
       label: '',
-      penwidth: 2
+      penwidth: 1
     };
 
     const transitionParams = Object.keys(transitionData)
@@ -25,9 +32,26 @@ const Visualizer: FC = () => {
     const transitionAsDOT = '"' + fromState + '" -> "' + toState + '" [' + transitionParams + ']';
     return transitionAsDOT;
   };
-  const makeGraph = (cpgString: string): string => {
-    const cpg = JSON.parse(cpgString) as Bundle;
-    const transitions: string[] = [];
+
+  const makeNode = (id: string, label: string): string => {
+    const node: { [key: string]: string } = {
+      id: id,
+      shape: 'record',
+      style: 'rounded,filled',
+      fillcolor: 'White',
+      penwidth: '2',
+      fontcolor: 'Black',
+      label: label
+    };
+    const nodeParams = Object.keys(node)
+      .map(key => `${key} = "${node[key]}"`)
+      .join(', ');
+
+    const nodeAsDOT = '"' + id + '" [' + nodeParams + ']';
+    return nodeAsDOT;
+  };
+
+  const parseBundle = (cpg: Bundle, transitions: string[]): string => {
     const resources = cpg.entry
       .map(state => {
         console.log(state);
@@ -67,28 +91,95 @@ const Visualizer: FC = () => {
             console.log(lib);
             label += `: ${lib.id} \\n${lib.title}`;
           }
-          const node: { [key: string]: string } = {
-            id: resource.id,
-            shape: 'record',
-            style: 'rounded,filled',
-            fillcolor: 'White',
-            penwidth: '2',
-            fontcolor: 'Black',
-            label: label
-          };
-          const nodeParams = Object.keys(node)
-            .map(key => `${key} = "${node[key]}"`)
-            .join(', ');
-
-          const nodeAsDOT = '"' + resource.id + '" [' + nodeParams + ']';
-          return nodeAsDOT;
+          return makeNode(resource.id, label);
         } else {
           return '';
         }
       })
       .join('\n');
+    return resources;
+  };
 
+  const parseCarePlan = (cpg: CpgCarePlan, transitions: string[]): string => {
+    if (cpg.contained) {
+      let resources = cpg.contained
+        .map(resource => {
+          if (resource.id && resource.resourceType) {
+            const fromState = resource.id;
+            let label = resource.resourceType;
+            if (label === 'RequestGroup') {
+              const reqGroup = resource as RequestGroup;
+              label += `: ${reqGroup.id}`;
+
+              if (reqGroup.action) {
+                const planTransitions = reqGroup.action
+                  .map(action => {
+                    const toState = action.resource?.reference;
+                    if (toState) {
+                      return makeTransition(fromState, toState.substring(1));
+                    } else {
+                      return '';
+                    }
+                  })
+                  .join('\n');
+                transitions.push(planTransitions);
+              }
+            } else if (label === 'MedicationRequest') {
+              label += `: ${resource.id}`;
+            } else if (label === 'CarePlan') {
+              const carePlan = resource as CpgCarePlan;
+              label += `: ${carePlan.id}`;
+              if (carePlan && carePlan.activity) {
+                const planTransitions = carePlan.activity
+                  .map(resource => {
+                    if (resource.reference?.reference && carePlan.id) {
+                      return makeTransition(
+                        carePlan.id,
+                        resource.reference?.reference?.substring(1)
+                      );
+                    } else {
+                      return '';
+                    }
+                  })
+                  .join('\n');
+                transitions.push(planTransitions);
+              }
+            }
+            return makeNode(fromState, label);
+          } else {
+            return '';
+          }
+        })
+        .join('\n');
+      const main = makeNode(cpg.resourceType, 'Main CarePlan');
+      if (cpg.activity) {
+        const mainTransitions = cpg.activity
+          .map(resource => {
+            if (resource.reference?.reference) {
+              return makeTransition(cpg.resourceType, resource.reference?.reference?.substring(1));
+            } else {
+              return '';
+            }
+          })
+          .join('\n');
+        transitions.push(mainTransitions);
+        resources = resources + `\n${main}`;
+      }
+      return resources;
+    }
+    return '';
+  };
+  const makeGraph = (cpgString: string): string => {
+    const cpg = JSON.parse(cpgString);
+    const transitions: string[] = [];
+    let resources = '';
+    if (cpg.entry) {
+      resources = parseBundle(cpg, transitions);
+    } else {
+      resources = parseCarePlan(cpg, transitions);
+    }
     const graphTransitions = transitions.join('\n');
+    console.log(resources);
     console.log(graphTransitions);
     let graph = 'digraph G {';
     graph += resources;
@@ -106,7 +197,15 @@ const Visualizer: FC = () => {
   return (
     <div>
       <textarea value={cpgString} onChange={_setCpgString}></textarea>
-      {graph && <Graphviz dot={graph}></Graphviz>}
+      {graph && (
+        <Graphviz
+          dot={graph}
+          options={{
+            width: '2000',
+            zoom: true
+          }}
+        ></Graphviz>
+      )}
     </div>
   );
 };
