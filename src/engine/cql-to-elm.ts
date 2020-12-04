@@ -1,7 +1,7 @@
 // External CQL -> ELM service
 import config from 'utils/ConfigManager';
 import { Client } from 'cql-translation-service-client';
-import { CqlLibraries } from 'cql-translation-service-client';
+import { CqlLibraries as _cl } from 'cql-translation-service-client';
 import { ElmLibrary as BuilderElmLibrary, ElmLibraries as BuilderElmLibraries } from 'elm-model';
 
 const url = config.get('cqlToElmWebserviceUrl');
@@ -21,4 +21,4 @@ export function convertBasicCQL(cql: string): Promise<BuilderElmLibrary> {
   return client.convertBasicCQL(cql) as Promise<BuilderElmLibrary>;
 }
 
-export type { CqlLibraries } from 'cql-translation-service-client';
+export type CqlLibraries = _cl;
