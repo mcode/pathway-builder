@@ -3529,9 +3529,10 @@ cql-execution@^1.4.1:
     moment "^2.20.1"
     ucum "0.0.7"
 
-"cql-translation-service-client@https://github.com/mcode/cql-translation-service-client#update-client":
-  version "0.5.0"
-  resolved "https://github.com/mcode/cql-translation-service-client#a712ed2da4f0dc962d7edd2d5bcee346fe10b79e"
+cql-translation-service-client@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/cql-translation-service-client/-/cql-translation-service-client-0.6.0.tgz#71ec8bdcf87437691f4cc2beb80570915943baf7"
+  integrity sha512-YpHG84d0wweGxCjem232WPTsCz6nIUaoxk8QksQjJge9p8kdXajA81Aya4PHD1R4NG0kEY6bxjwVxmabxbL9sQ==
   dependencies:
     axios "^0.19.2"
     form-data "3.0.0"
