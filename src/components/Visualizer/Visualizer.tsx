@@ -41,7 +41,7 @@ const Visualizer: FC = () => {
       fillcolor: 'White',
       penwidth: '2',
       fontcolor: 'Black',
-      label: label
+      label: label.replace(/"/g, '')
     };
     const nodeParams = Object.keys(node)
       .map(key => `${key} = "${node[key]}"`)
@@ -60,7 +60,7 @@ const Visualizer: FC = () => {
           let label = resource.resourceType;
           if (label === 'PlanDefinition') {
             const planDef = resource as PlanDefinition;
-            label += `: ${planDef.id}\\n${planDef.title}`;
+            // label += `: ${planDef.id}\\n${planDef.title}`;
             const planTransitions = planDef.action
               .map(action => {
                 const toState = action.definitionCanonical?.split('/').pop();
