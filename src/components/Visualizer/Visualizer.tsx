@@ -54,7 +54,6 @@ const Visualizer: FC = () => {
   const parseBundle = (cpg: Bundle, transitions: string[]): string => {
     const resources = cpg.entry
       .map(state => {
-        console.log(state);
         const resource = state.resource;
         if (resource && resource.id && resource.resourceType) {
           const fromState = resource.id;
@@ -88,7 +87,6 @@ const Visualizer: FC = () => {
             label += `: ${activityDef.id} \\n${activityDef.description}`;
           } else if (label === 'Library') {
             const lib = resource as Library;
-            console.log(lib);
             label += `: ${lib.id} \\n${lib.title}`;
           }
           return makeNode(resource.id, label);
@@ -179,8 +177,6 @@ const Visualizer: FC = () => {
       resources = parseCarePlan(cpg, transitions);
     }
     const graphTransitions = transitions.join('\n');
-    console.log(resources);
-    console.log(graphTransitions);
     let graph = 'digraph G {';
     graph += resources;
     graph += graphTransitions;
