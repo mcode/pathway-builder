@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import App from 'components/App';
+import Visualizer from 'components/Visualizer';
 import { Landing, AuthModalProvider } from 'components/Auth';
 import ThemeProvider from 'components/ThemeProvider';
 
@@ -29,6 +30,7 @@ ReactDOM.render(
           <Route exact path="/" component={Landing} />
           <Route path="/builder" component={App} />
           <Route path="/demo" component={StaticApp} />
+          <Route path="/viz/" component={Visualizer} />
         </Switch>
       </Router>
     </AuthModalProvider>
