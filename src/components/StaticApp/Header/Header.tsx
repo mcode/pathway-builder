@@ -20,7 +20,7 @@ const DemoBanner: FC = () => {
   return (
     <div className={styleOverrides.root}>
       <FontAwesomeIcon icon={faExclamationCircle} className={styleOverrides.icon} />
-      You are currently viewing syntheic demo data. Any changes made will not be saved. To create
+      You are currently viewing synthetic demo data. Any changes made will not be saved. To create
       your own pathways,{' '}
       <span className={styleOverrides.underline} onClick={openLoginModal}>
         login
